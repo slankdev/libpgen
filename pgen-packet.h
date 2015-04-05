@@ -42,22 +42,12 @@ class pgen_packet{
 		int len;
 		u_char data[PGEN_PACKLEN];
 	public:
-		pgent_mac eth_srcEth;
-		pgent_mac eth_dstEth;
-		int eth_type;
-		pgent_ip ip_srcIp;
-		pgent_ip ip_dstIp;
-		int ip_type;
-
-		int tcp_srcPort;
-		int tcp_dstPort;
-		int udp_srcPort;
-		int udp_dstPort;
-		
-		int srcPort;
-		int dstPort;
-		
-		
+		pgent_mac	eth_srcEth;
+		pgent_mac 	eth_dstEth;
+		int 		eth_type;
+		pgent_ip 	ip_srcIp;
+		pgent_ip 	ip_dstIp;
+		int			ip_type;
 		
 		pgen_packet();
 		~pgen_packet(); 
@@ -68,14 +58,6 @@ class pgen_packet{
 		void sendDl(const char* ifname);
 		void sendNw(const char* ifname);
 		void sendTp(const char* ifname);
-		bool eth_srcEth_isEmpty();
-		bool eth_dstEth_isEmpty();
-		bool ip_srcIp_isEmpty();
-		bool ip_dstIp_isEmpty();
-		bool tcp_srcPort_isEmpty();
-		bool tcp_dstPort_isEmpty();
-		bool udp_srcPort_isEmpty();
-		bool udp_dstPort_isEmpty();
 };
 
 
@@ -117,7 +99,7 @@ class pgen_eth : public pgen_packet {
 #include <sys/socket.h>
 #include <net/ethernet.h> 		/* for struct ether_header 	*/
 #include <netinet/if_ether.h>	/* for struct ether_arp 	*/
-class pgen_arp : public pgen_packet {
+class pgen_arp : public pgen_eth {
 	private:
 		struct ether_header eth;
 		struct ether_arp arp;
@@ -131,10 +113,6 @@ class pgen_arp : public pgen_packet {
 		void info();
 		void clear();
 		void compile(const char* ifname);
-		bool arp_srcEth_isEmpty();
-		bool arp_dstEth_isEmpty();
-		bool arp_srcIp_isEmpty();
-		bool arp_dstIp_isEmpty();
 };
 
 
@@ -151,7 +129,7 @@ class pgen_arp : public pgen_packet {
 #include <sys/socket.h>
 #include <net/ethernet.h>		/* for struct ether_header	*/ 
 #include <netinet/ip.h>			/* for struct iphdr			*/
-class pgen_ip : public pgen_packet {
+class pgen_ip : public pgen_eth {
 	private:
 		struct ether_header eth;
 		struct iphdr ip;
@@ -176,7 +154,7 @@ class pgen_ip : public pgen_packet {
 #include <net/ethernet.h> 		/* for struct ether_header	*/
 #include <netinet/ip.h>			/* for struct iphdr			*/
 #include <netinet/ip_icmp.h>	/* for struct icmp			*/
-class pgen_icmp : public pgen_packet {
+class pgen_icmp : public pgen_ip {
 	private:
 		struct ether_header eth;
 		struct iphdr ip;

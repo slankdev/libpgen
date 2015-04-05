@@ -15,8 +15,8 @@
 
 class pgent_ip{
 	private:
-		u_int32_t _addr;
 	public:
+		u_int32_t _addr;
 		
 		pgent_ip(){}
 
@@ -33,6 +33,11 @@ class pgent_ip{
 							lc.c[0],lc.c[1],lc.c[2],lc.c[3]);
 			return str;
 		}
+		bool isEmpty(){
+			if(_addr == 0)	return true;
+			else			return false;
+		}
+
 
 		pgent_ip operator=(const char* str){
 			_addr = inet_addr(str);
@@ -40,7 +45,7 @@ class pgent_ip{
 		pgent_ip operator=(const int num){
 			_addr = num;
 		}
-		unsigned int operator[](const int num){
+		u_char operator[](const int num){
 			union lc{
 				unsigned int l;
 				unsigned char c[4];
@@ -103,8 +108,8 @@ class pgent_ip{
 
 class pgent_mac{
 	private:
-		u_char _addr[6];
 	public:
+		u_char _addr[6];
 		pgent_mac(){}
 
 		char* c_str(){
@@ -138,6 +143,11 @@ class pgent_mac{
 			}fclose(fp);
 			strcpy(bender, "not-found");
 			return bender;
+		}
+		bool isEmpty(){
+			for(int i=0; i<6; i++)
+				if(_addr[i] != 0)	return false;
+			return true;
 		}
 
 
