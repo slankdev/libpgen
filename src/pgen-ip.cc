@@ -23,13 +23,10 @@ pgen_ip::pgen_ip(){
 	clear();	
 }
 
-
-
 void pgen_ip::clear(){
 	ip_srcIp = 0;
 	ip_dstIp = 0;
 }
-
 
 
 void pgen_ip::compile(const char* ifname){
@@ -71,5 +68,12 @@ void pgen_ip::compile(const char* ifname){
 
 
 void pgen_ip::info(){
+	pgen_eth::info();
+
 	printf("ip::info()\n");
+	printf(" * Internet Protocol version 4\n");
+	printf("    - Version     :  %d \n", ip.version);
+	printf("    - Source      :  %s \n", ip_srcIp.c_str());
+	printf("    - Destination :  %s \n", ip_dstIp.c_str());
+	printf("    - Protocol    :  %s (0x%x) \n","test",  ip_type);
 }

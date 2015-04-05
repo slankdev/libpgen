@@ -7,8 +7,6 @@
 #include "util.h"
 #include "pgen-funcs.h"
 #include "pgen-variable.h"
-
-
 //--saiteigenn-zettai-hituyou---
 #include <stdio.h>
 #include <string.h>
@@ -19,8 +17,6 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 //------------------------------
-
-
 
 
 
@@ -37,10 +33,10 @@
 #include <netinet/in.h>		/* for struct sockaddr_in */
 class pgen_packet{
 	protected:
-		int packetType;
-		int sock;
-		int len;
-		u_char data[PGEN_PACKLEN];
+		int 	packetType;
+		int 	sock;
+		int 	len;
+		u_char 	data[PGEN_PACKLEN];
 	public:
 		
 		pgen_packet();
@@ -102,13 +98,13 @@ class pgen_eth : public pgen_packet {
 class pgen_arp : public pgen_eth {
 	private:
 		struct ether_header eth;
-		struct ether_arp arp;
+		struct ether_arp 	arp;
 	public:
 		int arp_option;
-		pgent_mac arp_srcEth;
-		pgent_mac arp_dstEth;
-		pgent_ip arp_srcIp;
-		pgent_ip arp_dstIp;
+		pgent_mac	arp_srcEth;
+		pgent_mac	arp_dstEth;
+		pgent_ip	arp_srcIp;
+		pgent_ip	arp_dstIp;
 
 		pgen_arp();
 		void info();
@@ -133,7 +129,7 @@ class pgen_arp : public pgen_eth {
 class pgen_ip : public pgen_eth {
 	private:
 		struct ether_header eth;
-		struct iphdr ip;
+		struct iphdr		ip;
 	public:
 		pgent_ip 	ip_srcIp;
 		pgent_ip 	ip_dstIp;
@@ -164,8 +160,8 @@ class pgen_ip : public pgen_eth {
 class pgen_icmp : public pgen_ip {
 	private:
 		struct ether_header eth;
-		struct iphdr ip;
-		struct icmphdr icmp;
+		struct iphdr 		ip;
+		struct icmphdr 		icmp;
 	public:
 		int icmp_option;
 		int icmp_code;

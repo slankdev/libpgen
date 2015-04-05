@@ -18,14 +18,10 @@ pgen_eth::pgen_eth(){
 	clear();	
 }
 
-
-
 void pgen_eth::clear(){
 	eth_srcEth = 0;
 	eth_dstEth = 0;
 }
-
-
 
 void pgen_eth::compile(const char* ifname){
 	if(eth_srcEth.isEmpty()){
@@ -49,7 +45,6 @@ void pgen_eth::compile(const char* ifname){
 	len = p - data;
 }
 
-
 void pgen_eth::info(){
 	printf(" * Ethernet       :  %s  --->  %s \n"
 			, eth_srcEth.c_str(), eth_dstEth.c_str());
@@ -58,7 +53,5 @@ void pgen_eth::info(){
 	printf("    - Source      :  %s (%s)   \n"
 			, eth_srcEth.c_str(), eth_srcEth.bender());
 	printf("    - Type        :  %s (0x%04x)   \n", "text", eth_type);
-
-	//printf("\n\n");
 }
 

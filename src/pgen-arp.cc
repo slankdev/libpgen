@@ -27,19 +27,6 @@ pgen_arp::pgen_arp(){
 	clear();
 }
 
-
-void pgen_arp::info(){
-	pgen_eth::info();	
-
-	printf(" * ARP	          :       \n");
-	printf("    - Sender Mac  :  %s (%s) \n", arp_srcEth.c_str(), arp_srcEth.bender());
-	printf("    - Sender IP   :  %s  \n", arp_srcIp.c_str() );
-	printf("    - Target Mac  :  %s (%s) \n", arp_dstEth.c_str(), arp_dstEth.bender());
-	printf("    - Target IP   :  %s  \n", arp_dstIp.c_str() );
-}
-
-
-
 void pgen_arp::clear(){
 	arp_srcIp = 0;
 	arp_dstIp = 0;
@@ -49,7 +36,16 @@ void pgen_arp::clear(){
 }
 
 
+void pgen_arp::info(){
+	pgen_eth::info();	
 
+	printf(" * Address Resolution Protocol \n");
+	printf("    - Opcode      :  %s (%d) \n", "test", arp_option);
+	printf("    - Sender Mac  :  %s (%s) \n", arp_srcEth.c_str(), arp_srcEth.bender());
+	printf("    - Sender IP   :  %s  \n", arp_srcIp.c_str() );
+	printf("    - Target Mac  :  %s (%s) \n", arp_dstEth.c_str(), arp_dstEth.bender());
+	printf("    - Target IP   :  %s  \n", arp_dstIp.c_str() );
+}
 
 
 void pgen_arp::compile(const char* ifname){
