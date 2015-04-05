@@ -37,7 +37,7 @@
 #include <netinet/in.h>		/* for struct sockaddr_in */
 class pgen_packet{
 	protected:
-		pgen_t packetType;
+		int packetType;
 		int sock;
 		int len;
 		u_char data[PGEN_PACKLEN];
@@ -80,6 +80,8 @@ class pgen_eth : public pgen_packet {
 	private:
 		struct ether_header eth;
 	public:
+
+
 		void compile(const char* ifname);
 		void info();
 };

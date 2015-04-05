@@ -11,7 +11,7 @@
 #define PGEN_DEFAULT_TTL 48
 	
 	
-typedef int pgen_t;
+//typedef int pgen_t;
 #define PGEN_PACKETTYPE_ETH 	1
 #define PGEN_PACKETTYPE_ARP 	2
 #define PGEN_PACKETTYPE_IP		3
