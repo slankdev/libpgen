@@ -41,7 +41,7 @@ void pgen_icmp::clear(){
 
 
 void pgen_icmp::compile(const char* ifname){
-	pgen_packet::compile(ifname);
+	pgen_ip::compile(ifname);
 	packetType = PGEN_PACKETTYPE_ICMP;
 	memset(data, 0, sizeof(data));
 	memset(&eth, 0, sizeof eth);

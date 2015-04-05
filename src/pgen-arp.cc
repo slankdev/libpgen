@@ -53,7 +53,7 @@ void pgen_arp::clear(){
 
 
 void pgen_arp::compile(const char* ifname){
-	pgen_packet::compile(ifname);
+	pgen_eth::compile(ifname);
 
 	packetType = PGEN_PACKETTYPE_ARP;
 	memset(data, 0, sizeof data);
