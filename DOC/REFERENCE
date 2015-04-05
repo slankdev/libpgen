@@ -1,0 +1,11 @@
+REFERENCE このファイルにlibpgenの使い方を書き込む
+
+@ パケット作成から送信までの手順
+ 0. ヘッダのインクルード			#include "pgen.h" /* only this header! */
+ 1. 変数定義						pgen_packet pack;
+ 2. 変数の設定						pack.opcode = PGEN_ARPOP_REQEST; 
+ 3. パケットを完成形にする			pack.make();
+ 4. インターフェースを決めて送信	pack.send("eth0");
+
+
+
