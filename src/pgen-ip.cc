@@ -14,8 +14,31 @@
 
 #include <net/ethernet.h> 
 #include <netinet/ip.h>
+
+
+
+
+pgen_ip::pgen_ip(){
+	pgen_eth::clear();
+	clear();	
+}
+
+
+
+void pgen_ip::clear(){
+	ip_srcIp = 0;
+	ip_dstIp = 0;
+}
+
+
+
 void pgen_ip::compile(const char* ifname){
-	pgen_packet::compile(ifname);
+	pgen_eth::compile(ifname);
+	if(ip_srcIp.isEmpty()){
+		ip_srcIp = pgen_getIP(ifname);
+		printf(" - ip_srcIp is Empty. set %s's ip address(%s)\n", ifname, pgen_getIP(ifname));
+	}
+
 	packetType = PGEN_PACKETTYPE_IP;
 	memset(data, 0, sizeof data);
 	memset(&eth, 0, sizeof eth);

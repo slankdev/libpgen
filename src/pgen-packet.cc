@@ -32,10 +32,6 @@ pgen_packet::~pgen_packet(){
 void pgen_packet::clear(){
 	sock = 0;
 	len = 0;
-	eth_srcEth = 0;
-	eth_dstEth = 0;
-	ip_srcIp = 0;
-	ip_dstIp = 0;
 }
 
 
@@ -67,20 +63,6 @@ void pgen_packet::hex(){
 			}
 		}printf("\n");
 	}printf("\n");
-}
-
-
-
-
-void pgen_packet::compile(const char* ifname){
-	if(eth_srcEth.isEmpty()){
-		eth_srcEth = pgen_getMAC(ifname);
-		printf(" - eth_srcEth is Empty. set %s's mac address(%s)\n", ifname, eth_srcEth.c_str());
-	}
-	if(ip_srcIp.isEmpty()){
-		ip_srcIp = pgen_getIP(ifname);
-		printf(" - ip_srcIp is Empty. set %s's ip address(%s)\n", ifname, pgen_getIP(ifname));
-	}
 }
 
 

@@ -42,17 +42,11 @@ class pgen_packet{
 		int len;
 		u_char data[PGEN_PACKLEN];
 	public:
-		pgent_mac	eth_srcEth;
-		pgent_mac 	eth_dstEth;
-		int 		eth_type;
-		pgent_ip 	ip_srcIp;
-		pgent_ip 	ip_dstIp;
-		int			ip_type;
 		
 		pgen_packet();
 		~pgen_packet(); 
 		virtual void info()=0;	
-		virtual void compile(const char* ifname);
+		virtual void compile(const char* ifname)=0;
 		virtual void clear();
 		void hex();
 		void sendDl(const char* ifname);
@@ -80,8 +74,12 @@ class pgen_eth : public pgen_packet {
 	private:
 		struct ether_header eth;
 	public:
-
-
+		pgent_mac	eth_srcEth;
+		pgent_mac 	eth_dstEth;
+		int 		eth_type;
+		
+		pgen_eth();
+		void clear();
 		void compile(const char* ifname);
 		void info();
 };
@@ -111,6 +109,7 @@ class pgen_arp : public pgen_eth {
 		pgent_mac arp_dstEth;
 		pgent_ip arp_srcIp;
 		pgent_ip arp_dstIp;
+
 		pgen_arp();
 		void info();
 		void clear();
@@ -136,6 +135,12 @@ class pgen_ip : public pgen_eth {
 		struct ether_header eth;
 		struct iphdr ip;
 	public:
+		pgent_ip 	ip_srcIp;
+		pgent_ip 	ip_dstIp;
+		int			ip_type;
+		
+		pgen_ip();
+		void clear();
 		void compile(const char* ifname);
 		void info();
 };
