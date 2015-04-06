@@ -29,13 +29,8 @@ int main(){
 	arp.arp_option = ARPOP_REQUEST;
 	arp.wrap("eth0");
 	arp.info();
-//	arp.sendDl("eth0");
 	arp.send();
 	printf("===========================================\n");
-	
-	
-	
-	
 	
 	
 	printf("ICMP========================================\n");
@@ -48,7 +43,7 @@ int main(){
 	printf("===========================================\n");
 
 	printf("IP=========================================\n");
-	ip.ip_dstIp = "255.255.255.255";
+	ip.ip_dstIp = "192.168.179.1";
 	ip.wrapLite("eth0");
 	ip.info();
 	ip.send();

@@ -39,7 +39,7 @@ void pgen_ip::wrapLite(const char* ifname){
 	sin.sin_addr.s_addr = ip_dstIp._addr;
 	memcpy(&addr, &sin, sizeof(sin));
 
-	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_IP)) < 0){
+	if((sock=socket(AF_INET, SOCK_RAW, htons(ETH_P_IP))) < 0){
 		perror("ip::wrapLite socket()");
 		exit(PGEN_ERROR);
 	}
