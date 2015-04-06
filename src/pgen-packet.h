@@ -43,7 +43,7 @@ class pgen_packet{
 		pgen_packet();
 		~pgen_packet(); 
 		virtual void info()=0;	
-		virtual void compile(const char* ifname)=0;
+		virtual void wrap(const char* ifname)=0;
 		virtual void clear();
 		void hex();
 		void sendDl(const char* ifname);
@@ -86,7 +86,7 @@ class pgen_eth : public pgen_packet {
 		
 		pgen_eth();
 		void clear();
-		void compile(const char* ifname);
+		void wrap(const char* ifname);
 		void info();
 };
 
@@ -118,7 +118,7 @@ class pgen_arp : public pgen_eth {
 		pgen_arp();
 		void info();
 		void clear();
-		void compile(const char* ifname);
+		void wrap(const char* ifname);
 };
 
 
@@ -145,7 +145,7 @@ class pgen_ip : public pgen_eth {
 		
 		pgen_ip();
 		void clear();
-		void compile(const char* ifname);
+		void wrap(const char* ifname);
 		void info();
 };
 
@@ -175,7 +175,7 @@ class pgen_icmp : public pgen_ip {
 		pgen_icmp();
 		void info();
 		void clear();
-		void compile(const char* ifname);
+		void wrap(const char* ifname);
  };
 
 
@@ -201,7 +201,7 @@ class pgen_tcp : public pgen_ip {
 		pgen_tcp();
 		void info();
 		void clear();
-		void compile(const char* ifname);
+		void wrap(const char* ifname);
 		
 };
 

@@ -29,8 +29,8 @@ pgen_arp::pgen_arp(){
 
 
 
-void pgen_arp::compile(const char* ifname){
-	pgen_eth::compile(ifname);
+void pgen_arp::wrap(const char* ifname){
+	pgen_eth::wrap(ifname);
 
 	packetType = PGEN_PACKETTYPE_ARP;
 	eth.ether_type = htons(ETHERTYPE_ARP);
@@ -60,7 +60,7 @@ void pgen_arp::compile(const char* ifname){
 
 
 	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
-		perror("arp::compile bind()");
+		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
 	//struct sockaddr addr;
@@ -68,7 +68,7 @@ void pgen_arp::compile(const char* ifname){
 	addr.sa_family = AF_PACKET;
 	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
 	if(bind(sock, &addr, sizeof(addr)) < 0){
-		perror("arp::compile bind()");
+		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
 }

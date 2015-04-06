@@ -36,9 +36,9 @@ pgen_icmp::pgen_icmp(){
 
 
 
-void pgen_icmp::compile(const char* ifname){
+void pgen_icmp::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_ICMP;
-	pgen_ip::compile(ifname);
+	pgen_ip::wrap(ifname);
 	ip.protocol = IPPROTO_ICMP;
 	ip.tot_len = sizeof(ip) + sizeof(icmp) + 100;
 
@@ -59,7 +59,7 @@ void pgen_icmp::compile(const char* ifname){
 	len = p-data;
 	
 	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(IPPROTO_ICMP))) < 0){
-		perror("arp::compile bind()");
+		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
 
@@ -67,7 +67,7 @@ void pgen_icmp::compile(const char* ifname){
 	addr.sa_family = AF_PACKET;
 	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
 	if(bind(sock, &addr, sizeof(addr)) < 0){
-		perror("arp::compile bind()");
+		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
 

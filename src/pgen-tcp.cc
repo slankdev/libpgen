@@ -41,8 +41,8 @@ void pgen_tcp::info(){
 
 
 
-void pgen_tcp::compile(const char* ifname){
-	pgen_ip::compile(ifname);
+void pgen_tcp::wrap(const char* ifname){
+	pgen_ip::wrap(ifname);
 	ip.protocol = IPPROTO_TCP;
 	
 	memset(&data, 0, sizeof data);
@@ -50,7 +50,7 @@ void pgen_tcp::compile(const char* ifname){
 
 
 	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(IPPROTO_TCP))) < 0){
-		perror("arp::compile bind()");
+		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
 
@@ -58,7 +58,7 @@ void pgen_tcp::compile(const char* ifname){
 	addr.sa_family = AF_PACKET;
 	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
 	if(bind(sock, &addr, sizeof(addr)) < 0){
-		perror("arp::compile bind()");
+		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
 }

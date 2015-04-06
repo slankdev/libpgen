@@ -37,7 +37,7 @@ void pgen_packet::clear(){
 
 void pgen_packet::sendDl(const char* ifname){
 	if((sock=socket(PF_PACKET, SOCK_PACKET, 0)) < 0){
-		perror("pgen_packet.compile socket()");
+		perror("pgen_packet.wrap socket()");
 		exit(PGEN_ERROR);
 	}
 
@@ -46,7 +46,7 @@ void pgen_packet::sendDl(const char* ifname){
 	saDl.sa_family = PF_PACKET;
 	snprintf(saDl.sa_data, sizeof(saDl.sa_data), "%s", ifname);
 	if(bind(sock, &saDl, sizeof(saDl)) < 0){
-		perror("pgen_packet.compile bind()");
+		perror("pgen_packet.wrap bind()");
 		exit(PGEN_ERROR);
 	}
 

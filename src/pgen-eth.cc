@@ -23,7 +23,7 @@ void pgen_eth::clear(){
 	eth_dstEth = 0;
 }
 
-void pgen_eth::compile(const char* ifname){
+void pgen_eth::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_ETH;
 	memset(data, 0, sizeof data);
 
@@ -40,7 +40,7 @@ void pgen_eth::compile(const char* ifname){
 
 
 	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
-		perror("eth::compile bind()");
+		perror("eth::wrap bind()");
 		exit(PGEN_ERROR);
 	}
 
@@ -48,7 +48,7 @@ void pgen_eth::compile(const char* ifname){
 	addr.sa_family = AF_PACKET;
 	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
 	if(bind(sock, &addr, sizeof(addr)) < 0){
-		perror("eth::compile bind()");
+		perror("eth::wrap bind()");
 		exit(PGEN_ERROR);
 	}
 }
