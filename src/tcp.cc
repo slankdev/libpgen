@@ -29,7 +29,7 @@ void pgen_tcp::wrapLite(const char* ifname){
 	struct sockaddr_in sin;
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = ip_dstIp._addr;
-	sin.sin_port = tcp_dstPort;
+	sin.sin_port = htons(tcp_dstPort);
 	memcpy(&addr, &sin, sizeof(sin));
 
 	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) < 0){
@@ -38,8 +38,13 @@ void pgen_tcp::wrapLite(const char* ifname){
 	}
 
 	memset(&tcp, 0, sizeof tcp);
-	
-
+	tcp.source = htons(tcp_srcPort);
+	tcp.dest   = htons(tcp_dstPort);
+	tcp.seq    = 0;
+	tcp.ack_seq = 0;
+	tcp.doff = sizeof(tcp);
+	tcp.window = 1500;
+	tcp.check  = 0;
 
 	u_char* p = data;
 	memcpy(p, &tcp, sizeof(icmp));

@@ -39,10 +39,10 @@ void pgen_udp::wrapLite(const char* ifname){
 	}
 
 	memset(&udp, 0, sizeof udp);
-	udp.uh_sport = htons(udp_srcPort);
-	udp.uh_dport = htons(udp_dstPort);
-	udp.uh_ulen = sizeof(udp);
-	udp.uh_sum = 0;
+	udp.source = htons(udp_srcPort);
+	udp.dest   = htons(udp_dstPort);
+	udp.len    = sizeof(udp);
+	udp.check  = 0;
 	
 
 

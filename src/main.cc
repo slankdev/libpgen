@@ -8,9 +8,9 @@ int main(){
 	pgen_ip ip;
 	pgen_icmp icmp;
 	pgen_udp udp;
+	pgen_tcp tcp;
 
 	
-	printf("ARP========================================\n");
 	arp.eth_srcEth = pgen_getMAC("eth0");
 	arp.eth_dstEth = "ff:ff:ff:ff:ff:ff";
 	arp.arp_srcEth = pgen_getMAC("eth0");
@@ -19,36 +19,45 @@ int main(){
 	arp.arp_dstIp = "192.168.179.1";
 	arp.arp_option = ARPOP_REQUEST;
 	arp.wrap("eth0");
+	printf("ARP========================================\n");
 	arp.info();
-	arp.send();
 	printf("===========================================\n");
+	arp.send();
 	
 	
-	printf("ICMP========================================\n");
 	icmp.ip_dstIp = "192.168.179.1";
 	icmp.icmp_option = PGEN_ICMPOP_ECHO;
 	icmp.icmp_code 	 = PGEN_ICMPCODE_NET_UNREACH;
 	icmp.wrapLite("eth0");
+	printf("ICMP========================================\n");
 	icmp.info();
-	icmp.send();
 	printf("===========================================\n");
+	icmp.send();
 
-	printf("IP=========================================\n");
 	ip.ip_dstIp = "192.168.179.1";
 	ip.wrapLite("eth0");
+	printf("IP=========================================\n");
 	ip.info();
-	ip.send();
 	printf("===========================================\n");
+	ip.send();
 
 	
-	printf("UDP========================================\n");
 	udp.ip_dstIp = "192.168.179.1";
-	//udp.udp_srcPort = 11111;
 	udp.udp_srcPort = 123;
-	//udp.udp_dstPort = 22222;
 	udp.udp_dstPort = 123;
 	udp.wrapLite("eth0");
+	printf("UDP========================================\n");
 	udp.info();
-	udp.send();
 	printf("===========================================\n");
+	udp.send();
+	
+	
+	tcp.ip_dstIp = "192.168.179.1";
+	tcp.tcp_srcPort = 11111;
+	tcp.tcp_dstPort = 22222;
+	tcp.wrapLite("eth0");
+	printf("TCP========================================\n");
+	tcp.info();
+	printf("===========================================\n");
+	tcp.send();
 }
