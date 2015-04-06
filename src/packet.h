@@ -45,9 +45,7 @@ class pgen_packet{
 		virtual void wrap(const char* ifname)=0;
 		virtual void clear();
 		void hex();
-		void sendDl(const char* ifname);
-		void sendNw(const char* ifname);
-		void sendTp(const char* ifname);
+	//	void sendDl(const char* ifname);
 		
 		void send(){
 			int n;

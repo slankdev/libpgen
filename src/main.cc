@@ -1,13 +1,6 @@
 #include "pgen.h"
 
 
-int main55(){
-	u_int32_t myad = inet_addr("192.168.179.1");
-	pgent_ip  ip;
-	ip = "192.168.179.1";
-	if(ip._addr == myad)	printf("same\n");
-	else 	printf("no same\n");
-}
 
 int main(){
 	pgen_eth eth;
@@ -29,26 +22,20 @@ int main(){
 	printf("ARP========================================\n");
 	arp.eth_srcEth = pgen_getMAC("eth0");
 	arp.eth_dstEth = "ff:ff:ff:ff:ff:ff";
+	arp.arp_srcEth = pgen_getMAC("eth0");
 	arp.arp_srcIp = pgen_getIP("eth0");
+	arp.arp_dstEth = 0;
 	arp.arp_dstIp = "192.168.179.1";
 	arp.arp_option = ARPOP_REQUEST;
 	arp.wrap("eth0");
 	arp.info();
+//	arp.sendDl("eth0");
 	arp.send();
 	printf("===========================================\n");
 	
 	
-/*	
-	printf("IP=========================================\n");
-	ip.eth_srcEth = pgen_getMAC("eth0");
-	ip.eth_dstEth = "ff:ff:ff:ff:ff:ff";
-	ip.ip_srcIp = pgen_getIP("eth0");
-	ip.ip_dstIp = "255.255.255.255";
-	ip.wrap("eth0");
-	ip.info();
-	ip.send();
-	printf("===========================================\n");
-*/	
+	
+	
 	
 	
 	printf("ICMP========================================\n");
@@ -60,5 +47,11 @@ int main(){
 	icmp.send();
 	printf("===========================================\n");
 
+	printf("IP=========================================\n");
+	ip.ip_dstIp = "255.255.255.255";
+	ip.wrapLite("eth0");
+	ip.info();
+	ip.send();
+	printf("===========================================\n");
 
 }

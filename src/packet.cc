@@ -33,7 +33,7 @@ void pgen_packet::clear(){
 
 
 
-
+/*
 void pgen_packet::sendDl(const char* ifname){
 	if((sock=socket(PF_PACKET, SOCK_PACKET, 0)) < 0){
 		perror("pgen_packet.wrap socket()");
@@ -56,10 +56,7 @@ void pgen_packet::sendDl(const char* ifname){
 	
 	printf(" - pgen_packet.send: send packet successful\n");
 }
-
-void pgen_packet::sendNw(const char* ifname){}
-void pgen_packet::sendTp(const char* ifname){}
-
+*/
 
 
 

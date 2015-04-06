@@ -62,14 +62,10 @@ void pgen_arp::wrap(const char* ifname){
 		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
-	//struct sockaddr addr;
+
 	memset(&addr, 0, sizeof addr);
 	addr.sa_family = AF_PACKET;
 	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
-	if(bind(sock, &addr, sizeof(addr)) < 0){
-		perror("arp::wrap bind()");
-		exit(PGEN_ERROR);
-	}
 }
 
 
