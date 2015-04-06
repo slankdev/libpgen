@@ -34,6 +34,49 @@ pgen_icmp::pgen_icmp(){
 
 
 
+
+
+void pgen_icmp::compile(const char* ifname){
+	packetType = PGEN_PACKETTYPE_ICMP;
+	pgen_ip::compile(ifname);
+	ip.protocol = IPPROTO_ICMP;
+	ip.tot_len = sizeof(ip) + sizeof(icmp) + 100;
+
+	memset(data, 0, sizeof(data));
+	memset(&icmp, 0, sizeof icmp);
+
+	icmp.type = icmp_option;
+	icmp.code = icmp_code;
+	icmp.checksum = checksum(&icmp, sizeof icmp);
+	
+	
+	u_char* p = data;
+	memcpy(p, &eth, sizeof(eth));
+	p += sizeof(eth);
+	memcpy(p, &ip, sizeof(ip));
+	p += sizeof(ip);
+	memcpy(p, &icmp, sizeof(icmp));
+	len = p-data;
+	
+	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(IPPROTO_ICMP))) < 0){
+		perror("arp::compile bind()");
+		exit(PGEN_ERROR);
+	}
+
+	memset(&addr, 0, sizeof addr);
+	addr.sa_family = AF_PACKET;
+	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
+	if(bind(sock, &addr, sizeof(addr)) < 0){
+		perror("arp::compile bind()");
+		exit(PGEN_ERROR);
+	}
+
+}
+
+
+
+
+
 void pgen_icmp::info(){
 	pgen_ip::info();
 
@@ -59,34 +102,4 @@ void pgen_icmp::clear(){
 	icmp_option -1;
 	icmp_code = -1;
 }
-
-
-
-void pgen_icmp::compile(const char* ifname){
-	pgen_ip::compile(ifname);
-
-	memset(data, 0, sizeof(data));
-	memset(&icmp, 0, sizeof icmp);
-		
-	packetType = PGEN_PACKETTYPE_ICMP;
-	ip.protocol = IPPROTO_ICMP;
-	ip.tot_len = sizeof(ip) + sizeof(icmp);
-
-	icmp.type = icmp_option;
-	icmp.code = icmp_code;
-//	icmp.check = checksum(&ip, sizeof(ip));
-	icmp.checksum = checksum(&icmp, sizeof icmp);
-	
-	
-	u_char* p = data;
-	memcpy(p, &eth, sizeof(eth));
-	p += sizeof(eth);
-	memcpy(p, &ip, sizeof(ip));
-	p += sizeof(ip);
-	memcpy(p, &icmp, sizeof(icmp));
-	len = p-data;
-	
-}
-
-
 

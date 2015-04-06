@@ -37,6 +37,20 @@ void pgen_eth::compile(const char* ifname){
 	memcpy(data, &eth, sizeof eth);
 	p += sizeof(eth);
 	len = p - data;
+
+
+	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
+		perror("eth::compile bind()");
+		exit(PGEN_ERROR);
+	}
+
+	memset(&addr, 0, sizeof addr);
+	addr.sa_family = AF_PACKET;
+	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
+	if(bind(sock, &addr, sizeof(addr)) < 0){
+		perror("eth::compile bind()");
+		exit(PGEN_ERROR);
+	}
 }
 
 

@@ -30,13 +30,12 @@ void pgen_ip::clear(){
 
 
 void pgen_ip::compile(const char* ifname){
-	pgen_eth::compile(ifname);
-
 	packetType = PGEN_PACKETTYPE_IP;
+	pgen_eth::compile(ifname);
 	eth.ether_type = htons(ETHERTYPE_IP);
+
 	memset(data, 0, sizeof data);
 	memset(&ip, 0, sizeof ip);
-	
 
 	ip.ihl = sizeof(ip) / 4;
 	ip.version = 4;
@@ -56,6 +55,20 @@ void pgen_ip::compile(const char* ifname){
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(ip);
 	len = p - data;
+
+
+	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(IPPROTO_IP))) < 0){
+		perror("arp::compile bind()");
+		exit(PGEN_ERROR);
+	}
+
+	memset(&addr, 0, sizeof addr);
+	addr.sa_family = AF_PACKET;
+	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
+	if(bind(sock, &addr, sizeof(addr)) < 0){
+		perror("arp::compile bind()");
+		exit(PGEN_ERROR);
+	}
 }
 
 void pgen_ip::info(){

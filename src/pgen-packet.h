@@ -191,10 +191,17 @@ class pgen_icmp : public pgen_ip {
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>		/* for struct tcp			*/
-class pgen_tcp{
+class pgen_tcp : public pgen_ip {
 	protected:
 		struct tcphdr tcp;
 	public:
+		int tcp_srcPort;
+		int tcp_dstPort;
+
+		pgen_tcp();
+		void info();
+		void clear();
+		void compile(const char* ifname);
 		
 };
 
