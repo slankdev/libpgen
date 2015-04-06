@@ -53,7 +53,7 @@ class pgen_packet{
 				perror("pgen_packet.send sendto()");
 				exit(PGEN_ERROR);
 			}
-			printf(" - %d packet sended!!\n", n);
+	//		printf(" - %d packet sended!!\n", n);
 			printf(" - pgen_packet.send: send packet successful\n");
 		}
 
@@ -182,7 +182,6 @@ class pgen_icmp : public pgen_ip {
 
 
 
-/*//[[[
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -202,9 +201,34 @@ class pgen_tcp : public pgen_ip {
 		pgen_tcp();
 		void info();
 		void clear();
+		void wrapLite(const char* ifname);
 		void wrap(const char* ifname);
 		
 };
-*///]]]
 
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <stdint.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/udp.h>		// for struct udp		
+class pgen_udp : public pgen_ip {
+	protected:
+		struct udphdr udp;
+	public:
+		int udp_srcPort;
+		int udp_dstPort;
+
+		pgen_udp();
+		void info();
+		void clear();
+		void wrapLite(const char* ifname);
+		void wrap(const char* ifname);
+		
+};
 #endif

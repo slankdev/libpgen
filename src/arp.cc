@@ -97,9 +97,9 @@ void pgen_arp::info(){
 	_arpopcode[-1] = "Not Set";
 
 	printf(" * Address Resolution Protocol \n");
-	printf("    - Opcode      :  %s (%d) \n", _arpopcode[arp_option], arp_option);
-	printf("    - Sender Mac  :  %s (%s) \n", arp_srcEth.c_str(), arp_srcEth.bender());
-	printf("    - Sender IP   :  %s  \n", arp_srcIp.c_str() );
-	printf("    - Target Mac  :  %s (%s) \n", arp_dstEth.c_str(), arp_dstEth.bender());
-	printf("    - Target IP   :  %s  \n", arp_dstIp.c_str() );
+	printf("    - Opcode          :  %s (%d) \n", _arpopcode[arp_option], arp_option);
+	printf("    - Sender Mac      :  %s (%s) \n", arp_srcEth.c_str(), arp_srcEth.bender());
+	printf("    - Sender IP       :  %s  \n", arp_srcIp.c_str() );
+	printf("    - Target Mac      :  %s (%s) \n", arp_dstEth.c_str(), arp_dstEth.bender());
+	printf("    - Target IP       :  %s  \n", arp_dstIp.c_str() );
 }

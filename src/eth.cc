@@ -64,9 +64,9 @@ void pgen_eth::info(){
 	_ethtype[0x86dd] = "IPv6";
 
 	printf(" * Ethernet  %s -> %s \n", eth_srcEth.bender(), eth_dstEth.bender());
-	printf("    - Destination :  %s (%s)   \n", eth_dstEth.c_str(), eth_dstEth.bender());
-	printf("    - Source      :  %s (%s)   \n" , eth_srcEth.c_str(), eth_srcEth.bender());
-	printf("    - Type        :  %s  (0x%04x)   \n", 
+	printf("    - Destination     :  %s (%s)   \n", eth_dstEth.c_str(), eth_dstEth.bender());
+	printf("    - Source          :  %s (%s)   \n" , eth_srcEth.c_str(), eth_srcEth.bender());
+	printf("    - Type            :  %s  (0x%04x)   \n", 
 			_ethtype[htons(eth.ether_type)] ,htons(eth.ether_type));
 }
 

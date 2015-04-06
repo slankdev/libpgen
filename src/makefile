@@ -17,8 +17,9 @@ SRC = main.cc \
 	  eth.cc \
 	  arp.cc \
 	  ip.cc \
-	  icmp.cc 
-#	  tcp.cc 
+	  icmp.cc \
+	  tcp.cc \
+	  udp.cc
 HDR = pgen.h \
 	  pgen-opcode.h \
 	  pgen-macro.h \

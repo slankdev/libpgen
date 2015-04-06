@@ -120,8 +120,7 @@ void pgen_ip::info(){
 	_ipprot[41] = "IPv6 on IP";
 
 	printf(" * Internet Protocol version 4\n");
-//	printf("    - Version     :  %d \n", ip.version);
-	printf("    - Source      :  %s \n", ip_srcIp.c_str());
-	printf("    - Destination :  %s \n", ip_dstIp.c_str());
-	printf("    - Protocol    :  %s (%u) \n", _ipprot[ip.protocol],  ip.protocol);
+	printf("    - Source          :  %s \n", ip_srcIp.c_str());
+	printf("    - Destination     :  %s \n", ip_dstIp.c_str());
+	printf("    - Protocol        :  %s (%u) \n", _ipprot[ip.protocol],  ip.protocol);
 }

@@ -7,17 +7,8 @@ int main(){
 	pgen_arp arp;
 	pgen_ip ip;
 	pgen_icmp icmp;
+	pgen_udp udp;
 
-/*
-	printf("ETH========================================\n");
-	eth.eth_srcEth = pgen_getMAC("eth0");
-	eth.eth_dstEth = "ff:ff:ff:ff:ff:ff";
-	eth.wrap("eth0");
-	eth.info();
-	eth.send();
-	printf("===========================================\n");
-*/	
-	
 	
 	printf("ARP========================================\n");
 	arp.eth_srcEth = pgen_getMAC("eth0");
@@ -49,4 +40,15 @@ int main(){
 	ip.send();
 	printf("===========================================\n");
 
+	
+	printf("UDP========================================\n");
+	udp.ip_dstIp = "192.168.179.1";
+	//udp.udp_srcPort = 11111;
+	udp.udp_srcPort = 123;
+	//udp.udp_dstPort = 22222;
+	udp.udp_dstPort = 123;
+	udp.wrapLite("eth0");
+	udp.info();
+	udp.send();
+	printf("===========================================\n");
 }
