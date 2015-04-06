@@ -13,6 +13,29 @@
 
 
 
+
+
+unsigned short checksum(const void* data, int len){
+	unsigned long sum = 0;
+	unsigned short* buf = (unsigned short*)data;
+
+	while (len > 1) {
+		sum += *buf;
+		buf++;
+		len -= 2;
+	}
+	if (len == 1)
+		sum += *(unsigned char *)buf;
+
+	sum = (sum & 0xffff) + (sum >> 16);
+	sum = (sum & 0xffff) + (sum >> 16);
+	return ~sum;
+}
+
+
+
+
+
 char* pgen_mac2bender(const char* addr){
 	FILE *fp;
 	const char* filename = "mac_code.list";

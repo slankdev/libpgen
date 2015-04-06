@@ -4,7 +4,6 @@
 #include "pgen-packet.h"
 #include "pgen-macro.h"
 #include "pgen-opcode.h"
-#include "util.h"
 #include "pgen-funcs.h"
 #include "pgen-variable.h"
 

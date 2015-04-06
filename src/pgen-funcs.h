@@ -1,5 +1,6 @@
 
 
+unsigned short checksum(const void* data, int len);
 
 char* pgen_mac2bender(const char* addr);
 
