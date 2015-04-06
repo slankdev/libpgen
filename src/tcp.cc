@@ -42,7 +42,7 @@ void pgen_tcp::wrapLite(const char* ifname){
 	tcp.dest   = htons(tcp_dstPort);
 	tcp.seq    = 0;
 	tcp.ack_seq = 0;
-	tcp.doff = sizeof(tcp);
+	tcp.doff = (short)sizeof(tcp);
 	tcp.window = 1500;
 	tcp.check  = 0;
 
