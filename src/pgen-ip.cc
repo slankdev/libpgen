@@ -66,7 +66,7 @@ void pgen_ip::info(){
 	pgen_eth::info();
 	
 	std::map<int, const char*> _ipprot;
-	_ipprot[0]  = "Not Set Empty IP Packet";
+	_ipprot[0]  = "Not Set. Empty IP Packet";
 	_ipprot[1]  = "ICMP";
 	_ipprot[2]  = "IGMP";
 	_ipprot[4]  = "IPv4 on IP";

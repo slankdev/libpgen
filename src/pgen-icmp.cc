@@ -70,20 +70,11 @@ void pgen_icmp::compile(const char* ifname){
 		
 	packetType = PGEN_PACKETTYPE_ICMP;
 	ip.protocol = IPPROTO_ICMP;
-
-	ip.ihl = sizeof(ip) / 4;
-	ip.version = 4;
-	ip.tos = 0; //no useing world now
 	ip.tot_len = sizeof(ip) + sizeof(icmp);
-	ip.id = random(); // ??????
-	ip.frag_off = 0; // ?????
-	ip.ttl = PGEN_DEFAULT_TTL;
-	ip.protocol = IPPROTO_ICMP;
-	ip.saddr = ip_srcIp._addr;
-	ip.daddr = ip_dstIp._addr;
-	ip.check = checksum(&ip, sizeof(ip));
+
 	icmp.type = icmp_option;
 	icmp.code = icmp_code;
+//	icmp.check = checksum(&ip, sizeof(ip));
 	icmp.checksum = checksum(&icmp, sizeof icmp);
 	
 	
