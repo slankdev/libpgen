@@ -21,43 +21,10 @@
 #include <netinet/if_ether.h>
 
 
-
-
-
 pgen_arp::pgen_arp(){
 	clear();
 }
 
-
-
-void pgen_arp::clear(){
-	arp_srcIp = 0;
-	arp_dstIp = 0;
-	arp_srcEth = 0;
-	arp_dstEth = 0;
-	arp_option = -1;
-}
-
-
-
-
-void pgen_arp::info(){
-	pgen_eth::info();	
-
-	std::map<int, const char*> _arpopcode;
-	_arpopcode[1] = "ARP Request";
-	_arpopcode[2] = "ARP Reply";
-	_arpopcode[3] = "RARP Request";
-	_arpopcode[4] = "RARP Reply";
-	_arpopcode[-1] = "Not Set";
-
-	printf(" * Address Resolution Protocol \n");
-	printf("    - Opcode      :  %s (%d) \n", _arpopcode[arp_option], arp_option);
-	printf("    - Sender Mac  :  %s (%s) \n", arp_srcEth.c_str(), arp_srcEth.bender());
-	printf("    - Sender IP   :  %s  \n", arp_srcIp.c_str() );
-	printf("    - Target Mac  :  %s (%s) \n", arp_dstEth.c_str(), arp_dstEth.bender());
-	printf("    - Target IP   :  %s  \n", arp_dstIp.c_str() );
-}
 
 
 
@@ -90,9 +57,54 @@ void pgen_arp::compile(const char* ifname){
 	memcpy(p, &arp, sizeof(arp));
 	p += sizeof(arp);
 	len = p - data;
+
+
+	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
+		perror("arp::compile bind()");
+		exit(PGEN_ERROR);
+	}
+	//struct sockaddr addr;
+	memset(&addr, 0, sizeof addr);
+	addr.sa_family = AF_PACKET;
+	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
+	if(bind(sock, &addr, sizeof(addr)) < 0){
+		perror("arp::compile bind()");
+		exit(PGEN_ERROR);
+	}
 }
 
 
 
 
 
+
+
+void pgen_arp::clear(){
+	arp_srcIp = 0;
+	arp_dstIp = 0;
+	arp_srcEth = 0;
+	arp_dstEth = 0;
+	arp_option = -1;
+}
+
+
+
+
+
+void pgen_arp::info(){
+	pgen_eth::info();	
+
+	std::map<int, const char*> _arpopcode;
+	_arpopcode[1] = "ARP Request";
+	_arpopcode[2] = "ARP Reply";
+	_arpopcode[3] = "RARP Request";
+	_arpopcode[4] = "RARP Reply";
+	_arpopcode[-1] = "Not Set";
+
+	printf(" * Address Resolution Protocol \n");
+	printf("    - Opcode      :  %s (%d) \n", _arpopcode[arp_option], arp_option);
+	printf("    - Sender Mac  :  %s (%s) \n", arp_srcEth.c_str(), arp_srcEth.bender());
+	printf("    - Sender IP   :  %s  \n", arp_srcIp.c_str() );
+	printf("    - Target Mac  :  %s (%s) \n", arp_dstEth.c_str(), arp_dstEth.bender());
+	printf("    - Target IP   :  %s  \n", arp_dstIp.c_str() );
+}

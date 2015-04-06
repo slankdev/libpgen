@@ -37,6 +37,7 @@ class pgen_packet{
 		int 	sock;
 		int 	len;
 		u_char 	data[PGEN_PACKLEN];
+		struct sockaddr addr;
 	public:
 		
 		pgen_packet();
@@ -48,6 +49,15 @@ class pgen_packet{
 		void sendDl(const char* ifname);
 		void sendNw(const char* ifname);
 		void sendTp(const char* ifname);
+		
+		void sendTest(){
+			if((sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
+				perror("pgen_packet.send sendto()");
+				exit(PGEN_ERROR);
+			}
+			printf(" - pgen_packet.send: send packet successful\n");
+		}
+
 };
 
 
