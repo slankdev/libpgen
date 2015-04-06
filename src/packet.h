@@ -49,11 +49,13 @@ class pgen_packet{
 		void sendNw(const char* ifname);
 		void sendTp(const char* ifname);
 		
-		void sendTest(){
-			if((sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
+		void send(){
+			int n;
+			if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
 				perror("pgen_packet.send sendto()");
 				exit(PGEN_ERROR);
 			}
+			printf(" - %d packet sended!!\n", n);
 			printf(" - pgen_packet.send: send packet successful\n");
 		}
 
@@ -145,6 +147,7 @@ class pgen_ip : public pgen_eth {
 		pgen_ip();
 		void clear();
 		void wrap(const char* ifname);
+		void wrapLite(const char* ifname);
 		void info();
 };
 
@@ -175,12 +178,13 @@ class pgen_icmp : public pgen_ip {
 		void info();
 		void clear();
 		void wrap(const char* ifname);
+		void wrapLite(const char* ifname);
  };
 
 
 
 
-
+/*//[[[
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -189,7 +193,7 @@ class pgen_icmp : public pgen_ip {
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <netinet/tcp.h>		/* for struct tcp			*/
+#include <netinet/tcp.h>		// for struct tcp		
 class pgen_tcp : public pgen_ip {
 	protected:
 		struct tcphdr tcp;
@@ -203,6 +207,6 @@ class pgen_tcp : public pgen_ip {
 		void wrap(const char* ifname);
 		
 };
-
+*///]]]
 
 #endif

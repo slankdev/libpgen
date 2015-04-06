@@ -39,11 +39,13 @@ class pgent_ip{
 		}
 
 
-		pgent_ip operator=(const char* str){
+		pgent_ip& operator=(const char* str){
 			_addr = inet_addr(str);
+			return *this;
 		}
-		pgent_ip operator=(const int num){
+		pgent_ip& operator=(const int num){
 			_addr = num;
+			return *this;
 		}
 		u_char operator[](const int num){
 			union lc{
@@ -158,6 +160,7 @@ class pgent_mac{
 			sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
 				&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)buf[i];
+			return *this;
 		}
 		pgent_mac& operator=(const int num){
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)num;

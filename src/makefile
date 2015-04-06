@@ -17,8 +17,8 @@ SRC = main.cc \
 	  eth.cc \
 	  arp.cc \
 	  ip.cc \
-	  icmp.cc \
-	  tcp.cc 
+	  icmp.cc 
+#	  tcp.cc 
 HDR = pgen.h \
 	  pgen-opcode.h \
 	  pgen-macro.h \
@@ -34,6 +34,7 @@ all: $(program)
 
 $(program): $(OBJ)
 	$(CPP) $(OBJ) -o $(program) $(CFLAGS)
+	$(RM) *.o
 
 
 .cc.o: 

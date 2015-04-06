@@ -32,6 +32,33 @@ pgen_icmp::pgen_icmp(){
 
 
 
+void pgen_icmp::wrapLite(const char* ifname){
+	packetType = PGEN_PACKETTYPE_ICMP;
+	memset(data, 0, sizeof(data));
+
+	struct sockaddr_in sin;
+	sin.sin_family = AF_INET;
+	sin.sin_addr.s_addr = ip_dstIp._addr;
+	memcpy(&addr, &sin, sizeof(sin));
+
+	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0){
+		perror("icmp::wrapLite bind()");
+		exit(PGEN_ERROR);
+	}
+
+	memset(&icmp, 0, sizeof icmp);
+	icmp.type = icmp_option;
+	icmp.code = icmp_code;
+	icmp.checksum = 0;
+	icmp.un.echo.id = 0;
+	icmp.un.echo.sequence = 0;
+	icmp.checksum = checksum(&icmp, sizeof icmp);
+	
+	u_char* p = data;
+	memcpy(p, &icmp, sizeof(icmp));
+	p += sizeof(icmp);
+	len = p-data;
+}
 
 
 
@@ -47,7 +74,6 @@ void pgen_icmp::wrap(const char* ifname){
 	icmp.type = icmp_option;
 	icmp.code = icmp_code;
 	icmp.checksum = checksum(&icmp, sizeof icmp);
-	
 	
 	u_char* p = data;
 	memcpy(p, &eth, sizeof(eth));
@@ -69,7 +95,6 @@ void pgen_icmp::wrap(const char* ifname){
 		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
-
 }
 
 

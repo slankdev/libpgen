@@ -6,7 +6,7 @@
 
 
 #define PGEN_DEVLEN 256
-#define PGEN_PACKLEN 1000
+#define PGEN_PACKLEN 2000
 #define PGEN_ERROR -1
 #define PGEN_SCCESS 1
 
