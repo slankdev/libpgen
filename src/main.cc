@@ -1,8 +1,21 @@
 #include "pgen.h"
 
 
-
 int main(){
+	pgen_udp p;
+	p.ip_srcIp = pgen_getIP("eth0");
+	p.ip_srcIp = "192.168.179.34";
+	p.ip_dstIp = "192.168.179.1";
+	p.udp_srcPort = 50;
+	p.udp_dstPort = 10;
+	p.wrap("eth0");
+	p.info();
+	p.send();
+}
+
+
+
+int main0(){
 	pgen_eth eth;
 	pgen_arp arp;
 	pgen_ip ip;
