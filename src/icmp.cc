@@ -4,7 +4,7 @@
 #include <iostream>
 
 /* include must!!! */
-#include "pgen-packet.h"
+#include "packet.h"
 #include "pgen-variable.h"
 #include "pgen-macro.h"
 #include "pgen-opcode.h"

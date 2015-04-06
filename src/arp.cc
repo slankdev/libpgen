@@ -1,4 +1,4 @@
-#include "pgen-packet.h"
+#include "packet.h"
 #include "pgen-variable.h"
 
 /* include must!!! */
