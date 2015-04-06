@@ -7,6 +7,7 @@
 #include "pgen-funcs.h"
 #include "util.h"
 
+#include <map>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,6 +28,8 @@ pgen_arp::pgen_arp(){
 	clear();
 }
 
+
+
 void pgen_arp::clear(){
 	arp_srcIp = 0;
 	arp_dstIp = 0;
@@ -36,11 +39,20 @@ void pgen_arp::clear(){
 }
 
 
+
+
 void pgen_arp::info(){
 	pgen_eth::info();	
 
+	std::map<int, const char*> _arpopcode;
+	_arpopcode[1] = "ARP Request";
+	_arpopcode[2] = "ARP Reply";
+	_arpopcode[3] = "RARP Request";
+	_arpopcode[4] = "RARP Reply";
+	_arpopcode[-1] = "Not Set";
+
 	printf(" * Address Resolution Protocol \n");
-	printf("    - Opcode      :  %s (%d) \n", "test", arp_option);
+	printf("    - Opcode      :  %s (%d) \n", _arpopcode[arp_option], arp_option);
 	printf("    - Sender Mac  :  %s (%s) \n", arp_srcEth.c_str(), arp_srcEth.bender());
 	printf("    - Sender IP   :  %s  \n", arp_srcIp.c_str() );
 	printf("    - Target Mac  :  %s (%s) \n", arp_dstEth.c_str(), arp_dstEth.bender());
@@ -48,19 +60,16 @@ void pgen_arp::info(){
 }
 
 
+
+
 void pgen_arp::compile(const char* ifname){
 	pgen_eth::compile(ifname);
 
 	packetType = PGEN_PACKETTYPE_ARP;
+	eth.ether_type = htons(ETHERTYPE_ARP);
 	memset(data, 0, sizeof data);
-	memset(&eth, 0, sizeof eth);
 	memset(&arp, 0, sizeof arp);
 	
-	eth.ether_type = htons(ETHERTYPE_ARP);
-	for(int i=0; i< 6; i++){
-		eth.ether_shost[i] = eth_srcEth._addr[i];	
-		eth.ether_dhost[i] = eth_dstEth._addr[i];	
-	}
 	arp.arp_hrd = htons(ARPHRD_ETHER);
 	arp.arp_pro = htons(ETHERTYPE_IP);
 	arp.arp_hln = 6;
@@ -75,7 +84,6 @@ void pgen_arp::compile(const char* ifname){
 		arp.arp_tpa[i] = arp_dstIp[i];
 	}
 		
-	
 	u_char* p = data;
 	memcpy(p, &eth, sizeof(eth));
 	p += sizeof(eth);

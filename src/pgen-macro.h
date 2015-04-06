@@ -1,3 +1,6 @@
+#ifndef PGEN_MACRO_H
+#define PGEN_MACRO_H
+
 
 
 
@@ -20,3 +23,7 @@
 #define PGEN_PACKETTYPE_UDP		6
 
 
+#include <string>
+
+
+#endif

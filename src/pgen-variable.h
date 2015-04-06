@@ -123,7 +123,7 @@ class pgent_mac{
 			const char* filename = "mac_code.list";
 			unsigned int  mac[3];
 			char buf[256];
-			char* bender = (char*)malloc(sizeof(char) * (strlen(buf)+1));
+			char* bender = (char*)malloc(sizeof(char) * 256);
 			u_char mymac[3];
 			if((fp=fopen(filename, "r")) == NULL){
 				perror("getbenderbymac fopen");
@@ -134,7 +134,7 @@ class pgent_mac{
 			while(fgets(buf, sizeof(buf), fp) != NULL){
 				sscanf(buf, "%2x%2x%2x\t%s", &mac[0],&mac[1],&mac[2],buf);
 				if(mac[0]==mymac[0]&&mac[1]==mymac[1]&&mac[2]==mymac[2]){
-					snprintf(bender, strlen(buf), "%s", buf);
+					sprintf(bender, "%s", buf);
 					return bender;
 				}
 				memset(mac, 0, sizeof(mac));

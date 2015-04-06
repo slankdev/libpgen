@@ -2,7 +2,7 @@
 #include "pgen-variable.h"
 
 
-
+#include <map>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -37,15 +37,11 @@ void pgen_ip::compile(const char* ifname){
 	}
 
 	packetType = PGEN_PACKETTYPE_IP;
+	eth.ether_type = htons(ETHERTYPE_IP);
 	memset(data, 0, sizeof data);
-	memset(&eth, 0, sizeof eth);
 	memset(&ip, 0, sizeof ip);
 	
-	eth.ether_type = htons(ETHERTYPE_IP);
-	for(int i=0; i< 6; i++){
-		eth.ether_shost[i] = eth_srcEth._addr[i];	
-		eth.ether_dhost[i] = eth_dstEth._addr[i];	
-	}
+
 	ip.ihl = sizeof(ip) / 4;
 	ip.version = 4;
 	ip.tos = 0; //no useing world now
@@ -66,14 +62,21 @@ void pgen_ip::compile(const char* ifname){
 	len = p - data;
 }
 
-
 void pgen_ip::info(){
 	pgen_eth::info();
+	
+	std::map<int, const char*> _ipprot;
+	_ipprot[0]  = "Not Set Empty IP Packet";
+	_ipprot[1]  = "ICMP";
+	_ipprot[2]  = "IGMP";
+	_ipprot[4]  = "IPv4 on IP";
+	_ipprot[6]  = "TCP";
+	_ipprot[17] = "UDP";
+	_ipprot[41] = "IPv6 on IP";
 
-	printf("ip::info()\n");
 	printf(" * Internet Protocol version 4\n");
 	printf("    - Version     :  %d \n", ip.version);
 	printf("    - Source      :  %s \n", ip_srcIp.c_str());
 	printf("    - Destination :  %s \n", ip_dstIp.c_str());
-	printf("    - Protocol    :  %s (0x%x) \n","test",  ip_type);
+	printf("    - Protocol    :  %s (%u) \n", _ipprot[ip.protocol],  ip.protocol);
 }

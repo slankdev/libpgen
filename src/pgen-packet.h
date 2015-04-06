@@ -67,7 +67,7 @@ class pgen_packet{
 #include <sys/socket.h>
 #include <net/ethernet.h> 		/* for struct ether_header */
 class pgen_eth : public pgen_packet {
-	private:
+	protected:
 		struct ether_header eth;
 	public:
 		pgent_mac	eth_srcEth;
@@ -93,11 +93,10 @@ class pgen_eth : public pgen_packet {
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <net/ethernet.h> 		/* for struct ether_header 	*/
+//#include <net/ethernet.h> 		/* for struct ether_header 	*/
 #include <netinet/if_ether.h>	/* for struct ether_arp 	*/
 class pgen_arp : public pgen_eth {
-	private:
-		struct ether_header eth;
+	protected:
 		struct ether_arp 	arp;
 	public:
 		int arp_option;
@@ -124,11 +123,10 @@ class pgen_arp : public pgen_eth {
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <net/ethernet.h>		/* for struct ether_header	*/ 
+//#include <net/ethernet.h>		/* for struct ether_header	*/ 
 #include <netinet/ip.h>			/* for struct iphdr			*/
 class pgen_ip : public pgen_eth {
-	private:
-		struct ether_header eth;
+	protected:
 		struct iphdr		ip;
 	public:
 		pgent_ip 	ip_srcIp;
@@ -154,13 +152,11 @@ class pgen_ip : public pgen_eth {
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <net/ethernet.h> 		/* for struct ether_header	*/
-#include <netinet/ip.h>			/* for struct iphdr			*/
+//#include <net/ethernet.h> 		/* for struct ether_header	*/
+//#include <netinet/ip.h>			/* for struct iphdr			*/
 #include <netinet/ip_icmp.h>	/* for struct icmp			*/
 class pgen_icmp : public pgen_ip {
-	private:
-		struct ether_header eth;
-		struct iphdr 		ip;
+	protected:
 		struct icmphdr 		icmp;
 	public:
 		int icmp_option;
@@ -171,6 +167,25 @@ class pgen_icmp : public pgen_ip {
 		void clear();
 		void compile(const char* ifname);
  };
+
+
+
+
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <stdint.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>		/* for struct tcp			*/
+class pgen_tcp{
+	protected:
+		struct tcphdr tcp;
+	public:
+};
 
 
 #endif

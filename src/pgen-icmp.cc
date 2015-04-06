@@ -1,11 +1,16 @@
-#include "pgen-packet.h"
-#include "pgen-variable.h"
+
+#include <map>
+#include <string>
+#include <iostream>
 
 /* include must!!! */
+#include "pgen-packet.h"
+#include "pgen-variable.h"
 #include "pgen-macro.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
 #include "util.h"
+
 
 #include <stdio.h>
 #include <string.h>
@@ -16,8 +21,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#include <net/ethernet.h> 
-#include <netinet/ip.h>
+//#include <net/ethernet.h> 
+//#include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 
 
@@ -27,8 +32,25 @@ pgen_icmp::pgen_icmp(){
 }
 
 
+
+
 void pgen_icmp::info(){
-	printf("icmp::info()\n");	
+	pgen_ip::info();
+
+	std::map<int, const char*>  _icmpoption;
+	_icmpoption[0] = "Echo Reply";
+	_icmpoption[5] = "REdirect"; 
+	_icmpoption[8] = "Echo"; 
+	std::map<int, const char*> _icmpcode;
+	_icmpcode[0]  = "Net Unreachable";
+	_icmpcode[1]  = "Host Unreachable";
+	_icmpcode[2]  = "Protocol Unreachable";
+	_icmpcode[3]  = "Port Unreachable";
+	_icmpcode[255]  = "Not Set";
+
+	printf(" * Internet Control Message Protocol \n");
+	printf("    - Type        :  %s (%d)\n", _icmpoption[icmp.type] , icmp.type);
+	printf("    - Code        :  %s (%d)\n",  _icmpcode[icmp.code], icmp.code);
 }
 
 
@@ -42,17 +64,13 @@ void pgen_icmp::clear(){
 
 void pgen_icmp::compile(const char* ifname){
 	pgen_ip::compile(ifname);
-	packetType = PGEN_PACKETTYPE_ICMP;
+
 	memset(data, 0, sizeof(data));
-	memset(&eth, 0, sizeof eth);
-	memset(&ip, 0, sizeof ip);		
 	memset(&icmp, 0, sizeof icmp);
 		
-	eth.ether_type = htons(ETHERTYPE_IP);
-	for(int i=0; i< 6; i++){
-		eth.ether_shost[i] = eth_srcEth._addr[i];	
-		eth.ether_dhost[i] = eth_dstEth._addr[i];	
-	}
+	packetType = PGEN_PACKETTYPE_ICMP;
+	ip.protocol = IPPROTO_ICMP;
+
 	ip.ihl = sizeof(ip) / 4;
 	ip.version = 4;
 	ip.tos = 0; //no useing world now
@@ -68,12 +86,7 @@ void pgen_icmp::compile(const char* ifname){
 	icmp.code = icmp_code;
 	icmp.checksum = checksum(&icmp, sizeof icmp);
 	
-	u_char* p = data;
-	memcpy(p, &ip, sizeof(ip));
-	p += sizeof(ip);
-	memcpy(p, &icmp, sizeof(icmp));
-	len = p-data;
-	/*
+	
 	u_char* p = data;
 	memcpy(p, &eth, sizeof(eth));
 	p += sizeof(eth);
@@ -81,10 +94,8 @@ void pgen_icmp::compile(const char* ifname){
 	p += sizeof(ip);
 	memcpy(p, &icmp, sizeof(icmp));
 	len = p-data;
-	*/
+	
 }
-
-
 
 
 
