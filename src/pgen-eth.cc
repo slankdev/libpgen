@@ -24,12 +24,6 @@ void pgen_eth::clear(){
 }
 
 void pgen_eth::compile(const char* ifname){
-	if(eth_srcEth.isEmpty()){
-		eth_srcEth = pgen_getMAC(ifname);
-		printf(" - eth_srcEth is Empty. set %s's mac address(%s)\n", ifname, eth_srcEth.c_str());
-	}
-
-
 	packetType = PGEN_PACKETTYPE_ETH;
 	memset(data, 0, sizeof data);
 

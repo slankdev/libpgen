@@ -31,10 +31,6 @@ void pgen_ip::clear(){
 
 void pgen_ip::compile(const char* ifname){
 	pgen_eth::compile(ifname);
-	if(ip_srcIp.isEmpty()){
-		ip_srcIp = pgen_getIP(ifname);
-		printf(" - ip_srcIp is Empty. set %s's ip address(%s)\n", ifname, pgen_getIP(ifname));
-	}
 
 	packetType = PGEN_PACKETTYPE_IP;
 	eth.ether_type = htons(ETHERTYPE_IP);
