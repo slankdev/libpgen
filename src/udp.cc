@@ -58,7 +58,34 @@ void pgen_udp::wrapLite(const char* ifname){
 
 
 
-void pgen_udp::wrap(const char* ifname){}
+void pgen_udp::wrap(const char* ifname){
+	packetType = PGEN_PACKETTYPE_UDP;
+	memset(data, 0, sizeof data);
+	ip.protocol = IPPROTO_UDP;
+	ip.tot_len = sizeof(ip) + sizeof(udp);
+	
+	memset(&addr, 0, sizeof addr);
+	addr.sa_family = AF_PACKET;
+	snprintf(addr.sa_data, sizeof(addr.sa_data),"%s", ifname );
+	if((sock=socket(AF_PACKET, SOCK_RAW, IPPROTO_UDP)) < 0){
+		perror("udp::wrapLite socket()");
+		exit(PGEN_ERROR);
+	}
+
+	memset(&udp, 0, sizeof udp);
+	udp.source = htons(udp_srcPort);
+	udp.dest   = htons(udp_dstPort);
+	udp.len    = sizeof(udp);
+	udp.check  = 0;
+	
+	u_char* p = data;
+	memcpy(p, &eth, sizeof eth);
+	p += sizeof(struct ether_header);
+	memcpy(p, &ip, sizeof ip);
+	p += sizeof(struct iphdr);
+	memcpy(p, &udp, sizeof udp);
+	p += sizeof(struct udphdr);
+}
 
 
 

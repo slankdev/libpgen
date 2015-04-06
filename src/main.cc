@@ -1,34 +1,18 @@
 #include "pgen.h"
 
 
-int main33(){
+int main(){
 	pgen_udp p;
+
+	p.eth_srcEth = pgen_getIP("eth0");
+	p.eth_dstEth = 0;
 	p.ip_srcIp = pgen_getIP("eth0");
-	p.ip_srcIp = "192.168.179.34";
 	p.ip_dstIp = "192.168.179.1";
 	p.udp_srcPort = 50;
 	p.udp_dstPort = 10;
 	p.wrap("eth0");
 	p.info();
 	p.send();
-}
-
-
-int main(){
-	pgen_arp arp;
-		
-	arp.eth_srcEth = pgen_getMAC("eth0");
-	arp.eth_dstEth = "ff:ff:ff:ff:ff:ff";
-	arp.arp_srcEth = pgen_getMAC("eth0");
-	arp.arp_srcIp = pgen_getIP("eth0");
-	arp.arp_dstEth = 0;
-	arp.arp_dstIp = "192.168.179.1";
-	arp.arp_option = ARPOP_REQUEST;
-	arp.wrap("eth0");
-	printf("ARP========================================\n");
-	arp.info();
-	printf("===========================================\n");
-	arp.send();
 }
 
 
