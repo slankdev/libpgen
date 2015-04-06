@@ -20,19 +20,25 @@
 
 
 pgen_udp::pgen_udp(){
+	pgen_ip::clear();
 	clear();
+}
+void pgen_udp::clear(){
+	udp_srcPort = 0;
+	udp_dstPort = 0;
 }
 
 
 
 void pgen_udp::wrapLite(const char* ifname){
+	packetType = PGEN_PACKETTYPE_UDP;
 	memset(data, 0, sizeof data);
+
 	struct sockaddr_in sin;
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = ip_dstIp._addr;
 	sin.sin_port = htons(udp_dstPort);
 	memcpy(&addr, &sin, sizeof(sin));
-
 	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_UDP)) < 0){
 		perror("udp::wrapLite socket()");
 		exit(PGEN_ERROR);
@@ -43,8 +49,6 @@ void pgen_udp::wrapLite(const char* ifname){
 	udp.dest   = htons(udp_dstPort);
 	udp.len    = sizeof(udp);
 	udp.check  = 0;
-	
-
 
 	u_char* p = data;
 	memcpy(p, &udp, sizeof(icmp));
@@ -55,7 +59,6 @@ void pgen_udp::wrapLite(const char* ifname){
 
 
 void pgen_udp::wrap(const char* ifname){}
-
 
 
 
@@ -71,7 +74,3 @@ void pgen_udp::info(){
 
 
 
-void pgen_udp::clear(){
-	udp_srcPort = 0;
-	udp_dstPort = 0;
-}

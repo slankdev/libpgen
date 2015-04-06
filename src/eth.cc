@@ -1,3 +1,4 @@
+
 #include "packet.h"
 #include "pgen-variable.h"
 
@@ -10,22 +11,28 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-
 #include <net/ethernet.h> 
+
+
 
 pgen_eth::pgen_eth(){
 	pgen_packet::clear();
 	clear();	
 }
-
 void pgen_eth::clear(){
 	eth_srcEth = 0;
 	eth_dstEth = 0;
 }
 
+
+
 void pgen_eth::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_ETH;
 	memset(data, 0, sizeof data);
+	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
+		perror("eth::wrap bind()");
+		exit(PGEN_ERROR);
+	}
 
 	eth.ether_type = htons(0);
 	for(int i=0; i< 6; i++){
@@ -37,20 +44,6 @@ void pgen_eth::wrap(const char* ifname){
 	memcpy(data, &eth, sizeof eth);
 	p += sizeof(eth);
 	len = p - data;
-
-
-	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
-		perror("eth::wrap bind()");
-		exit(PGEN_ERROR);
-	}
-
-	memset(&addr, 0, sizeof addr);
-	addr.sa_family = AF_PACKET;
-	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
-	if(bind(sock, &addr, sizeof(addr)) < 0){
-		perror("eth::wrap bind()");
-		exit(PGEN_ERROR);
-	}
 }
 
 

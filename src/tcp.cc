@@ -19,19 +19,25 @@
 
 
 pgen_tcp::pgen_tcp(){
+	pgen_ip::clear();
 	clear();
+}
+void pgen_tcp::clear(){
+	tcp_srcPort = 0;
+	tcp_dstPort = 0;
 }
 
 
 
 void pgen_tcp::wrapLite(const char* ifname){
+	packetType = PGEN_PACKETTYPE_TCP;
 	memset(data, 0, sizeof data);
+
 	struct sockaddr_in sin;
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = ip_dstIp._addr;
 	sin.sin_port = htons(tcp_dstPort);
 	memcpy(&addr, &sin, sizeof(sin));
-
 	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) < 0){
 		perror("tcp::wrapLite socket()");
 		exit(PGEN_ERROR);
@@ -58,7 +64,6 @@ void pgen_tcp::wrap(const char* ifname){}
 
 
 
-
 void pgen_tcp::info(){
 	pgen_ip::info();
 
@@ -71,7 +76,3 @@ void pgen_tcp::info(){
 
 
 
-void pgen_tcp::clear(){
-	tcp_srcPort = 0;
-	tcp_dstPort = 0;
-}

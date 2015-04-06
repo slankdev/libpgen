@@ -18,13 +18,10 @@
 #include <netinet/in.h>		/* for struct sockaddr_in */
 		
 
-pgen_packet::pgen_packet(){
-	clear();
-}
+pgen_packet::pgen_packet(){	clear(); }
+pgen_packet::~pgen_packet(){ close(sock); }
 
-pgen_packet::~pgen_packet(){ 
-	close(sock); 
-}
+
 
 void pgen_packet::clear(){
 	sock = 0;
@@ -33,31 +30,14 @@ void pgen_packet::clear(){
 
 
 
-/*
-void pgen_packet::sendDl(const char* ifname){
-	if((sock=socket(PF_PACKET, SOCK_PACKET, 0)) < 0){
-		perror("pgen_packet.wrap socket()");
-		exit(PGEN_ERROR);
-	}
-
-	struct sockaddr saDl;
-	memset(&saDl, 0, sizeof saDl);
-	saDl.sa_family = PF_PACKET;
-	snprintf(saDl.sa_data, sizeof(saDl.sa_data), "%s", ifname);
-	if(bind(sock, &saDl, sizeof(saDl)) < 0){
-		perror("pgen_packet.wrap bind()");
-		exit(PGEN_ERROR);
-	}
-
-	if((sendto(sock, data, len, 0, &saDl, sizeof(saDl))) < 0){
+void pgen_packet::send(){
+	int n;
+	if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
 		perror("pgen_packet.send sendto()");
 		exit(PGEN_ERROR);
 	}
-	
 	printf(" - pgen_packet.send: send packet successful\n");
 }
-*/
-
 
 
 

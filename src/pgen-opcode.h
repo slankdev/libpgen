@@ -1,5 +1,4 @@
 // many packet's option code macros
-
 // format: PGEN_XXXOP_YYY 
 
 
@@ -55,20 +54,6 @@
 #define PGEN_ICMPCODE_PREC_CUTOFF		ICMP_PREC_CUTOFF	/* Precedence cut off			 */
 #define PGEN_ICMPCODE_NR_ICMP_UNREACH	NR_ICMP_UNREACH		/* instead of hardcoding 
 															   			immediate value	   	 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

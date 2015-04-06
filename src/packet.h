@@ -41,22 +41,11 @@ class pgen_packet{
 		
 		pgen_packet();
 		~pgen_packet(); 
+		virtual void clear();
 		virtual void info()=0;	
 		virtual void wrap(const char* ifname)=0;
-		virtual void clear();
 		void hex();
-	//	void sendDl(const char* ifname);
-		
-		void send(){
-			int n;
-			if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
-				perror("pgen_packet.send sendto()");
-				exit(PGEN_ERROR);
-			}
-	//		printf(" - %d packet sended!!\n", n);
-			printf(" - pgen_packet.send: send packet successful\n");
-		}
-
+		void send();
 };
 
 
@@ -85,8 +74,8 @@ class pgen_eth : public pgen_packet {
 		
 		pgen_eth();
 		void clear();
-		void wrap(const char* ifname);
 		void info();
+		void wrap(const char* ifname);
 };
 
 
@@ -102,7 +91,6 @@ class pgen_eth : public pgen_packet {
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-//#include <net/ethernet.h> 		/* for struct ether_header 	*/
 #include <netinet/if_ether.h>	/* for struct ether_arp 	*/
 class pgen_arp : public pgen_eth {
 	protected:
@@ -115,8 +103,8 @@ class pgen_arp : public pgen_eth {
 		pgent_ip	arp_dstIp;
 
 		pgen_arp();
-		void info();
 		void clear();
+		void info();
 		void wrap(const char* ifname);
 };
 
@@ -132,7 +120,6 @@ class pgen_arp : public pgen_eth {
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-//#include <net/ethernet.h>		/* for struct ether_header	*/ 
 #include <netinet/ip.h>			/* for struct iphdr			*/
 class pgen_ip : public pgen_eth {
 	protected:
@@ -144,9 +131,9 @@ class pgen_ip : public pgen_eth {
 		
 		pgen_ip();
 		void clear();
+		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
-		void info();
 };
 
 
@@ -162,8 +149,6 @@ class pgen_ip : public pgen_eth {
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-//#include <net/ethernet.h> 		/* for struct ether_header	*/
-//#include <netinet/ip.h>			/* for struct iphdr			*/
 #include <netinet/ip_icmp.h>	/* for struct icmp			*/
 class pgen_icmp : public pgen_ip {
 	protected:
@@ -173,8 +158,8 @@ class pgen_icmp : public pgen_ip {
 		int icmp_code;
 
 		pgen_icmp();
-		void info();
 		void clear();
+		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
  };
@@ -199,10 +184,10 @@ class pgen_tcp : public pgen_ip {
 		int tcp_dstPort;
 
 		pgen_tcp();
-		void info();
 		void clear();
-		void wrapLite(const char* ifname);
+		void info();
 		void wrap(const char* ifname);
+		void wrapLite(const char* ifname);
 		
 };
 
@@ -225,10 +210,10 @@ class pgen_udp : public pgen_ip {
 		int udp_dstPort;
 
 		pgen_udp();
-		void info();
 		void clear();
-		void wrapLite(const char* ifname);
+		void info();
 		void wrap(const char* ifname);
+		void wrapLite(const char* ifname);
 		
 };
 #endif

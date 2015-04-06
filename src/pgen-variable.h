@@ -4,23 +4,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include <sys/types.h>
 #include <stdint.h>
 #include <arpa/inet.h>
 
-
 #include "pgen-funcs.h"
+
 
 
 class pgent_ip{
 	private:
 	public:
-		u_int32_t _addr;
-		
+		u_int32_t _addr;		
 		pgent_ip(){}
-
-
 		char* c_str(){
 			char* str = (char*)malloc(sizeof(char)*16);
 			union lc{
@@ -37,8 +33,6 @@ class pgent_ip{
 			if(_addr == 0)	return true;
 			else			return false;
 		}
-
-
 		pgent_ip& operator=(const char* str){
 			_addr = inet_addr(str);
 			return *this;
@@ -113,7 +107,6 @@ class pgent_mac{
 	public:
 		u_char _addr[6];
 		pgent_mac(){}
-
 		char* c_str(){
 			char* str = (char*)malloc(sizeof(char)*19);
 			snprintf(str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
@@ -151,10 +144,6 @@ class pgent_mac{
 				if(_addr[i] != 0)	return false;
 			return true;
 		}
-
-
-
-
 		pgent_mac& operator=(const char* str){
 			unsigned int buf[6];
 			sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
@@ -164,6 +153,7 @@ class pgent_mac{
 		}
 		pgent_mac& operator=(const int num){
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)num;
+			return *this;
 		}
 		unsigned char operator[](const int num){
 			switch(num){

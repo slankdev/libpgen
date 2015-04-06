@@ -22,7 +22,6 @@ pgen_ip::pgen_ip(){
 	pgen_eth::clear();
 	clear();	
 }
-
 void pgen_ip::clear(){
 	ip_srcIp = 0;
 	ip_dstIp = 0;
@@ -38,7 +37,6 @@ void pgen_ip::wrapLite(const char* ifname){
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = ip_dstIp._addr;
 	memcpy(&addr, &sin, sizeof(sin));
-
 	if((sock=socket(AF_INET, SOCK_RAW, htons(ETH_P_IP))) < 0){
 		perror("ip::wrapLite socket()");
 		exit(PGEN_ERROR);
@@ -69,10 +67,14 @@ void pgen_ip::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_IP;
 	pgen_eth::wrap(ifname);
 	eth.ether_type = htons(ETHERTYPE_IP);
-
 	memset(data, 0, sizeof data);
-	memset(&ip, 0, sizeof ip);
+	
+	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(IPPROTO_IP))) < 0){
+		perror("arp::wrap bind()");
+		exit(PGEN_ERROR);
+	}
 
+	memset(&ip, 0, sizeof ip);
 	ip.ihl = sizeof(ip) / 4;
 	ip.version = 4;
 	ip.tos = 0; //no useing world now
@@ -92,20 +94,16 @@ void pgen_ip::wrap(const char* ifname){
 	p += sizeof(ip);
 	len = p - data;
 
-
-	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(IPPROTO_IP))) < 0){
-		perror("arp::wrap bind()");
-		exit(PGEN_ERROR);
-	}
-
-	memset(&addr, 0, sizeof addr);
+	/*memset(&addr, 0, sizeof addr);
 	addr.sa_family = AF_PACKET;
 	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
 	if(bind(sock, &addr, sizeof(addr)) < 0){
 		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
-	}
+	}*/
 }
+
+
 
 void pgen_ip::info(){
 	pgen_eth::info();
