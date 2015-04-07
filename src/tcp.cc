@@ -51,6 +51,13 @@ void pgen_tcp::wrapLite(const char* ifname){
 	tcp.doff = (short)sizeof(tcp);
 	tcp.window = 1500;
 	tcp.check  = 0;
+	// get frag by frags
+	if(tcp_frag.fin == 1)	tcp.fin = 1;
+	if(tcp_frag.syn == 1)	tcp.syn = 1;
+	if(tcp_frag.rst == 1)	tcp.rst = 1;
+	if(tcp_frag.psh == 1)	tcp.psh = 1;
+	if(tcp_frag.ack == 1)	tcp.ack = 1;
+	if(tcp_frag.urg == 1)	tcp.urg = 1;
 
 	u_char* p = data;
 	memcpy(p, &tcp, sizeof(icmp));

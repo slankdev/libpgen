@@ -2,6 +2,23 @@
 
 
 int main(){
+	pgen_tcp tcp;
+
+	tcp.ip_dstIp = "192.168.179.5";
+	tcp.tcp_srcPort = 11111;
+	tcp.tcp_dstPort = 80;
+	tcp.tcp_frag.fin = 1;
+
+	tcp.wrapLite("eth0");
+	tcp.info();
+	for(int i=1;;i++){
+		printf("%10d", i);
+		tcp.send();
+	}
+}
+
+
+int main5(){
 	pgen_udp p;
 
 	p.eth_srcEth = pgen_getIP("eth0");

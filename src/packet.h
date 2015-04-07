@@ -182,6 +182,14 @@ class pgen_tcp : public pgen_ip {
 	public:
 		int tcp_srcPort;
 		int tcp_dstPort;
+		struct{
+			int fin;
+			int syn;
+			int rst;
+			int psh;
+			int ack;
+			int urg;
+		}tcp_frag ;
 
 		pgen_tcp();
 		void clear();
