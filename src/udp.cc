@@ -18,7 +18,6 @@
 #include <sys/socket.h>
 #include <netinet/udp.h>		// for struct udp		
 
-
 pgen_udp::pgen_udp(){
 	pgen_ip::clear();
 	clear();
@@ -26,6 +25,13 @@ pgen_udp::pgen_udp(){
 void pgen_udp::clear(){
 	udp_srcPort = 0;
 	udp_dstPort = 0;
+}
+
+
+void pgen_udp::send(const char* ifname){
+	
+	wrap(ifname);
+
 }
 
 

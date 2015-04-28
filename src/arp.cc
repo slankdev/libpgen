@@ -32,7 +32,10 @@ void pgen_arp::clear(){
 	arp_option = -1;
 }
 
-
+void pgen_arp::send(const char* ifname){
+	wrap(ifname);
+		
+}
 
 
 

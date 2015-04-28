@@ -26,6 +26,7 @@
 
 
 
+
 pgen_icmp::pgen_icmp(){
 	pgen_ip::clear();
 	clear();
@@ -35,7 +36,10 @@ void pgen_icmp::clear(){
 	icmp_option -1;
 	icmp_code = -1;
 }
-
+void pgen_icmp::send(const char* ifname){
+	wrap(ifname);
+		
+}
 
 
 void pgen_icmp::wrapLite(const char* ifname){

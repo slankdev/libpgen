@@ -44,14 +44,9 @@ class pgen_packet{
 		virtual void clear();
 		virtual void info()=0;	
 		virtual void wrap(const char* ifname)=0;
+		virtual void send(const char* ifname)=0;
 		void hex();
-		void send();
 };
-
-
-
-
-
 
 
 
@@ -76,9 +71,8 @@ class pgen_eth : public pgen_packet {
 		void clear();
 		void info();
 		void wrap(const char* ifname);
+		void send(const char* ifname);
 };
-
-
 
 
 
@@ -106,9 +100,8 @@ class pgen_arp : public pgen_eth {
 		void clear();
 		void info();
 		void wrap(const char* ifname);
+		void send(const char* ifname);
 };
-
-
 
 
 
@@ -134,9 +127,8 @@ class pgen_ip : public pgen_eth {
 		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
+		void send(const char* ifname);
 };
-
-
 
 
 
@@ -162,7 +154,10 @@ class pgen_icmp : public pgen_ip {
 		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
+		void send(const char* ifname);
  };
+
+
 
 
 
@@ -196,8 +191,11 @@ class pgen_tcp : public pgen_ip {
 		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
-		
+		void send(const char* ifname);
 };
+
+
+
 
 
 
@@ -222,6 +220,11 @@ class pgen_udp : public pgen_ip {
 		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
-		
+		void send(const char* ifname);
 };
+
+
+
+
+
 #endif

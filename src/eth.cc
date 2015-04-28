@@ -15,6 +15,14 @@
 
 
 
+
+
+
+
+
+
+
+
 pgen_eth::pgen_eth(){
 	pgen_packet::clear();
 	clear();	
@@ -22,6 +30,11 @@ pgen_eth::pgen_eth(){
 void pgen_eth::clear(){
 	eth_srcEth = 0;
 	eth_dstEth = 0;
+}
+
+void pgen_eth::send(const char* ifname){
+	wrap(ifname);
+		
 }
 
 

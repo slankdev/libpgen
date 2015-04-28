@@ -17,7 +17,6 @@
 #include <sys/socket.h>
 #include <netinet/tcp.h>		// for struct tcp		
 
-
 pgen_tcp::pgen_tcp(){
 	pgen_ip::clear();
 	clear();
@@ -27,7 +26,10 @@ void pgen_tcp::clear(){
 	tcp_dstPort = 0;
 }
 
-
+void pgen_tcp::send(const char* ifname){
+	wrap(ifname);
+		
+}
 
 void pgen_tcp::wrapLite(const char* ifname){
 	packetType = PGEN_PACKETTYPE_TCP;

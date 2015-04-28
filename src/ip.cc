@@ -18,6 +18,7 @@
 
 
 
+
 pgen_ip::pgen_ip(){
 	pgen_eth::clear();
 	clear();	
@@ -27,7 +28,10 @@ void pgen_ip::clear(){
 	ip_dstIp = 0;
 }
 
-
+void pgen_ip::send(const char* ifname){
+	wrap(ifname);
+		
+}
 
 void pgen_ip::wrapLite(const char* ifname){
 	packetType = PGEN_PACKETTYPE_IP;

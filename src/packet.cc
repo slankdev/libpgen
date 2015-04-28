@@ -30,7 +30,9 @@ void pgen_packet::clear(){
 
 
 
-void pgen_packet::send(){
+void pgen_packet::send(const char* ifname){
+	wrap(ifname);
+
 	int n;
 	if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
 		perror("pgen_packet.send sendto()");
