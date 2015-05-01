@@ -24,6 +24,7 @@ pgen_arp::pgen_arp(){
 	pgen_eth::clear();
 	clear();
 }
+
 void pgen_arp::clear(){
 	arp_srcIp = 0;
 	arp_dstIp = 0;
@@ -33,24 +34,35 @@ void pgen_arp::clear(){
 }
 
 void pgen_arp::send(const char* ifname){
-	wrap(ifname);
-		
+	int sock;
+	int n;
+	struct sockaddr addr;
+
+	wrap(ifname);		
+	
+	memset(&addr, 0, sizeof addr);
+	addr.sa_family = AF_PACKET;
+	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
+	if((sock=socket(AF_PACKET, SOCK_PACKET, 0)) < 0){
+		perror("arp::wrap bind()");
+		exit(PGEN_ERROR);
+	}
+	if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
+		perror("pgen_packet.send sendto()");
+		exit(PGEN_ERROR);
+	}
+
+	close(sock);
 }
 
 
 
 void pgen_arp::wrap(const char* ifname){
-	packetType = PGEN_PACKETTYPE_ARP;
 	pgen_eth::wrap(ifname);
+	packetType = PGEN_PACKETTYPE_ARP;
+	
 	memset(data, 0, sizeof data);
 
-	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
-		perror("arp::wrap bind()");
-		exit(PGEN_ERROR);
-	}
-	memset(&addr, 0, sizeof addr);
-	addr.sa_family = AF_PACKET;
-	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
 	
 	eth.ether_type = htons(ETHERTYPE_ARP);
 	memset(&arp, 0, sizeof arp);

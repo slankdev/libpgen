@@ -19,31 +19,47 @@
 		
 
 pgen_packet::pgen_packet(){	clear(); }
-pgen_packet::~pgen_packet(){ close(sock); }
 
 
 
 void pgen_packet::clear(){
-	sock = 0;
 	len = 0;
 }
 
 
+void pgen_packet::hex(){
+	unsigned char buf[256];
+	memcpy(buf, data, len);
 
-void pgen_packet::send(const char* ifname){
-	wrap(ifname);
-
-	int n;
-	if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
-		perror("pgen_packet.send sendto()");
-		exit(PGEN_ERROR);
-	}
-	printf(" - pgen_packet.send: send packet successful\n");
+	printf("\nHexDump len: %d\n", len);
+	for(int address=0; address<len; address+=0x10){
+		printf("%08x     ", address);
+		for(int addr=address, i=0; i<0x10; i++, addr++){
+			if(addr%8==0 && addr%16!=0)	printf(" ");
+			if(address+i > len)
+				printf("   ");
+			else
+				printf("%02x ", buf[addr] & 0xff);
+		}
+		printf("\n");
+		/*
+		printf("   ");
+		for(int addr=address, i=0; i<0x10; i++, addr++){
+			if(addr%0X08==0 && addr%0x10!=0)	printf(" ");
+			if(address+i > len)
+				printf(" ");
+			else{
+				if(buf[addr] < 0x20 || 0x7e < buf[addr])
+					buf[addr] = '.';
+				printf("%c ", buf[addr]);
+			}
+		}printf("\n");
+		*/
+	}printf("\n");
+	
 }
 
-
-
-void pgen_packet::hex(){
+void pgen_packet::hexFull(){
 	unsigned char buf[256];
 	memcpy(buf, data, len);
 	

@@ -33,19 +33,20 @@
 class pgen_packet{
 	protected:
 		int 	packetType;
-		int 	sock;
+		//int 	sock;
 		int 	len;
 		u_char 	data[PGEN_PACKLEN];
-		struct sockaddr addr;
+	//	struct sockaddr addr;
 	public:
 		
 		pgen_packet();
-		~pgen_packet(); 
+		//~pgen_packet(); 
 		virtual void clear();
 		virtual void info()=0;	
 		virtual void wrap(const char* ifname)=0;
 		virtual void send(const char* ifname)=0;
 		void hex();
+		void hexFull();
 };
 
 

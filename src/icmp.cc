@@ -24,6 +24,7 @@
 //#include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 
+#include "netutil.h"
 
 
 
@@ -36,13 +37,68 @@ void pgen_icmp::clear(){
 	icmp_option -1;
 	icmp_code = -1;
 }
+
 void pgen_icmp::send(const char* ifname){
-	wrap(ifname);
+	int sock;
+	int n;
+	
+	/*
+	struct sockaddr_in addr;
+	memset(&addr, 0, sizeof addr);
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = ip_dstIp._addr;
+	*/
+
+	wrap(ifname);		
+	
+	
+	if((sock=initRawSocket(ifname, 1, 0)) < 0){
+		exit(PGEN_ERROR);
+	}
+	if((n=write(sock, data, len)) < 0){
+//	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
+		perror("ip::send sendto()");
+		exit(PGEN_ERROR);
+	}
+
+	close(sock);
 		
 }
 
 
-void pgen_icmp::wrapLite(const char* ifname){
+
+void pgen_icmp::wrap(const char* ifname){
+	packetType = PGEN_PACKETTYPE_ICMP;
+	pgen_ip::wrap(ifname);
+	memset(data, 0, sizeof(data));
+	ip.protocol = IPPROTO_ICMP;
+	ip.tot_len = sizeof(ip) + sizeof(icmp) + 100;
+
+
+	memset(&icmp, 0, sizeof icmp);
+	icmp.type = icmp_option;
+	icmp.code = icmp_code;
+	icmp.checksum = 0;
+	icmp.un.echo.id = 0;
+	icmp.un.echo.sequence = 0;
+	icmp.checksum = checksum(&icmp, sizeof icmp);
+
+
+	u_char* p = data;
+	memcpy(p, &eth, sizeof(eth));
+	p += sizeof(eth);
+	memcpy(p, &ip, sizeof(ip));
+	p += sizeof(ip);
+	memcpy(p, &icmp, sizeof(icmp));
+	len = p-data;
+
+}
+
+
+
+/*
+void pgen_icmp::wrapLite(const char* ifname){//[[[
+	int sock;
 	packetType = PGEN_PACKETTYPE_ICMP;
 	memset(data, 0, sizeof(data));
 
@@ -67,46 +123,8 @@ void pgen_icmp::wrapLite(const char* ifname){
 	memcpy(p, &icmp, sizeof(icmp));
 	p += sizeof(icmp);
 	len = p-data;
-}
-
-
-
-void pgen_icmp::wrap(const char* ifname){
-	packetType = PGEN_PACKETTYPE_ICMP;
-	pgen_ip::wrap(ifname);
-	memset(data, 0, sizeof(data));
-	ip.protocol = IPPROTO_ICMP;
-	ip.tot_len = sizeof(ip) + sizeof(icmp) + 100;
-
-	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(IPPROTO_ICMP))) < 0){
-		perror("arp::wrap bind()");
-		exit(PGEN_ERROR);
-	}
-
-	memset(&icmp, 0, sizeof icmp);
-	icmp.type = icmp_option;
-	icmp.code = icmp_code;
-	icmp.checksum = 0;
-	icmp.un.echo.id = 0;
-	icmp.un.echo.sequence = 0;
-	icmp.checksum = checksum(&icmp, sizeof icmp);
-
-	u_char* p = data;
-	memcpy(p, &eth, sizeof(eth));
-	p += sizeof(eth);
-	memcpy(p, &ip, sizeof(ip));
-	p += sizeof(ip);
-	memcpy(p, &icmp, sizeof(icmp));
-	len = p-data;
-
-	/*memset(&addr, 0, sizeof addr);
-	addr.sa_family = AF_PACKET;
-	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
-	if(bind(sock, &addr, sizeof(addr)) < 0){
-		perror("arp::wrap bind()");
-		exit(PGEN_ERROR);
-	}*/
-}
+}//]]]
+*/
 
 
 

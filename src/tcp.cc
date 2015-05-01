@@ -30,8 +30,9 @@ void pgen_tcp::send(const char* ifname){
 	wrap(ifname);
 		
 }
-
+/*
 void pgen_tcp::wrapLite(const char* ifname){
+	int sock;
 	packetType = PGEN_PACKETTYPE_TCP;
 	memset(data, 0, sizeof data);
 
@@ -66,7 +67,7 @@ void pgen_tcp::wrapLite(const char* ifname){
 	p += sizeof(tcp);
 	len = p - data;
 }
-
+*/
 
 
 void pgen_tcp::wrap(const char* ifname){}

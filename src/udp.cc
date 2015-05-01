@@ -35,8 +35,9 @@ void pgen_udp::send(const char* ifname){
 }
 
 
-
+/*
 void pgen_udp::wrapLite(const char* ifname){
+	int sock;
 	packetType = PGEN_PACKETTYPE_UDP;
 	memset(data, 0, sizeof data);
 
@@ -61,10 +62,12 @@ void pgen_udp::wrapLite(const char* ifname){
 	p += sizeof(udp);
 	len = p - data;
 }
-
+*/
 
 
 void pgen_udp::wrap(const char* ifname){
+	int sock;
+	struct sockaddr addr;
 	packetType = PGEN_PACKETTYPE_UDP;
 	memset(data, 0, sizeof data);
 	ip.protocol = IPPROTO_UDP;

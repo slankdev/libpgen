@@ -19,13 +19,15 @@ SRC = main.cc \
 	  ip.cc \
 	  icmp.cc \
 	  tcp.cc \
-	  udp.cc
+	  udp.cc \
+	  netutil.cc
 HDR = pgen.h \
 	  pgen-opcode.h \
 	  pgen-macro.h \
 	  pgen-variable.h \
 	  pgen-funcs.h \
-	  packet.h 
+	  packet.h \
+	  types.h
 OBJ = $(SRC:.cc=.o)
 CFLAGS = -Wall 
 

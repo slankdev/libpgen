@@ -16,37 +16,45 @@
 
 
 
-
-
-
-
-
-
-
 pgen_eth::pgen_eth(){
 	pgen_packet::clear();
 	clear();	
 }
+
 void pgen_eth::clear(){
 	eth_srcEth = 0;
 	eth_dstEth = 0;
 }
 
 void pgen_eth::send(const char* ifname){
-	wrap(ifname);
-		
+	int sock;
+	int n;
+	struct sockaddr addr;
+
+	wrap(ifname);		
+	
+	
+	memset(&addr, 0, sizeof addr);
+	addr.sa_family = AF_PACKET;
+	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
+	if((sock=socket(AF_PACKET, SOCK_PACKET, 0)) < 0){
+		perror("eth::wrap bind()");
+		exit(PGEN_ERROR);
+	}
+	if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
+		perror("pgen_packet.send sendto()");
+		exit(PGEN_ERROR);
+	}
+
+	close(sock);
 }
 
 
 
 void pgen_eth::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_ETH;
+	
 	memset(data, 0, sizeof data);
-	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
-		perror("eth::wrap bind()");
-		exit(PGEN_ERROR);
-	}
-
 	eth.ether_type = htons(0);
 	for(int i=0; i< 6; i++){
 		eth.ether_shost[i] = eth_srcEth._addr[i];	
