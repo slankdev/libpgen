@@ -29,24 +29,21 @@ void pgen_ip::clear(){
 
 
 void pgen_ip::sendPack(const char* ifname){
+	wrap(ifname);		
 	int sock;
 	int n;
 	
-	/*
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = ip_dstIp._addr;
-	*/
 
-	wrap(ifname);		
-	
 	
 	if((sock=initRawSocket(ifname, 3)) < 0){
 		exit(PGEN_ERROR);
 	}
-	if((n=write(sock, data, len)) < 0){
-//	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
+	//if((n=write(sock, data, len)) < 0){
+	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
 		perror("ip::send sendto()");
 		exit(PGEN_ERROR);
 	}
@@ -76,8 +73,8 @@ void pgen_ip::wrap(const char* ifname){
 	ip.check = htons(checksum(&ip, sizeof(ip)));
 
 	u_char* p = data;
-	memcpy(p, &eth, sizeof eth);
-	p += sizeof(eth);
+//	memcpy(p, &eth, sizeof eth);
+//	p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(ip);
 	len = p - data;

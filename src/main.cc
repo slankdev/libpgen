@@ -2,6 +2,19 @@
 
 const char* dev = "wlan0";
 
+void ip(){
+	pgen_ip p;
+
+	p.ip_srcIp = pgen_getIP(dev);
+	p.ip_srcIp = "192.168.0.1";
+	p.ip_dstIp = "192.168.0.18";
+
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+}
+
+
 void arp(){
 	pgen_arp p;
 
@@ -38,7 +51,8 @@ void icmp(){
 }
 
 int main(){
-//	arp();
-	icmp();
+	//arp();
+	ip();
+	//icmp();
 }
 
