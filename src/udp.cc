@@ -28,7 +28,7 @@ void pgen_udp::clear(){
 }
 
 
-void pgen_udp::send(const char* ifname){
+void pgen_udp::sendPack(const char* ifname){
 	
 	wrap(ifname);
 

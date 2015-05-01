@@ -3,7 +3,8 @@
 
 
 int sendRaw(int sock);
-int initRawSocket(const char* dev, int ipOnly, int promisc);
+int initRawSocket(const char* dev, int layer);
+//int initRawSocket(const char* dev, int ipOnly, int promisc);
 
 
 #endif

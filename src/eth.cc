@@ -26,7 +26,7 @@ void pgen_eth::clear(){
 	eth_dstEth = 0;
 }
 
-void pgen_eth::send(const char* ifname){
+void pgen_eth::sendPack(const char* ifname){
 	int sock;
 	int n;
 	struct sockaddr addr;

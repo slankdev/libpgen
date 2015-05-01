@@ -37,7 +37,7 @@ all: $(program)
 
 $(program): $(OBJ)
 	$(CPP) $(OBJ) -o $(program) $(CFLAGS)
-	$(RM) *.o
+#	$(RM) *.o
 
 
 .cc.o: 

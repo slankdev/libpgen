@@ -38,28 +38,45 @@ void pgen_icmp::clear(){
 	icmp_code = -1;
 }
 
-void pgen_icmp::send(const char* ifname){
+void pgen_icmp::sendPack(const char* ifname){
+	wrap(ifname);		
 	int sock;
 	int n;
 	
-	/*
+	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = ip_dstIp._addr;
-	*/
+	
 
-	wrap(ifname);		
-	
-	
-	if((sock=initRawSocket(ifname, 1, 0)) < 0){
-		exit(PGEN_ERROR);
+	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) < 0){
+		perror("socket: ");
+		exit(-1);
 	}
-	if((n=write(sock, data, len)) < 0){
-//	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
+
+	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
 		perror("ip::send sendto()");
 		exit(PGEN_ERROR);
 	}
+
+	
+
+
+/*	
+	if((sock=initRawSocket(ifname, 1, 0)) < 0){
+		exit(PGEN_ERROR);
+	}
+
+//	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
+	if((n=write(sock, data, len)) < 0){
+//	if((n=send(sock, data, len, 0)) < 0){
+		perror("ip::send sendto()");
+		exit(PGEN_ERROR);
+	}
+*/	
+	
+	printf("send size: %d\n", n);
 
 	close(sock);
 		
@@ -68,63 +85,37 @@ void pgen_icmp::send(const char* ifname){
 
 
 void pgen_icmp::wrap(const char* ifname){
+
 	packetType = PGEN_PACKETTYPE_ICMP;
 	pgen_ip::wrap(ifname);
 	memset(data, 0, sizeof(data));
 	ip.protocol = IPPROTO_ICMP;
-	ip.tot_len = sizeof(ip) + sizeof(icmp) + 100;
-
+	ip.tot_len = htons(sizeof(ip) + sizeof(icmp)) ;
+	
 
 	memset(&icmp, 0, sizeof icmp);
-	icmp.type = icmp_option;
-	icmp.code = icmp_code;
-	icmp.checksum = 0;
-	icmp.un.echo.id = 0;
-	icmp.un.echo.sequence = 0;
-	icmp.checksum = checksum(&icmp, sizeof icmp);
+	icmp.icmp_type = icmp_option;
+	icmp.icmp_code = icmp_code;
+	icmp.icmp_cksum = 0;
+	icmp.icmp_void = 0;
+	icmp.icmp_hun.ih_idseq.icd_id = htons(256);
+	icmp.icmp_hun.ih_idseq.icd_seq = htons(1);
+	icmp.icmp_cksum = checksum(&icmp, sizeof icmp);
 
 
 	u_char* p = data;
-	memcpy(p, &eth, sizeof(eth));
-	p += sizeof(eth);
+//	memcpy(p, &eth, sizeof(eth));
+//	p += sizeof(eth);
 	memcpy(p, &ip, sizeof(ip));
 	p += sizeof(ip);
 	memcpy(p, &icmp, sizeof(icmp));
+	p += sizeof(icmp);
+
 	len = p-data;
 
 }
 
 
-
-/*
-void pgen_icmp::wrapLite(const char* ifname){//[[[
-	int sock;
-	packetType = PGEN_PACKETTYPE_ICMP;
-	memset(data, 0, sizeof(data));
-
-	struct sockaddr_in sin;
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = ip_dstIp._addr;
-	memcpy(&addr, &sin, sizeof(sin));
-	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0){
-		perror("icmp::wrapLite bind()");
-		exit(PGEN_ERROR);
-	}
-
-	memset(&icmp, 0, sizeof icmp);
-	icmp.type = icmp_option;
-	icmp.code = icmp_code;
-	icmp.checksum = 0;
-	icmp.un.echo.id = 0;
-	icmp.un.echo.sequence = 0;
-	icmp.checksum = checksum(&icmp, sizeof icmp);
-	
-	u_char* p = data;
-	memcpy(p, &icmp, sizeof(icmp));
-	p += sizeof(icmp);
-	len = p-data;
-}//]]]
-*/
 
 
 
@@ -143,8 +134,11 @@ void pgen_icmp::info(){
 	_icmpcode[255]  = "Not Set";
 
 	printf(" * Internet Control Message Protocol \n");
-	printf("    - Type        :  %s (%d)\n", _icmpoption[icmp.type] , icmp.type);
-	printf("    - Code        :  %s (%d)\n",  _icmpcode[icmp.code], icmp.code);
+	printf("    - Type            :  %s (%d)\n", _icmpoption[icmp.icmp_type] , icmp.icmp_type);
+	printf("    - Code            :  %s (%d)\n",  _icmpcode[icmp.icmp_code], icmp.icmp_code);
+	printf("    - id(BE)          :  %d \n", icmp.icmp_hun.ih_idseq.icd_id);
+	printf("    - seq num(BE)     :  %d \n", icmp.icmp_hun.ih_idseq.icd_seq);
+	printf("    - Header Checksum :  0x%x \n", icmp.icmp_cksum);
 }
 
 

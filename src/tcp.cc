@@ -26,7 +26,7 @@ void pgen_tcp::clear(){
 	tcp_dstPort = 0;
 }
 
-void pgen_tcp::send(const char* ifname){
+void pgen_tcp::sendPack(const char* ifname){
 	wrap(ifname);
 		
 }

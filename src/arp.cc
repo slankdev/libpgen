@@ -19,6 +19,8 @@
 #include <net/ethernet.h> 
 #include <netinet/if_ether.h>
 
+#include "netutil.h"
+
 
 pgen_arp::pgen_arp(){
 	pgen_eth::clear();
@@ -33,21 +35,16 @@ void pgen_arp::clear(){
 	arp_option = -1;
 }
 
-void pgen_arp::send(const char* ifname){
+void pgen_arp::sendPack(const char* ifname){
+	wrap(ifname);		
 	int sock;
 	int n;
-	struct sockaddr addr;
-
-	wrap(ifname);		
 	
-	memset(&addr, 0, sizeof addr);
-	addr.sa_family = AF_PACKET;
-	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
-	if((sock=socket(AF_PACKET, SOCK_PACKET, 0)) < 0){
+	if((sock=initRawSocket(ifname, 2)) < 0){
 		perror("arp::wrap bind()");
 		exit(PGEN_ERROR);
 	}
-	if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
+	if((n=write(sock, data, len)) < 0){
 		perror("pgen_packet.send sendto()");
 		exit(PGEN_ERROR);
 	}
