@@ -35,6 +35,7 @@ void pgen_arp::clear(){
 	arp_option = -1;
 }
 
+
 void pgen_arp::sendPack(const char* ifname){
 	wrap(ifname);		
 	int sock;
@@ -57,11 +58,9 @@ void pgen_arp::sendPack(const char* ifname){
 void pgen_arp::wrap(const char* ifname){
 	pgen_eth::wrap(ifname);
 	packetType = PGEN_PACKETTYPE_ARP;
-	
 	memset(data, 0, sizeof data);
-
-	
 	eth.ether_type = htons(ETHERTYPE_ARP);
+
 	memset(&arp, 0, sizeof arp);
 	arp.arp_hrd = htons(ARPHRD_ETHER);
 	arp.arp_pro = htons(ETHERTYPE_IP);

@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 #include <net/ethernet.h> 
 
+#include "netutil.h"
 
 
 
@@ -24,25 +25,20 @@ pgen_eth::pgen_eth(){
 void pgen_eth::clear(){
 	eth_srcEth = 0;
 	eth_dstEth = 0;
+	eth_type = htons(0);
 }
 
 void pgen_eth::sendPack(const char* ifname){
+	wrap(ifname);		
 	int sock;
 	int n;
-	struct sockaddr addr;
 
-	wrap(ifname);		
 	
-	
-	memset(&addr, 0, sizeof addr);
-	addr.sa_family = AF_PACKET;
-	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
-	if((sock=socket(AF_PACKET, SOCK_PACKET, 0)) < 0){
-		perror("eth::wrap bind()");
+	if((sock=initRawSocket(ifname, 2)) < 0){
 		exit(PGEN_ERROR);
 	}
-	if((n=sendto(sock, data, len, 0, &addr, sizeof(addr))) < 0){
-		perror("pgen_packet.send sendto()");
+	if((n=write(sock, data, len)) < 0){
+		perror("pgen_eth::sendPack: ");
 		exit(PGEN_ERROR);
 	}
 
@@ -53,9 +49,9 @@ void pgen_eth::sendPack(const char* ifname){
 
 void pgen_eth::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_ETH;
-	
 	memset(data, 0, sizeof data);
 	eth.ether_type = htons(0);
+
 	for(int i=0; i< 6; i++){
 		eth.ether_shost[i] = eth_srcEth._addr[i];	
 		eth.ether_dhost[i] = eth_dstEth._addr[i];	

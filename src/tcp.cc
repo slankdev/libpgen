@@ -27,24 +27,37 @@ void pgen_tcp::clear(){
 }
 
 void pgen_tcp::sendPack(const char* ifname){
-	wrap(ifname);
-		
-}
-/*
-void pgen_tcp::wrapLite(const char* ifname){
+	wrap(ifname);		
 	int sock;
-	packetType = PGEN_PACKETTYPE_TCP;
-	memset(data, 0, sizeof data);
+	int n;
+	
+	struct sockaddr_in addr;
+	memset(&addr, 0, sizeof addr);
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = ip_dstIp._addr;
+	addr.sin_port = htons(tcp_dstPort);
 
-	struct sockaddr_in sin;
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = ip_dstIp._addr;
-	sin.sin_port = htons(tcp_dstPort);
-	memcpy(&addr, &sin, sizeof(sin));
 	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) < 0){
-		perror("tcp::wrapLite socket()");
+		perror("socket: ");
+		exit(-1);
+	}
+	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
+		perror("pgen_tcp::sendpack: ");
 		exit(PGEN_ERROR);
 	}
+
+	close(sock);
+}
+
+
+
+void pgen_tcp::wrap(const char* ifname){
+	pgen_ip::wrap(ifname);
+	packetType = PGEN_PACKETTYPE_TCP;
+	memset(data, 0, sizeof data);
+	ip.protocol = IPPROTO_TCP;
+	ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
+	
 
 	memset(&tcp, 0, sizeof tcp);
 	tcp.source = htons(tcp_srcPort);
@@ -61,16 +74,15 @@ void pgen_tcp::wrapLite(const char* ifname){
 	if(tcp_frag.psh == 1)	tcp.psh = 1;
 	if(tcp_frag.ack == 1)	tcp.ack = 1;
 	if(tcp_frag.urg == 1)	tcp.urg = 1;
+	tcp.check = checksum(&tcp, sizeof tcp);
 
 	u_char* p = data;
+	memcpy(p, &ip, sizeof(ip));
+	p += sizeof(ip);
 	memcpy(p, &tcp, sizeof(icmp));
 	p += sizeof(tcp);
 	len = p - data;
 }
-*/
-
-
-void pgen_tcp::wrap(const char* ifname){}
 
 
 

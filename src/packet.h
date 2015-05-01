@@ -193,7 +193,6 @@ class pgen_tcp : public pgen_ip {
 		void clear();
 		void info();
 		void wrap(const char* ifname);
-		void wrapLite(const char* ifname);
 		void sendPack(const char* ifname);
 };
 

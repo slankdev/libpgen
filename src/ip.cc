@@ -42,7 +42,6 @@ void pgen_ip::sendPack(const char* ifname){
 	if((sock=initRawSocket(ifname, 3)) < 0){
 		exit(PGEN_ERROR);
 	}
-	//if((n=write(sock, data, len)) < 0){
 	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
 		perror("ip::send sendto()");
 		exit(PGEN_ERROR);
@@ -73,8 +72,8 @@ void pgen_ip::wrap(const char* ifname){
 	ip.check = htons(checksum(&ip, sizeof(ip)));
 
 	u_char* p = data;
-//	memcpy(p, &eth, sizeof eth);
-//	p += sizeof(eth);
+	//memcpy(p, &eth, sizeof eth);
+	//p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(ip);
 	len = p - data;

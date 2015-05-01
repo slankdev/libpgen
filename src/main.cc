@@ -2,7 +2,35 @@
 
 const char* dev = "wlan0";
 
-void ip(){
+void udp(){
+	pgen_udp p;
+
+	p.ip_srcIp = pgen_getIP(dev);
+	p.ip_dstIp = "192.168.0.1";
+	p.udp_srcPort = 8888;
+	p.udp_dstPort = 9999;
+
+
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+}
+
+void tcp(){
+	pgen_tcp p;
+
+	p.ip_srcIp = pgen_getIP(dev);
+	p.ip_dstIp = "192.168.0.1";
+	p.tcp_srcPort = 8888;
+	p.tcp_dstPort = 9999;
+
+
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+}
+
+void ip(){//[[[
 	pgen_ip p;
 
 	p.ip_srcIp = pgen_getIP(dev);
@@ -12,10 +40,9 @@ void ip(){
 	p.sendPack(dev);
 	p.info();
 	p.hex();
-}
+}//]]]
 
-
-void arp(){
+void arp(){//[[[
 	pgen_arp p;
 
 	p.eth_srcEth = pgen_getMAC(dev);
@@ -29,9 +56,9 @@ void arp(){
 	p.sendPack(dev);
 	p.info();
 	p.hex();
-}
+}//]]]
 
-void icmp(){
+void icmp(){//[[[ 
 	pgen_icmp p;
 	
 	//p.eth_srcEth = pgen_getMAC(dev);
@@ -48,11 +75,13 @@ void icmp(){
 	p.hex();
 
 
-}
+}//]]]
 
 int main(){
 	//arp();
-	ip();
+	//ip();
 	//icmp();
+	//tcp();
+	udp();
 }
 
