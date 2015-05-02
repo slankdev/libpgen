@@ -5,6 +5,7 @@
 #include "pgen-funcs.h"
 #include "pgen-variable.h"
 
+#include "netutil.h"
 
 #include <map>
 #include <stdio.h>
@@ -37,8 +38,7 @@ void pgen_tcp::sendPack(const char* ifname){
 	addr.sin_addr.s_addr = ip_dstIp._addr;
 	addr.sin_port = htons(tcp_dstPort);
 
-	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) < 0){
-		perror("socket: ");
+	if((sock=initRawSocket(ifname, 3)) < 0){
 		exit(-1);
 	}
 	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
@@ -62,10 +62,10 @@ void pgen_tcp::wrap(const char* ifname){
 	memset(&tcp, 0, sizeof tcp);
 	tcp.source = htons(tcp_srcPort);
 	tcp.dest   = htons(tcp_dstPort);
-	tcp.seq    = 0;
-	tcp.ack_seq = 0;
-	tcp.doff = (short)sizeof(tcp);
-	tcp.window = 1500;
+	tcp.seq    = htons(1234);
+	tcp.ack_seq = (0x14);
+	tcp.doff = htons(0x14);
+	tcp.window = htons(1500);
 	tcp.check  = 0;
 	// get frag by frags
 	if(tcp_frag.fin == 1)	tcp.fin = 1;
@@ -92,6 +92,15 @@ void pgen_tcp::info(){
 	printf(" * Transmission Control Protocol \n");
 	printf("   - Source Port      :  %d \n", tcp_srcPort);
 	printf("   - Destination Port :  %d \n", tcp_dstPort);
+	printf("   - Frags            :  ");
+	if(tcp_frag.fin == 1)	printf("F");
+	if(tcp_frag.syn == 1)	printf("S");
+	if(tcp_frag.rst == 1)	printf("R");
+	if(tcp_frag.psh == 1)	printf("P");
+	if(tcp_frag.ack == 1)	printf("A");
+	if(tcp_frag.urg == 1)	printf("U");
+	printf("\n");
+	
 }
 
 

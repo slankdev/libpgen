@@ -6,6 +6,7 @@
 #include "pgen-funcs.h"
 #include "pgen-variable.h"
 
+#include "netutil.h"
 
 #include <map>
 #include <stdio.h>
@@ -39,8 +40,7 @@ void pgen_udp::sendPack(const char* ifname){
 	addr.sin_addr.s_addr = ip_dstIp._addr;
 	addr.sin_port = htons(udp_dstPort);
 
-	if((sock=socket(AF_INET, SOCK_RAW, IPPROTO_UDP)) < 0){
-		perror("socket: ");
+	if((sock=initRawSocket(ifname, 3)) < 0){
 		exit(-1);
 	}
 	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
@@ -57,13 +57,13 @@ void pgen_udp::wrap(const char* ifname){
 	pgen_ip::wrap(ifname);
 	packetType = PGEN_PACKETTYPE_UDP;
 	ip.protocol = IPPROTO_UDP;
-	ip.tot_len = sizeof(ip) + sizeof(udp);
+	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
 	
 
 	memset(&udp, 0, sizeof udp);
 	udp.source = htons(udp_srcPort);
-	udp.dest   = udp_dstPort;
-	udp.len    = sizeof(udp);
+	udp.dest   = htons(udp_dstPort);
+	udp.len    = htons(sizeof(udp));
 	udp.check  = 0;
 	
 	u_char* p = data;

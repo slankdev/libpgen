@@ -22,7 +22,9 @@ void tcp(){
 	p.ip_srcIp = pgen_getIP(dev);
 	p.ip_dstIp = "192.168.0.1";
 	p.tcp_srcPort = 8888;
-	p.tcp_dstPort = 9999;
+	p.tcp_dstPort = 80;
+	p.tcp_frag.syn = 1;
+	p.tcp_frag.ack = 1;
 
 
 	p.sendPack(dev);
@@ -78,10 +80,14 @@ void icmp(){//[[[
 }//]]]
 
 int main(){
+	printf("BE: %d\n",BIG_ENDIAN);
+	printf("LE: %d\n",LITTLE_ENDIAN);
+	printf("%d\n",__BYTE_ORDER);
+
 	//arp();
 	//ip();
 	//icmp();
 	//tcp();
-	udp();
+	//udp();
 }
 
