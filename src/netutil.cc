@@ -12,6 +12,30 @@
 #include <sys/ioctl.h>
 
 
+unsigned short checksumTcp(const void* data, int len){
+	unsigned long sum = 0;
+	unsigned short* buf = (unsigned short*)data;
+	unsigned short oddbyte;
+
+	while (len > 1) {
+		sum += *buf++;
+		len -= 2;
+	}
+
+	if (len == 1){
+		oddbyte = 0;
+		*((unsigned short*)&oddbyte) = *(unsigned short*)buf;
+		sum += oddbyte;
+	}
+
+
+	sum = (sum & 0xffff) + (sum >> 16);
+	sum += (sum >> 16);
+	return (unsigned short)~sum;
+}
+
+
+
 int sendRawPacket(int sock, const u_char* data, int len, int layer, struct sockaddr* sap){
 	int sendlen;
 
@@ -82,6 +106,11 @@ int initRawSocket(const char* dev, int layer){
 				perror("initRawSocket: ");
 				return -1;
 			}
+
+			if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev)) < 0){
+				return -1;	
+			}
+
 			break;
 
 

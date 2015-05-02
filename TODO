@@ -3,6 +3,8 @@ TODO		[date]  about  [fin-date]
 
 [2015.04.01]	usable format.pgen file 			[]
 				* this file is packet format
-[2015.05.01]	malformed packet in tcp,udp 		[]
+[2015.05.01]	unmuch checksum in tcp		 		[]
+				because checksum is fail in TCP
+				fuuuuu------------------ck!!!
 [2015.05.02]	add copy constractor 				[]
 				in pgent_ip, pgent_mac	

@@ -51,16 +51,17 @@ void pgen_tcp::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_TCP;
 	memset(data, 0, sizeof data);
 	ip.protocol = IPPROTO_TCP;
-	ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
+	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
+	ip.tot_len = htons(sizeof(ip) + tcp_doff);
 	
 
 	memset(&tcp, 0, sizeof tcp);
 	tcp.source = htons(tcp_srcPort);
 	tcp.dest   = htons(tcp_dstPort);
-	tcp.seq    = htons(1234);
-	tcp.ack_seq = (0x14);
-	tcp.doff = htons(0x14);
-	tcp.window = htons(1500);
+	tcp.seq    = htonl(0);
+	tcp.ack_seq = htonl(0);
+	tcp.doff = tcp_doff >> 2;  // ５で割った値を入れる 
+	tcp.window = htons(tcp_window);	//OK
 	tcp.check  = 0;
 	// get frag by frags
 	if(tcp_frag.fin == 1)	tcp.fin = 1;
@@ -69,7 +70,9 @@ void pgen_tcp::wrap(const char* ifname){
 	if(tcp_frag.psh == 1)	tcp.psh = 1;
 	if(tcp_frag.ack == 1)	tcp.ack = 1;
 	if(tcp_frag.urg == 1)	tcp.urg = 1;
-	tcp.check = checksum(&tcp, sizeof tcp);
+	//tcp.check = htons(checksum(&tcp, sizeof tcp));
+	//tcp.check = htons(0xe9a);
+	tcp.check = 0x768b;
 
 	u_char* p = data;
 	memcpy(p, &ip, sizeof(ip));
@@ -77,6 +80,7 @@ void pgen_tcp::wrap(const char* ifname){
 	memcpy(p, &tcp, sizeof(icmp));
 	p += sizeof(tcp);
 	len = p - data;
+
 }
 
 
@@ -85,9 +89,9 @@ void pgen_tcp::info(){
 	pgen_ip::info();
 
 	printf(" * Transmission Control Protocol \n");
-	printf("   - Source Port      :  %d \n", tcp_srcPort);
-	printf("   - Destination Port :  %d \n", tcp_dstPort);
-	printf("   - Frags            :  ");
+	printf("    - Source Port     :  %d \n", tcp_srcPort);
+	printf("    - Dest Port       :  %d \n", tcp_dstPort);
+	printf("    - Frags           :  ");
 	if(tcp_frag.fin == 1)	printf("F");
 	if(tcp_frag.syn == 1)	printf("S");
 	if(tcp_frag.rst == 1)	printf("R");
@@ -95,6 +99,9 @@ void pgen_tcp::info(){
 	if(tcp_frag.ack == 1)	printf("A");
 	if(tcp_frag.urg == 1)	printf("U");
 	printf("\n");
+	printf("    - Checksum        :  0x%04x \n", ntohs(tcp.check));
+	printf("                         0x0e9a \n");
+
 	
 }
 

@@ -38,23 +38,12 @@ void pgen_packet::hex(){
 			if(addr%8==0 && addr%16!=0)	printf(" ");
 			if(address+i > len)
 				printf("   ");
-			else
+			else{
+				//if(buf[addr] == '\0')	continue;
 				printf("%02x ", buf[addr] & 0xff);
+			}
 		}
 		printf("\n");
-		/*
-		printf("   ");
-		for(int addr=address, i=0; i<0x10; i++, addr++){
-			if(addr%0X08==0 && addr%0x10!=0)	printf(" ");
-			if(address+i > len)
-				printf(" ");
-			else{
-				if(buf[addr] < 0x20 || 0x7e < buf[addr])
-					buf[addr] = '.';
-				printf("%c ", buf[addr]);
-			}
-		}printf("\n");
-		*/
 	}printf("\n");
 	
 }
