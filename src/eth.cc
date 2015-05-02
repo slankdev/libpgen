@@ -13,15 +13,36 @@
 #include <sys/socket.h>
 #include <net/ethernet.h> 
 
+#include "netutil.h"
+
 
 
 pgen_eth::pgen_eth(){
 	pgen_packet::clear();
 	clear();	
 }
+
 void pgen_eth::clear(){
 	eth_srcEth = 0;
 	eth_dstEth = 0;
+	eth_type = htons(0);
+}
+
+void pgen_eth::sendPack(const char* ifname){
+	wrap(ifname);		
+	int sock;
+	int n;
+
+	
+	if((sock=initRawSocket(ifname, 2)) < 0){
+		exit(PGEN_ERROR);
+	}
+	if((n=write(sock, data, len)) < 0){
+		perror("pgen_eth::sendPack: ");
+		exit(PGEN_ERROR);
+	}
+
+	close(sock);
 }
 
 
@@ -29,12 +50,8 @@ void pgen_eth::clear(){
 void pgen_eth::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_ETH;
 	memset(data, 0, sizeof data);
-	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(ETH_P_ARP))) < 0){
-		perror("eth::wrap bind()");
-		exit(PGEN_ERROR);
-	}
-
 	eth.ether_type = htons(0);
+
 	for(int i=0; i< 6; i++){
 		eth.ether_shost[i] = eth_srcEth._addr[i];	
 		eth.ether_dhost[i] = eth_dstEth._addr[i];	

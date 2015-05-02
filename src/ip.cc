@@ -1,7 +1,6 @@
 #include "packet.h"
 #include "pgen-variable.h"
 
-
 #include <map>
 #include <stdio.h>
 #include <string.h>
@@ -15,6 +14,7 @@
 #include <net/ethernet.h> 
 #include <netinet/ip.h>
 
+#include "netutil.h"
 
 
 
@@ -28,37 +28,26 @@ void pgen_ip::clear(){
 }
 
 
+void pgen_ip::sendPack(const char* ifname){
+	wrap(ifname);		
+	int sock;
+	int n;
+	
+	struct sockaddr_in addr;
+	memset(&addr, 0, sizeof addr);
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = ip_dstIp._addr;
 
-void pgen_ip::wrapLite(const char* ifname){
-	packetType = PGEN_PACKETTYPE_IP;
-	memset(data, 0, sizeof data);
-
-	struct sockaddr_in sin;
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = ip_dstIp._addr;
-	memcpy(&addr, &sin, sizeof(sin));
-	if((sock=socket(AF_INET, SOCK_RAW, htons(ETH_P_IP))) < 0){
-		perror("ip::wrapLite socket()");
+	
+	if((sock=initRawSocket(ifname, 3)) < 0){
+		exit(PGEN_ERROR);
+	}
+	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
+		perror("ip::send sendto()");
 		exit(PGEN_ERROR);
 	}
 
-	memset(&ip, 0, sizeof ip);
-	ip.ihl = sizeof(ip) / 4;
-	ip.version = 4;
-	ip.tos = 0; //no useing world now
-	ip.tot_len = sizeof(ip);
-	ip.id = random(); // ??????
-	ip.frag_off = 0; // ?????
-	ip.ttl = PGEN_DEFAULT_TTL;
-	ip.protocol = IPPROTO_IP;
-	ip.saddr = ip_srcIp._addr;
-	ip.daddr = ip_dstIp._addr;
-	ip.check = checksum(&ip, sizeof(ip));
-
-	u_char* p = data;
-	memcpy(p, &ip, sizeof ip);
-	p += sizeof(ip);
-	len = p - data;
+	close(sock);
 }
 
 
@@ -68,11 +57,6 @@ void pgen_ip::wrap(const char* ifname){
 	pgen_eth::wrap(ifname);
 	eth.ether_type = htons(ETHERTYPE_IP);
 	memset(data, 0, sizeof data);
-	
-	if((sock=socket(AF_PACKET, SOCK_PACKET, htons(IPPROTO_IP))) < 0){
-		perror("arp::wrap bind()");
-		exit(PGEN_ERROR);
-	}
 
 	memset(&ip, 0, sizeof ip);
 	ip.ihl = sizeof(ip) / 4;
@@ -85,24 +69,15 @@ void pgen_ip::wrap(const char* ifname){
 	ip.protocol = IPPROTO_IP;
 	ip.saddr = ip_srcIp._addr;
 	ip.daddr = ip_dstIp._addr;
-	ip.check = checksum(&ip, sizeof(ip));
+	ip.check = htons(checksum(&ip, sizeof(ip)));
 
 	u_char* p = data;
-	memcpy(p, &eth, sizeof eth);
-	p += sizeof(eth);
+	//memcpy(p, &eth, sizeof eth);
+	//p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(ip);
 	len = p - data;
-
-	/*memset(&addr, 0, sizeof addr);
-	addr.sa_family = AF_PACKET;
-	snprintf(addr.sa_data, sizeof(addr.sa_data), "%s", ifname);
-	if(bind(sock, &addr, sizeof(addr)) < 0){
-		perror("arp::wrap bind()");
-		exit(PGEN_ERROR);
-	}*/
 }
-
 
 
 void pgen_ip::info(){
@@ -121,4 +96,8 @@ void pgen_ip::info(){
 	printf("    - Source          :  %s \n", ip_srcIp.c_str());
 	printf("    - Destination     :  %s \n", ip_dstIp.c_str());
 	printf("    - Protocol        :  %s (%u) \n", _ipprot[ip.protocol],  ip.protocol);
+	printf("    - Time to Leave   :  %d \n", ip.ttl);
+	printf("    - Total Length    :  %d \n", htons(ip.tot_len));
+//	printf("    - Header Checksum :  %x \n", ip.check);
+
 }

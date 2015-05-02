@@ -33,25 +33,21 @@
 class pgen_packet{
 	protected:
 		int 	packetType;
-		int 	sock;
+		//int 	sock;
 		int 	len;
 		u_char 	data[PGEN_PACKLEN];
-		struct sockaddr addr;
+	//	struct sockaddr addr;
 	public:
 		
 		pgen_packet();
-		~pgen_packet(); 
+		//~pgen_packet(); 
 		virtual void clear();
 		virtual void info()=0;	
 		virtual void wrap(const char* ifname)=0;
+		virtual void sendPack(const char* ifname)=0;
 		void hex();
-		void send();
+		void hexFull();
 };
-
-
-
-
-
 
 
 
@@ -76,9 +72,8 @@ class pgen_eth : public pgen_packet {
 		void clear();
 		void info();
 		void wrap(const char* ifname);
+		void sendPack(const char* ifname);
 };
-
-
 
 
 
@@ -106,9 +101,8 @@ class pgen_arp : public pgen_eth {
 		void clear();
 		void info();
 		void wrap(const char* ifname);
+		void sendPack(const char* ifname);
 };
-
-
 
 
 
@@ -134,9 +128,8 @@ class pgen_ip : public pgen_eth {
 		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
+		void sendPack(const char* ifname);
 };
-
-
 
 
 
@@ -152,17 +145,22 @@ class pgen_ip : public pgen_eth {
 #include <netinet/ip_icmp.h>	/* for struct icmp			*/
 class pgen_icmp : public pgen_ip {
 	protected:
-		struct icmphdr 		icmp;
+		struct icmp icmp;
+		//struct icmphdr 		icmp;
 	public:
 		int icmp_option;
 		int icmp_code;
+	
 
 		pgen_icmp();
 		void clear();
 		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
+		void sendPack(const char* ifname);
  };
+
+
 
 
 
@@ -195,9 +193,11 @@ class pgen_tcp : public pgen_ip {
 		void clear();
 		void info();
 		void wrap(const char* ifname);
-		void wrapLite(const char* ifname);
-		
+		void sendPack(const char* ifname);
 };
+
+
+
 
 
 
@@ -222,6 +222,11 @@ class pgen_udp : public pgen_ip {
 		void info();
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
-		
+		void sendPack(const char* ifname);
 };
+
+
+
+
+
 #endif

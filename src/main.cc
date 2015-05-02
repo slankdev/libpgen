@@ -1,94 +1,93 @@
 #include "pgen.h"
 
+const char* dev = "wlan0";
 
-int main(){
-	pgen_tcp tcp;
-
-	tcp.ip_dstIp = "192.168.179.5";
-	tcp.tcp_srcPort = 11111;
-	tcp.tcp_dstPort = 80;
-	tcp.tcp_frag.fin = 1;
-
-	tcp.wrapLite("eth0");
-	tcp.info();
-	for(int i=1;;i++){
-		printf("%10d", i);
-		tcp.send();
-	}
-}
-
-
-int main5(){
+void udp(){
 	pgen_udp p;
 
-	p.eth_srcEth = pgen_getIP("eth0");
-	p.eth_dstEth = 0;
-	p.ip_srcIp = pgen_getIP("eth0");
-	p.ip_dstIp = "192.168.179.1";
-	p.udp_srcPort = 50;
-	p.udp_dstPort = 10;
-	p.wrap("eth0");
+	p.ip_srcIp = pgen_getIP(dev);
+	p.ip_dstIp = "192.168.0.1";
+	p.udp_srcPort = 8888;
+	p.udp_dstPort = 9999;
+
+
+	p.sendPack(dev);
 	p.info();
-	p.send();
+	p.hex();
 }
 
+void tcp(){
+	pgen_tcp p;
 
-int main3(){
-	pgen_eth eth;
-	pgen_arp arp;
-	pgen_ip ip;
-	pgen_icmp icmp;
-	pgen_udp udp;
-	pgen_tcp tcp;
+	p.ip_srcIp = pgen_getIP(dev);
+	p.ip_dstIp = "192.168.0.1";
+	p.tcp_srcPort = 8888;
+	p.tcp_dstPort = 80;
+	p.tcp_frag.syn = 1;
+	p.tcp_frag.ack = 1;
 
-	
-	arp.eth_srcEth = pgen_getMAC("eth0");
-	arp.eth_dstEth = "ff:ff:ff:ff:ff:ff";
-	arp.arp_srcEth = pgen_getMAC("eth0");
-	arp.arp_srcIp = pgen_getIP("eth0");
-	arp.arp_dstEth = 0;
-	arp.arp_dstIp = "192.168.179.1";
-	arp.arp_option = ARPOP_REQUEST;
-	arp.wrap("eth0");
-	printf("ARP========================================\n");
-	arp.info();
-	printf("===========================================\n");
-	arp.send();
-	
-	
-	icmp.ip_dstIp = "192.168.179.1";
-	icmp.icmp_option = PGEN_ICMPOP_ECHO;
-	icmp.icmp_code 	 = PGEN_ICMPCODE_NET_UNREACH;
-	icmp.wrapLite("eth0");
-	printf("ICMP========================================\n");
-	icmp.info();
-	printf("===========================================\n");
-	icmp.send();
 
-	ip.ip_dstIp = "192.168.179.1";
-	ip.wrapLite("eth0");
-	printf("IP=========================================\n");
-	ip.info();
-	printf("===========================================\n");
-	ip.send();
-
-	
-	udp.ip_dstIp = "192.168.179.1";
-	udp.udp_srcPort = 123;
-	udp.udp_dstPort = 123;
-	udp.wrapLite("eth0");
-	printf("UDP========================================\n");
-	udp.info();
-	printf("===========================================\n");
-	udp.send();
-	
-	
-	tcp.ip_dstIp = "192.168.179.1";
-	tcp.tcp_srcPort = 11111;
-	tcp.tcp_dstPort = 22222;
-	tcp.wrapLite("eth0");
-	printf("TCP========================================\n");
-	tcp.info();
-	printf("===========================================\n");
-	tcp.send();
+	p.sendPack(dev);
+	p.info();
+	p.hex();
 }
+
+void ip(){//[[[
+	pgen_ip p;
+
+	p.ip_srcIp = pgen_getIP(dev);
+	p.ip_srcIp = "192.168.0.1";
+	p.ip_dstIp = "192.168.0.18";
+
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+}//]]]
+
+void arp(){//[[[
+	pgen_arp p;
+
+	p.eth_srcEth = pgen_getMAC(dev);
+	p.eth_dstEth = "ff:ff:ff:ff:ff:ff";
+	p.arp_srcEth = pgen_getMAC(dev);
+	p.arp_srcIp  = pgen_getIP(dev);
+	p.arp_dstEth = "ff:ff:ff:ff:ff:ff";
+	p.arp_dstIp  = "192.168.0.1";
+	p.arp_option = PGEN_ARPOP_REQEST;
+		
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+}//]]]
+
+void icmp(){//[[[ 
+	pgen_icmp p;
+	
+	//p.eth_srcEth = pgen_getMAC(dev);
+	//p.eth_dstEth = "00:10:18:de:ad:05";
+	//p.eth_dstEth = "80:e6:50:17:18:46";
+	p.ip_srcIp = pgen_getIP(dev);
+	//p.ip_srcIp = "192.168.0.1";
+	p.ip_dstIp = "192.168.0.18";
+	p.icmp_option = PGEN_ICMPOP_ECHO;
+	p.icmp_code   = PGEN_ICMPCODE_NET_UNREACH;
+
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+
+
+}//]]]
+
+int main(){
+	printf("BE: %d\n",BIG_ENDIAN);
+	printf("LE: %d\n",LITTLE_ENDIAN);
+	printf("%d\n",__BYTE_ORDER);
+
+	//arp();
+	//ip();
+	//icmp();
+	//tcp();
+	//udp();
+}
+
