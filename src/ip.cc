@@ -39,13 +39,16 @@ void pgen_ip::sendPack(const char* ifname){
 	addr.sin_addr.s_addr = ip_dstIp._addr;
 
 	
-	if((sock=initRawSocket(ifname, 3)) < 0){
+	if((sock=initRawSocket(ifname, 3)) < 0)
 		exit(PGEN_ERROR);
-	}
+	/*
 	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
 		perror("ip::send sendto()");
 		exit(PGEN_ERROR);
 	}
+	*/
+	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
+		exit(PGEN_ERROR);
 
 	close(sock);
 }

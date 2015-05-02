@@ -42,21 +42,16 @@ void pgen_icmp::clear(){
 void pgen_icmp::sendPack(const char* ifname){
 	wrap(ifname);		
 	int sock;
-	int n;
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = ip_dstIp._addr;
 
-	if((sock=initRawSocket(ifname, 3)) < 0){
-		perror("socket: ");
+	if((sock=initRawSocket(ifname, 3)) < 0)
 		exit(-1);
-	}
-	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
-		perror("pgen_icmp::sendPack: ");
+	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
 		exit(PGEN_ERROR);
-	}
 
 	close(sock);
 }

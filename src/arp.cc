@@ -39,16 +39,11 @@ void pgen_arp::clear(){
 void pgen_arp::sendPack(const char* ifname){
 	wrap(ifname);		
 	int sock;
-	int n;
 	
-	if((sock=initRawSocket(ifname, 2)) < 0){
-		perror("arp::wrap bind()");
+	if((sock=initRawSocket(ifname, 2)) < 0)
 		exit(PGEN_ERROR);
-	}
-	if((n=write(sock, data, len)) < 0){
-		perror("pgen_packet.send sendto()");
+	if(sendRawPacket(sock, data, len, 2, nullptr) < 0)
 		exit(PGEN_ERROR);
-	}
 
 	close(sock);
 }

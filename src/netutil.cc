@@ -12,8 +12,33 @@
 #include <sys/ioctl.h>
 
 
-int sendRaw(int sock){
-	return 1;
+int sendRawPacket(int sock, const u_char* data, int len, int layer, struct sockaddr* sap){
+	int sendlen;
+
+	switch(layer){
+		case 2:
+			sendlen = write(sock, data, len);
+			if(sendlen < 0){
+				perror("sendRawPacket: ");
+				return -1;
+			}
+			break;
+
+		case 3:
+			sendlen = sendto(sock, data, len, 0, sap, sizeof(struct sockaddr));
+			if(sendlen < 0){
+				perror("sendRawPacket: ");
+				return -1;
+			}
+			break;
+
+		default:
+			fprintf(stderr, "sendRawPacket: layer no support\n");
+			return -1;
+			break;
+	}
+	
+	return sendlen;
 }
 
 

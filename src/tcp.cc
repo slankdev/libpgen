@@ -30,21 +30,16 @@ void pgen_tcp::clear(){
 void pgen_tcp::sendPack(const char* ifname){
 	wrap(ifname);		
 	int sock;
-	int n;
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = ip_dstIp._addr;
-	addr.sin_port = htons(tcp_dstPort);
 
-	if((sock=initRawSocket(ifname, 3)) < 0){
+	if((sock=initRawSocket(ifname, 3)) < 0)
 		exit(-1);
-	}
-	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
-		perror("pgen_tcp::sendpack: ");
+	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
 		exit(PGEN_ERROR);
-	}
 
 	close(sock);
 }
