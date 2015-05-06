@@ -10,11 +10,6 @@ void icmp();
 
 
 int main(){
-	/*
-	printf("BE: %d\n",BIG_ENDIAN);
-	printf("LE: %d\n",LITTLE_ENDIAN);
-	printf("%d\n",__BYTE_ORDER);
-	*/
 
 	//arp();
 	//ip();
@@ -29,8 +24,8 @@ void tcp(){
 
 	p.ip_srcIp = pgen_getIP(dev);
 	p.ip_dstIp = "192.168.179.1";
-	p.tcp_srcPort = 9999;
-	p.tcp_dstPort = 7;
+	p.tcp_srcPort = 65467;
+	p.tcp_dstPort = 22;
 	p.tcp_doff = 20;
 	p.tcp_window = 8192;
 	p.tcp_frag.syn = 1;
@@ -94,3 +89,11 @@ void icmp(){
 }
 
 
+
+void checkEndian(){
+	/*
+	printf("BE: %d\n",BIG_ENDIAN);
+	printf("LE: %d\n",LITTLE_ENDIAN);
+	printf("%d\n",__BYTE_ORDER);
+	*/
+}
