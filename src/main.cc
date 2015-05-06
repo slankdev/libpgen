@@ -2,49 +2,64 @@
 
 const char* dev = "wlan0";
 
+void tcp();
+void udp();
+void ip();
+void arp();
+void icmp();
+
+
+int main(){
+
+	//arp();
+	//ip();
+	//icmp();
+	tcp();
+	//udp();
+}
+
+
+void tcp(){
+	pgen_tcp p;
+
+	p.ip_srcIp = pgen_getIP(dev);
+	p.ip_dstIp = "192.168.179.1";
+	p.tcp_srcPort = 65467;
+	p.tcp_dstPort = 22;
+	p.tcp_doff = 20;
+	p.tcp_window = 8192;
+	p.tcp_frag.syn = 1;
+
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+}
+
 void udp(){
 	pgen_udp p;
 
 	p.ip_srcIp = pgen_getIP(dev);
 	p.ip_dstIp = "192.168.0.1";
 	p.udp_srcPort = 8888;
-	p.udp_dstPort = 9999;
-
-
+	p.udp_dstPort = 7;
+	
 	p.sendPack(dev);
 	p.info();
 	p.hex();
-}
+ }
 
-void tcp(){
-	pgen_tcp p;
-
-	p.ip_srcIp = pgen_getIP(dev);
-	p.ip_dstIp = "192.168.0.1";
-	p.tcp_srcPort = 8888;
-	p.tcp_dstPort = 80;
-	p.tcp_frag.syn = 1;
-	p.tcp_frag.ack = 1;
-
-
-	p.sendPack(dev);
-	p.info();
-	p.hex();
-}
-
-void ip(){//[[[
+void ip(){
 	pgen_ip p;
 
 	p.ip_srcIp = pgen_getIP(dev);
-	p.ip_srcIp = "192.168.0.1";
-	p.ip_dstIp = "192.168.0.18";
+	p.ip_dstIp = "192.168.0.1";
 
 	p.sendPack(dev);
 	p.info();
 	p.hex();
-}//]]]
+}
 
-void arp(){//[[[
+void arp(){
 	pgen_arp p;
 
 	p.eth_srcEth = pgen_getMAC(dev);
@@ -58,36 +73,27 @@ void arp(){//[[[
 	p.sendPack(dev);
 	p.info();
 	p.hex();
-}//]]]
+}
 
-void icmp(){//[[[ 
+void icmp(){ 
 	pgen_icmp p;
 	
-	//p.eth_srcEth = pgen_getMAC(dev);
-	//p.eth_dstEth = "00:10:18:de:ad:05";
-	//p.eth_dstEth = "80:e6:50:17:18:46";
 	p.ip_srcIp = pgen_getIP(dev);
-	//p.ip_srcIp = "192.168.0.1";
-	p.ip_dstIp = "192.168.0.18";
+	p.ip_dstIp = "192.168.0.1";
 	p.icmp_option = PGEN_ICMPOP_ECHO;
 	p.icmp_code   = PGEN_ICMPCODE_NET_UNREACH;
-
+	
 	p.sendPack(dev);
 	p.info();
 	p.hex();
+}
 
 
-}//]]]
 
-int main(){
+void checkEndian(){
+	/*
 	printf("BE: %d\n",BIG_ENDIAN);
 	printf("LE: %d\n",LITTLE_ENDIAN);
 	printf("%d\n",__BYTE_ORDER);
-
-	//arp();
-	//ip();
-	//icmp();
-	//tcp();
-	//udp();
+	*/
 }
-
