@@ -8,3 +8,5 @@ TODO		[date]  about  [fin-date]
 				fuuuuu------------------ck!!!
 [2015.05.02]	add copy constractor 				[]
 				in pgent_ip, pgent_mac	
+[2015.05.07]	add default variable of packet val	[]
+				ex) ip.dst 's defalut is 127.0.0.1

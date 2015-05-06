@@ -22,6 +22,7 @@ pgen_tcp::pgen_tcp(){
 	pgen_ip::clear();
 	clear();
 }
+
 void pgen_tcp::clear(){
 	tcp_srcPort = 0;
 	tcp_dstPort = 0;
@@ -59,7 +60,6 @@ void pgen_tcp::wrap(const char* ifname){
 	ip.protocol = IPPROTO_TCP;
 	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
 	ip.tot_len = htons(sizeof(ip) + tcp_doff);
-	
 
 	memset(&tcp, 0, sizeof tcp);
 	tcp.source = htons(tcp_srcPort);
@@ -76,9 +76,7 @@ void pgen_tcp::wrap(const char* ifname){
 	if(tcp_frag.psh == 1)	tcp.psh = 1;
 	if(tcp_frag.ack == 1)	tcp.ack = 1;
 	if(tcp_frag.urg == 1)	tcp.urg = 1;
-	//tcp.check = htons(checksum(&tcp, sizeof tcp));
 	tcp.check = checksumTcp(tcp, ip, sizeof(tcp)+sizeof(ip));
-	//tcp.check = 0x768b;
 
 	u_char* p = data;
 	memcpy(p, &ip, sizeof(ip));
@@ -86,7 +84,6 @@ void pgen_tcp::wrap(const char* ifname){
 	memcpy(p, &tcp, sizeof(icmp));
 	p += sizeof(tcp);
 	len = p - data;
-
 }
 
 
@@ -107,8 +104,6 @@ void pgen_tcp::info(){
 	printf("\n");
 	printf("    - Checksum        :  0x%04x \n", ntohs(tcp.check));
 	printf("                         0x0e9a \n");
-
-	
 }
 
 

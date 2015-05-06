@@ -23,11 +23,11 @@ pgen_udp::pgen_udp(){
 	pgen_ip::clear();
 	clear();
 }
+
 void pgen_udp::clear(){
 	udp_srcPort = 0;
 	udp_dstPort = 0;
 }
-
 
 void pgen_udp::sendPack(const char* ifname){
 	wrap(ifname);		
@@ -53,7 +53,6 @@ void pgen_udp::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_UDP;
 	ip.protocol = IPPROTO_UDP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
-	
 
 	memset(&udp, 0, sizeof udp);
 	udp.source = htons(udp_srcPort);

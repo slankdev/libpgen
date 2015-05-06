@@ -15,6 +15,25 @@
 #include <netinet/ip.h>
 
 
+
+unsigned short checksum(const void* data, int len){
+	unsigned long sum = 0;
+	unsigned short* buf = (unsigned short*)data;
+
+	while (len > 1) {
+		sum += *buf;
+		buf++;
+		len -= 2;
+	}
+	if (len == 1)
+		sum += *(unsigned char *)buf;
+
+	sum = (sum & 0xffff) + (sum >> 16);
+	sum = (sum & 0xffff) + (sum >> 16);
+	return ~sum;
+}
+
+
 static u_int16_t CSUM(u_int16_t *data, int len){
   u_int32_t sum = 0;
 
@@ -84,10 +103,10 @@ int sendRawPacket(int sock, const u_char* data, int len, int layer, struct socka
 			fprintf(stderr, "sendRawPacket: layer no support\n");
 			return -1;
 			break;
-	}
-	
+	}	
 	return sendlen;
 }
+
 
 
 int initRawSocket(const char* dev, int layer){
@@ -120,10 +139,8 @@ int initRawSocket(const char* dev, int layer){
 				close(sock);
 				return -1;
 			}
-
 			break;
-		
-		
+
 		case 3:
 			sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
 			if(sock < 0){
@@ -137,26 +154,11 @@ int initRawSocket(const char* dev, int layer){
 
 			break;
 
-
 		default:
 			fprintf(stderr, "initRawSocket: this layer no support\n");
 			return -1;
 			break;
 	}
-
 	return sock;	
 }
 
-/*
-int initRawSocket(const char* dev, int ipOnly, int promisc){
-	int sock;
-	struct ifreq ifreq;
-	struct sockaddr_ll sa;
-	
-
-	
-
-
-
-	return sock;	
-}*/

@@ -42,7 +42,7 @@ void pgen_arp::sendPack(const char* ifname){
 	
 	if((sock=initRawSocket(ifname, 2)) < 0)
 		exit(PGEN_ERROR);
-	if(sendRawPacket(sock, data, len, 2, nullptr) < 0)
+	if(sendRawPacket(sock, data, len, 2, NULL) < 0)
 		exit(PGEN_ERROR);
 
 	close(sock);

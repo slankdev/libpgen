@@ -20,10 +20,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-//#include <net/ethernet.h> 
-//#include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
-
 #include "netutil.h"
 
 
@@ -65,7 +62,6 @@ void pgen_icmp::wrap(const char* ifname){
 	memset(data, 0, sizeof(data));
 	ip.protocol = IPPROTO_ICMP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(icmp)) ;
-	
 
 	memset(&icmp, 0, sizeof icmp);
 	icmp.icmp_type = icmp_option;
@@ -75,7 +71,6 @@ void pgen_icmp::wrap(const char* ifname){
 	icmp.icmp_hun.ih_idseq.icd_id = htons(1);
 	icmp.icmp_hun.ih_idseq.icd_seq = htons(1);
 	icmp.icmp_cksum = checksum(&icmp, sizeof icmp);
-
 
 	u_char* p = data;
 	//memcpy(p, &eth, sizeof(eth));

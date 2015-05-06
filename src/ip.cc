@@ -41,12 +41,7 @@ void pgen_ip::sendPack(const char* ifname){
 	
 	if((sock=initRawSocket(ifname, 3)) < 0)
 		exit(PGEN_ERROR);
-	/*
-	if((n=sendto(sock, data, len, 0, (struct sockaddr*)&addr, sizeof addr)) < 0){
-		perror("ip::send sendto()");
-		exit(PGEN_ERROR);
-	}
-	*/
+
 	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
 		exit(PGEN_ERROR);
 
@@ -101,6 +96,4 @@ void pgen_ip::info(){
 	printf("    - Protocol        :  %s (%u) \n", _ipprot[ip.protocol],  ip.protocol);
 	printf("    - Time to Leave   :  %d \n", ip.ttl);
 	printf("    - Total Length    :  %d \n", htons(ip.tot_len));
-//	printf("    - Header Checksum :  %x \n", ip.check);
-
 }

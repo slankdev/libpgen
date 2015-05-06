@@ -18,9 +18,9 @@
 #include <netinet/in.h>		/* for struct sockaddr_in */
 		
 
-pgen_packet::pgen_packet(){	clear(); }
-
-
+pgen_packet::pgen_packet(){
+	clear();
+}
 
 void pgen_packet::clear(){
 	len = 0;
@@ -39,14 +39,13 @@ void pgen_packet::hex(){
 			if(address+i > len)
 				printf("   ");
 			else{
-				//if(buf[addr] == '\0')	continue;
 				printf("%02x ", buf[addr] & 0xff);
 			}
 		}
 		printf("\n");
 	}printf("\n");
-	
 }
+
 
 void pgen_packet::hexFull(){
 	unsigned char buf[256];

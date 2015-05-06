@@ -33,14 +33,11 @@
 class pgen_packet{
 	protected:
 		int 	packetType;
-		//int 	sock;
 		int 	len;
 		u_char 	data[PGEN_PACKLEN];
-	//	struct sockaddr addr;
 	public:
 		
 		pgen_packet();
-		//~pgen_packet(); 
 		virtual void clear();
 		virtual void info()=0;	
 		virtual void wrap(const char* ifname)=0;
@@ -146,11 +143,9 @@ class pgen_ip : public pgen_eth {
 class pgen_icmp : public pgen_ip {
 	protected:
 		struct icmp icmp;
-		//struct icmphdr 		icmp;
 	public:
 		int icmp_option;
 		int icmp_code;
-	
 
 		pgen_icmp();
 		void clear();
@@ -190,7 +185,6 @@ class pgen_tcp : public pgen_ip {
 		}tcp_frag ;
 		int tcp_window;
 		int tcp_doff;
-
 
 		pgen_tcp();
 		void clear();
