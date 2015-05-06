@@ -11,27 +11,51 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-
-unsigned short checksumTcp(const void* data, int len){
-	unsigned long sum = 0;
-	unsigned short* buf = (unsigned short*)data;
-	unsigned short oddbyte;
-
-	while (len > 1) {
-		sum += *buf++;
-		len -= 2;
-	}
-
-	if (len == 1){
-		oddbyte = 0;
-		*((unsigned short*)&oddbyte) = *(unsigned short*)buf;
-		sum += oddbyte;
-	}
+#include <netinet/tcp.h>
+#include <netinet/ip.h>
 
 
-	sum = (sum & 0xffff) + (sum >> 16);
-	sum += (sum >> 16);
-	return (unsigned short)~sum;
+static u_int16_t CSUM(u_int16_t *data, int len){
+  u_int32_t sum = 0;
+
+  for (; len > 1; len -= 2) {
+    sum += *data++;
+    if (sum & 0x80000000) 
+      sum = (sum & 0xffff) + (sum >> 16);
+  }
+
+  if (len == 1) {
+    u_int16_t i = 0;
+    *(u_char*) (&i) = *(u_char *) data;
+    sum += i;
+  }
+
+  while (sum >> 16)
+    sum = (sum & 0xffff) + (sum >> 16);
+
+  return ~sum;
+}
+
+unsigned short checksumTcp(struct tcphdr tcp, struct iphdr ip, int datalen){
+	struct tpack {
+	  struct ip ip;
+	  struct tcphdr tcp;
+	};
+	struct tpack p;
+	u_int16_t ret;
+	
+	memcpy(&p.tcp, &tcp, sizeof(struct tcphdr));;
+	p.ip.ip_ttl = 0;
+	p.ip.ip_p      = IPPROTO_TCP;
+	p.ip.ip_src.s_addr = ip.saddr;
+	p.ip.ip_dst.s_addr = ip.daddr;
+	p.ip.ip_sum    = htons((sizeof p.tcp) );
+
+#define PHLEN 12
+	p.tcp.th_sum = 0;
+	ret = CSUM((u_int16_t*)&p.ip.ip_ttl, PHLEN+sizeof(p.tcp));
+	
+	return ret;
 }
 
 

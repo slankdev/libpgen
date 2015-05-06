@@ -19,28 +19,26 @@ int main(){
 	//arp();
 	//ip();
 	//icmp();
-	//tcp();
-	udp();
+	tcp();
+	//udp();
 }
 
 
-void tcp(){//[[[
+void tcp(){
 	pgen_tcp p;
 
 	p.ip_srcIp = pgen_getIP(dev);
-	p.ip_dstIp = "192.168.0.1";
-	p.tcp_srcPort = 65432;
-	p.tcp_dstPort = 80;
+	p.ip_dstIp = "192.168.179.1";
+	p.tcp_srcPort = 9999;
+	p.tcp_dstPort = 7;
 	p.tcp_doff = 20;
 	p.tcp_window = 8192;
 	p.tcp_frag.syn = 1;
-	//p.tcp_frag.ack = 1;
-
 
 	p.sendPack(dev);
 	p.info();
 	p.hex();
-}//]]]
+}
 
 void udp(){
 	pgen_udp p;
@@ -49,7 +47,7 @@ void udp(){
 	p.ip_dstIp = "192.168.0.1";
 	p.udp_srcPort = 8888;
 	p.udp_dstPort = 7;
-
+	
 	p.sendPack(dev);
 	p.info();
 	p.hex();

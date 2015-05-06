@@ -2,7 +2,7 @@
 #define NETUTIL_H
 
 
-unsigned short checksumTcp(const void* data, int len);
+unsigned short checksumTcp(struct tcphdr tcp, struct iphdr ip, int datalen);
 int sendRawPacket(int sock, const u_char* data, int len, 
 		int layer, struct sockaddr* sap);
 int initRawSocket(const char* dev, int layer);

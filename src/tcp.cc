@@ -25,6 +25,12 @@ pgen_tcp::pgen_tcp(){
 void pgen_tcp::clear(){
 	tcp_srcPort = 0;
 	tcp_dstPort = 0;
+	tcp_frag.fin = 0;
+	tcp_frag.syn = 0;
+	tcp_frag.rst = 0;
+	tcp_frag.psh = 0;
+	tcp_frag.ack = 0;
+	tcp_frag.urg = 0;
 }
 
 void pgen_tcp::sendPack(const char* ifname){
@@ -71,8 +77,8 @@ void pgen_tcp::wrap(const char* ifname){
 	if(tcp_frag.ack == 1)	tcp.ack = 1;
 	if(tcp_frag.urg == 1)	tcp.urg = 1;
 	//tcp.check = htons(checksum(&tcp, sizeof tcp));
-	//tcp.check = htons(0xe9a);
-	tcp.check = 0x768b;
+	tcp.check = checksumTcp(tcp, ip, sizeof(tcp)+sizeof(ip));
+	//tcp.check = 0x768b;
 
 	u_char* p = data;
 	memcpy(p, &ip, sizeof(ip));
