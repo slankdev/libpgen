@@ -120,6 +120,13 @@ class pgen_ip : public pgen_eth {
 		ipaddr 	ip_dstIp;
 		int			ip_type;
 		
+		int ip_tos; // no (type of service)
+		int ip_len; // no (total length)
+		int ip_id; // no
+		int ip_ttl; // no
+
+
+
 		pgen_ip();
 		void clear();
 		void info();
@@ -147,7 +154,7 @@ class pgen_icmp : public pgen_ip {
 	public:
 		int icmp_option;
 		int icmp_code;
-
+		
 		pgen_icmp();
 		void clear();
 		void info();
@@ -189,6 +196,9 @@ class pgen_tcp : public pgen_ip {
 		int tcp_window;
 		int tcp_doff;
 
+		int tcp_seqNum;
+		int tcp_ackNum;
+
 		pgen_tcp();
 		void clear();
 		void info();
@@ -218,6 +228,8 @@ class pgen_udp : public pgen_ip {
 	public:
 		int udp_srcPort;
 		int udp_dstPort;
+		
+		int udp_len; // no (total length)
 
 		pgen_udp();
 		void clear();
