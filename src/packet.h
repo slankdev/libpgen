@@ -18,7 +18,7 @@
 //------------------------------
 
 
-
+#include "mytypes.h"
 
 
 #include <stdio.h>
@@ -61,8 +61,8 @@ class pgen_eth : public pgen_packet {
 	protected:
 		struct ether_header eth;
 	public:
-		pgent_mac	eth_srcEth;
-		pgent_mac 	eth_dstEth;
+		macaddr	eth_srcEth;
+		macaddr 	eth_dstEth;
 		int 		eth_type;
 		
 		pgen_eth();
@@ -89,10 +89,10 @@ class pgen_arp : public pgen_eth {
 		struct ether_arp 	arp;
 	public:
 		int arp_option;
-		pgent_mac	arp_srcEth;
-		pgent_mac	arp_dstEth;
-		pgent_ip	arp_srcIp;
-		pgent_ip	arp_dstIp;
+		macaddr	arp_srcEth;
+		macaddr	arp_dstEth;
+		ipaddr	arp_srcIp;
+		ipaddr	arp_dstIp;
 
 		pgen_arp();
 		void clear();
@@ -116,8 +116,8 @@ class pgen_ip : public pgen_eth {
 	protected:
 		struct iphdr		ip;
 	public:
-		pgent_ip 	ip_srcIp;
-		pgent_ip 	ip_dstIp;
+		ipaddr 	ip_srcIp;
+		ipaddr 	ip_dstIp;
 		int			ip_type;
 		
 		pgen_ip();
@@ -143,6 +143,7 @@ class pgen_ip : public pgen_eth {
 class pgen_icmp : public pgen_ip {
 	protected:
 		struct icmp icmp;
+		u_char data[100]; // no use yet
 	public:
 		int icmp_option;
 		int icmp_code;
@@ -153,6 +154,7 @@ class pgen_icmp : public pgen_ip {
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
 		void sendPack(const char* ifname);
+		void setData(const u_char* p, int len); // no use yet
  };
 
 
@@ -172,6 +174,7 @@ class pgen_icmp : public pgen_ip {
 class pgen_tcp : public pgen_ip {
 	protected:
 		struct tcphdr tcp;
+		u_char data[100]; // no use yet
 	public:
 		int tcp_srcPort;
 		int tcp_dstPort;
@@ -191,6 +194,7 @@ class pgen_tcp : public pgen_ip {
 		void info();
 		void wrap(const char* ifname);
 		void sendPack(const char* ifname);
+		void setData(const u_char* p, int len); // no use yet
 };
 
 
@@ -210,6 +214,7 @@ class pgen_tcp : public pgen_ip {
 class pgen_udp : public pgen_ip {
 	protected:
 		struct udphdr udp;
+		u_char data[100]; // no use yet
 	public:
 		int udp_srcPort;
 		int udp_dstPort;
@@ -220,6 +225,7 @@ class pgen_udp : public pgen_ip {
 		void wrap(const char* ifname);
 		void wrapLite(const char* ifname);
 		void sendPack(const char* ifname);
+		void setData(const u_char* p, int len); // no use yet
 };
 
 

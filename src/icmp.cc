@@ -112,3 +112,4 @@ void pgen_icmp::info(){
 
 
 
+void pgen_icmp::setData(const u_char *p, int len){}

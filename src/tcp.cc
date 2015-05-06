@@ -60,6 +60,9 @@ void pgen_tcp::wrap(const char* ifname){
 	ip.protocol = IPPROTO_TCP;
 	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
 	ip.tot_len = htons(sizeof(ip) + tcp_doff);
+	u_char buf[1000];
+	u_char *bp;
+	memset(buf, 0, sizeof buf);
 
 	memset(&tcp, 0, sizeof tcp);
 	tcp.source = htons(tcp_srcPort);
@@ -69,14 +72,18 @@ void pgen_tcp::wrap(const char* ifname){
 	tcp.doff = tcp_doff >> 2;  // ５で割った値を入れる 
 	tcp.window = htons(tcp_window);	//OK
 	tcp.check  = 0;
-	// get frag by frags
 	if(tcp_frag.fin == 1)	tcp.fin = 1;
 	if(tcp_frag.syn == 1)	tcp.syn = 1;
 	if(tcp_frag.rst == 1)	tcp.rst = 1;
 	if(tcp_frag.psh == 1)	tcp.psh = 1;
 	if(tcp_frag.ack == 1)	tcp.ack = 1;
 	if(tcp_frag.urg == 1)	tcp.urg = 1;
-	tcp.check = checksumTcp(tcp, ip, sizeof(tcp)+sizeof(ip));
+	bp = buf;
+	memcpy(bp, &ip, sizeof(ip));
+	bp += sizeof(ip);
+	memcpy(bp, &tcp, sizeof(icmp));
+	bp += sizeof(tcp);
+	tcp.check = checksumTcp(buf, bp-buf);
 
 	u_char* p = data;
 	memcpy(p, &ip, sizeof(ip));
@@ -103,10 +110,9 @@ void pgen_tcp::info(){
 	if(tcp_frag.urg == 1)	printf("U");
 	printf("\n");
 	printf("    - Checksum        :  0x%04x \n", ntohs(tcp.check));
-	printf("                         0x0e9a \n");
 }
 
 
-
+void pgen_tcp::setData(const u_char *p, int len){}
 
 

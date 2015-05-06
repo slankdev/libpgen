@@ -83,4 +83,5 @@ void pgen_udp::info(){
 
 
 
+void pgen_udp::setData(const u_char *p, int len){}
 

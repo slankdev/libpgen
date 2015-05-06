@@ -12,11 +12,17 @@
 
 
 
-class pgent_ip{
+class ipaddr{
 	private:
 	public:
 		u_int32_t _addr;		
-		pgent_ip(){}
+		ipaddr(){}
+		ipaddr(const char* str){
+			_addr = inet_addr(str);
+		}
+		ipaddr(const ipaddr &i){
+			_addr = i._addr;
+		}
 		char* c_str(){
 			char* str = (char*)malloc(sizeof(char)*16);
 			union lc{
@@ -33,11 +39,15 @@ class pgent_ip{
 			if(_addr == 0)	return true;
 			else			return false;
 		}
-		pgent_ip& operator=(const char* str){
+		ipaddr& operator=(const ipaddr i){
+			_addr = i._addr;
+			return *this;
+		}
+		ipaddr& operator=(const char* str){
 			_addr = inet_addr(str);
 			return *this;
 		}
-		pgent_ip& operator=(const int num){
+		ipaddr& operator=(const int num){
 			_addr = num;
 			return *this;
 		}
@@ -66,7 +76,7 @@ class pgent_ip{
 					break;
 			}
 		}
-		bool operator<(const pgent_ip iaddr){
+		bool operator<(const ipaddr iaddr){
 			union lc{
 				unsigned int l;
 				unsigned char c[4];
@@ -80,7 +90,7 @@ class pgent_ip{
 				else					return lc.c[i] < ilc.c[i];
 			}return false;
 		}
-		bool operator>(const pgent_ip iaddr){
+		bool operator>(const ipaddr iaddr){
 			union lc{
 				unsigned int l;
 				unsigned char c[4];
@@ -93,7 +103,7 @@ class pgent_ip{
 				else					return lc.c[i] > ilc.c[i];
 			}return false;
 		}
-		bool operator==(const pgent_ip iaddr){
+		bool operator==(const ipaddr iaddr){
 			if(_addr == iaddr._addr)	return true;
 			else						return false;
 		}
@@ -102,11 +112,21 @@ class pgent_ip{
 
 
 
-class pgent_mac{
+class macaddr{
 	private:
 	public:
 		u_char _addr[6];
-		pgent_mac(){}
+		macaddr(){}
+		macaddr(const char* str){
+			unsigned int buf[6];
+			sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
+				&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
+			for(int i=0; i<6; i++)	_addr[i] = (u_char)buf[i];
+		}
+		macaddr(const macaddr &m){
+			for(int i=0; i<6; i++)
+				_addr[i] = m._addr[i];
+		}
 		char* c_str(){
 			char* str = (char*)malloc(sizeof(char)*19);
 			snprintf(str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
@@ -144,14 +164,18 @@ class pgent_mac{
 				if(_addr[i] != 0)	return false;
 			return true;
 		}
-		pgent_mac& operator=(const char* str){
+		macaddr& operator=(const macaddr m){
+			for(int i=0; i<6; i++)	_addr[i] = m._addr[i];
+			return *this;
+		}
+		macaddr& operator=(const char* str){
 			unsigned int buf[6];
 			sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
 				&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)buf[i];
 			return *this;
 		}
-		pgent_mac& operator=(const int num){
+		macaddr& operator=(const int num){
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)num;
 			return *this;
 		}
@@ -180,19 +204,19 @@ class pgent_mac{
 					break;
 			}
 		}
-		bool operator<(const pgent_mac iaddr){
+		bool operator<(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(_addr[i] == iaddr._addr[i])	continue;
 				else							return _addr[i] < _addr[i];
 			}return false;
 		}
-		bool operator>(const pgent_mac iaddr){
+		bool operator>(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(_addr[i] == iaddr._addr[i])	continue;
 				else							return _addr[i] > _addr[i];
 			}return false;
 		}
-		bool operator==(const pgent_ip iaddr){
+		bool operator==(const ipaddr iaddr){
 			for(int i=0; i<6; i++)
 				if(_addr[i] != _addr[i])	return false;
 			return true;

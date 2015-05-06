@@ -3,6 +3,7 @@
 #include <netpacket/packet.h>
 #include <netinet/if_ether.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -34,49 +35,38 @@ unsigned short checksum(const void* data, int len){
 }
 
 
-static u_int16_t CSUM(u_int16_t *data, int len){
-  u_int32_t sum = 0;
 
-  for (; len > 1; len -= 2) {
-    sum += *data++;
-    if (sum & 0x80000000) 
-      sum = (sum & 0xffff) + (sum >> 16);
-  }
-
-  if (len == 1) {
-    u_int16_t i = 0;
-    *(u_char*) (&i) = *(u_char *) data;
-    sum += i;
-  }
-
-  while (sum >> 16)
-    sum = (sum & 0xffff) + (sum >> 16);
-
-  return ~sum;
-}
-
-unsigned short checksumTcp(struct tcphdr tcp, struct iphdr ip, int datalen){
+unsigned short checksumTcp(const u_char *dp, int datalen){
+	struct tcphdr tcp;
+	struct ip ip;
+	char data[100];
+	memcpy(&ip, dp, sizeof(struct ip));
+	dp += sizeof(struct ip);
+	memcpy(&tcp, dp, sizeof(struct tcphdr));
+	dp += sizeof(struct tcphdr);
+	memcpy(data, dp, datalen-sizeof(struct tcphdr)-sizeof(struct ip));
+	dp += datalen-sizeof(struct tcphdr)-sizeof(struct ip);
+	
 	struct tpack {
 	  struct ip ip;
 	  struct tcphdr tcp;
-	};
-	struct tpack p;
-	u_int16_t ret;
+	  u_char data[100];
+	}p;
 	
-	memcpy(&p.tcp, &tcp, sizeof(struct tcphdr));;
+	memcpy(&p.ip, &ip, sizeof(struct ip));
+	memcpy(&p.tcp , &tcp, sizeof(struct tcphdr));
+	memcpy(&p.data, data, datalen-sizeof(struct tcphdr)-sizeof(struct ip));
+
 	p.ip.ip_ttl = 0;
 	p.ip.ip_p      = IPPROTO_TCP;
-	p.ip.ip_src.s_addr = ip.saddr;
-	p.ip.ip_dst.s_addr = ip.daddr;
+	p.ip.ip_src.s_addr = ip.ip_src.s_addr;
+	p.ip.ip_dst.s_addr = ip.ip_dst.s_addr;
 	p.ip.ip_sum    = htons((sizeof p.tcp) );
 
 #define PHLEN 12
 	p.tcp.th_sum = 0;
-	ret = CSUM((u_int16_t*)&p.ip.ip_ttl, PHLEN+sizeof(p.tcp));
-	
-	return ret;
+	return checksum((u_int16_t*)&p.ip.ip_ttl, PHLEN+datalen-sizeof(struct ip));
 }
-
 
 
 int sendRawPacket(int sock, const u_char* data, int len, int layer, struct sockaddr* sap){

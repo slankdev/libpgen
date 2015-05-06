@@ -1,12 +1,13 @@
 TODO		[date]  about  [fin-date]
 
 
-[2015.04.01]	usable format.pgen file 			[]
-				* this file is packet format
-[2015.05.01]	unmuch checksum in tcp		 		[]
+[2015.05.01]	unmuch checksum in tcp		 		[2015.05.06]
 				because checksum is fail in TCP
 				fuuuuu------------------ck!!!
-[2015.05.02]	add copy constractor 				[]
+[2015.05.02]	add copy constractor 				[2015.05.06]
 				in pgent_ip, pgent_mac	
 [2015.05.07]	add default variable of packet val	[]
 				ex) ip.dst 's defalut is 127.0.0.1
+[2015.05.07]	add setData in ICMP TCP UDP			[]
+				add function 
+
