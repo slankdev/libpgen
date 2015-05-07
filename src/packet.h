@@ -120,9 +120,9 @@ class pgen_ip : public pgen_eth {
 		ipaddr 	ip_dstIp;
 		int			ip_type;
 		
-		int ip_tos; // no (type of service)
-		int ip_id; // no
-		int ip_ttl; // no
+		int ip_tos; 
+		int ip_id; 
+		int ip_ttl; 
 
 
 
