@@ -32,7 +32,7 @@ void pgen_arp::clear(){
 	arp_dstIp = 0;
 	arp_srcEth = 0;
 	arp_dstEth = 0;
-	arp_option = -1;
+	arp_option = PGEN_ARPOP_REQEST;
 }
 
 

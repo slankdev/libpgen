@@ -32,8 +32,8 @@ pgen_icmp::pgen_icmp(){
 
 void pgen_icmp::clear(){
 	pgen_packet::clear();
-	icmp_option -1;
-	icmp_code = -1;
+	icmp_option = 8;
+	icmp_code = 0;
 }
 
 void pgen_icmp::sendPack(const char* ifname){

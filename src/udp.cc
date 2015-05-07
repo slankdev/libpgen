@@ -25,8 +25,8 @@ pgen_udp::pgen_udp(){
 }
 
 void pgen_udp::clear(){
-	udp_srcPort = 0;
-	udp_dstPort = 0;
+	udp_srcPort = 53;
+	udp_dstPort = 53;
 }
 
 void pgen_udp::sendPack(const char* ifname){

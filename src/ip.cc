@@ -24,7 +24,11 @@ pgen_ip::pgen_ip(){
 }
 void pgen_ip::clear(){
 	ip_srcIp = 0;
-	ip_dstIp = 0;
+	ip_dstIp = "127.0.0.1";
+	ip_type = IPPROTO_IP;
+	ip_tos = 0;
+	ip_id = 1;
+	ip_ttl = 64;
 }
 
 
@@ -59,19 +63,17 @@ void pgen_ip::wrap(const char* ifname){
 	memset(&ip, 0, sizeof ip);
 	ip.ihl = sizeof(ip) / 4;
 	ip.version = 4;
-	ip.tos = 0; //no useing world now
+	ip.tos = ip_tos; //no useing world now
 	ip.tot_len = sizeof(ip);
-	ip.id = random(); // ??????
+	ip.id = htons(ip_id);
 	ip.frag_off = 0; // ?????
-	ip.ttl = PGEN_DEFAULT_TTL;
-	ip.protocol = IPPROTO_IP;
+	ip.ttl = ip_ttl;
+	ip.protocol = ip_type;
 	ip.saddr = ip_srcIp._addr;
 	ip.daddr = ip_dstIp._addr;
 	ip.check = htons(checksum(&ip, sizeof(ip)));
 
 	u_char* p = data;
-	//memcpy(p, &eth, sizeof eth);
-	//p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(ip);
 	len = p - data;
@@ -95,5 +97,6 @@ void pgen_ip::info(){
 	printf("    - Destination     :  %s \n", ip_dstIp.c_str());
 	printf("    - Protocol        :  %s (%u) \n", _ipprot[ip.protocol],  ip.protocol);
 	printf("    - Time to Leave   :  %d \n", ip.ttl);
-	printf("    - Total Length    :  %d \n", htons(ip.tot_len));
+	printf("    - Total Length    :  %d \n", ntohs(ip.tot_len));
+	printf("    - Identification  :  %d \n", htons(ip.id));
 }

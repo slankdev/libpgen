@@ -121,7 +121,6 @@ class pgen_ip : public pgen_eth {
 		int			ip_type;
 		
 		int ip_tos; // no (type of service)
-		int ip_len; // no (total length)
 		int ip_id; // no
 		int ip_ttl; // no
 
@@ -194,8 +193,6 @@ class pgen_tcp : public pgen_ip {
 			char urg;
 		}tcp_frag ;
 		int tcp_window;
-		int tcp_doff;
-
 		int tcp_seqNum;
 		int tcp_ackNum;
 
@@ -229,7 +226,6 @@ class pgen_udp : public pgen_ip {
 		int udp_srcPort;
 		int udp_dstPort;
 		
-		int udp_len; // no (total length)
 
 		pgen_udp();
 		void clear();

@@ -24,14 +24,17 @@ pgen_tcp::pgen_tcp(){
 }
 
 void pgen_tcp::clear(){
-	tcp_srcPort = 0;
-	tcp_dstPort = 0;
+	tcp_srcPort = 20;
+	tcp_dstPort = 80;
 	tcp_frag.fin = 0;
 	tcp_frag.syn = 0;
 	tcp_frag.rst = 0;
 	tcp_frag.psh = 0;
 	tcp_frag.ack = 0;
 	tcp_frag.urg = 0;
+	tcp_window = 8192;
+	tcp_seqNum = 0;
+	tcp_ackNum = 0;
 }
 
 void pgen_tcp::sendPack(const char* ifname){
@@ -59,7 +62,7 @@ void pgen_tcp::wrap(const char* ifname){
 	memset(data, 0, sizeof data);
 	ip.protocol = IPPROTO_TCP;
 	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
-	ip.tot_len = htons(sizeof(ip) + tcp_doff);
+	ip.tot_len = htons(sizeof(ip) + 20);
 	u_char buf[1000];
 	u_char *bp;
 	memset(buf, 0, sizeof buf);
@@ -67,9 +70,9 @@ void pgen_tcp::wrap(const char* ifname){
 	memset(&tcp, 0, sizeof tcp);
 	tcp.source = htons(tcp_srcPort);
 	tcp.dest   = htons(tcp_dstPort);
-	tcp.seq    = htonl(0);
-	tcp.ack_seq = htonl(0);
-	tcp.doff = tcp_doff >> 2;  // ５で割った値を入れる 
+	tcp.seq    = htonl(tcp_seqNum);
+	tcp.ack_seq = htonl(tcp_ackNum);
+	tcp.doff = 20 >> 2;  // 4で割った値を入れる
 	tcp.window = htons(tcp_window);	//OK
 	tcp.check  = 0;
 	if(tcp_frag.fin == 1)	tcp.fin = 1;
@@ -109,7 +112,11 @@ void pgen_tcp::info(){
 	if(tcp_frag.ack == 1)	printf("A");
 	if(tcp_frag.urg == 1)	printf("U");
 	printf("\n");
+	printf("    - Window size     :  %d \n", ntohs(tcp.window));
 	printf("    - Checksum        :  0x%04x \n", ntohs(tcp.check));
+	printf("    - sequence        :  %u \n", ntohl(tcp.seq));
+	printf("    - acknowledge     :  %u \n", ntohl(tcp.ack_seq));
+
 }
 
 
