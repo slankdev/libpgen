@@ -6,8 +6,21 @@ TODO		[date]  about  [fin-date]
 				fuuuuu------------------ck!!!
 [2015.05.02]	add copy constractor 				[2015.05.06]
 				in pgent_ip, pgent_mac	
-[2015.05.07]	add default variable of packet val	[]
+[2015.05.07]	add default variable of packet val	[2015.05.07]
 				ex) ip.dst 's defalut is 127.0.0.1
 [2015.05.07]	add setData in ICMP TCP UDP			[]
 				add function 
+[2015.05.07]	set TCP val in object 					[]
+				ex) pack.ip.dst="192.168.0.6";
+[2015.05.07]	set UDP val in object 					[]
+				ex) pack.ip.dst="192.168.0.6";
+[2015.05.07]	set IP val in object 					[]
+				ex) pack.ip.dst="192.168.0.6";
+[2015.05.07]	set ICMP val in object 					[]
+				ex) pack.ip.dst="192.168.0.6";
+[2015.05.07]	set ARP val in object 					[]
+				ex) pack.ip.dst="192.168.0.6";
+[2015.05.07]	set ETH val in object 					[]
+				ex) pack.ip.dst="192.168.0.6";
+
 

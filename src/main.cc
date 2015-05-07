@@ -2,6 +2,7 @@
 
 const char* dev = "wlan0";
 
+void tcp2();
 void tcp();
 void udp();
 void ip();
@@ -17,14 +18,28 @@ int portdst = 7;
 
 
 
-
 int main(){
 
 	//arp();
 	//ip();
 	//icmp();
 	tcp();
+	//tcp2();
 	//udp();
+}
+
+void tcp2(){
+	pgen_tcp p;
+
+	p.ip_srcIp = ipsrc;
+	p.ip_dstIp = ipdst;
+	p.TCP.srcPort = portsrc;
+	p.TCP.dstPort = portdst;
+	p.TCP.frag.syn = 1;
+
+	p.sendPack2(dev);
+	p.info();
+	p.hex();
 }
 
 

@@ -64,6 +64,11 @@ class pgen_eth : public pgen_packet {
 		macaddr	eth_srcEth;
 		macaddr 	eth_dstEth;
 		int 		eth_type;
+
+		struct{
+			macaddr src;
+			macaddr dst;
+		}ETH;
 		
 		pgen_eth();
 		void clear();
@@ -94,6 +99,13 @@ class pgen_arp : public pgen_eth {
 		ipaddr	arp_srcIp;
 		ipaddr	arp_dstIp;
 
+		struct{
+			macaddr	srcEth;
+			macaddr	dstEth;
+			ipaddr	srcIp;
+			ipaddr	dstIp;
+		}ARP;
+
 		pgen_arp();
 		void clear();
 		void info();
@@ -119,11 +131,17 @@ class pgen_ip : public pgen_eth {
 		ipaddr 	ip_srcIp;
 		ipaddr 	ip_dstIp;
 		int			ip_type;
-		
 		int ip_tos; 
 		int ip_id; 
 		int ip_ttl; 
-
+		
+		struct{
+			ipaddr src;
+			ipaddr dst;
+			int tos; 
+			int id; 
+			int ttl; 
+		}IP;
 
 
 		pgen_ip();
@@ -153,6 +171,11 @@ class pgen_icmp : public pgen_ip {
 	public:
 		int icmp_option;
 		int icmp_code;
+
+		struct{	
+			int option;
+			int code;
+		}ICMP;
 		
 		pgen_icmp();
 		void clear();
@@ -195,12 +218,30 @@ class pgen_tcp : public pgen_ip {
 		int tcp_window;
 		int tcp_seqNum;
 		int tcp_ackNum;
+		
+		struct{
+			int srcPort;
+			int dstPort;
+			struct{
+				char fin;
+				char syn;
+				char rst;
+				char psh;
+				char ack;
+				char urg;
+			}frag ;
+			int window;
+			int seqNum;
+			int ackNum;
+		}TCP;
 
 		pgen_tcp();
 		void clear();
 		void info();
 		void wrap(const char* ifname);
+		void wrap2(const char* ifname);
 		void sendPack(const char* ifname);
+		void sendPack2(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 };
 
@@ -226,6 +267,10 @@ class pgen_udp : public pgen_ip {
 		int udp_srcPort;
 		int udp_dstPort;
 		
+		struct{
+			int srcPort;
+			int dstPort;
+		}UDP;
 
 		pgen_udp();
 		void clear();
