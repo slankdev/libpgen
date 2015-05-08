@@ -28,12 +28,12 @@ pgen_arp::pgen_arp(){
 }
 
 void pgen_arp::clear(){
-	arp_srcIp = 0;
-	arp_dstIp = 0;
-	arp_srcEth = 0;
-	arp_dstEth = 0;
-	arp_option = PGEN_ARPOP_REQEST;
-}
+	ARP.srcIp = 0;
+	ARP.dstIp = 0;
+	ARP.srcEth = 0;
+	ARP.dstEth = 0;
+	ARP.option = PGEN_ARPOP_REQEST;
+}   
 
 
 void pgen_arp::sendPack(const char* ifname){
@@ -61,14 +61,14 @@ void pgen_arp::wrap(const char* ifname){
 	arp.arp_pro = htons(ETHERTYPE_IP);
 	arp.arp_hln = 6;
 	arp.arp_pln = 4;
-	arp.arp_op  = htons(arp_option);
+	arp.arp_op  = htons(ARP.option);
 	for(int i=0; i<6; i++){
-		arp.arp_sha[i] = arp_srcEth._addr[i];
-		arp.arp_tha[i] = arp_dstEth._addr[i];
+		arp.arp_sha[i] = ARP.srcEth._addr[i];
+		arp.arp_tha[i] = ARP.dstEth._addr[i];
 	}
 	for(int i=0; i<4; i++){
-		arp.arp_spa[i] = arp_srcIp[i];
-		arp.arp_tpa[i] = arp_dstIp[i];
+		arp.arp_spa[i] = ARP.srcIp[i];
+		arp.arp_tpa[i] = ARP.dstIp[i];
 	}
 		
 	u_char* p = data;
@@ -78,7 +78,6 @@ void pgen_arp::wrap(const char* ifname){
 	p += sizeof(arp);
 	len = p - data;
 }
-
 
 
 
@@ -93,9 +92,9 @@ void pgen_arp::info(){
 	_arpopcode[-1] = "Not Set";
 
 	printf(" * Address Resolution Protocol \n");
-	printf("    - Opcode          :  %s (%d) \n", _arpopcode[arp_option], arp_option);
-	printf("    - Sender Mac      :  %s (%s) \n", arp_srcEth.c_str(), arp_srcEth.bender());
-	printf("    - Sender IP       :  %s  \n", arp_srcIp.c_str() );
-	printf("    - Target Mac      :  %s (%s) \n", arp_dstEth.c_str(), arp_dstEth.bender());
-	printf("    - Target IP       :  %s  \n", arp_dstIp.c_str() );
+	printf("    - Opcode          :  %s (%d) \n", _arpopcode[ntohs(arp.arp_op)], ntohs(arp.arp_op));
+	printf("    - Sender Mac      :  %s (%s) \n", ARP.srcEth.c_str(), ARP.srcEth.bender());
+	printf("    - Sender IP       :  %s  \n", ARP.srcIp.c_str() );
+	printf("    - Target Mac      :  %s (%s) \n", ARP.dstEth.c_str(), ARP.dstEth.bender());
+	printf("    - Target IP       :  %s  \n", ARP.dstIp.c_str() );
 }

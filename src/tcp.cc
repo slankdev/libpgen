@@ -46,7 +46,7 @@ void pgen_tcp::sendPack(const char* ifname){
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = ip_dstIp._addr;
+	addr.sin_addr.s_addr = IP.dst._addr;
 
 	if((sock=initRawSocket(ifname, 3)) < 0)
 		exit(-1);
