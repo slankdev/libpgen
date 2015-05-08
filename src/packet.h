@@ -205,20 +205,6 @@ class pgen_tcp : public pgen_ip {
 		struct tcphdr tcp;
 		u_char data[100]; // no use yet
 	public:
-		int tcp_srcPort;
-		int tcp_dstPort;
-		struct{
-			char fin;
-			char syn;
-			char rst;
-			char psh;
-			char ack;
-			char urg;
-		}tcp_frag ;
-		int tcp_window;
-		int tcp_seqNum;
-		int tcp_ackNum;
-		
 		struct{
 			int srcPort;
 			int dstPort;
@@ -239,9 +225,7 @@ class pgen_tcp : public pgen_ip {
 		void clear();
 		void info();
 		void wrap(const char* ifname);
-		void wrap2(const char* ifname);
 		void sendPack(const char* ifname);
-		void sendPack2(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 };
 

@@ -24,17 +24,6 @@ pgen_tcp::pgen_tcp(){
 }
 
 void pgen_tcp::clear(){
-	tcp_srcPort = 20;
-	tcp_dstPort = 80;
-	tcp_frag.fin = 0;
-	tcp_frag.syn = 0;
-	tcp_frag.rst = 0;
-	tcp_frag.psh = 0;
-	tcp_frag.ack = 0;
-	tcp_frag.urg = 0;
-	tcp_window = 8192;
-	tcp_seqNum = 0;
-	tcp_ackNum = 0;
 
 	TCP.srcPort = 20;
 	TCP.dstPort = 80;
@@ -49,22 +38,6 @@ void pgen_tcp::clear(){
 	TCP.ackNum = 0;
 }
 
-void pgen_tcp::sendPack2(const char* ifname){
-	wrap2(ifname);		
-	int sock;
-	
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof addr);
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = ip_dstIp._addr;
-
-	if((sock=initRawSocket(ifname, 3)) < 0)
-		exit(-1);
-	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
-		exit(PGEN_ERROR);
-
-	close(sock);
-}
 
 void pgen_tcp::sendPack(const char* ifname){
 	wrap(ifname);		
@@ -83,7 +56,7 @@ void pgen_tcp::sendPack(const char* ifname){
 	close(sock);
 }
 
-void pgen_tcp::wrap2(const char* ifname){
+void pgen_tcp::wrap(const char* ifname){
 	pgen_ip::wrap(ifname);
 	packetType = PGEN_PACKETTYPE_TCP;
 	memset(data, 0, sizeof data);
@@ -124,54 +97,13 @@ void pgen_tcp::wrap2(const char* ifname){
 }
 
 
-void pgen_tcp::wrap(const char* ifname){
-	pgen_ip::wrap(ifname);
-	packetType = PGEN_PACKETTYPE_TCP;
-	memset(data, 0, sizeof data);
-	ip.protocol = IPPROTO_TCP;
-	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
-	ip.tot_len = htons(sizeof(ip) + 20);
-	u_char buf[1000];
-	u_char *bp;
-	memset(buf, 0, sizeof buf);
-
-	memset(&tcp, 0, sizeof tcp);
-	tcp.source = htons(tcp_srcPort);
-	tcp.dest   = htons(tcp_dstPort);
-	tcp.seq    = htonl(tcp_seqNum);
-	tcp.ack_seq = htonl(tcp_ackNum);
-	tcp.doff = 20 >> 2;  // 4で割った値を入れる
-	tcp.window = htons(tcp_window);	//OK
-	tcp.check  = 0;
-	if(tcp_frag.fin == 1)	tcp.fin = 1;
-	if(tcp_frag.syn == 1)	tcp.syn = 1;
-	if(tcp_frag.rst == 1)	tcp.rst = 1;
-	if(tcp_frag.psh == 1)	tcp.psh = 1;
-	if(tcp_frag.ack == 1)	tcp.ack = 1;
-	if(tcp_frag.urg == 1)	tcp.urg = 1;
-	bp = buf;
-	memcpy(bp, &ip, sizeof(ip));
-	bp += sizeof(ip);
-	memcpy(bp, &tcp, sizeof(icmp));
-	bp += sizeof(tcp);
-	tcp.check = checksumTcp(buf, bp-buf);
-
-	u_char* p = data;
-	memcpy(p, &ip, sizeof(ip));
-	p += sizeof(ip);
-	memcpy(p, &tcp, sizeof(icmp));
-	p += sizeof(tcp);
-	len = p - data;
-}
-
-
 
 void pgen_tcp::info(){
 	pgen_ip::info();
 
 	printf(" * Transmission Control Protocol \n");
-	printf("    - Source Port     :  %d \n", tcp_srcPort);
-	printf("    - Dest Port       :  %d \n", tcp_dstPort);
+	printf("    - Source Port     :  %d \n", ntohs(tcp.source));
+	printf("    - Dest Port       :  %d \n", ntohs(tcp.dest));
 	printf("    - Frags           :  ");
 	if(tcp.fin == 1)	printf("F");
 	if(tcp.syn == 1)	printf("S");

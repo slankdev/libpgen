@@ -10,17 +10,17 @@ TODO		[date]  about  [fin-date]
 				ex) ip.dst 's defalut is 127.0.0.1
 [2015.05.07]	add setData in ICMP TCP UDP			[]
 				add function 
-[2015.05.07]	set TCP val in object 					[]
-				ex) pack.ip.dst="192.168.0.6";
+[2015.05.07]	set TCP val in object 					[2015.05.08]
+				ex) pack.IP.dst="192.168.0.6";
 [2015.05.07]	set UDP val in object 					[]
-				ex) pack.ip.dst="192.168.0.6";
+				ex) pack.IP.dst="192.168.0.6";
 [2015.05.07]	set IP val in object 					[]
-				ex) pack.ip.dst="192.168.0.6";
+				ex) pack.IP.dst="192.168.0.6";
 [2015.05.07]	set ICMP val in object 					[]
-				ex) pack.ip.dst="192.168.0.6";
+				ex) pack.IP.dst="192.168.0.6";
 [2015.05.07]	set ARP val in object 					[]
-				ex) pack.ip.dst="192.168.0.6";
+				ex) pack.IP.dst="192.168.0.6";
 [2015.05.07]	set ETH val in object 					[]
-				ex) pack.ip.dst="192.168.0.6";
+				ex) pack.IP.dst="192.168.0.6";
 
 

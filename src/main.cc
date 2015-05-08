@@ -12,7 +12,7 @@ void icmp();
 macaddr macsrc = pgen_getMAC(dev);
 macaddr macdst = "ff:ff:ff:ff:ff:ff";
 ipaddr ipsrc = pgen_getIP(dev);
-ipaddr ipdst = "10.128.5.119";
+ipaddr ipdst = "10.128.6.24";
 int portsrc = 23445;
 int portdst = 7;
 
@@ -24,23 +24,9 @@ int main(){
 	//ip();
 	//icmp();
 	tcp();
-	//tcp2();
 	//udp();
 }
 
-void tcp2(){
-	pgen_tcp p;
-
-	p.ip_srcIp = ipsrc;
-	p.ip_dstIp = ipdst;
-	p.TCP.srcPort = portsrc;
-	p.TCP.dstPort = portdst;
-	p.TCP.frag.syn = 1;
-
-	p.sendPack2(dev);
-	p.info();
-	p.hex();
-}
 
 
 void tcp(){
@@ -48,9 +34,9 @@ void tcp(){
 
 	p.ip_srcIp = ipsrc;
 	p.ip_dstIp = ipdst;
-	p.tcp_srcPort = portsrc;
-	p.tcp_dstPort = portdst;
-	p.tcp_frag.syn = 1;
+	p.TCP.srcPort = portsrc;
+	p.TCP.dstPort = portdst;
+	p.TCP.frag.syn = 1;
 
 	p.sendPack(dev);
 	p.info();
