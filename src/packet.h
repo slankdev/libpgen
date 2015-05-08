@@ -248,9 +248,6 @@ class pgen_udp : public pgen_ip {
 		struct udphdr udp;
 		u_char data[100]; // no use yet
 	public:
-		int udp_srcPort;
-		int udp_dstPort;
-		
 		struct{
 			int srcPort;
 			int dstPort;
@@ -260,7 +257,6 @@ class pgen_udp : public pgen_ip {
 		void clear();
 		void info();
 		void wrap(const char* ifname);
-		void wrapLite(const char* ifname);
 		void sendPack(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 };

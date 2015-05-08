@@ -12,7 +12,7 @@ TODO		[date]  about  [fin-date]
 				add function 
 [2015.05.07]	set TCP val in object 					[2015.05.08]
 				ex) pack.IP.dst="192.168.0.6";
-[2015.05.07]	set UDP val in object 					[]
+[2015.05.07]	set UDP val in object 					[2015.05.08]
 				ex) pack.IP.dst="192.168.0.6";
 [2015.05.07]	set IP val in object 					[]
 				ex) pack.IP.dst="192.168.0.6";

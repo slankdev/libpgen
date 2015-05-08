@@ -25,8 +25,8 @@ pgen_udp::pgen_udp(){
 }
 
 void pgen_udp::clear(){
-	udp_srcPort = 53;
-	udp_dstPort = 53;
+	UDP.srcPort = 53;
+	UDP.dstPort = 53;
 }
 
 void pgen_udp::sendPack(const char* ifname){
@@ -55,14 +55,12 @@ void pgen_udp::wrap(const char* ifname){
 	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
 
 	memset(&udp, 0, sizeof udp);
-	udp.source = htons(udp_srcPort);
-	udp.dest   = htons(udp_dstPort);
+	udp.source = htons(UDP.srcPort);
+	udp.dest   = htons(UDP.dstPort);
 	udp.len    = htons(sizeof(udp));
 	udp.check  = 0;
 	
 	u_char* p = data;
-	//memcpy(p, &eth, sizeof eth);
-	//p += sizeof(struct ether_header);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(struct iphdr);
 	memcpy(p, &udp, sizeof udp);
@@ -71,13 +69,12 @@ void pgen_udp::wrap(const char* ifname){
 }
 
 
-
 void pgen_udp::info(){
 	pgen_ip::info();
 
-	printf(" * Transmission Control Protocol \n");
-	printf("   - Source Port      :  %d \n", udp_srcPort);
-	printf("   - Destination Port :  %d \n", udp_dstPort);
+	printf(" * User Datagram Protocol \n");
+	printf("   - Source Port      :  %d \n", ntohs(udp.source));
+	printf("   - Destination Port :  %d \n", ntohs(udp.dest));
 }
 
 
