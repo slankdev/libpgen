@@ -11,33 +11,59 @@ void icmp();
 macaddr macsrc = pgen_getMAC(dev);
 macaddr macdst = "ff:ff:ff:ff:ff:ff";
 ipaddr ipsrc = pgen_getIP(dev);
-ipaddr ipdst = "192.168.179.3";
+ipaddr ipdst = "10.128.6.24";
 int portsrc = 23445;
-int portdst = 22;
-
-
+int portdst = 7;
 
 
 int main(){
 
-	//arp();
+	arp();
 	//ip();
 	//icmp();
-	tcp();
+	//tcp();
 	//udp();
+}
+
+void icmp(){ 
+	pgen_icmp p;
+	
+	p.IP.src = pgen_getIP(dev);
+	p.IP.dst = ipdst;
+	p.ICMP.option = PGEN_ICMPOP_ECHO;
+	p.ICMP.code   = PGEN_ICMPCODE_NET_UNREACH;
+	
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+}
+
+
+void arp(){
+	pgen_arp p;
+
+	p.ETH.src = macsrc;
+	p.ETH.dst = "ff:ff:ff:ff:ff:ff";
+	p.ARP.srcEth = macsrc;
+	p.ARP.srcIp  = ipsrc;
+	p.ARP.dstEth = "ff:ff:ff:ff:ff:ff";
+	p.ARP.dstIp  = ipdst;
+//	p.arp_option = PGEN_ARPOP_REQEST;
+		
+	p.sendPack(dev);
+	p.info();
+	p.hex();
 }
 
 
 void tcp(){
 	pgen_tcp p;
 
-	p.ip_srcIp = ipsrc;
-	p.ip_dstIp = ipdst;
-	p.tcp_srcPort = portsrc;
-	p.tcp_dstPort = portdst;
-	p.tcp_doff = 20;
-	p.tcp_window = 8192;
-	p.tcp_frag.syn = 1;
+	p.IP.src = ipsrc;
+	p.IP.dst = ipdst;
+	p.TCP.srcPort = portsrc;
+	p.TCP.dstPort = portdst;
+	p.TCP.frag.syn = 1;
 
 	p.sendPack(dev);
 	p.info();
@@ -47,56 +73,27 @@ void tcp(){
 void udp(){
 	pgen_udp p;
 
-	p.ip_srcIp = pgen_getIP(dev);
-	p.ip_dstIp = "192.168.0.1";
-	p.udp_srcPort = 8888;
-	p.udp_dstPort = 7;
-	
+	p.IP.src = ipsrc;
+	p.IP.dst = ipdst;
+	p.UDP.srcPort = portsrc;
+	p.UDP.dstPort = portdst;
+
 	p.sendPack(dev);
 	p.info();
 	p.hex();
  }
 
+
 void ip(){
 	pgen_ip p;
 
-	p.ip_srcIp = pgen_getIP(dev);
-	p.ip_dstIp = "192.168.0.1";
+	p.IP.src = pgen_getIP(dev);
+	p.IP.dst = "192.168.0.1";
 
 	p.sendPack(dev);
 	p.info();
 	p.hex();
 }
-
-void arp(){
-	pgen_arp p;
-
-	p.eth_srcEth = pgen_getMAC(dev);
-	p.eth_dstEth = "ff:ff:ff:ff:ff:ff";
-	p.arp_srcEth = pgen_getMAC(dev);
-	p.arp_srcIp  = pgen_getIP(dev);
-	p.arp_dstEth = "ff:ff:ff:ff:ff:ff";
-	p.arp_dstIp  = "192.168.0.1";
-	p.arp_option = PGEN_ARPOP_REQEST;
-		
-	p.sendPack(dev);
-	p.info();
-	p.hex();
-}
-
-void icmp(){ 
-	pgen_icmp p;
-	
-	p.ip_srcIp = pgen_getIP(dev);
-	p.ip_dstIp = "192.168.0.1";
-	p.icmp_option = PGEN_ICMPOP_ECHO;
-	p.icmp_code   = PGEN_ICMPCODE_NET_UNREACH;
-	
-	p.sendPack(dev);
-	p.info();
-	p.hex();
-}
-
 
 
 void checkEndian(){

@@ -32,8 +32,8 @@ pgen_icmp::pgen_icmp(){
 
 void pgen_icmp::clear(){
 	pgen_packet::clear();
-	icmp_option -1;
-	icmp_code = -1;
+	ICMP.option = 8;
+	ICMP.code = 0;
 }
 
 void pgen_icmp::sendPack(const char* ifname){
@@ -43,7 +43,7 @@ void pgen_icmp::sendPack(const char* ifname){
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = ip_dstIp._addr;
+	addr.sin_addr.s_addr = IP.dst._addr;
 
 	if((sock=initRawSocket(ifname, 3)) < 0)
 		exit(-1);
@@ -64,8 +64,8 @@ void pgen_icmp::wrap(const char* ifname){
 	ip.tot_len = htons(sizeof(ip) + sizeof(icmp)) ;
 
 	memset(&icmp, 0, sizeof icmp);
-	icmp.icmp_type = icmp_option;
-	icmp.icmp_code = icmp_code;
+	icmp.icmp_type = ICMP.option;
+	icmp.icmp_code = ICMP.code;
 	icmp.icmp_cksum = 0;
 	icmp.icmp_void = 0;
 	icmp.icmp_hun.ih_idseq.icd_id = htons(1);

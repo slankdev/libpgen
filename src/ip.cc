@@ -23,8 +23,13 @@ pgen_ip::pgen_ip(){
 	clear();	
 }
 void pgen_ip::clear(){
-	ip_srcIp = 0;
-	ip_dstIp = 0;
+
+	IP.src = 0;
+	IP.dst = "127.0.0.1";
+	IP.type = IPPROTO_IP;
+	IP.tos = 0;
+	IP.id = 1;
+	IP.ttl = 64;
 }
 
 
@@ -36,7 +41,7 @@ void pgen_ip::sendPack(const char* ifname){
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = ip_dstIp._addr;
+	addr.sin_addr.s_addr = IP.dst._addr;
 
 	
 	if((sock=initRawSocket(ifname, 3)) < 0)
@@ -59,19 +64,17 @@ void pgen_ip::wrap(const char* ifname){
 	memset(&ip, 0, sizeof ip);
 	ip.ihl = sizeof(ip) / 4;
 	ip.version = 4;
-	ip.tos = 0; //no useing world now
+	ip.tos = IP.tos; //no useing world now
 	ip.tot_len = sizeof(ip);
-	ip.id = random(); // ??????
+	ip.id = htons(IP.id);
 	ip.frag_off = 0; // ?????
-	ip.ttl = PGEN_DEFAULT_TTL;
-	ip.protocol = IPPROTO_IP;
-	ip.saddr = ip_srcIp._addr;
-	ip.daddr = ip_dstIp._addr;
+	ip.ttl = IP.ttl;
+	ip.protocol = IP.type;
+	ip.saddr = IP.src._addr;
+	ip.daddr = IP.dst._addr;
 	ip.check = htons(checksum(&ip, sizeof(ip)));
 
 	u_char* p = data;
-	//memcpy(p, &eth, sizeof eth);
-	//p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(ip);
 	len = p - data;
@@ -91,9 +94,10 @@ void pgen_ip::info(){
 	_ipprot[41] = "IPv6 on IP";
 
 	printf(" * Internet Protocol version 4\n");
-	printf("    - Source          :  %s \n", ip_srcIp.c_str());
-	printf("    - Destination     :  %s \n", ip_dstIp.c_str());
+	printf("    - Source          :  %s \n", IP.src.c_str());
+	printf("    - Destination     :  %s \n", IP.dst.c_str());
 	printf("    - Protocol        :  %s (%u) \n", _ipprot[ip.protocol],  ip.protocol);
 	printf("    - Time to Leave   :  %d \n", ip.ttl);
-	printf("    - Total Length    :  %d \n", htons(ip.tot_len));
+	printf("    - Total Length    :  %d \n", ntohs(ip.tot_len));
+	printf("    - Identification  :  %d \n", htons(ip.id));
 }

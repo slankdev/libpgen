@@ -61,9 +61,14 @@ class pgen_eth : public pgen_packet {
 	protected:
 		struct ether_header eth;
 	public:
-		macaddr	eth_srcEth;
-		macaddr 	eth_dstEth;
-		int 		eth_type;
+		//macaddr	eth_srcEth;
+		//macaddr 	eth_dstEth;
+		//int 		eth_type;
+		struct{
+			int type;
+			macaddr src;
+			macaddr dst;
+		}ETH;
 		
 		pgen_eth();
 		void clear();
@@ -88,11 +93,13 @@ class pgen_arp : public pgen_eth {
 	protected:
 		struct ether_arp 	arp;
 	public:
-		int arp_option;
-		macaddr	arp_srcEth;
-		macaddr	arp_dstEth;
-		ipaddr	arp_srcIp;
-		ipaddr	arp_dstIp;
+		struct{
+			int option;
+			macaddr	srcEth;
+			macaddr	dstEth;
+			ipaddr	srcIp;
+			ipaddr	dstIp;
+		}ARP;
 
 		pgen_arp();
 		void clear();
@@ -116,22 +123,20 @@ class pgen_ip : public pgen_eth {
 	protected:
 		struct iphdr		ip;
 	public:
-		ipaddr 	ip_srcIp;
-		ipaddr 	ip_dstIp;
-		int			ip_type;
-		
-		int ip_tos; // no (type of service)
-		int ip_len; // no (total length)
-		int ip_id; // no
-		int ip_ttl; // no
-
+		struct{
+			int type;
+			ipaddr src;
+			ipaddr dst;
+			int tos; 
+			int id; 
+			int ttl; 
+		}IP;
 
 
 		pgen_ip();
 		void clear();
 		void info();
 		void wrap(const char* ifname);
-		void wrapLite(const char* ifname);
 		void sendPack(const char* ifname);
 };
 
@@ -152,14 +157,17 @@ class pgen_icmp : public pgen_ip {
 		struct icmp icmp;
 		u_char data[100]; // no use yet
 	public:
-		int icmp_option;
-		int icmp_code;
+		//int icmp_option;
+		//int icmp_code;
+		struct{	
+			int option;
+			int code;
+		}ICMP;
 		
 		pgen_icmp();
 		void clear();
 		void info();
 		void wrap(const char* ifname);
-		void wrapLite(const char* ifname);
 		void sendPack(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
  };
@@ -183,21 +191,21 @@ class pgen_tcp : public pgen_ip {
 		struct tcphdr tcp;
 		u_char data[100]; // no use yet
 	public:
-		int tcp_srcPort;
-		int tcp_dstPort;
 		struct{
-			char fin;
-			char syn;
-			char rst;
-			char psh;
-			char ack;
-			char urg;
-		}tcp_frag ;
-		int tcp_window;
-		int tcp_doff;
-
-		int tcp_seqNum;
-		int tcp_ackNum;
+			int srcPort;
+			int dstPort;
+			struct{
+				char fin;
+				char syn;
+				char rst;
+				char psh;
+				char ack;
+				char urg;
+			}frag ;
+			int window;
+			int seqNum;
+			int ackNum;
+		}TCP;
 
 		pgen_tcp();
 		void clear();
@@ -226,16 +234,15 @@ class pgen_udp : public pgen_ip {
 		struct udphdr udp;
 		u_char data[100]; // no use yet
 	public:
-		int udp_srcPort;
-		int udp_dstPort;
-		
-		int udp_len; // no (total length)
+		struct{
+			int srcPort;
+			int dstPort;
+		}UDP;
 
 		pgen_udp();
 		void clear();
 		void info();
 		void wrap(const char* ifname);
-		void wrapLite(const char* ifname);
 		void sendPack(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 };
