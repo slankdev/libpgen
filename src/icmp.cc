@@ -4,7 +4,7 @@
 
 /* include must!!! */
 #include "packet.h"
-#include "pgen-variable.h"
+#include "address.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
 

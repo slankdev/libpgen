@@ -5,7 +5,7 @@
 #include "pgen.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
-#include "pgen-variable.h"
+#include "address.h"
 #include "mytypes.h"
 
 #include <stdio.h>

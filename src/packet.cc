@@ -1,6 +1,6 @@
 #include "packet.h"
 #include "pgen.h"
-#include "pgen-variable.h"
+#include "address.h"
 
 /* include must!!! */
 #include "pgen-opcode.h"

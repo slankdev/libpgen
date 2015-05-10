@@ -1,7 +1,7 @@
 
 #include "pgen.h"
 #include "packet.h"
-#include "pgen-variable.h"
+#include "address.h"
 
 #include <map>
 #include <stdio.h>

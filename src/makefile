@@ -24,7 +24,7 @@ SRC = main.cc \
 HDR = pgen.h \
 	  pgen-opcode.h \
 	  pgen-macro.h \
-	  pgen-variable.h \
+	  address.h \
 	  pgen-funcs.h \
 	  packet.h \
 	  types.h
