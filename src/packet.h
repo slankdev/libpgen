@@ -1,23 +1,11 @@
 #ifndef PGEN_PACK_H
 #define PGEN_PACK_H
 
-/* include must!!! */
-#include "pgen-macro.h"
+
+#include "pgen.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
 #include "pgen-variable.h"
-//--saiteigenn-zettai-hituyou---
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-//------------------------------
-
-
 #include "mytypes.h"
 
 
@@ -29,7 +17,14 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <netinet/in.h>		/* for struct sockaddr_in */
+
+
+#define PGEN_PACKLEN 2000
+
+
+
+
+
 class pgen_packet{
 	protected:
 		int 	packetType;
@@ -48,15 +43,9 @@ class pgen_packet{
 
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <net/ethernet.h> 		/* for struct ether_header */
+
+
+//#include <net/ethernet.h> 		/* for struct ether_header */
 class pgen_eth : public pgen_packet {
 	protected:
 		struct MYETH eth;
@@ -77,15 +66,7 @@ class pgen_eth : public pgen_packet {
 
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/if_ether.h>	/* for struct ether_arp 	*/
+//#include <netinet/if_ether.h>	/* for struct ether_arp 	*/
 class pgen_arp : public pgen_eth {
 	protected:
 		struct MYARP arp;
@@ -107,15 +88,7 @@ class pgen_arp : public pgen_eth {
 
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/ip.h>			/* for struct iphdr			*/
+//#include <netinet/ip.h>			/* for struct iphdr			*/
 class pgen_ip : public pgen_eth {
 	protected:
 		struct MYIP		ip;
@@ -140,19 +113,11 @@ class pgen_ip : public pgen_eth {
 
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/ip_icmp.h>	/* for struct icmp			*/
+//#include <netinet/ip_icmp.h>	/* for struct icmp			*/
 class pgen_icmp : public pgen_ip {
 	protected:
 		struct MYICMP icmp;
-		u_char data[100]; // no use yet
+		u_char _data[100]; // no use yet
 	public:
 		struct{	
 			int option;
@@ -172,19 +137,11 @@ class pgen_icmp : public pgen_ip {
 
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>		// for struct tcp		
+//#include <netinet/tcp.h>		// for struct tcp		
 class pgen_tcp : public pgen_ip {
 	protected:
 		struct MYTCP tcp;
-		u_char data[100]; // no use yet
+		u_char _data[100]; // no use yet
 	public:
 		struct{
 			int srcPort;
@@ -215,19 +172,11 @@ class pgen_tcp : public pgen_ip {
 
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/udp.h>		// for struct udp		
+//#include <netinet/udp.h>		// for struct udp		
 class pgen_udp : public pgen_ip {
 	protected:
 		struct MYUDP udp;
-		u_char data[100]; // no use yet
+		u_char _data[100]; // no use yet
 	public:
 		struct{
 			int srcPort;

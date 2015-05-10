@@ -1,8 +1,8 @@
 #include "packet.h"
+#include "pgen.h"
 #include "pgen-variable.h"
 
 /* include must!!! */
-#include "pgen-macro.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
 

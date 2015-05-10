@@ -5,7 +5,6 @@
 /* include must!!! */
 #include "packet.h"
 #include "pgen-variable.h"
-#include "pgen-macro.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
 

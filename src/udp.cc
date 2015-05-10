@@ -1,7 +1,7 @@
 
 /* include must!!! */
+#include "pgen.h"
 #include "packet.h"
-#include "pgen-macro.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
 #include "pgen-variable.h"

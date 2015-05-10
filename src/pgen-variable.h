@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 
+#include "pgen.h"
 #include "pgen-funcs.h"
 
 

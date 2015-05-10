@@ -3,7 +3,6 @@
 #define PGEN_H
 
 // include must!!
-#include "pgen-macro.h"
 #include "packet.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
@@ -12,7 +11,6 @@
 
 
 #define PGEN_DEVLEN 256
-#define PGEN_PACKLEN 2000
 #define PGEN_ERROR -1
 #define PGEN_SCCESS 1
 
