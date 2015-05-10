@@ -2,7 +2,7 @@
 /* include must!!! */
 #include "pgen.h"
 #include "packet.h"
-#include "pgen-opcode.h"
+#include "packconf.h"
 #include "pgen-funcs.h"
 #include "address.h"
 

@@ -5,6 +5,10 @@
 #include <netinet/in.h> // for BYTE_ORDER
 #include <endian.h>		// for BYTE_ORDER
 
+#include <netinet/ip.h>				// i want delete this
+#include <netinet/ip_icmp.h>		// i want delete this
+
+
 
 
 

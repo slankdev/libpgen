@@ -2,7 +2,7 @@
 #include "address.h"
 
 /* include must!!! */
-#include "pgen-opcode.h"
+#include "packconf.h"
 #include "pgen-funcs.h"
 
 #include <map>

@@ -22,8 +22,7 @@ SRC = main.cc \
 	  udp.cc \
 	  netutil.cc
 HDR = pgen.h \
-	  pgen-opcode.h \
-	  pgen-macro.h \
+	  packconf.h \
 	  address.h \
 	  pgen-funcs.h \
 	  packet.h \
