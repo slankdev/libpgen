@@ -54,11 +54,11 @@ void pgen_arp::wrap(const char* ifname){
 	pgen_eth::wrap(ifname);
 	packetType = PGEN_PACKETTYPE_ARP;
 	memset(data, 0, sizeof data);
-	eth.ether_type = htons(ETHERTYPE_ARP);
+	eth.ether_type = htons(MT_ETHERTYPE_ARP);
 
 	memset(&arp, 0, sizeof arp);
-	arp.arp_hrd = htons(ARPHRD_ETHER);
-	arp.arp_pro = htons(ETHERTYPE_IP);
+	arp.arp_hrd = htons(MT_ARPHRD_ETHER);
+	arp.arp_pro = htons(MT_ETHERTYPE_IP);
 	arp.arp_hln = 6;
 	arp.arp_pln = 4;
 	arp.arp_op  = htons(ARP.option);

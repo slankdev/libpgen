@@ -54,7 +54,7 @@ void pgen_ip::sendPack(const char* ifname){
 void pgen_ip::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_IP;
 	pgen_eth::wrap(ifname);
-	eth.ether_type = htons(ETHERTYPE_IP);
+	eth.ether_type = htons(MT_ETHERTYPE_IP);
 	memset(data, 0, sizeof data);
 
 	memset(&ip, 0, sizeof ip);

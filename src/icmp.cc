@@ -58,7 +58,7 @@ void pgen_icmp::wrap(const char* ifname){
 	packetType = PGEN_PACKETTYPE_ICMP;
 	pgen_ip::wrap(ifname);
 	memset(data, 0, sizeof(data));
-	ip.protocol = IPPROTO_ICMP;
+	ip.protocol = MT_IPPROTO_ICMP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(icmp)) ;
 
 	memset(&icmp, 0, sizeof icmp);

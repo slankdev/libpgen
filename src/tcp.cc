@@ -59,7 +59,7 @@ void pgen_tcp::wrap(const char* ifname){
 	pgen_ip::wrap(ifname);
 	packetType = PGEN_PACKETTYPE_TCP;
 	memset(data, 0, sizeof data);
-	ip.protocol = IPPROTO_TCP;
+	ip.protocol = MT_IPPROTO_TCP;
 	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
 	ip.tot_len = htons(sizeof(ip) + 20);
 	u_char buf[1000];
