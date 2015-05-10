@@ -21,8 +21,8 @@ int main(){
 	//arp();
 	//ip();
 	//icmp();
-	//tcp();
-	udp();
+	tcp();
+	//udp();
 }
 
 void icmp(){ 
