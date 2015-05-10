@@ -11,18 +11,18 @@ void icmp();
 macaddr macsrc = pgen_getMAC(dev);
 macaddr macdst = "ff:ff:ff:ff:ff:ff";
 ipaddr ipsrc = pgen_getIP(dev);
-ipaddr ipdst = "10.128.6.24";
+ipaddr ipdst = "192.168.101.27";
 int portsrc = 23445;
 int portdst = 7;
 
 
 int main(){
 
-	arp();
+	//arp();
 	//ip();
 	//icmp();
 	//tcp();
-	//udp();
+	udp();
 }
 
 void icmp(){ 

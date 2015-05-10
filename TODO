@@ -22,5 +22,12 @@ TODO		[date]  about  [fin-date]
 				ex) pack.IP.dst="192.168.0.6";
 [2015.05.07]	set ETH val in object 				[2015.05.08]
 				ex) pack.IP.dst="192.168.0.6";
+[2015.05.10]	make myPacket structure in ETH		[2015.05.10]
+[2015.05.10]	make myPacket structure in ARP		[2015.05.10]
+[2015.05.10]	make myPacket structure in IP		[]
+[2015.05.10]	make myPacket structure in ICMP		[]
+[2015.05.10]	make myPacket structure in TCP		[]
+[2015.05.10]	make myPacket structure in UDP		[]
+[2015.05.10]	add macro of packet options			[]
 
 

@@ -59,11 +59,9 @@ class pgen_packet{
 #include <net/ethernet.h> 		/* for struct ether_header */
 class pgen_eth : public pgen_packet {
 	protected:
-		struct ether_header eth;
+		//struct ether_header eth;
+		struct MYETH eth;
 	public:
-		//macaddr	eth_srcEth;
-		//macaddr 	eth_dstEth;
-		//int 		eth_type;
 		struct{
 			int type;
 			macaddr src;
@@ -91,7 +89,8 @@ class pgen_eth : public pgen_packet {
 #include <netinet/if_ether.h>	/* for struct ether_arp 	*/
 class pgen_arp : public pgen_eth {
 	protected:
-		struct ether_arp 	arp;
+		//struct ether_arp 	arp;
+		struct MYARP arp;
 	public:
 		struct{
 			int option;
@@ -154,7 +153,8 @@ class pgen_ip : public pgen_eth {
 #include <netinet/ip_icmp.h>	/* for struct icmp			*/
 class pgen_icmp : public pgen_ip {
 	protected:
-		struct icmp icmp;
+		//struct icmp icmp;
+		struct MYICMP icmp;
 		u_char data[100]; // no use yet
 	public:
 		//int icmp_option;
@@ -231,7 +231,7 @@ class pgen_tcp : public pgen_ip {
 #include <netinet/udp.h>		// for struct udp		
 class pgen_udp : public pgen_ip {
 	protected:
-		struct udphdr udp;
+		struct MYUDP udp;
 		u_char data[100]; // no use yet
 	public:
 		struct{
