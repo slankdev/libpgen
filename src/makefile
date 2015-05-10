@@ -26,7 +26,7 @@ HDR = pgen.h \
 	  address.h \
 	  pgen-funcs.h \
 	  packet.h \
-	  types.h
+	  mytypes.h 
 OBJ = $(SRC:.cc=.o)
 CFLAGS = -Wall 
 

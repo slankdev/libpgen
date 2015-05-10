@@ -12,6 +12,10 @@
 #include "pgen-funcs.h"
 
 
+static const char* getbender(const char* mac);
+
+
+
 
 class ipaddr{
 	private:
@@ -134,7 +138,13 @@ class macaddr{
 				_addr[0], _addr[1], _addr[2], _addr[3], _addr[4], _addr[5]);
 			return str;
 		}
-		char* bender(){
+
+		const char* bender(){
+			char mymac[16];
+			sprintf(mymac, "%02X%02X%02X" , _addr[0],_addr[1],_addr[2]);
+			return getbender(mymac);
+		}
+		char* bender_old(){
 			FILE *fp;
 			const char* filename = "mac_code.list";
 			unsigned int  mac[3];
@@ -223,6 +233,15 @@ class macaddr{
 			return true;
 		}
 };
+
+#include "dictionary.h"
+static const char* getbender(const char* mac){
+	char* bender = (char*)malloc(sizeof(char)*256);
+	strcpy(bender, macDictionary[mac]);
+	
+	return bender;	
+}
+
 
 
 #endif

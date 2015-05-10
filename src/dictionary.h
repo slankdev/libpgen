@@ -2,7 +2,10 @@
 #define DICTIONARY_H
 
 #include <map>
-std::map<const char*, const char*> macDictionary;
+#include <iostream>
+#include <string>
+
+std::map<std::string , const char*> macDictionary;
 
 
 macDictionary["FFFFFF"] = "BroadCast"; 
@@ -7862,7 +7865,7 @@ macDictionary["001EC7"] = "2Wire,";
 macDictionary["001EC8"] = "Rapid"; 
 macDictionary["001EC9"] = "Dell"; 
 macDictionary["001ECA"] = "Nortel"; 
-macDictionary["001ECB"] = ""RPC"; 
+macDictionary["001ECB"] = "RPC"; 
 macDictionary["001ECC"] = "CDVI"; 
 macDictionary["001ECD"] = "KYLAND"; 
 macDictionary["001ECE"] = "BISA"; 
@@ -9554,7 +9557,7 @@ macDictionary["002568"] = "Shenzhen";
 macDictionary["002569"] = "SAGEM"; 
 macDictionary["00256A"] = "inIT"; 
 macDictionary["00256B"] = "ATENIX"; 
-macDictionary["00256C"] = ""Azimut""; 
+macDictionary["00256C"] = "Azimut"; 
 macDictionary["00256D"] = "Broadband"; 
 macDictionary["00256E"] = "Van"; 
 macDictionary["00256F"] = "Dantherm"; 
