@@ -24,7 +24,6 @@ pgen_tcp::pgen_tcp(){
 }
 
 void pgen_tcp::clear(){
-
 	TCP.srcPort = 20;
 	TCP.dstPort = 80;
 	TCP.frag.fin = 0;
@@ -121,5 +120,3 @@ void pgen_tcp::info(){
 
 
 void pgen_tcp::setData(const u_char *p, int len){}
-
-

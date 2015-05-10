@@ -31,16 +31,12 @@ void pgen_eth::clear(){
 void pgen_eth::sendPack(const char* ifname){
 	wrap(ifname);		
 	int sock;
-	int n;
 
-	
 	if((sock=initRawSocket(ifname, 2)) < 0){
 		exit(PGEN_ERROR);
 	}
-	if((n=write(sock, data, len)) < 0){
-		perror("pgen_eth::sendPack: ");
+	if(sendRawPacket(sock, data, len, 2, NULL) < 0)
 		exit(PGEN_ERROR);
-	}
 
 	close(sock);
 }
@@ -74,8 +70,10 @@ void pgen_eth::info(){
 	_ethtype[0x86dd] = "IPv6";
 
 	printf(" * Ethernet  %s -> %s \n", ETH.src.bender(), ETH.dst.bender());
-	printf("    - Destination     :  %s (%s)   \n", ETH.dst.c_str(), ETH.dst.bender());
-	printf("    - Source          :  %s (%s)   \n" , ETH.src.c_str(), ETH.src.bender());
+	printf("    - Destination     :  %s (%s)   \n", 
+			ETH.dst.c_str(), ETH.dst.bender());
+	printf("    - Source          :  %s (%s)   \n" , 
+			ETH.src.c_str(), ETH.src.bender());
 	printf("    - Type            :  %s  (0x%04x)   \n", 
 			_ethtype[htons(eth.ether_type)] ,htons(eth.ether_type));
 }

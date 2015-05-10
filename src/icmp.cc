@@ -1,4 +1,3 @@
-
 #include <map>
 #include <string>
 #include <iostream>
@@ -9,7 +8,6 @@
 #include "pgen-macro.h"
 #include "pgen-opcode.h"
 #include "pgen-funcs.h"
-
 
 #include <stdio.h>
 #include <string.h>
@@ -73,8 +71,6 @@ void pgen_icmp::wrap(const char* ifname){
 	icmp.icmp_cksum = checksum(&icmp, sizeof icmp);
 
 	u_char* p = data;
-	//memcpy(p, &eth, sizeof(eth));
-	//p += sizeof(eth);
 	memcpy(p, &ip, sizeof(ip));
 	p += sizeof(ip);
 	memcpy(p, &icmp, sizeof(icmp));
@@ -101,8 +97,10 @@ void pgen_icmp::info(){
 	_icmpcode[255]  = "Not Set";
 
 	printf(" * Internet Control Message Protocol \n");
-	printf("    - Type            :  %s (%d)\n", _icmpoption[icmp.icmp_type] , icmp.icmp_type);
-	printf("    - Code            :  %s (%d)\n",  _icmpcode[icmp.icmp_code], icmp.icmp_code);
+	printf("    - Type            :  %s (%d)\n", 
+			_icmpoption[icmp.icmp_type] , icmp.icmp_type);
+	printf("    - Code            :  %s (%d)\n",  
+			_icmpcode[icmp.icmp_code], icmp.icmp_code);
 	printf("    - id(BE/LE)       :  %d/%d \n", 
 			htons(icmp.icmp_hun.ih_idseq.icd_seq), icmp.icmp_hun.ih_idseq.icd_id);
 	printf("    - seq num(BE/LE)  :  %d/%d \n", 

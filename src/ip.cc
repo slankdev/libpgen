@@ -23,7 +23,6 @@ pgen_ip::pgen_ip(){
 	clear();	
 }
 void pgen_ip::clear(){
-
 	IP.src = 0;
 	IP.dst = "127.0.0.1";
 	IP.type = IPPROTO_IP;
@@ -36,17 +35,14 @@ void pgen_ip::clear(){
 void pgen_ip::sendPack(const char* ifname){
 	wrap(ifname);		
 	int sock;
-	int n;
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = IP.dst._addr;
-
 	
 	if((sock=initRawSocket(ifname, 3)) < 0)
 		exit(PGEN_ERROR);
-
 	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
 		exit(PGEN_ERROR);
 
@@ -96,7 +92,8 @@ void pgen_ip::info(){
 	printf(" * Internet Protocol version 4\n");
 	printf("    - Source          :  %s \n", IP.src.c_str());
 	printf("    - Destination     :  %s \n", IP.dst.c_str());
-	printf("    - Protocol        :  %s (%u) \n", _ipprot[ip.protocol],  ip.protocol);
+	printf("    - Protocol        :  %s (%u) \n", 
+			_ipprot[ip.protocol],  ip.protocol);
 	printf("    - Time to Leave   :  %d \n", ip.ttl);
 	printf("    - Total Length    :  %d \n", ntohs(ip.tot_len));
 	printf("    - Identification  :  %d \n", htons(ip.id));
