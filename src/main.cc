@@ -18,10 +18,10 @@ int portdst = 7;
 
 int main(){
 
-	//arp();
+	arp();
 	//ip();
 	//icmp();
-	tcp();
+	//tcp();
 	//udp();
 }
 

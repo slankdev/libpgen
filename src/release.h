@@ -19,8 +19,6 @@ const char* author_email = "slank.dev@gmail.com";
  *						in pgent_ip, pgent_mac	
  *   	[2015.05.07]	add default variable of packet val	[2015.05.07]
  *   					ex) ip.dst 's defalut is 127.0.0.1
- *   	[2015.05.07]	add setData in ICMP TCP UDP			[]
- *   					add function 
  *   	[2015.05.07]	set TCP val in object 				[2015.05.08]
  *   					ex) pack.IP.dst="192.168.0.6";
  *   	[2015.05.07]	set UDP val in object 				[2015.05.08]
@@ -39,10 +37,18 @@ const char* author_email = "slank.dev@gmail.com";
  *   	[2015.05.10]	make myPacket structure in ICMP		[2015.05.10]
  *   	[2015.05.10]	make myPacket structure in TCP		[2015.05.10]
  *		[2015.05.10]	make myPacket structure in UDP		[2015.05.10]
- *		[2015.05.10]	add macro of packet options			[]
+ *		[2015.05.10]	add macro of packet options			[2015.05.10]
+ *   	[2015.05.07]	add setData in ICMP TCP UDP			[]
+ *   					add function 
+ *		[2015.05.07]	add dictionary of mac addr		[]
  *
+ *
+ *
+ *
+ *		BUG			[date]  about  [fin-date]
+ *		[date------]	title		 						[]
+ *		
  *
  */
-
 
 #endif
