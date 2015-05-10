@@ -7,7 +7,6 @@
 
 std::map<std::string , const char*> macDictionary;
 
-
 macDictionary["FFFFFF"] = "BroadCast"; 
 macDictionary["000000"] = "XEROX"; 
 macDictionary["000001"] = "XEROX"; 

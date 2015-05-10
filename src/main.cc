@@ -11,7 +11,7 @@ void icmp();
 macaddr macsrc = pgen_getMAC(dev);
 macaddr macdst = "ff:ff:ff:ff:ff:ff";
 ipaddr ipsrc = pgen_getIP(dev);
-ipaddr ipdst = "192.168.101.27";
+ipaddr ipdst = "192.168.179.1";
 int portsrc = 23445;
 int portdst = 7;
 

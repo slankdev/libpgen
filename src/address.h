@@ -139,12 +139,13 @@ class macaddr{
 			return str;
 		}
 
-		const char* bender(){
+		const char* bender_test(){
 			char mymac[16];
 			sprintf(mymac, "%02X%02X%02X" , _addr[0],_addr[1],_addr[2]);
-			return getbender(mymac);
+			//return getbender(mymac);
+			return "test";
 		}
-		char* bender_old(){
+		char* bender(){
 			FILE *fp;
 			const char* filename = "mac_code.list";
 			unsigned int  mac[3];
@@ -234,11 +235,15 @@ class macaddr{
 		}
 };
 
-#include "dictionary.h"
+
+//#include "dictionary.h"
+#include <string>
+#include <map>
 static const char* getbender(const char* mac){
 	char* bender = (char*)malloc(sizeof(char)*256);
+	std::map<std::string , const char*> macDictionary;
+
 	strcpy(bender, macDictionary[mac]);
-	
 	return bender;	
 }
 
