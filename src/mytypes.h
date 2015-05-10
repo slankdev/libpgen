@@ -8,22 +8,20 @@
 
 
 
-struct myEthHdr
-{
-//  u_int8_t  ether_dhost[ETH_ALEN];	/* destination eth addr	*/
-//  u_int8_t  ether_shost[ETH_ALEN];	/* source ether addr	*/
-//  u_int16_t ether_type;		        /* packet type ID field	*/
+struct myEthHdr{
+	u_int8_t  ether_dhost[ETH_ALEN];	/* destination eth addr	*/
+	u_int8_t  ether_shost[ETH_ALEN];	/* source ether addr	*/
+	u_int16_t ether_type;		        /* packet type ID field	*/
 };
 
 
 
-struct myArpHdr
-{
-//    unsigned short int ar_hrd;		/* Format of hardware address.  */
-//    unsigned short int ar_pro;		/* Format of protocol address.  */
-//    unsigned char ar_hln;		/* Length of hardware address.  */
-//    unsigned char ar_pln;		/* Length of protocol address.  */
-//    unsigned short int ar_op;		/* ARP opcode (command).  */
+struct myArpHdr{
+	unsigned short int ar_hrd;		/* Format of hardware address.  */
+	unsigned short int ar_pro;		/* Format of protocol address.  */
+	unsigned char ar_hln;		/* Length of hardware address.  */
+	unsigned char ar_pln;		/* Length of protocol address.  */
+	unsigned short int ar_op;		/* ARP opcode (command).  */
 };
 
 #define	ARPOP_REQUEST	1		/* ARP request.  */

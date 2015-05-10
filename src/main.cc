@@ -48,7 +48,7 @@ void arp(){
 	p.ARP.srcIp  = ipsrc;
 	p.ARP.dstEth = "ff:ff:ff:ff:ff:ff";
 	p.ARP.dstIp  = ipdst;
-//	p.arp_option = PGEN_ARPOP_REQEST;
+	p.ARP.option = PGEN_ARPOP_REQEST;
 		
 	p.sendPack(dev);
 	p.info();
