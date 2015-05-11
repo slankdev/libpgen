@@ -40,7 +40,7 @@ const char* author_email = "slank.dev@gmail.com";
  *		[2015.05.10]	add macro of packet options			[2015.05.10]
  *   	[2015.05.07]	add setData in ICMP TCP UDP			[]
  *   					add function 
- *		[2015.05.07]	add dictionary of mac addr			[]
+ *		[2015.05.11]	add function port2service(int)		[]
  *
  *
  *
