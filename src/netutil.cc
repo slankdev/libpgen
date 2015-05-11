@@ -14,10 +14,24 @@
 
 #include <netinet/tcp.h>
 #include <netinet/ip.h>
+#include <netdb.h>
 
 
-const char* port2service(int port){
-	return "test";
+const char* port2service(int port, int protocol){
+	struct servent* serv;
+	if(protocol == 1)
+		serv = getservbyport(htons(port), "tcp");
+	else if(protocol == 2)
+		serv = getservbyport(htons(port), "udp");
+	else
+		return "port2service error";
+
+
+	if(serv == NULL)
+		return "not found";
+	else
+		return serv->s_name;
+
 }
 
 

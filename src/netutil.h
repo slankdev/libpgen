@@ -2,7 +2,7 @@
 #define NETUTIL_H
 
 
-const char* port2service(int port);
+const char* port2service(int port, int protocol);
 unsigned short checksum(const void* data, int len);
 unsigned short checksumTcp(const u_char* dp, int datalen);
 int sendRawPacket(int sock, const u_char* data, int len, 

@@ -101,8 +101,10 @@ void pgen_tcp::info(){
 	pgen_ip::info();
 
 	printf(" * Transmission Control Protocol \n");
-	printf("    - Source Port     :  %d \n", ntohs(tcp.source));
-	printf("    - Dest Port       :  %d \n", ntohs(tcp.dest));
+	printf("    - Source Port     :  %d (%s) \n",
+			ntohs(tcp.source), port2service(ntohs(tcp.source), 1));
+	printf("    - Dest Port       :  %d (%s) \n", 
+			ntohs(tcp.dest), port2service(ntohs(tcp.dest), 1));
 	printf("    - Frags           :  ");
 	if(tcp.fin == 1)	printf("F");
 	if(tcp.syn == 1)	printf("S");
