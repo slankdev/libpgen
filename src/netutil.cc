@@ -22,7 +22,7 @@ const char* port2service(int port, int protocol){
 	if(protocol == 1)
 		serv = getservbyport(htons(port), "tcp");
 	else if(protocol == 2)
-		erv = getservbyport(htons(port), "udp");
+		serv = getservbyport(htons(port), "udp");
 	else
 		return "port2service error";
 
