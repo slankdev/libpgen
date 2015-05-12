@@ -31,7 +31,8 @@ OBJ = $(SRC:.cc=.o)
 CFLAGS = -Wall -fPIC
 
 
-all: libpgen.a
+#all: libpgen.a
+all: libpgen.so
 
 
 libpgen.a: $(OBJ)
@@ -41,7 +42,7 @@ libpgen.a: $(OBJ)
 
 
 libpgen.so: $(OBJ)
-	$(CPP) $(OBJ) -shared -o $(program)  $(CFLAGS)
+	$(CPP) $(OBJ) -shared -o $@  $(CFLAGS)
 #	$(RM) *.o
 
 
@@ -62,7 +63,8 @@ libpgen.so: $(OBJ)
 #------------------------------OTHERS----------------------------------#
 
 clean:
-	$(RM) *.o *.out
+	$(RM) *.o *.out *.a *.so
+
 
 
 
