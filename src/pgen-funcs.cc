@@ -10,6 +10,8 @@
 #include <netinet/in.h>
 #include <net/if.h>
 
+#include "pgen.h"
+#include "pgen-funcs.h"
 
 
 
