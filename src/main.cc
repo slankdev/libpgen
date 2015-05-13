@@ -1,6 +1,6 @@
 #include "pgen.h"
 
-const char* dev = "wlan0";
+const char* dev = "eth0";
 
 void tcp();
 void udp();
@@ -17,11 +17,15 @@ int portdst = 7;
 
 
 int main(){
-
-	//arp();
+	printf("--------arp--------------------------------\n");
+	arp();
+	printf("-------------------------------------------\n");
+	
 	//ip();
 	//icmp();
+	printf("--------tcp--------------------------------\n");
 	tcp();
+	printf("-------------------------------------------\n");
 	//udp();
 }
 
