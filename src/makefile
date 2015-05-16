@@ -5,13 +5,13 @@ export CPP := g++
 export CXX := g++ 
 export RM  := rm -rf
 export MKDIR := mkdir -p
+export AR  := ar
+
 
 
 .SUFFIXES: .out .c .cc .o .h 
 
-program = a.out
-SRC = main.cc \
-	  pgen-funcs.cc \
+SRC = pgen-funcs.cc \
 	  packet.cc \
 	  eth.cc \
 	  arp.cc \
@@ -28,19 +28,35 @@ HDR = pgen.h \
 	  mytypes.h 
 OBJ = $(SRC:.cc=.o)
 
-CFLAGS = -Wall 
+CFLAGS = -Wall -fPIC
 
 
-all: $(program)
+all: libpgen.a
+#all: libpgen.so
 
 
-$(program): $(OBJ)
-	$(CPP) $(OBJ) -o $(program) $(CFLAGS)
+libpgen.a: $(OBJ)
+	$(RM) -f $@
+	$(AR) rc $@ $(OBJ)
+
+
+
+libpgen.so: $(OBJ)
+	$(CPP) $(OBJ) -shared -o $@  $(CFLAGS)
 #	$(RM) *.o
 
 
+
+
 .cc.o: 
-	$(CPP) -std=c++11 -c  $<  -o $@  
+	$(CPP) -std=c++11 -fPIC -c  $<  -o $@  
+
+
+
+
+
+
+
 
 
 
@@ -48,5 +64,8 @@ $(program): $(OBJ)
 
 clean:
 	$(RM) *.o *.out *.a *.so
+
+
+
 
 

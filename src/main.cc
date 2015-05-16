@@ -1,8 +1,8 @@
 #include "pgen.h"
 
-const char* dev = "eth0";
+const char* dev = "wlan0";
 
-void tcp();
+void tcp();//[[[
 void udp();
 void ip();
 void arp();
@@ -13,21 +13,35 @@ macaddr macdst = "ff:ff:ff:ff:ff:ff";
 ipaddr ipsrc = pgen_getIP(dev);
 ipaddr ipdst = "192.168.179.1";
 int portsrc = 23445;
-int portdst = 7;
+int portdst = 7;//]]]
 
 
 int main(){
-	printf("--------arp--------------------------------\n");
 	arp();
-	printf("-------------------------------------------\n");
-	
 	//ip();
 	//icmp();
-	printf("--------tcp--------------------------------\n");
-	tcp();
-	printf("-------------------------------------------\n");
+	//tcp();
 	//udp();
 }
+
+
+void arp(){
+	pgen_arp p;
+
+	p.ETH.src = macsrc;
+	p.ETH.dst = "ff:ff:ff:ff:ff:ff";
+	p.ARP.srcEth = pgen_getMAC(dev);
+	p.ARP.srcIp  = pgen_getIP(dev);
+	p.ARP.srcIp  = "10.128.5.189";
+	p.ARP.dstEth = "ff:ff:ff:ff:ff:ff";
+	p.ARP.dstIp  = "10.128.7.242";
+	p.ARP.option = PGEN_ARPOP_REQEST;
+		
+	p.sendPack(dev);
+	p.info();
+	p.hex();
+}
+
 
 void icmp(){ 
 	pgen_icmp p;
@@ -44,21 +58,6 @@ void icmp(){
 
 
 
-void arp(){
-	pgen_arp p;
-
-	p.ETH.src = macsrc;
-	p.ETH.dst = "ff:ff:ff:ff:ff:ff";
-	p.ARP.srcEth = macsrc;
-	p.ARP.srcIp  = ipsrc;
-	p.ARP.dstEth = "ff:ff:ff:ff:ff:ff";
-	p.ARP.dstIp  = ipdst;
-	p.ARP.option = PGEN_ARPOP_REQEST;
-		
-	p.sendPack(dev);
-	p.info();
-	p.hex();
-}
 
 
 void tcp(){
