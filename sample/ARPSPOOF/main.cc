@@ -21,8 +21,10 @@ int main(){
 	pack.info();
 	pack.hex();
 
+	printf("\n");
 	for(int i=0; i<10; i++){
-		printf("%d: send packet!!\n", i);
+		printf("%d: target is %s\n", i, target.c_str());
+		//printf("%d: %s\n", i, pack.summary());
 		pack.sendPack(dev);
 		sleep(1);
 	}
