@@ -41,6 +41,8 @@ const char* author_email = "slank.dev@gmail.com";
  *		[2015.05.11]	add function port2service(int)		[2015.05.11]
  *   	[2015.05.07]	add setData in ICMP TCP UDP			[]
  *   					add function 
+ *		[2015.05.16]	add function unlookup(const)		[]
+ *						ipaddr uslookup(url);		 
  *
  *
  *
