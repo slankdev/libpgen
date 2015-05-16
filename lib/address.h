@@ -11,6 +11,8 @@
 #include "pgen.h"
 #include "pgen-funcs.h"
 
+#define FILEPATH "/home/slank/git/libpgen/lib/"
+
 
 static const char* getbender(const char* mac);
 
@@ -140,7 +142,7 @@ class macaddr{
 		}
 		char* bender(){
 			FILE *fp;
-			const char* filename = "mac_code.list";
+			const char* filename = FILEPATH;
 			unsigned int  mac[3];
 			char buf[256];
 			char* bender = (char*)malloc(sizeof(char) * 256);
