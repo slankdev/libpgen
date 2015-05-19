@@ -43,6 +43,8 @@ const char* author_email = "slank.dev@gmail.com";
  *   					add function 
  *		[2015.05.16]	add function unlookup(const)		[]
  *						ipaddr uslookup(url);		 
+ *		[2015.05.16]	add function summary(void)			[]
+ *						print packet info inline
  *
  *
  *

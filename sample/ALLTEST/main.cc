@@ -51,9 +51,13 @@ void icmp(){
 	p.ICMP.option = PGEN_ICMPOP_ECHO;
 	p.ICMP.code   = PGEN_ICMPCODE_NET_UNREACH;
 	
-	p.sendPack(dev);
 	p.info();
 	p.hex();
+	for(int i=0; ;i++){
+		p.sendPack(dev);
+		printf("%d: send !!\n",i);
+		sleep(0.1);
+	}
 }
 
 

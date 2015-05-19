@@ -1,8 +1,8 @@
 #include "pgen.h"
 
 const char* dev = "wlan0";
-
 ipaddr target = "192.168.0.1";
+
 
 int main(){
 	pgen_arp pack;
@@ -20,7 +20,8 @@ int main(){
 
 	printf("\n");
 	for(int i=0; i<10; i++){
-		printf("%d: target is %s\n", i, target.c_str());
+		printf("%d:  %s\n", i, target.c_str());
+
 		//printf("%d: %s\n", i, pack.summary());
 		pack.sendPack(dev);
 		sleep(1);
