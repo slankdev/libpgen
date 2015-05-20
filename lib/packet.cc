@@ -19,10 +19,10 @@
 		
 
 pgen_packet::pgen_packet(){
-	clear();
+	CLEAR();
 }
 
-void pgen_packet::clear(){
+void pgen_packet::CLEAR(){
 	len = 0;
 }
 

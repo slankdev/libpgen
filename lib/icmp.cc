@@ -23,18 +23,18 @@
 
 
 pgen_icmp::pgen_icmp(){
-	pgen_ip::clear();
-	clear();
+	pgen_ip::CLEAR();
+	CLEAR();
 }
 
-void pgen_icmp::clear(){
-	pgen_packet::clear();
+void pgen_icmp::CLEAR(){
+	pgen_packet::CLEAR();
 	ICMP.option = 8;
 	ICMP.code = 0;
 }
 
-void pgen_icmp::sendPack(const char* ifname){
-	wrap(ifname);		
+void pgen_icmp::SEND(const char* ifname){
+	WRAP(ifname);		
 	int sock;
 	
 	struct sockaddr_in addr;
@@ -52,10 +52,9 @@ void pgen_icmp::sendPack(const char* ifname){
 
 
 
-void pgen_icmp::wrap(const char* ifname){
-	pgen_ip::wrap(ifname);
+void pgen_icmp::WRAP(const char* ifname){
+	pgen_ip::WRAP(ifname);
 	packetType = PGEN_PACKETTYPE_ICMP;
-	pgen_ip::wrap(ifname);
 	memset(data, 0, sizeof(data));
 	ip.protocol = MT_IPPROTO_ICMP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(icmp)) ;
@@ -81,8 +80,8 @@ void pgen_icmp::wrap(const char* ifname){
 
 
 
-void pgen_icmp::info(){
-	pgen_ip::info();
+void pgen_icmp::INFO(){
+	pgen_ip::INFO();
 
 	std::map<int, const char*>  _icmpoption;
 	_icmpoption[0] = "Echo Reply";

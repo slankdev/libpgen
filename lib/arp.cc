@@ -22,11 +22,11 @@
 
 
 pgen_arp::pgen_arp(){
-	pgen_eth::clear();
-	clear();
+	pgen_eth::CLEAR();
+	CLEAR();
 }
 
-void pgen_arp::clear(){
+void pgen_arp::CLEAR(){
 	ARP.srcIp = 0;
 	ARP.dstIp = 0;
 	ARP.srcEth = 0;
@@ -35,8 +35,8 @@ void pgen_arp::clear(){
 }   
 
 
-void pgen_arp::sendPack(const char* ifname){
-	wrap(ifname);		
+void pgen_arp::SEND(const char* ifname){
+	WRAP(ifname);		
 	int sock;
 	
 	if((sock=initRawSocket(ifname, 2)) < 0)
@@ -49,8 +49,8 @@ void pgen_arp::sendPack(const char* ifname){
 
 
 
-void pgen_arp::wrap(const char* ifname){
-	pgen_eth::wrap(ifname);
+void pgen_arp::WRAP(const char* ifname){
+	pgen_eth::WRAP(ifname);
 	packetType = PGEN_PACKETTYPE_ARP;
 	memset(data, 0, sizeof data);
 	eth.ether_type = htons(MT_ETHERTYPE_ARP);
@@ -80,8 +80,8 @@ void pgen_arp::wrap(const char* ifname){
 
 
 
-void pgen_arp::info(){
-	pgen_eth::info();	
+void pgen_arp::INFO(){
+	pgen_eth::INFO();	
 
 	std::map<int, const char*> _arpopcode;
 	_arpopcode[1] = "ARP Request";

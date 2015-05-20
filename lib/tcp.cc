@@ -19,11 +19,11 @@
 #include <netinet/tcp.h>		// for struct tcp		
 
 pgen_tcp::pgen_tcp(){
-	pgen_ip::clear();
-	clear();
+	pgen_ip::CLEAR();
+	CLEAR();
 }
 
-void pgen_tcp::clear(){
+void pgen_tcp::CLEAR(){
 	TCP.srcPort = 20;
 	TCP.dstPort = 80;
 	TCP.frag.fin = 0;
@@ -38,8 +38,8 @@ void pgen_tcp::clear(){
 }
 
 
-void pgen_tcp::sendPack(const char* ifname){
-	wrap(ifname);		
+void pgen_tcp::SEND(const char* ifname){
+	WRAP(ifname);		
 	int sock;
 	
 	struct sockaddr_in addr;
@@ -55,8 +55,8 @@ void pgen_tcp::sendPack(const char* ifname){
 	close(sock);
 }
 
-void pgen_tcp::wrap(const char* ifname){
-	pgen_ip::wrap(ifname);
+void pgen_tcp::WRAP(const char* ifname){
+	pgen_ip::WRAP(ifname);
 	packetType = PGEN_PACKETTYPE_TCP;
 	memset(data, 0, sizeof data);
 	ip.protocol = MT_IPPROTO_TCP;
@@ -97,8 +97,8 @@ void pgen_tcp::wrap(const char* ifname){
 
 
 
-void pgen_tcp::info(){
-	pgen_ip::info();
+void pgen_tcp::INFO(){
+	pgen_ip::INFO();
 
 	printf(" * Transmission Control Protocol \n");
 	printf("    - Source Port     :  %d (%s) \n",
