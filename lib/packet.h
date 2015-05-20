@@ -32,10 +32,10 @@ class pgen_packet{
 	public:
 		
 		pgen_packet();
-		virtual void clear();
-		virtual void info()=0;	
-		virtual void wrap(const char* ifname)=0;
-		virtual void sendPack(const char* ifname)=0;
+		virtual void CLEAR();
+		virtual void INFO()=0;	
+		virtual void WRAP(const char* ifname)=0;
+		virtual void SEND(const char* ifname)=0;
 		void hex();
 		void hexFull();
 };
@@ -56,10 +56,10 @@ class pgen_eth : public pgen_packet {
 		}ETH;
 		
 		pgen_eth();
-		void clear();
-		void info();
-		void wrap(const char* ifname);
-		void sendPack(const char* ifname);
+		void CLEAR();
+		void INFO();
+		void WRAP(const char* ifname);
+		void SEND(const char* ifname);
 };
 
 
@@ -79,10 +79,10 @@ class pgen_arp : public pgen_eth {
 		}ARP;
 
 		pgen_arp();
-		void clear();
-		void info();
-		void wrap(const char* ifname);
-		void sendPack(const char* ifname);
+		void CLEAR();
+		void INFO();
+		void WRAP(const char* ifname);
+		void SEND(const char* ifname);
 };
 
 
@@ -103,10 +103,10 @@ class pgen_ip : public pgen_eth {
 
 
 		pgen_ip();
-		void clear();
-		void info();
-		void wrap(const char* ifname);
-		void sendPack(const char* ifname);
+		void CLEAR();
+		void INFO();
+		void WRAP(const char* ifname);
+		void SEND(const char* ifname);
 };
 
 
@@ -124,10 +124,10 @@ class pgen_icmp : public pgen_ip {
 		}ICMP;
 		
 		pgen_icmp();
-		void clear();
-		void info();
-		void wrap(const char* ifname);
-		void sendPack(const char* ifname);
+		void CLEAR();
+		void INFO();
+		void WRAP(const char* ifname);
+		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
  };
 
@@ -159,10 +159,10 @@ class pgen_tcp : public pgen_ip {
 		}TCP;
 
 		pgen_tcp();
-		void clear();
-		void info();
-		void wrap(const char* ifname);
-		void sendPack(const char* ifname);
+		void CLEAR();
+		void INFO();
+		void WRAP(const char* ifname);
+		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 };
 
@@ -183,10 +183,10 @@ class pgen_udp : public pgen_ip {
 		}UDP;
 
 		pgen_udp();
-		void clear();
-		void info();
-		void wrap(const char* ifname);
-		void sendPack(const char* ifname);
+		void CLEAR();
+		void INFO();
+		void WRAP(const char* ifname);
+		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 };
 

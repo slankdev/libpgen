@@ -20,10 +20,10 @@
 
 
 pgen_ip::pgen_ip(){
-	pgen_eth::clear();
-	clear();	
+	pgen_eth::CLEAR();
+	CLEAR();	
 }
-void pgen_ip::clear(){
+void pgen_ip::CLEAR(){
 	IP.src = 0;
 	IP.dst = "127.0.0.1";
 	IP.type = IPPROTO_IP;
@@ -33,8 +33,8 @@ void pgen_ip::clear(){
 }
 
 
-void pgen_ip::sendPack(const char* ifname){
-	wrap(ifname);		
+void pgen_ip::SEND(const char* ifname){
+	WRAP(ifname);		
 	int sock;
 	
 	struct sockaddr_in addr;
@@ -52,9 +52,9 @@ void pgen_ip::sendPack(const char* ifname){
 
 
 
-void pgen_ip::wrap(const char* ifname){
+void pgen_ip::WRAP(const char* ifname){
 	packetType = PGEN_PACKETTYPE_IP;
-	pgen_eth::wrap(ifname);
+	pgen_eth::WRAP(ifname);
 	eth.ether_type = htons(MT_ETHERTYPE_IP);
 	memset(data, 0, sizeof data);
 
@@ -78,8 +78,8 @@ void pgen_ip::wrap(const char* ifname){
 }
 
 
-void pgen_ip::info(){
-	pgen_eth::info();
+void pgen_ip::INFO(){
+	pgen_eth::INFO();
 	
 	std::map<int, const char*> _ipprot;
 	_ipprot[0]  = "Not Set. Empty IP Packet";

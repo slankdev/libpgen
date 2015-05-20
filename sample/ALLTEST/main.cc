@@ -37,8 +37,8 @@ void arp(){
 	p.ARP.dstIp  = "10.128.7.242";
 	p.ARP.option = PGEN_ARPOP_REQEST;
 		
-	p.sendPack(dev);
-	p.info();
+	p.SEND(dev);
+	p.INFO();
 	p.hex();
 }
 
@@ -51,10 +51,10 @@ void icmp(){
 	p.ICMP.option = PGEN_ICMPOP_ECHO;
 	p.ICMP.code   = PGEN_ICMPCODE_NET_UNREACH;
 	
-	p.info();
+	p.INFO();
 	p.hex();
 	for(int i=0; ;i++){
-		p.sendPack(dev);
+		p.SEND(dev);
 		printf("%d: send !!\n",i);
 		sleep(0.1);
 	}
@@ -73,8 +73,8 @@ void tcp(){
 	p.TCP.dstPort = portdst;
 	p.TCP.frag.syn = 1;
 
-	p.sendPack(dev);
-	p.info();
+	p.SEND(dev);
+	p.INFO();
 	p.hex();
 }
 
@@ -86,8 +86,8 @@ void udp(){
 	p.UDP.srcPort = portsrc;
 	p.UDP.dstPort = portdst;
 
-	p.sendPack(dev);
-	p.info();
+	p.SEND(dev);
+	p.INFO();
 	p.hex();
  }
 
@@ -98,8 +98,8 @@ void ip(){
 	p.IP.src = pgen_getIP(dev);
 	p.IP.dst = "192.168.0.1";
 
-	p.sendPack(dev);
-	p.info();
+	p.SEND(dev);
+	p.INFO();
 	p.hex();
 }
 

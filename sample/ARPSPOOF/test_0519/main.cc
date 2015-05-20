@@ -1,6 +1,6 @@
 #include "pgen.h"
 #include <stdio.h>
-#define DEV "eth0"
+#define DEV "wlan0"
 
 int main(int argc,char** argv){
 	if(argc != 5){
@@ -27,7 +27,7 @@ int main(int argc,char** argv){
 				pack.ARP.dstIp.c_str(),
 				pack.ARP.dstEth.c_str() );
 
-		pack.sendPack(DEV);
+		pack.SEND(DEV);
 		sleep(1);
 	}
 }
