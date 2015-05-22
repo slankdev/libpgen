@@ -36,7 +36,7 @@ void pgen_arp::CLEAR(){
 
 
 void pgen_arp::SEND(const char* ifname){
-	WRAP(ifname);		
+	WRAP();		
 	int sock;
 	
 	if((sock=initRawSocket(ifname, 2)) < 0)
@@ -49,8 +49,8 @@ void pgen_arp::SEND(const char* ifname){
 
 
 
-void pgen_arp::WRAP(const char* ifname){
-	pgen_eth::WRAP(ifname);
+void pgen_arp::WRAP(){
+	pgen_eth::WRAP();
 	packetType = PGEN_PACKETTYPE_ARP;
 	memset(data, 0, sizeof data);
 	eth.ether_type = htons(MT_ETHERTYPE_ARP);
@@ -81,7 +81,7 @@ void pgen_arp::WRAP(const char* ifname){
 
 
 void pgen_arp::INFO(){
-	WRAP("no use");
+	WRAP();
 	pgen_eth::INFO();	
 
 	std::map<int, const char*> _arpopcode;

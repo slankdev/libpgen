@@ -30,7 +30,7 @@ void pgen_udp::CLEAR(){
 }
 
 void pgen_udp::SEND(const char* ifname){
-	WRAP(ifname);		
+	WRAP();		
 	int sock;
 	
 	struct sockaddr_in addr;
@@ -48,8 +48,8 @@ void pgen_udp::SEND(const char* ifname){
 
 
 
-void pgen_udp::WRAP(const char* ifname){
-	pgen_ip::WRAP(ifname);
+void pgen_udp::WRAP(){
+	pgen_ip::WRAP();
 	packetType = PGEN_PACKETTYPE_UDP;
 	ip.protocol = MT_IPPROTO_UDP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
@@ -70,7 +70,7 @@ void pgen_udp::WRAP(const char* ifname){
 
 
 void pgen_udp::INFO(){
-	WRAP("no use");
+	WRAP();
 	pgen_ip::INFO();
 
 	printf(" * User Datagram Protocol \n");

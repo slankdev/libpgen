@@ -34,7 +34,7 @@ void pgen_icmp::CLEAR(){
 }
 
 void pgen_icmp::SEND(const char* ifname){
-	WRAP(ifname);		
+	WRAP();		
 	int sock;
 	
 	struct sockaddr_in addr;
@@ -52,8 +52,8 @@ void pgen_icmp::SEND(const char* ifname){
 
 
 
-void pgen_icmp::WRAP(const char* ifname){
-	pgen_ip::WRAP(ifname);
+void pgen_icmp::WRAP(){
+	pgen_ip::WRAP();
 	packetType = PGEN_PACKETTYPE_ICMP;
 	memset(data, 0, sizeof(data));
 	ip.protocol = MT_IPPROTO_ICMP;
@@ -81,7 +81,7 @@ void pgen_icmp::WRAP(const char* ifname){
 
 
 void pgen_icmp::INFO(){
-	WRAP("no use");
+	WRAP();
 	pgen_ip::INFO();
 
 	std::map<int, const char*>  _icmpoption;

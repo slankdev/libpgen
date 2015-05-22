@@ -34,7 +34,7 @@ void pgen_ip::CLEAR(){
 
 
 void pgen_ip::SEND(const char* ifname){
-	WRAP(ifname);		
+	WRAP();		
 	int sock;
 	
 	struct sockaddr_in addr;
@@ -52,9 +52,9 @@ void pgen_ip::SEND(const char* ifname){
 
 
 
-void pgen_ip::WRAP(const char* ifname){
+void pgen_ip::WRAP(){
 	packetType = PGEN_PACKETTYPE_IP;
-	pgen_eth::WRAP(ifname);
+	pgen_eth::WRAP();
 	eth.ether_type = htons(MT_ETHERTYPE_IP);
 	memset(data, 0, sizeof data);
 
@@ -79,7 +79,7 @@ void pgen_ip::WRAP(const char* ifname){
 
 
 void pgen_ip::INFO(){
-	WRAP("no use");
+	WRAP();
 	pgen_eth::INFO();
 	
 	std::map<int, const char*> _ipprot;

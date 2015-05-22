@@ -30,7 +30,7 @@ void pgen_eth::CLEAR(){
 }
 
 void pgen_eth::SEND(const char* ifname){
-	WRAP(ifname);		
+	WRAP();		
 	int sock;
 
 	if((sock=initRawSocket(ifname, 2)) < 0){
@@ -44,7 +44,7 @@ void pgen_eth::SEND(const char* ifname){
 
 
 
-void pgen_eth::WRAP(const char* ifname){
+void pgen_eth::WRAP(){
 	packetType = PGEN_PACKETTYPE_ETH;
 	memset(data, 0, sizeof data);
 	eth.ether_type = htons(0);
@@ -63,7 +63,7 @@ void pgen_eth::WRAP(const char* ifname){
 
 
 void pgen_eth::INFO(){
-	WRAP("no use");
+	WRAP();
 	std::map<int , const char*> _ethtype;
 	_ethtype[0x0800] = "IPv4";
 	_ethtype[0x0806] = "ARP";

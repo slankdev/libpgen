@@ -39,7 +39,7 @@ void pgen_tcp::CLEAR(){
 
 
 void pgen_tcp::SEND(const char* ifname){
-	WRAP(ifname);		
+	WRAP();		
 	int sock;
 	
 	struct sockaddr_in addr;
@@ -55,8 +55,8 @@ void pgen_tcp::SEND(const char* ifname){
 	close(sock);
 }
 
-void pgen_tcp::WRAP(const char* ifname){
-	pgen_ip::WRAP(ifname);
+void pgen_tcp::WRAP(){
+	pgen_ip::WRAP();
 	packetType = PGEN_PACKETTYPE_TCP;
 	memset(data, 0, sizeof data);
 	ip.protocol = MT_IPPROTO_TCP;
@@ -98,7 +98,7 @@ void pgen_tcp::WRAP(const char* ifname){
 
 
 void pgen_tcp::INFO(){
-	WRAP("no use");
+	WRAP();
 	pgen_ip::INFO();
 
 	printf(" * Transmission Control Protocol \n");
