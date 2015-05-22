@@ -81,6 +81,7 @@ void pgen_icmp::WRAP(const char* ifname){
 
 
 void pgen_icmp::INFO(){
+	WRAP("no use");
 	pgen_ip::INFO();
 
 	std::map<int, const char*>  _icmpoption;

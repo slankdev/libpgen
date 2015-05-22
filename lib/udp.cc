@@ -70,6 +70,7 @@ void pgen_udp::WRAP(const char* ifname){
 
 
 void pgen_udp::INFO(){
+	WRAP("no use");
 	pgen_ip::INFO();
 
 	printf(" * User Datagram Protocol \n");

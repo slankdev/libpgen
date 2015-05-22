@@ -79,6 +79,7 @@ void pgen_ip::WRAP(const char* ifname){
 
 
 void pgen_ip::INFO(){
+	WRAP("no use");
 	pgen_eth::INFO();
 	
 	std::map<int, const char*> _ipprot;

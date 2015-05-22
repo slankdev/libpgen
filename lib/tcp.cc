@@ -98,6 +98,7 @@ void pgen_tcp::WRAP(const char* ifname){
 
 
 void pgen_tcp::INFO(){
+	WRAP("no use");
 	pgen_ip::INFO();
 
 	printf(" * Transmission Control Protocol \n");
