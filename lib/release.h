@@ -47,6 +47,8 @@ const char* author_email = "slank.dev@gmail.com";
  *						print packet info inline
  *		[2015.05.16]	add function isIPADDR()				[]
  *		[2015.05.16]	add function isMACADDR()			[]
+ *		[2015.05.25]	change type int to u_char in addr 	[]
+ *						add private or public all value
  *
  *
  *
