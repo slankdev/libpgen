@@ -10,10 +10,7 @@
 
 
 
-
-
-
-#define	MT_ETHERTYPE_PUP		0x0200          /* Xerox PUP */
+#define	MT_ETHERTYPE_PUP		0x0200          /* Xerox PUP *///[[[
 #define MT_ETHERTYPE_SPRITE		0x0500		/* Sprite */
 #define	MT_ETHERTYPE_IP			0x0800		/* IP */
 #define	MT_ETHERTYPE_ARP		0x0806		/* Address resolution */
@@ -375,7 +372,7 @@ struct MYTCP{
 
 
 
-
+//]]]
 
 
 struct MYUDP{
@@ -393,9 +390,17 @@ struct MYUDP{
 			u_int16_t check;
 		};
 	};
+}; 
+
+
+struct MYDNS{
+	u_int16_t id;
+	u_int16_t flags;
+	u_int16_t qdcnt;
+	u_int16_t ancnt;
+	u_int16_t nscnt;
+	u_int16_t arcnt;
 };
-
-
 
 
 

@@ -19,7 +19,8 @@ SRC = pgen-funcs.cc \
 	  icmp.cc \
 	  tcp.cc \
 	  udp.cc \
-	  netutil.cc
+	  netutil.cc \
+	  dns.cc
 HDR = pgen.h \
 	  packconf.h \
 	  address.h \

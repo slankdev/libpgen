@@ -20,11 +20,11 @@
 #include <netinet/udp.h>		// for struct udp		
 
 pgen_udp::pgen_udp(){
-	pgen_ip::CLEAR();
 	CLEAR();
 }
 
 void pgen_udp::CLEAR(){
+	pgen_ip::CLEAR();
 	UDP.srcPort = 53;
 	UDP.dstPort = 53;
 }
@@ -50,7 +50,6 @@ void pgen_udp::SEND(const char* ifname){
 
 void pgen_udp::WRAP(){
 	pgen_ip::WRAP();
-	packetType = PGEN_PACKETTYPE_UDP;
 	ip.protocol = MT_IPPROTO_UDP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
 
