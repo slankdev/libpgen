@@ -21,6 +21,7 @@ static const char* getbender(const char* mac);
 
 class ipaddr{
 	private:
+		
 	public:
 		u_int32_t _addr;		
 		ipaddr(){}
