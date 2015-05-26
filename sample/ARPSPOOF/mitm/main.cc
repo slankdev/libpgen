@@ -4,6 +4,7 @@
 #include <thread>
 
 const char* dev = "wlan0";
+const char* dumpfile = "dump.pcap";
 
 
 void capture(const char* ip1, const char* ip2){
@@ -14,7 +15,6 @@ void capture(const char* ip1, const char* ip2){
 	char filtercmd[256];
 
 	sprintf(filtercmd, "ip && ((net %s) || (net %s))", ip1, ip2);
-	//printf("%s\n", filtercmd);
 
 	p = pcap_open_live(dev, 66536, 1,10,errbuf);
 	if(p == NULL){
@@ -31,7 +31,7 @@ void capture(const char* ip1, const char* ip2){
 		pcap_close(p);
 		return;
 	}
-	pdump = pcap_dump_open(p, "./dump.pcap");
+	pdump = pcap_dump_open(p, dumpfile);
 	if(pdump == NULL){	
 		fprintf(stderr, "%s\n", pcap_geterr(p));
 		pcap_close(p);
@@ -101,7 +101,7 @@ void mitm_attack(const char* ip1, const char* mac1,
 
 
 	for(int i=0; ; i++){
-		printf("0x%04x: %s[%s] <MITM Attack> %s[%s] \n", i, 
+		printf("0x%04x: %s[%s] <MITM> %s[%s] \n", i, 
 				pack_to_target1.ARP.dstIp.c_str(),
 				pack_to_target1.ARP.dstEth.c_str(),
 				pack_to_target2.ARP.dstIp.c_str(),

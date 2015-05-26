@@ -4,4 +4,6 @@
 *.o
 *.a
 *.so
-
+*.pcap
+*.pcapng
+*.dat
