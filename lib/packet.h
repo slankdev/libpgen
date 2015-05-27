@@ -16,6 +16,8 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <string>
+#include <iostream>
 
 
 #define PGEN_PACKLEN 2000
@@ -191,6 +193,29 @@ class pgen_udp : public pgen_ip {
 };
 
 
+
+class pgen_dns :public pgen_udp {
+	protected:
+		struct MYDNSHDR dns;
+	public:
+		struct{
+			u_int16_t id;
+			u_int16_t flags;
+			u_int16_t qdcnt;
+			u_int16_t ancnt;
+			u_int16_t nscnt;
+			u_int16_t arcnt;
+			std::string name;
+			u_int16_t type;
+			u_int16_t cls;
+		}DNS;
+
+		pgen_dns();
+		void CLEAR();
+		void INFO();
+		void WRAP();
+		void SEND(const char* ifname);
+};
 
 
 
