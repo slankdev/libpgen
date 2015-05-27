@@ -14,7 +14,7 @@ int main(int argc, char** argv){
 	pack.DNS.ancnt = 0x0000;
 	pack.DNS.nscnt = 0x0000;
 	pack.DNS.arcnt = 0x0000;
-	pack.DNS.name  = "www.slankdev.net";
+	pack.DNS.name  = "google.com";
 	pack.DNS.type  = 0x0001;
 	pack.DNS.cls   = 0x0001;
 
