@@ -196,7 +196,7 @@ class pgen_udp : public pgen_ip {
 
 class pgen_dns :public pgen_udp {
 	protected:
-		struct MYDNS dns;
+		struct MYDNSHDR dns;
 	public:
 		struct{
 			u_int16_t id;

@@ -26,16 +26,59 @@ void pgen_dns::CLEAR(){
 	pgen_udp::CLEAR();
 }
 
+
+#include <vector>
+#include <string>
 void pgen_dns::WRAP(){
 	pgen_udp::WRAP();
 	udp.dest = htons(53);
-	udp.len = htons(38);
-	char *name;
-	u_int16_t type;
-	u_int16_t cls;
+
+
+	udp.len = htons(42);
+	
+
+
+	char *name;	
+	int count = 0;
+	name = (char*)malloc(DNS.name.length()+2);
+	
+	struct{
+		u_int16_t type;
+		u_int16_t cls;
+	}_query;
+
+
+	char *str;
+	char buf[256];
+	strcpy(buf, DNS.name.c_str());
+	
+	str = strtok(buf, ".");
+	name[count] = (char)strlen(str);
+	count++;
+	for(int i=0; i<strlen(str); i++){
+		name[count] = str[i];
+		count++;
+	}
+	while((str=strtok(NULL, ".")) != NULL){
+		name[count] = (char)strlen(str);
+		count++;
+		for(int i=0; i<strlen(str); i++){
+			name[count] = str[i];
+			count++;
+		}
+	}
+	name[count] = 0x00;
+	count++;
+
+	printf("\ncount: %d \n", count);
+	for(int i=0; i<count; i++){
+		printf("%02x ", name[i]);	
+	}
+
+
+
 
 	memset(&dns, 0, sizeof dns);
-	//setting dns Structure
 	dns.id = htons(DNS.id);
 	dns.flags = htons(DNS.flags);
 	dns.qdcnt = htons(DNS.qdcnt);
@@ -43,12 +86,9 @@ void pgen_dns::WRAP(){
 	dns.nscnt = htons(DNS.nscnt);
 	dns.arcnt = htons(DNS.arcnt);
 
-	name = (char*)malloc(DNS.name.length());
-	//strcpy(name, DNS.name.c_str());
-	sprintf(name,  "%c%s", 0x08, DNS.name.c_str());
-	sprintf(name,  "%cslankdev%cnet", 0x08, 0x03);
-	type = htons(DNS.type);
-	cls  = htons(DNS.cls);
+
+	_query.type = htons(DNS.type);
+	_query.cls  = htons(DNS.cls);
 
 
 	u_char* p = data;
@@ -58,17 +98,15 @@ void pgen_dns::WRAP(){
 	p += sizeof(struct MYUDP);
 
 	memcpy(p, &dns, sizeof dns);
-	p += sizeof(struct MYDNS);
-	memcpy(p, name, strlen(name)+1);
-	p += strlen(name) + 1;
-	memcpy(p, &(type), sizeof(u_int16_t));
-	p += sizeof(u_int16_t);
-	memcpy(p, &(cls), sizeof(u_int16_t));
-	p += sizeof(u_int16_t);
+	p += sizeof(struct MYDNSHDR);
+
+	memcpy(p, name, count);
+	p += count;
+
+	memcpy(p, &_query, sizeof(_query));
+	p += sizeof(_query);
 	
 	len = p-data;
-
-	
 }
 
 

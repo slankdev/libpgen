@@ -9,8 +9,8 @@
 #include <netinet/ip_icmp.h>		// i want delete this
 
 
-
-#define	MT_ETHERTYPE_PUP		0x0200          /* Xerox PUP *///[[[
+ 
+# define	MT_ETHERTYPE_PUP		0x0200          /* Xerox PUP *///[[[
 #define MT_ETHERTYPE_SPRITE		0x0500		/* Sprite */
 #define	MT_ETHERTYPE_IP			0x0800		/* IP */
 #define	MT_ETHERTYPE_ARP		0x0806		/* Address resolution */
@@ -393,7 +393,7 @@ struct MYUDP{
 }; 
 
 
-struct MYDNS{
+struct MYDNSHDR{
 	u_int16_t id;
 	u_int16_t flags;
 	u_int16_t qdcnt;
