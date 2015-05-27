@@ -21,4 +21,5 @@ int main(int argc, char** argv){
 
 	pack.SEND(dev);
 	pack.hex();
+	pack.INFO();
 }

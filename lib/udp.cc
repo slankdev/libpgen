@@ -73,9 +73,9 @@ void pgen_udp::INFO(){
 	pgen_ip::INFO();
 
 	printf(" * User Datagram Protocol \n");
-	printf("   - Source Port      :  %d (%s)\n", 
+	printf("    - Source Port     :  %d (%s)\n", 
 			ntohs(udp.source), port2service(ntohs(udp.source), 2));
-	printf("   - Destination Port :  %d (%s)\n", 
+	printf("    - Destination Port:  %d (%s)\n", 
 			ntohs(udp.dest), port2service(ntohs(udp.dest), 2));
 }
 

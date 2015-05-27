@@ -24,6 +24,7 @@ pgen_dns::pgen_dns(){
 
 void pgen_dns::CLEAR(){
 	pgen_udp::CLEAR();
+
 }
 
 
@@ -111,4 +112,13 @@ void pgen_dns::SEND(const char* ifname){
 
 void pgen_dns::INFO(){
 	WRAP();
+	pgen_udp::INFO();
+
+	printf(" * Domain Name System \n");
+	printf("    - Identification  : 0x%04x\n", ntohs(dns.id));
+	printf("    - Flags           : 0x%04x\n", ntohs(dns.flags));
+	printf("    - Question        : 0x%04x\n", ntohs(dns.qdcnt));
+	printf("    - Answer RRs      : 0x%04x\n", ntohs(dns.ancnt));
+	printf("    - Authority RRs   : 0x%04x\n", ntohs(dns.nscnt));
+	printf("    - Additional RRs  : 0x%04x\n", ntohs(dns.arcnt));
 }
