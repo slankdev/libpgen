@@ -17,7 +17,7 @@
 
 
 
-
+/*
 char* pgen_getIP(const char* ifname){
 	int sockd;
 	struct ifreq ifr;
@@ -60,11 +60,11 @@ char* pgen_getMASK(const char* ifname){
 
 	return maskstr;
 }
+*/
 
 
 
-
-
+/*
 char* pgen_getMAC( const char* ifname){
 	int sockd;
 	struct ifreq ifr;
@@ -88,7 +88,7 @@ char* pgen_getMAC( const char* ifname){
 	return macstr;
 }
 
-
+*/
 
 
 void pgen_checkPrivileges(void){
