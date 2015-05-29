@@ -8,6 +8,18 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <time.h>
+
 #include "pgen.h"
 #include "pgen-funcs.h"
 
@@ -30,6 +42,46 @@ class ipaddr{
 		}
 		ipaddr(const ipaddr &i){
 			_addr = i._addr;
+		}
+		bool setipbydev(const char* ifname){
+			int sockd;
+			struct ifreq ifr;
+			struct sockaddr_in *sa;
+			char* ipstr;
+
+			if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+				perror("socket()!");
+				return false;
+			}
+			ifr.ifr_addr.sa_family = AF_INET;
+			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
+			ioctl(sockd, SIOCGIFADDR, &ifr);
+			close(sockd);
+			sa = (struct sockaddr_in*)&ifr.ifr_addr;
+			ipstr = inet_ntoa(sa->sin_addr);
+
+			_addr = inet_addr(ipstr);
+			return true;
+		}
+		bool setmaskbydev(const char* ifname){
+			int sockd;
+			struct ifreq ifr;
+			struct sockaddr_in *sa;
+			char* maskstr;
+
+			if((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+				perror("socket");
+				return false;
+			}
+			ifr.ifr_addr.sa_family = AF_INET;
+			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
+			ioctl(sockd, SIOCGIFNETMASK, &ifr);
+			close(sockd);
+			sa = (struct sockaddr_in*)&ifr.ifr_addr;
+			maskstr = inet_ntoa(sa->sin_addr);
+
+			_addr = inet_addr(maskstr);
+			return true;
 		}
 		char* c_str(){
 			char* str = (char*)malloc(sizeof(char)*16);
@@ -134,6 +186,30 @@ class macaddr{
 		macaddr(const macaddr &m){
 			for(int i=0; i<6; i++)
 				_addr[i] = m._addr[i];
+		}
+		bool setmacbydev(const char* ifname){
+			int sockd;
+			struct ifreq ifr;
+			char* macstr;
+			u_char addr[6];
+
+			if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
+				perror("socket()!");
+				return false;
+			}
+			macstr = (char*)malloc(sizeof(char)*19);
+			ifr.ifr_addr.sa_family = AF_INET;
+			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
+			ioctl(sockd, SIOCGIFHWADDR, &ifr);
+			close(sockd);
+			for(int i=0; i<6; i++)
+				addr[i] = (unsigned char)ifr.ifr_hwaddr.sa_data[i];
+			snprintf(macstr ,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
+				*addr, *(addr+1), *(addr+2), *(addr+3), *(addr+4), *(addr+5));
+
+			*this = macstr;
+			return true;
+				
 		}
 		char* c_str(){
 			char* str = (char*)malloc(sizeof(char)*19);

