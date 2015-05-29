@@ -10,7 +10,7 @@
 
 
  
-# define	MT_ETHERTYPE_PUP		0x0200          /* Xerox PUP *///[[[
+#define	MT_ETHERTYPE_PUP		0x0200		/* Xerox PUP */
 #define MT_ETHERTYPE_SPRITE		0x0500		/* Sprite */
 #define	MT_ETHERTYPE_IP			0x0800		/* IP */
 #define	MT_ETHERTYPE_ARP		0x0806		/* Address resolution */
@@ -27,11 +27,6 @@ struct MYETH{
 	u_int8_t  ether_shost[6];	/* source ether addr	*/
 	u_int16_t ether_type;		        /* packet type ID field	*/
 };
-
-
-
-
-
 
 
 
@@ -100,7 +95,6 @@ struct MYETH{
          
 #define MT_ARPHRD_VOID	  		0xFFFF	/* Void type, nothing is known.  */
 #define MT_ARPHRD_NONE	  		0xFFFE	/* Zero header length.  */
-
 
 #define	MT_ARPOP_REQUEST	1		/* ARP request.  */
 #define	MT_ARPOP_REPLY		2		/* ARP reply.  */
@@ -291,106 +285,50 @@ struct MYICMP{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 struct MYTCP{
-	__extension__ union{
-		struct{
-			u_int16_t th_sport;		/* source port */
-			u_int16_t th_dport;		/* destination port */
-			u_int32_t th_seq;		/* sequence number */
-			u_int32_t th_ack;		/* acknowledgement number */
-
+	u_int16_t source;
+	u_int16_t dest;
+	u_int32_t seq;
+	u_int32_t ack_seq;
 # if __BYTE_ORDER == __LITTLE_ENDIAN
-			u_int8_t th_x2:4;		/* (unused) */
-			u_int8_t th_off:4;		/* data offset */
+	u_int16_t res1:4;
+	u_int16_t doff:4;
+	u_int16_t fin:1;
+	u_int16_t syn:1;
+	u_int16_t rst:1;
+	u_int16_t psh:1;
+	u_int16_t ack:1;
+	u_int16_t urg:1;
+	u_int16_t res2:2;
 # elif __BYTE_ORDER == __BIG_ENDIAN
-			u_int8_t th_off:4;		/* data offset */
-			u_int8_t th_x2:4;		/* (unused) */
+	u_int16_t doff:4;
+	u_int16_t res1:4;
+	u_int16_t res2:2;
+	u_int16_t urg:1;
+	u_int16_t ack:1;
+	u_int16_t psh:1;
+	u_int16_t rst:1;
+	u_int16_t syn:1;
+	u_int16_t fin:1;
 # else
 #  error "Adjust your <bits/endian.h> defines"
 # endif
-
-			u_int8_t th_flags;
-# define TH_FIN		0x01
-# define TH_SYN		0x02
-# define TH_RST		0x04
-# define TH_PUSH	0x08
-# define TH_ACK		0x10
-# define TH_URG		0x20
-			u_int16_t th_win;		/* window */
-			u_int16_t th_sum;		/* checksum */
-			u_int16_t th_urp;		/* urgent pointer */
-		};
-		struct{
-			u_int16_t source;
-			u_int16_t dest;
-			u_int32_t seq;
-			u_int32_t ack_seq;
-# if __BYTE_ORDER == __LITTLE_ENDIAN
-			u_int16_t res1:4;
-			u_int16_t doff:4;
-			u_int16_t fin:1;
-			u_int16_t syn:1;
-			u_int16_t rst:1;
-			u_int16_t psh:1;
-			u_int16_t ack:1;
-			u_int16_t urg:1;
-			u_int16_t res2:2;
-# elif __BYTE_ORDER == __BIG_ENDIAN
-			u_int16_t doff:4;
-			u_int16_t res1:4;
-			u_int16_t res2:2;
-			u_int16_t urg:1;
-			u_int16_t ack:1;
-			u_int16_t psh:1;
-			u_int16_t rst:1;
-			u_int16_t syn:1;
-			u_int16_t fin:1;
-# else
-#  error "Adjust your <bits/endian.h> defines"
-# endif
-			u_int16_t window;
-			u_int16_t check;
-			u_int16_t urg_ptr;
-		};
-	};
+	u_int16_t window;
+	u_int16_t check;
+	u_int16_t urg_ptr;
 };
 
 
 
 
-
-
-
-//]]]
-
-
 struct MYUDP{
-	__extension__ union{
-		struct{
-			u_int16_t uh_sport;		/* source port */
-			u_int16_t uh_dport;		/* destination port */
-			u_int16_t uh_ulen;		/* udp length */
-			u_int16_t uh_sum;		/* udp checksum */
-		};
-		struct{
-			u_int16_t source;
-			u_int16_t dest;
-			u_int16_t len;
-			u_int16_t check;
-		};
-	};
+	u_int16_t source;
+	u_int16_t dest;
+	u_int16_t len;
+	u_int16_t check;
 }; 
+
+
 
 
 struct MYDNSHDR{
