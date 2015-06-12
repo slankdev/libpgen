@@ -8,6 +8,12 @@
 #include <netinet/ip.h>				// i want delete this
 #include <netinet/ip_icmp.h>		// i want delete this
 
+typedef u_int8_t  bit8;
+typedef u_int16_t bit16;
+typedef u_int32_t bit32;
+
+
+
 
  
 #define	MT_ETHERTYPE_PUP		0x0200		/* Xerox PUP */
@@ -23,9 +29,9 @@
 #define MT_ETHERTYPE_LOOPBACK	0x9000		/* used to test interfaces */
 
 struct MYETH{
-	u_int8_t  ether_dhost[6];	/* destination eth addr	*/
-	u_int8_t  ether_shost[6];	/* source ether addr	*/
-	u_int16_t ether_type;		        /* packet type ID field	*/
+	bit8  ether_dhost[6];	/* destination eth addr	*/
+	bit8  ether_shost[6];	/* source ether addr	*/
+	bit16 ether_type;		        /* packet type ID field	*/
 };
 
 
@@ -105,19 +111,19 @@ struct MYETH{
 #define	MT_ARPOP_NAK		10		/* (ATM)ARP NAK.  */
 
 struct myArpHdr{
-	unsigned short int ar_hrd;		/* Format of hardware address.  */
-	unsigned short int ar_pro;		/* Format of protocol address.  */
-	unsigned char ar_hln;			/* Length of hardware address.  */
-	unsigned char ar_pln;			/* Length of protocol address.  */
-	unsigned short int ar_op;		/* ARP opcode (command).  */
+	bit16 ar_hrd;		/* Format of hardware address.  */
+	bit16 ar_pro;		/* Format of protocol address.  */
+	bit8  ar_hln;			/* Length of hardware address.  */
+	bit8  ar_pln;			/* Length of protocol address.  */
+	bit16 ar_op;		/* ARP opcode (command).  */
 };
 
 struct	MYARP{
 	struct myArpHdr  ea_hdr;	/* fixed-size header */
-	u_int8_t arp_sha[6];		/* sender hardware address */
-	u_int8_t arp_spa[4];		/* sender protocol address */
-	u_int8_t arp_tha[6];		/* target hardware address */
-	u_int8_t arp_tpa[4];		/* target protocol address */
+	bit8 arp_sha[6];		/* sender hardware address */
+	bit8 arp_spa[4];		/* sender protocol address */
+	bit8 arp_tha[6];		/* target hardware address */
+	bit8 arp_tpa[4];		/* target protocol address */
 };
 
 
@@ -153,24 +159,24 @@ struct	MYARP{
 
 struct MYIP{
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-	unsigned int ihl:4;
-	unsigned int version:4;
+	bit32 ihl:4;
+	bit32 version:4;
 #elif __BYTE_ORDER == __BIG_ENDIAN
-	unsigned int version:4;
-	unsigned int ihl:4;
+	bit32 version:4;
+	bit32 ihl:4;
 #else
 # error	"Please fix <bits/endian.h>"
 #endif
 
-	u_int8_t tos;
-	u_int16_t tot_len;
-	u_int16_t id;
-	u_int16_t frag_off;
-	u_int8_t ttl;
-	u_int8_t protocol;
-	u_int16_t check;
-	u_int32_t saddr;
-	u_int32_t daddr;
+	bit8  tos;
+	bit16 tot_len;
+	bit16 id;
+	bit16 frag_off;
+	bit8  ttl;
+	bit8  protocol;
+	bit16 check;
+	bit32 saddr;
+	bit32 daddr;
 	/*The options start here. */
 };
 
@@ -226,28 +232,28 @@ struct MYIP{
 
 
 struct MYICMP{
-	u_int8_t  icmp_type;			/* type of message, see below */
-	u_int8_t  icmp_code;			/* type sub code */
-	u_int16_t icmp_cksum;			/* ones complement checksum of struct */
+	bit8  icmp_type;			/* type of message, see below */
+	bit8  icmp_code;			/* type sub code */
+	bit16 icmp_cksum;			/* ones complement checksum of struct */
 	union{
-		u_char ih_pptr;				/* ICMP_PARAMPROB */
+		bit8   ih_pptr;				/* ICMP_PARAMPROB */
 		struct in_addr ih_gwaddr;	/* gateway address */
 		struct ih_idseq{			/* echo datagram */
-			u_int16_t icd_id;
-			u_int16_t icd_seq;
+			bit16 icd_id;
+			bit16 icd_seq;
 		} ih_idseq;
-		u_int32_t ih_void;
+		bit32  ih_void;
 
 		/* ICMP_UNREACH_NEEDFRAG -- Path MTU Discovery (RFC1191) */
 		struct ih_pmtu{
-			u_int16_t ipm_void;
-			u_int16_t ipm_nextmtu;
+			bit16 ipm_void;
+			bit16 ipm_nextmtu;
 		} ih_pmtu;
 
 		struct ih_rtradv{
-			u_int8_t irt_num_addrs;
-			u_int8_t irt_wpa;
-			u_int16_t irt_lifetime;
+			bit16 irt_num_addrs;
+			bit16 irt_wpa;
+			bit16 irt_lifetime;
 		} ih_rtradv;
 	} icmp_hun;
 #define	icmp_pptr	icmp_hun.ih_pptr
@@ -262,17 +268,17 @@ struct MYICMP{
 #define	icmp_lifetime	icmp_hun.ih_rtradv.irt_lifetime
 	union{
 		struct{
-			u_int32_t its_otime;
-			u_int32_t its_rtime;
-			u_int32_t its_ttime;
+			bit32 its_otime;
+			bit32 its_rtime;
+			bit32 its_ttime;
 		} id_ts;
 		struct{
 			struct ip idi_ip;
 			/* options and then 64 bits of data */
 		} id_ip;
 		struct icmp_ra_addr id_radv;
-		u_int32_t   id_mask;
-		u_int8_t    id_data[1];
+		bit32 id_mask;
+		bit8  id_data[1];
 	} icmp_dun;
 #define	icmp_otime	icmp_dun.id_ts.its_otime
 #define	icmp_rtime	icmp_dun.id_ts.its_rtime
@@ -286,58 +292,58 @@ struct MYICMP{
 
 
 struct MYTCP{
-	u_int16_t source;
-	u_int16_t dest;
-	u_int32_t seq;
-	u_int32_t ack_seq;
+	bit16 source;
+	bit16 dest;
+	bit32 seq;
+	bit32 ack_seq;
 # if __BYTE_ORDER == __LITTLE_ENDIAN
-	u_int16_t res1:4;
-	u_int16_t doff:4;
-	u_int16_t fin:1;
-	u_int16_t syn:1;
-	u_int16_t rst:1;
-	u_int16_t psh:1;
-	u_int16_t ack:1;
-	u_int16_t urg:1;
-	u_int16_t res2:2;
+	bit16 res1:4;
+	bit16 doff:4;
+	bit16 fin:1;
+	bit16 syn:1;
+	bit16 rst:1;
+	bit16 psh:1;
+	bit16 ack:1;
+	bit16 urg:1;
+	bit16 res2:2;
 # elif __BYTE_ORDER == __BIG_ENDIAN
-	u_int16_t doff:4;
-	u_int16_t res1:4;
-	u_int16_t res2:2;
-	u_int16_t urg:1;
-	u_int16_t ack:1;
-	u_int16_t psh:1;
-	u_int16_t rst:1;
-	u_int16_t syn:1;
-	u_int16_t fin:1;
+	bit16 doff:4;
+	bit16 res1:4;
+	bit16 res2:2;
+	bit16 urg:1;
+	bit16 ack:1;
+	bit16 psh:1;
+	bit16 rst:1;
+	bit16 syn:1;
+	bit16 fin:1;
 # else
 #  error "Adjust your <bits/endian.h> defines"
 # endif
-	u_int16_t window;
-	u_int16_t check;
-	u_int16_t urg_ptr;
+	bit16 window;
+	bit16 check;
+	bit16 urg_ptr;
 };
 
 
 
 
 struct MYUDP{
-	u_int16_t source;
-	u_int16_t dest;
-	u_int16_t len;
-	u_int16_t check;
+	bit16 source;
+	bit16 dest;
+	bit16 len;
+	bit16 check;
 }; 
 
 
 
 
 struct MYDNSHDR{
-	u_int16_t id;
-	u_int16_t flags;
-	u_int16_t qdcnt;
-	u_int16_t ancnt;
-	u_int16_t nscnt;
-	u_int16_t arcnt;
+	bit16 id;
+	bit16 flags;
+	bit16 qdcnt;
+	bit16 ancnt;
+	bit16 nscnt;
+	bit16 arcnt;
 };
 
 

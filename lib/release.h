@@ -56,7 +56,9 @@ const char* author_email = "slank.dev@gmail.com";
  *		BUG			[date]  about  [fin-date]
  *		[date------]	title		 						[]
  *		
- *
+ *		CHANGES
+ *		[2015.06.12]	typedef int32 bit32
+ *						typedef int16 bit16...
  */
 
 #endif

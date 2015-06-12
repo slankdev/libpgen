@@ -123,6 +123,8 @@ class pgen_icmp : public pgen_ip {
 		struct{	
 			int option;
 			int code;
+			int id;
+			int seq;
 		}ICMP;
 		
 		pgen_icmp();

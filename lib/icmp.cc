@@ -31,6 +31,8 @@ void pgen_icmp::CLEAR(){
 	pgen_packet::CLEAR();
 	ICMP.option = 8;
 	ICMP.code = 0;
+	ICMP.id = 1;
+	ICMP.seq = 1;
 }
 
 void pgen_icmp::SEND(const char* ifname){
@@ -64,8 +66,8 @@ void pgen_icmp::WRAP(){
 	icmp.icmp_code = ICMP.code;
 	icmp.icmp_cksum = 0;
 	icmp.icmp_void = 0;
-	icmp.icmp_hun.ih_idseq.icd_id = htons(1);
-	icmp.icmp_hun.ih_idseq.icd_seq = htons(1);
+	icmp.icmp_hun.ih_idseq.icd_id = htons(ICMP.id);
+	icmp.icmp_hun.ih_idseq.icd_seq = htons(ICMP.seq);
 	icmp.icmp_cksum = checksum(&icmp, sizeof icmp);
 
 	u_char* p = data;
