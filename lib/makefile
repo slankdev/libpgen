@@ -32,8 +32,8 @@ OBJ = $(SRC:.cc=.o)
 CFLAGS = -Wall -fPIC
 
 
-all: libpgen.a
-#all: libpgen.so
+#all: libpgen.a
+all: libpgen.so
 
 
 libpgen.a: $(OBJ)
