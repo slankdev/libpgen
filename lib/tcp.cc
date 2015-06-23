@@ -95,7 +95,27 @@ void pgen_tcp::WRAP(){
 	len = p - data;
 }
 
+void pgen_tcp::SUMMARY(){
+	int seq = tcp.seq;
+	int win = tcp.window;
+	int len = tcp.doff;
+	int sport = tcp.source;
+	int dport = tcp.dest;
+	
+	std::string flag;
+	if(tcp.fin == 1)	flag+= "FIN";
+	if(tcp.syn == 1)	flag+= "SYN";
+	if(tcp.rst == 1)	flag+= "RST";
+	if(tcp.psh == 1)	flag+= "PSH";
+	if(tcp.ack == 1)	flag+= "ACK";
+	if(tcp.urg == 1)	flag+= "URG";
 
+
+
+	
+	printf("%d > %d [%s] seq=%d win=%d len=%d\n",
+			sport, dport, flag.c_str(), seq, win, len);
+}
 
 void pgen_tcp::INFO(){
 	WRAP();

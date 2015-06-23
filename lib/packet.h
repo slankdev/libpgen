@@ -136,6 +136,7 @@ class pgen_icmp : public pgen_ip {
 		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 		void SUMMARY();
+
  };
 
 
@@ -171,6 +172,7 @@ class pgen_tcp : public pgen_ip {
 		void WRAP();
 		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
+		void SUMMARY();
 };
 
 

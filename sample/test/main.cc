@@ -7,12 +7,15 @@ const char* dev = "wlan0";
 
 
 int main(){
-	pgen_icmp pack;
+	pgen_tcp pack;
 	
 	pack.IP.src = "192.168.179.123";
 	pack.IP.dst = "192.168.179.1";
-	pack.ICMP.option = 0;
-	pack.ICMP.code = 0;
+	
+	pack.TCP.srcPort = 12345;
+	pack.TCP.dstPort   = 54321;
+	pack.TCP.frag.syn =1;
+	pack.TCP.frag.ack =1;
 	
 	pack.INFO();
 	pack.SUMMARY();
