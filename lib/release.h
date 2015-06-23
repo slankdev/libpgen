@@ -41,12 +41,12 @@ class libpgen{
  *		[2015.05.10]	make myPacket structure in UDP		[2015.05.10]
  *		[2015.05.10]	add macro of packet options			[2015.05.10]
  *		[2015.05.11]	add function port2service(int)		[2015.05.11]
+ *		[2015.05.16]	add function summary(void)			[2015.06.23]
+ *						print packet info inline
  *   	[2015.05.07]	add setData in ICMP TCP UDP			[]
  *   					add function 
- *		[2015.05.16]	add function unlookup(const)		[]
- *						ipaddr uslookup(url);		 
- *		[2015.05.16]	add function summary(void)			[]
- *						print packet info inline
+ *		[2015.05.16]	add function nslookup(const)		[]
+ *						ipaddr nslookup(url);		 
  *		[2015.05.16]	add function isIPADDR()				[]
  *		[2015.05.16]	add function isMACADDR()			[]
  *		[2015.05.25]	change type int to u_char in addr 	[]
