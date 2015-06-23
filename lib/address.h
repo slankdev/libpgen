@@ -15,6 +15,7 @@
 
 #include "pgen.h"
 #include "pgen-funcs.h"
+#include "mytypes.h"
 
 #define FILEPATH "/home/slank/git/libpgen/lib/"
 
@@ -28,13 +29,17 @@ class ipaddr{
 	private:
 		
 	public:
-		u_int32_t _addr;		
+		bit32 _addr;		
+		
 		ipaddr(){}
 		ipaddr(const char* str){
 			_addr = inet_addr(str);
 		}
 		ipaddr(const ipaddr &i){
 			_addr = i._addr;
+		}
+		bit32 getbit(){
+			return _addr;	
 		}
 		bool setipbydev(const char* ifname){
 			int sockd;
@@ -93,6 +98,7 @@ class ipaddr{
 			else			return false;
 		}
 		ipaddr& operator=(const ipaddr i){
+			//_addr = i._addr;
 			_addr = i._addr;
 			return *this;
 		}
@@ -168,7 +174,7 @@ class ipaddr{
 class macaddr{
 	private:
 	public:
-		u_char _addr[6];
+		bit8 _addr[6];
 		macaddr(){}
 		macaddr(const char* str){
 			unsigned int buf[6];

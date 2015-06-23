@@ -2,12 +2,14 @@
 #define RELEASE_H
 
 
+class libpgen{
+	static const char* version = "0.01";
+	static const char* name = "libpgen";
+	static const char* fullname = "libpgen ver 0.01";
+	static const char* author = "slank (Hiroki Shirokura)";
+	static const char* author_email = "slank.dev@gmail.com";
+}
 
-const char* version = "0.01";
-const char* name = "libpgen";
-const char* fullname = "libpgen ver 0.01";
-const char* author = "slank (Hiroki Shirokura)";
-const char* author_email = "slank.dev@gmail.com";
 
 
 /*		TODO		[date]  about  [fin-date]

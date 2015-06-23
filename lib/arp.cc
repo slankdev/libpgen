@@ -79,6 +79,16 @@ void pgen_arp::WRAP(){
 }
 
 
+void pgen_arp::SUMMARY(){
+	if(ARP.option == 2){
+		printf("who has %s tell %s \n", ARP.dstIp.c_str(), ARP.srcEth.c_str());
+	}else if(ARP.option == 1){
+		printf("%s is at %s\n", ARP.srcIp.c_str(), ARP.srcEth.c_str());	
+	}else{
+		printf("other arp operation!! \n");	
+	}
+}
+
 
 void pgen_arp::INFO(){
 	WRAP();

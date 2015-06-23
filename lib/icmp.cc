@@ -6,8 +6,7 @@
 #include "packet.h"
 #include "address.h"
 #include "packconf.h"
-#include "pgen-funcs.h"
-
+#include "pgen-funcs.h" 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -76,10 +75,29 @@ void pgen_icmp::WRAP(){
 	memcpy(p, &icmp, sizeof(icmp));
 	p += sizeof(icmp);
 	len = p-data;
+} 
+
+
+
+void pgen_icmp::SUMMARY(){
+	INFO();
+
+	if(ICMP.option == PGEN_ICMPOP_ECHO && ICMP.code == 0){
+		printf("Echo Request id=%d seq=%d ttl=%d \n", 
+				ntohs(icmp.icmp_hun.ih_idseq.icd_id),
+				ntohs(icmp.icmp_hun.ih_idseq.icd_seq),
+				ip.ttl
+				);
+	}else if(ICMP.option == PGEN_ICMPOP_ECHOREPLY && ICMP.code == 0){
+		printf("Echo Relay   id=%d seq=%d ttl=%d\n", 
+				ntohs(icmp.icmp_hun.ih_idseq.icd_id),
+				ntohs(icmp.icmp_hun.ih_idseq.icd_seq),
+				ip.ttl
+			  );
+	}else{
+		printf("other icmp type\n");	
+	}
 }
-
-
-
 
 
 void pgen_icmp::INFO(){

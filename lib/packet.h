@@ -38,6 +38,7 @@ class pgen_packet{
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;
 		virtual void SEND(const char* ifname)=0;
+		virtual void SUMMARY()=0;
 		void hex();
 		void hexFull();
 };
@@ -85,6 +86,7 @@ class pgen_arp : public pgen_eth {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
+		void SUMMARY();
 };
 
 
@@ -133,6 +135,7 @@ class pgen_icmp : public pgen_ip {
 		void WRAP();
 		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
+		void SUMMARY();
  };
 
 
