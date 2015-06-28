@@ -17,7 +17,7 @@
 #include "pgen-funcs.h"
 #include "mytypes.h"
 
-#define FILEPATH "/home/slank/git/libpgen/lib/"
+#define FILEPATH "/usr/local/etc/mac_code.list"
 
 
 static const char* getbender(const char* mac);
