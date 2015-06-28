@@ -219,9 +219,10 @@ class macaddr{
 		char* bender(){
 			FILE *fp;
 			const char* filename = FILEPATH;
+			int strsize = 256;
 			unsigned int  mac[3];
-			char buf[256];
-			char* bender = (char*)malloc(sizeof(char) * 256);
+			char buf[strsize];
+			char* bender = (char*)malloc(sizeof(char) * strsize);
 			u_char mymac[3];
 			if((fp=fopen(filename, "r")) == NULL){
 				perror("getbenderbymac fopen");
@@ -236,8 +237,8 @@ class macaddr{
 					return bender;
 				}
 				memset(mac, 0, sizeof(mac));
-				memset(bender, 0, sizeof(bender));
-				memset(buf, 0, sizeof(buf));
+				memset(bender, 0, strsize);
+				memset(buf, 0, strsize);
 			}fclose(fp);
 			strcpy(bender, "not-found");
 			return bender;

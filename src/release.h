@@ -57,6 +57,16 @@ class libpgen{
  *
  *		BUG			[date]  about  [fin-date]
  *		[date------]	title		 						[]
+ *		[2015.06.28]	address.h:239 has some warning 		[]
+ *						near malloc() and memset() 
+ *						in string size is not true
+ *		[2015.06.28]	address.h:23 has some warning 		[]
+ *						near malloc() and memset() 
+ *						in string size is not true
+ *		[2015.06.28]	pgen-func.h:39 has some warning 	[]
+ *						near malloc() and memset() 
+ *						in string size is not true
+ *		[2015.06.28]	dns.cc;60 has memory error			[]
  *		
  *		CHANGES
  *		[2015.06.12]	typedef int32 bit32
