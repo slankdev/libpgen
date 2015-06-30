@@ -19,11 +19,12 @@
 
 
 pgen_eth::pgen_eth(){
-	pgen_packet::CLEAR();
 	CLEAR();	
 }
 
 void pgen_eth::CLEAR(){
+	pgen_packet::CLEAR();
+
 	ETH.src = 0;
 	ETH.dst = 0;
 	ETH.type = htons(0);

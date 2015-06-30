@@ -19,11 +19,11 @@
 #include <netinet/tcp.h>		// for struct tcp		
 
 pgen_tcp::pgen_tcp(){
-	pgen_ip::CLEAR();
 	CLEAR();
 }
 
 void pgen_tcp::CLEAR(){
+	pgen_ip::CLEAR();
 	TCP.srcPort = 20;
 	TCP.dstPort = 80;
 	TCP.frag.fin = 0;

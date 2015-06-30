@@ -22,11 +22,11 @@
 
 
 pgen_arp::pgen_arp(){
-	pgen_eth::CLEAR();
 	CLEAR();
 }
 
 void pgen_arp::CLEAR(){
+	pgen_eth::CLEAR();
 	ARP.srcIp = 0;
 	ARP.dstIp = 0;
 	ARP.srcEth = 0;

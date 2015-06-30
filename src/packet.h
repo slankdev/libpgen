@@ -38,7 +38,6 @@ class pgen_packet{
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;
 		virtual void SEND(const char* ifname)=0;
-		//virtual void SUMMARY()=0;
 		void hex();
 		void hexFull();
 };
@@ -237,9 +236,11 @@ class pgen_ardrone : public pgen_udp {
 				long roll;
 				long pitch;
 				long gaz;
-				long yaw1;
-				long yaw2;
-				long yaw3;
+				struct{
+					long x;
+					long y;
+					long z;
+				}yaw;
 			}pcmd_mag;
 			struct{
 				long seq;
@@ -251,9 +252,9 @@ class pgen_ardrone : public pgen_udp {
 		void CLEAR();
 		void WRAP();
 		void SEND(const char* ifname);
+		void INFO();
 		void SUMMARY();
-		void TEST();
-		void TEST0();
+		void _printdata();
 };
 
 

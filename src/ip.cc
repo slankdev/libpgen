@@ -20,10 +20,10 @@
 
 
 pgen_ip::pgen_ip(){
-	pgen_eth::CLEAR();
 	CLEAR();	
 }
 void pgen_ip::CLEAR(){
+	pgen_eth::CLEAR();
 	IP.src = 0;
 	IP.dst = "127.0.0.1";
 	IP.type = IPPROTO_IP;

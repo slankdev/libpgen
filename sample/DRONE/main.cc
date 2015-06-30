@@ -16,12 +16,13 @@ int main(){
 	pack.ARDRONE.pcmd_mag.roll = 333;
 	pack.ARDRONE.pcmd_mag.pitch = 444;
 	pack.ARDRONE.pcmd_mag.gaz = 555;
-	pack.ARDRONE.pcmd_mag.yaw1 = 666;
-	pack.ARDRONE.pcmd_mag.yaw2 = 777;
-	pack.ARDRONE.pcmd_mag.yaw3 = 888;
+	pack.ARDRONE.pcmd_mag.yaw.x = 666;
+	pack.ARDRONE.pcmd_mag.yaw.y = 777;
+	pack.ARDRONE.pcmd_mag.yaw.z = 888;
 	pack.ARDRONE.ref.seq = 111;
 	pack.ARDRONE.ref.command = 222;
-
-
-	pack.SEND(dev);
+	
+	pack.INFO();
+	//pack.SUMMARY();
+	//pack.SEND(dev);
 }

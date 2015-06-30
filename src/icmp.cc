@@ -22,7 +22,6 @@
 
 
 pgen_icmp::pgen_icmp(){
-	pgen_ip::CLEAR();
 	CLEAR();
 }
 
