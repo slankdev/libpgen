@@ -50,8 +50,7 @@ class pgen_packet{
 //#include <net/ethernet.h> 		/* for struct ether_header */
 class pgen_eth : public pgen_packet {
 	protected:
-		struct MYETH eth;
-	public:
+		struct MYETH eth; public:
 		struct{
 			int type;
 			macaddr src;
@@ -224,7 +223,23 @@ class pgen_dns :public pgen_udp {
 		void SEND(const char* ifname);
 };
 
+class pgen_ardrone : public pgen_udp {
+	protected:
+		struct MYARDRONE ardrone;
+	public:
+		struct{
+			char pcmd_mag[256];
+			int  pcmd_mag_len;
+			char ref[256];
+			int  ref_len;
+		}AR_DRONE;
 
+		pgen_ardrone();
+		void CLEAR();
+		void INFO();
+		void WRAP();
+		void SEND(const char* ifname);
+};
 
 
 
