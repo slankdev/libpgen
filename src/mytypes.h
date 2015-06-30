@@ -348,8 +348,5 @@ struct MYDNSHDR{
 
 
 
-struct MYARDRONE{
-
-};
 
 #endif

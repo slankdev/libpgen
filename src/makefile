@@ -25,7 +25,8 @@ SRC = pgen-funcs.cc \
 	  tcp.cc \
 	  udp.cc \
 	  netutil.cc \
-	  dns.cc
+	  dns.cc \
+	  ardrone.cc
 HDR = pgen.h \
 	  packconf.h \
 	  address.h \

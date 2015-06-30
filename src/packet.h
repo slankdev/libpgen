@@ -38,7 +38,7 @@ class pgen_packet{
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;
 		virtual void SEND(const char* ifname)=0;
-		virtual void SUMMARY()=0;
+		//virtual void SUMMARY()=0;
 		void hex();
 		void hexFull();
 };
@@ -223,22 +223,37 @@ class pgen_dns :public pgen_udp {
 		void SEND(const char* ifname);
 };
 
+
+
 class pgen_ardrone : public pgen_udp {
 	protected:
-		struct MYARDRONE ardrone;
+		char cmd[256];
+		int   clen;
 	public:
 		struct{
-			char pcmd_mag[256];
-			int  pcmd_mag_len;
-			char ref[256];
-			int  ref_len;
-		}AR_DRONE;
+			struct{
+				long seq;
+				long flag;
+				long roll;
+				long pitch;
+				long gaz;
+				long yaw1;
+				long yaw2;
+				long yaw3;
+			}pcmd_mag;
+			struct{
+				long seq;
+				long command;
+			}ref;
+		}ARDRONE;
 
 		pgen_ardrone();
 		void CLEAR();
-		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
+		void SUMMARY();
+		void TEST();
+		void TEST0();
 };
 
 
