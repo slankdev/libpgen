@@ -15,9 +15,12 @@ export RM  := rm -rf
 .cc.o: 
 	$(CPP) -std=c++11 -c  $<  -o $@  
 
+SNIFF_SRC = sniff/sniff.cc
+SNIFF_HDR = sniff/sniff.h
 
-SRC = pgen-funcs.cc \
-	  packet.cc \
+
+
+SRC = packet.cc \
 	  eth.cc \
 	  arp.cc \
 	  ip.cc \
@@ -30,7 +33,6 @@ SRC = pgen-funcs.cc \
 HDR = pgen.h \
 	  packconf.h \
 	  address.h \
-	  pgen-funcs.h \
 	  packet.h \
 	  mytypes.h 
 OBJ = $(SRC:.cc=.o)
@@ -63,7 +65,6 @@ copyheader:
 	$(CP) netutil.h     /usr/local/include/netutil.h
 	$(CP) packconf.h    /usr/local/include/packconf.h
 	$(CP) packet.h      /usr/local/include/packet.h
-	$(CP) pgen-funcs.h  /usr/local/include/pgen-funcs.h
 	$(CP) pgen.h        /usr/local/include/pgen.h
 	$(CP) release.h     /usr/local/include/release.h
 
@@ -80,7 +81,6 @@ deleteheader:
 	$(RM) /usr/local/include/netutil.h
 	$(RM) /usr/local/include/packconf.h
 	$(RM) /usr/local/include/packet.h
-	$(RM) /usr/local/include/pgen-funcs.h
 	$(RM) /usr/local/include/pgen.h
 	$(RM) /usr/local/include/release.h
 

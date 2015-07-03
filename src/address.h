@@ -14,7 +14,6 @@
 #include <net/if.h>
 
 #include "pgen.h"
-#include "pgen-funcs.h"
 #include "mytypes.h"
 
 #define FILEPATH "/usr/local/etc/mac_code.list"

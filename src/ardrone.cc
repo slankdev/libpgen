@@ -113,9 +113,11 @@ void pgen_ardrone::INFO(){
 
 void pgen_ardrone::SUMMARY(){
 	WRAP();
-	printf("AR Drone packet seq=%ld roll=%ld pitch=%ld\n", 
+	printf("AR Drone packet seq=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)\n", 
 			ARDRONE.pcmd_mag.seq, ARDRONE.pcmd_mag.roll, 
-			ARDRONE.pcmd_mag.pitch);
+			ARDRONE.pcmd_mag.pitch, ARDRONE.pcmd_mag.gaz,
+			ARDRONE.pcmd_mag.yaw.x, ARDRONE.pcmd_mag.yaw.y,
+			ARDRONE.pcmd_mag.yaw.x);
 }
 
 

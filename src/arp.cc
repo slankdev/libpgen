@@ -3,7 +3,6 @@
 
 /* include must!!! */
 #include "packconf.h"
-#include "pgen-funcs.h"
 
 #include <map>
 #include <stdio.h>

@@ -3,7 +3,6 @@
 #include "pgen.h"
 #include "packet.h"
 #include "packconf.h"
-#include "pgen-funcs.h"
 #include "address.h"
 
 #include "netutil.h"

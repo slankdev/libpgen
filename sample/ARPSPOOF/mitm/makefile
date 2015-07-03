@@ -5,7 +5,7 @@ export CPP := g++
 export CXX := g++
 export RM := rm -rf
 
-OPTION=-L/home/slank/git/libpgen/lib/ -I/home/slank/git/libpgen/lib/ 
+OPTION=-L/home/slank/git/libpgen/src/ -I/home/slank/git/libpgen/src/ 
 program = a.out
 
 

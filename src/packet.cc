@@ -4,7 +4,6 @@
 
 /* include must!!! */
 #include "packconf.h"
-#include "pgen-funcs.h"
 
 #include <stdio.h>
 #include <string.h>
