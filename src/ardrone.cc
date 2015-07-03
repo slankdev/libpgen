@@ -14,14 +14,14 @@ pgen_ardrone::pgen_ardrone(){
 void pgen_ardrone::CLEAR(){
 	pgen_udp::CLEAR();
 
-	ARDRONE.pcmd_mag.seq   = 0;
-	ARDRONE.pcmd_mag.flag  = 0;
-	ARDRONE.pcmd_mag.roll  = 0;
-	ARDRONE.pcmd_mag.pitch = 0;
-	ARDRONE.pcmd_mag.gaz   = 0;
-	ARDRONE.pcmd_mag.yaw.x = 0;
-	ARDRONE.pcmd_mag.yaw.y = 0;
-	ARDRONE.pcmd_mag.yaw.z = 0;
+	ARDRONE.pcmd.seq   = 0;
+	ARDRONE.pcmd.flag  = 0;
+	ARDRONE.pcmd.roll  = 0;
+	ARDRONE.pcmd.pitch = 0;
+	ARDRONE.pcmd.gaz   = 0;
+	ARDRONE.pcmd.yaw.x = 0;
+	ARDRONE.pcmd.yaw.y = 0;
+	ARDRONE.pcmd.yaw.z = 0;
 	ARDRONE.ref.seq        = 0;
 	ARDRONE.ref.command    = 0;
 }
@@ -55,10 +55,10 @@ void pgen_ardrone::WRAP(){
 	char spliter = 0x0d;
 
 	sprintf(cmd1, "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld", 
-			ARDRONE.pcmd_mag.seq, ARDRONE.pcmd_mag.flag, 
-			ARDRONE.pcmd_mag.roll, ARDRONE.pcmd_mag.pitch, 
-			ARDRONE.pcmd_mag.gaz, ARDRONE.pcmd_mag.yaw.x, 
-			ARDRONE.pcmd_mag.yaw.y, ARDRONE.pcmd_mag.yaw.z);
+			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, 
+			ARDRONE.pcmd.roll, ARDRONE.pcmd.pitch, 
+			ARDRONE.pcmd.gaz, ARDRONE.pcmd.yaw.x, 
+			ARDRONE.pcmd.yaw.y, ARDRONE.pcmd.yaw.z);
 	
 	sprintf(cmd2, "AT*REF=%ld,%ld", 
 			ARDRONE.ref.seq, ARDRONE.ref.command);
@@ -93,14 +93,14 @@ void pgen_ardrone::INFO(){
 	
 	printf(" * AR Drone packet\n");
 	printf("    - PCMD MAG\n");
-	printf("         Sequence Num : %ld \n", ARDRONE.pcmd_mag.seq);
-	printf("         Flag         : %ld \n", ARDRONE.pcmd_mag.flag);
-	printf("         Roll         : %ld \n", ARDRONE.pcmd_mag.roll);
-	printf("         Pitch        : %ld \n", ARDRONE.pcmd_mag.pitch);
-	printf("         Gaz          : %ld \n", ARDRONE.pcmd_mag.gaz);
+	printf("         Sequence Num : %ld \n", ARDRONE.pcmd.seq);
+	printf("         Flag         : %ld \n", ARDRONE.pcmd.flag);
+	printf("         Roll         : %ld \n", ARDRONE.pcmd.roll);
+	printf("         Pitch        : %ld \n", ARDRONE.pcmd.pitch);
+	printf("         Gaz          : %ld \n", ARDRONE.pcmd.gaz);
 	printf("         Yaw(x,y,z)   : (%ld,%ld,%ld)  \n", 
-			ARDRONE.pcmd_mag.yaw.x, ARDRONE.pcmd_mag.yaw.y,
-			ARDRONE.pcmd_mag.yaw.z);
+			ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,
+			ARDRONE.pcmd.yaw.z);
 	printf("    - REF\n");
 	printf("         Sequence Num : %ld \n", ARDRONE.ref.seq);
 	printf("         Command      : %ld \n", ARDRONE.ref.command);
@@ -113,11 +113,12 @@ void pgen_ardrone::INFO(){
 
 void pgen_ardrone::SUMMARY(){
 	WRAP();
-	printf("AR Drone packet seq=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)\n", 
-			ARDRONE.pcmd_mag.seq, ARDRONE.pcmd_mag.roll, 
-			ARDRONE.pcmd_mag.pitch, ARDRONE.pcmd_mag.gaz,
-			ARDRONE.pcmd_mag.yaw.x, ARDRONE.pcmd_mag.yaw.y,
-			ARDRONE.pcmd_mag.yaw.x);
+	printf("AR Drone PCMD(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
+			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, ARDRONE.pcmd.roll, 
+			ARDRONE.pcmd.pitch, ARDRONE.pcmd.gaz,
+			ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,
+			ARDRONE.pcmd.yaw.x);
+	printf("REF(seq=%ld, cmd=%ld)\n", ARDRONE.ref.seq, ARDRONE.ref.command);
 }
 
 

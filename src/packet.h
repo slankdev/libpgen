@@ -240,7 +240,7 @@ class pgen_ardrone : public pgen_udp {
 					long y;
 					long z;
 				}yaw;
-			}pcmd_mag;
+			}pcmd;
 			struct{
 				long seq;
 				long command;

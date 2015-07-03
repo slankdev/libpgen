@@ -1,61 +1,57 @@
-#include "pgen.h"
+#include <pgen.h>
 #include <stdio.h>
-#include <pcap.h>
-#include <thread>
+#include <sniff.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 #include <net/ethernet.h>
 
-const char* dev = "wlan0";
-
-void capture();
+const char* dev = "lo";
 
 
-int main(int argc,char** argv){
-	capture();
-}
 
-
-void callback(u_char* data, const struct pcap_pkthdr *header,
-									const u_char* packet){
+bool callback(const u_char* packet, int len){
 	struct ether_header* eth;
 	struct ip* ip;
 	struct udphdr* udp;
 	char buf[64];
-
+	pgen_ardrone p;
+	
 	eth = (struct ether_header*)packet;
 	packet += sizeof(struct ether_header);
+	len -= sizeof(struct ether_header);
 	ip  = (struct ip*)packet;
 	packet += sizeof(struct ip);
+	len -= sizeof(struct ip);
 	udp = (struct udphdr*)packet;
 	packet += sizeof(struct udphdr);
+	len -= sizeof(struct udphdr);
+	
 
-
+	// other packet!!
 	if(ip->ip_p!=17 || ntohs(udp->uh_sport)!=5556 
 			|| ntohs(udp->uh_dport)!=5556){
-		//printf("other packet!\n");
-		return ;
+		return true;
 	}
 
-	printf("%s\n", packet);
+	for(int i=0; i<len; i++){
+		if(packet[i] == 0x0d)	buf[i] = '.';
+		else					buf[i] = packet[i];
+	}buf[len] = '\0';
+
+
+	sscanf(buf, "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld.AT*REF=%ld,%ld.",
+			&p.ARDRONE.pcmd.seq, &p.ARDRONE.pcmd.flag, &p.ARDRONE.pcmd.roll,
+			&p.ARDRONE.pcmd.pitch, &p.ARDRONE.pcmd.gaz, &p.ARDRONE.pcmd.yaw.x,
+			&p.ARDRONE.pcmd.yaw.y, &p.ARDRONE.pcmd.yaw.z,
+			&p.ARDRONE.ref.seq, &p.ARDRONE.ref.command );
+
+	p.SUMMARY();
+	
+	return true;
 }
 
-void capture(){
-	pcap_t* handle;
-	char errbuf[PCAP_ERRBUF_SIZE];
 
-	handle = pcap_open_live(dev, 66536, 1,10,errbuf);
-	if(handle == NULL){
-		fprintf(stderr, "%s\n", errbuf);
-		return;
-	}
-	
-	if(pcap_loop(handle, 0, callback, NULL) < 0){
-		fprintf(stderr, "%s\n", pcap_geterr(handle));
-		pcap_close(handle);
-		return;
-	}
 
-	pcap_close(handle);
-	return;
+int main(int argc,char** argv){
+	sniff(dev, callback);
 }

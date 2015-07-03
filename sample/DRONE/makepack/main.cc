@@ -1,7 +1,9 @@
 #include <pgen.h>
 #include <stdio.h>
 
-const char* dev = "wlan0";
+const char* dev = "lo";
+const int count = 3;
+
 
 int main(){
 	pgen_ardrone pack;
@@ -11,34 +13,36 @@ int main(){
 	pack.UDP.srcPort = 5556;
 	pack.UDP.dstPort = 5556;
 	
-	pack.ARDRONE.pcmd_mag.seq   = 1;
-	pack.ARDRONE.pcmd_mag.flag  = 0;
-	pack.ARDRONE.pcmd_mag.roll  = 0;
-	pack.ARDRONE.pcmd_mag.pitch = 0;
-	pack.ARDRONE.pcmd_mag.gaz   = 0;
-	pack.ARDRONE.pcmd_mag.yaw.x = 0;
-	pack.ARDRONE.pcmd_mag.yaw.y = 0;
-	pack.ARDRONE.pcmd_mag.yaw.z = 0;
+	pack.ARDRONE.pcmd.seq   = 1;
+	pack.ARDRONE.pcmd.flag  = 0;
+	pack.ARDRONE.pcmd.roll  = 0;
+	pack.ARDRONE.pcmd.pitch = 0;
+	pack.ARDRONE.pcmd.gaz   = 0;
+	pack.ARDRONE.pcmd.yaw.x = 0;
+	pack.ARDRONE.pcmd.yaw.y = 0;
+	pack.ARDRONE.pcmd.yaw.z = 0;
 	pack.ARDRONE.ref.seq        = 0;
 	pack.ARDRONE.ref.command    = 0;
 
 	/*
-	pack.ARDRONE.pcmd_mag.seq = 1000000110;
-	pack.ARDRONE.pcmd_mag.flag = 220;
-	pack.ARDRONE.pcmd_mag.roll = 330;
-	pack.ARDRONE.pcmd_mag.pitch = 440;
-	pack.ARDRONE.pcmd_mag.gaz = 550;
-	pack.ARDRONE.pcmd_mag.yaw.x = 660;
-	pack.ARDRONE.pcmd_mag.yaw.y = 770;
-	pack.ARDRONE.pcmd_mag.yaw.z = 880;
+	pack.ARDRONE.pcmd.seq = 1000000110;
+	pack.ARDRONE.pcmd.flag = 220;
+	pack.ARDRONE.pcmd.roll = 330;
+	pack.ARDRONE.pcmd.pitch = 440;
+	pack.ARDRONE.pcmd.gaz = 550;
+	pack.ARDRONE.pcmd.yaw.x = 660;
+	pack.ARDRONE.pcmd.yaw.y = 770;
+	pack.ARDRONE.pcmd.yaw.z = 880;
 	pack.ARDRONE.ref.seq = 111;
 	pack.ARDRONE.ref.command = 222;
 	*/
 
 	//pack.INFO();
-	for(;;){
+	for(int i=0; ; i++){
 		pack.SEND(dev);
 		pack.SUMMARY();
-		sleep(1);
+		printf("%05d: ", i);
+		pack.ARDRONE.pcmd.seq++;
+		//sleep(count);
 	}
 }
