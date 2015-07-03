@@ -23,17 +23,17 @@ pgen_tcp::pgen_tcp(){
 
 void pgen_tcp::CLEAR(){
 	pgen_ip::CLEAR();
-	TCP.srcPort = 20;
-	TCP.dstPort = 80;
-	TCP.frag.fin = 0;
-	TCP.frag.syn = 0;
-	TCP.frag.rst = 0;
-	TCP.frag.psh = 0;
-	TCP.frag.ack = 0;
-	TCP.frag.urg = 0;
+	TCP.src = 20;
+	TCP.dst = 80;
+	TCP.flag.fin = 0;
+	TCP.flag.syn = 0;
+	TCP.flag.rst = 0;
+	TCP.flag.psh = 0;
+	TCP.flag.ack = 0;
+	TCP.flag.urg = 0;
 	TCP.window = 8192;
-	TCP.seqNum = 0;
-	TCP.ackNum = 0;
+	TCP.seq = 0;
+	TCP.ack = 0;
 }
 
 
@@ -66,19 +66,19 @@ void pgen_tcp::WRAP(){
 	memset(buf, 0, sizeof buf);
 
 	memset(&tcp, 0, sizeof tcp);
-	tcp.source = htons(TCP.srcPort);
-	tcp.dest   = htons(TCP.dstPort);
-	tcp.seq    = htonl(TCP.seqNum);
-	tcp.ack_seq = htonl(TCP.ackNum);
+	tcp.source = htons(TCP.src);
+	tcp.dest   = htons(TCP.dst);
+	tcp.seq    = htonl(TCP.seq);
+	tcp.ack_seq = htonl(TCP.ack);
 	tcp.doff = 20 >> 2;  // 4で割った値を入れる
 	tcp.window = htons(TCP.window);	//OK
 	tcp.check  = 0;
-	if(TCP.frag.fin == 1)	tcp.fin = 1;
-	if(TCP.frag.syn == 1)	tcp.syn = 1;
-	if(TCP.frag.rst == 1)	tcp.rst = 1;
-	if(TCP.frag.psh == 1)	tcp.psh = 1;
-	if(TCP.frag.ack == 1)	tcp.ack = 1;
-	if(TCP.frag.urg == 1)	tcp.urg = 1;
+	if(TCP.flag.fin == 1)	tcp.fin = 1;
+	if(TCP.flag.syn == 1)	tcp.syn = 1;
+	if(TCP.flag.rst == 1)	tcp.rst = 1;
+	if(TCP.flag.psh == 1)	tcp.psh = 1;
+	if(TCP.flag.ack == 1)	tcp.ack = 1;
+	if(TCP.flag.urg == 1)	tcp.urg = 1;
 	bp = buf;
 	memcpy(bp, &ip, sizeof(ip));
 	bp += sizeof(ip);
@@ -93,6 +93,30 @@ void pgen_tcp::WRAP(){
 	p += sizeof(tcp);
 	len = p - data;
 }
+
+
+
+
+
+void pgen_tcp::CAST(bit8* data){
+	struct MYTCP buf;
+	memcpy(&buf, data, sizeof(buf));
+
+	TCP.src = ntohs(buf.source);
+	TCP.dst = ntohs(buf.dest);
+	TCP.seq = ntohl(buf.seq);
+	TCP.ack = ntohl(buf.ack_seq);
+	TCP.window = ntohs(buf.window);
+	TCP.flag.fin = buf.fin;
+    TCP.flag.syn = buf.syn;
+    TCP.flag.rst = buf.rst;
+    TCP.flag.psh = buf.psh;
+    TCP.flag.ack = buf.ack;
+	TCP.flag.urg = buf.urg;
+	
+}
+
+
 
 void pgen_tcp::SUMMARY(){
 	int seq = tcp.seq;

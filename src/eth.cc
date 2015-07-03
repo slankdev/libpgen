@@ -48,7 +48,7 @@ void pgen_eth::SEND(const char* ifname){
 void pgen_eth::WRAP(){
 	packetType = PGEN_PACKETTYPE_ETH;
 	memset(data, 0, sizeof data);
-	eth.ether_type = htons(0);
+	eth.ether_type = htons(ETH.type);;
 
 	for(int i=0; i< 6; i++){
 		eth.ether_shost[i] = ETH.src._addr[i];	
@@ -81,3 +81,14 @@ void pgen_eth::INFO(){
 			_ethtype[htons(eth.ether_type)] ,htons(eth.ether_type));
 }
 
+
+void pgen_eth::CAST(bit8* data){
+	struct MYETH* buf;
+	buf = (struct MYETH*)data;
+
+	ETH.type = ntohs(buf->ether_type);
+	for(int i=0; i<6; i++){
+		ETH.src._addr[i] = buf->ether_shost[i];
+		ETH.dst._addr[i] = buf->ether_dhost[i];
+	}
+}

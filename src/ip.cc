@@ -78,6 +78,21 @@ void pgen_ip::WRAP(){
 }
 
 
+
+
+void pgen_ip::CAST(bit8* data){
+	struct MYIP buf;
+	memcpy(&buf, data, sizeof(buf));
+	
+	IP.type = buf.protocol;
+	IP.src._addr = buf.saddr;
+	IP.dst._addr = buf.daddr;
+	IP.tos = buf.tos;
+	IP.id = ntohs(buf.id);
+	IP.ttl = buf.ttl;
+}
+
+
 void pgen_ip::INFO(){
 	WRAP();
 	pgen_eth::INFO();

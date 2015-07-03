@@ -51,6 +51,21 @@ void pgen_icmp::SEND(const char* ifname){
 
 
 
+
+void pgen_icmp::CAST(bit8* data){
+	struct MYICMP buf;
+	memcpy(&buf, data, sizeof(buf));
+
+	ICMP.option = buf.icmp_type;
+	ICMP.code = buf.icmp_code;
+	ICMP.id = ntohs(buf.icmp_hun.ih_idseq.icd_id);
+	ICMP.seq = ntohs(buf.icmp_hun.ih_idseq.icd_seq);
+
+} 
+
+
+
+
 void pgen_icmp::WRAP(){
 	pgen_ip::WRAP();
 	packetType = PGEN_PACKETTYPE_ICMP;

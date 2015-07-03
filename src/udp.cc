@@ -24,8 +24,8 @@ pgen_udp::pgen_udp(){
 
 void pgen_udp::CLEAR(){
 	pgen_ip::CLEAR();
-	UDP.srcPort = 53;
-	UDP.dstPort = 53;
+	UDP.src = 53;
+	UDP.dst = 53;
 }
 
 void pgen_udp::SEND(const char* ifname){
@@ -53,8 +53,8 @@ void pgen_udp::WRAP(){
 	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
 
 	memset(&udp, 0, sizeof udp);
-	udp.source = htons(UDP.srcPort);
-	udp.dest   = htons(UDP.dstPort);
+	udp.source = htons(UDP.src);
+	udp.dest   = htons(UDP.dst);
 	udp.len    = htons(sizeof(udp));
 	udp.check  = 0;
 	
@@ -64,6 +64,16 @@ void pgen_udp::WRAP(){
 	memcpy(p, &udp, sizeof udp);
 	p += sizeof(struct udphdr);
 	len = p-data;
+}
+
+
+
+void pgen_udp::CAST(bit8* data){
+	struct MYUDP buf;
+	memcpy(&buf, data, sizeof(buf));
+	
+	UDP.src = ntohs(buf.source);
+	UDP.dst = ntohs(buf.dest);
 }
 
 

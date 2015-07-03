@@ -48,7 +48,8 @@ class pgen_packet{
 //#include <net/ethernet.h> 		/* for struct ether_header */
 class pgen_eth : public pgen_packet {
 	protected:
-		struct MYETH eth; public:
+		struct MYETH eth; 
+	public:
 		struct{
 			int type;
 			macaddr src;
@@ -60,6 +61,7 @@ class pgen_eth : public pgen_packet {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
+		void CAST(bit8*);
 };
 
 
@@ -71,7 +73,7 @@ class pgen_arp : public pgen_eth {
 		struct MYARP arp;
 	public:
 		struct{
-			int option;
+			int operation;
 			macaddr	srcEth;
 			macaddr	dstEth;
 			ipaddr	srcIp;
@@ -84,6 +86,7 @@ class pgen_arp : public pgen_eth {
 		void WRAP();
 		void SEND(const char* ifname);
 		void SUMMARY();
+		void CAST(bit8*);
 };
 
 
@@ -108,6 +111,7 @@ class pgen_ip : public pgen_eth {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
+		void CAST(bit8*);
 };
 
 
@@ -133,6 +137,7 @@ class pgen_icmp : public pgen_ip {
 		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 		void SUMMARY();
+		void CAST(bit8*);
 
  };
 
@@ -148,8 +153,8 @@ class pgen_tcp : public pgen_ip {
 		u_char _data[100]; // no use yet
 	public:
 		struct{
-			int srcPort;
-			int dstPort;
+			int src;
+			int dst;
 			struct{
 				char fin;
 				char syn;
@@ -157,10 +162,10 @@ class pgen_tcp : public pgen_ip {
 				char psh;
 				char ack;
 				char urg;
-			}frag ;
+			}flag ;
 			int window;
-			int seqNum;
-			int ackNum;
+			int seq;
+			int ack;
 		}TCP;
 
 		pgen_tcp();
@@ -170,8 +175,8 @@ class pgen_tcp : public pgen_ip {
 		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
 		void SUMMARY();
+		void CAST(bit8*);
 };
-
 
 
 
@@ -184,8 +189,8 @@ class pgen_udp : public pgen_ip {
 		u_char _data[100]; // no use yet
 	public:
 		struct{
-			int srcPort;
-			int dstPort;
+			int src;
+			int dst;
 		}UDP;
 
 		pgen_udp();
@@ -194,6 +199,7 @@ class pgen_udp : public pgen_ip {
 		void WRAP();
 		void SEND(const char* ifname);
 		void setData(const u_char* p, int len); // no use yet
+		void CAST(bit8*);
 };
 
 

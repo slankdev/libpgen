@@ -30,7 +30,7 @@ void pgen_arp::CLEAR(){
 	ARP.dstIp = 0;
 	ARP.srcEth = 0;
 	ARP.dstEth = 0;
-	ARP.option = PGEN_ARPOP_REQEST;
+	ARP.operation = PGEN_ARPOP_REQEST;
 }   
 
 
@@ -59,7 +59,7 @@ void pgen_arp::WRAP(){
 	arp.arp_pro = htons(MT_ETHERTYPE_IP);
 	arp.arp_hln = 6;
 	arp.arp_pln = 4;
-	arp.arp_op  = htons(ARP.option);
+	arp.arp_op  = htons(ARP.operation);
 	for(int i=0; i<6; i++){
 		arp.arp_sha[i] = ARP.srcEth._addr[i];
 		arp.arp_tha[i] = ARP.dstEth._addr[i];
@@ -78,10 +78,40 @@ void pgen_arp::WRAP(){
 }
 
 
+void pgen_arp::CAST(bit8* data){
+	struct MYARP buf;
+	memcpy(&buf, data, sizeof(buf));;
+	
+	union lc{
+		bit32 l;
+		bit8 c[4];
+	};
+	lc slc, dlc;
+
+	ARP.operation = ntohs(buf.arp_op);
+	for(int i=0; i<6; i++){
+		ARP.srcEth._addr[i] = buf.arp_sha[i];
+		ARP.dstEth._addr[i] = buf.arp_tha[i];
+	}
+	for(int i=0; i<4; i++){
+		slc.c[i] = buf.arp_spa[i];
+		dlc.c[i] = buf.arp_tpa[i];
+	}
+	ARP.srcIp = slc.l;
+	ARP.dstIp = dlc.l;
+
+}
+
+
+
+
+
+
+
 void pgen_arp::SUMMARY(){
-	if(ARP.option == 2){
+	if(ARP.operation == 2){
 		printf("who has %s tell %s \n", ARP.dstIp.c_str(), ARP.srcEth.c_str());
-	}else if(ARP.option == 1){
+	}else if(ARP.operation == 1){
 		printf("%s is at %s\n", ARP.srcIp.c_str(), ARP.srcEth.c_str());	
 	}else{
 		printf("other arp operation!! \n");	
