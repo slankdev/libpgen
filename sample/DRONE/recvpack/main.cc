@@ -16,23 +16,24 @@ bool callback(const u_char* packet, int len){
 	char buf[64];
 	pgen_ardrone p;
 	
-	eth = (struct ether_header*)packet;
+	p.ETH.CAST(packet);
 	packet += sizeof(struct ether_header);
 	len -= sizeof(struct ether_header);
-	ip  = (struct ip*)packet;
+	p.IP.CAST(packet);
 	packet += sizeof(struct ip);
 	len -= sizeof(struct ip);
-	udp = (struct udphdr*)packet;
+	p.UDP.CAST(packet);
 	packet += sizeof(struct udphdr);
 	len -= sizeof(struct udphdr);
 	
 
-	// other packet!!
-	if(ip->ip_p!=17 || ntohs(udp->uh_sport)!=5556 
-			|| ntohs(udp->uh_dport)!=5556){
-		return true;
-	}
+	// other jpacket!!
+	if(p.ETH.type != ETHERTYPE_IP)	return true;
+	if(p.IP.type != IPPROTO_UDP)	return true;
+	if(p.UDP.src != 5556)			return true;
+	if(p.UDP.dst != 5556)			return true;
 
+		
 	for(int i=0; i<len; i++){
 		if(packet[i] == 0x0d)	buf[i] = '.';
 		else					buf[i] = packet[i];
