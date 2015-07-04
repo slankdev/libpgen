@@ -26,30 +26,6 @@ hpingやscapyなどより細かくパケットを編集できるようにして�
   
 
  
-## 使用例
- 	#include "pgen.h"
-
-	int main(){
-		/* パケットインスタンスの生成 */
-		pgen_packet pack;
-		
-		/* packに必要な設定を施す */
-		pack.set_eth_srcEth("aa:bb:cc:dd:ee:ff");
-		pack.set_eth_dstEth("00:bb:cc:dd:ee:ff");
-		pack.set_ip_srcIp("192.168.0.5");
-		pack.set_ip_dstIp("192.168.0.1");
-		
-		/* packを送信可能な状態にする */
-		pack.make();
-
-		/* インタフェースを指定してpackを送信する */
-		pack.send("eth0");
-
-		/* ソケットの作成や、クローズなどはすべてライブラリがうらで行っているので
-		　　ユーザは意識しなくて良い */	
-
-		return 1;
-	}
 
 ## 利用可能環境
 os   : Ubuntu-Gnome 14.04  
@@ -69,6 +45,19 @@ Handlename  : Slank
 Fullname    : Hiroki Shirokura  
 Country     : Japan  
 E-mail      : slank.dev@gmail.com  
+
+
+## Install 
+	
+	$ cd libpgen/src
+	$ make
+	$ sudo make install
+
+## Uninstall 
+
+	$ cd libpgen/src
+	$ sudo make uninstall
+
 
 
 ## LICENCE1
