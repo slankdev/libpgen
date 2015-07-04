@@ -235,6 +235,7 @@ class pgen_dns :public pgen_udp {
 		pgen_dns();
 		void CLEAR();
 		void INFO();
+		void SUMMARY();
 		void WRAP();
 		void SEND(const char* ifname);
 };

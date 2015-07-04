@@ -108,6 +108,16 @@ void pgen_dns::SEND(const char* ifname){
 	close(sock);
 }
 
+void pgen_dns::SUMMARY(){
+	WRAP();
+
+	if(DNS.flags == 0x0100){
+		printf("Standard query 0x%x %s\n", ntohs(dns.flags),
+				DNS.name.c_str());
+			
+	}
+	
+}
 
 void pgen_dns::INFO(){
 	WRAP();
