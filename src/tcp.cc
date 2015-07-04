@@ -25,12 +25,12 @@ void pgen_tcp::CLEAR(){
 	pgen_ip::CLEAR();
 	TCP.src = 20;
 	TCP.dst = 80;
-	TCP.flag.fin = 0;
-	TCP.flag.syn = 0;
-	TCP.flag.rst = 0;
-	TCP.flag.psh = 0;
-	TCP.flag.ack = 0;
-	TCP.flag.urg = 0;
+	TCP.flags.fin = 0;
+	TCP.flags.syn = 0;
+	TCP.flags.rst = 0;
+	TCP.flags.psh = 0;
+	TCP.flags.ack = 0;
+	TCP.flags.urg = 0;
 	TCP.window = 8192;
 	TCP.seq = 0;
 	TCP.ack = 0;
@@ -73,12 +73,12 @@ void pgen_tcp::WRAP(){
 	tcp.doff = 20 >> 2;  // 4で割った値を入れる
 	tcp.window = htons(TCP.window);	//OK
 	tcp.check  = 0;
-	if(TCP.flag.fin == 1)	tcp.fin = 1;
-	if(TCP.flag.syn == 1)	tcp.syn = 1;
-	if(TCP.flag.rst == 1)	tcp.rst = 1;
-	if(TCP.flag.psh == 1)	tcp.psh = 1;
-	if(TCP.flag.ack == 1)	tcp.ack = 1;
-	if(TCP.flag.urg == 1)	tcp.urg = 1;
+	if(TCP.flags.fin == 1)	tcp.fin = 1;
+	if(TCP.flags.syn == 1)	tcp.syn = 1;
+	if(TCP.flags.rst == 1)	tcp.rst = 1;
+	if(TCP.flags.psh == 1)	tcp.psh = 1;
+	if(TCP.flags.ack == 1)	tcp.ack = 1;
+	if(TCP.flags.urg == 1)	tcp.urg = 1;
 	bp = buf;
 	memcpy(bp, &ip, sizeof(ip));
 	bp += sizeof(ip);
@@ -110,12 +110,12 @@ void pgen_tcp::CAST(const bit8* data, int len){
 	TCP.seq = ntohl(buf.seq);
 	TCP.ack = ntohl(buf.ack_seq);
 	TCP.window = ntohs(buf.window);
-	TCP.flag.fin = buf.fin;
-    TCP.flag.syn = buf.syn;
-    TCP.flag.rst = buf.rst;
-    TCP.flag.psh = buf.psh;
-    TCP.flag.ack = buf.ack;
-	TCP.flag.urg = buf.urg;
+	TCP.flags.fin = buf.fin;
+    TCP.flags.syn = buf.syn;
+    TCP.flags.rst = buf.rst;
+    TCP.flags.psh = buf.psh;
+    TCP.flags.ack = buf.ack;
+	TCP.flags.urg = buf.urg;
 	
 }
 

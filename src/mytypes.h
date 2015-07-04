@@ -347,6 +347,44 @@ struct MYDNSHDR{
 };
 
 
+struct MYDNS{
+	bit16 id;
+	union{
+		struct{
+# if __BYTE_ORDER == __LITTLE_ENDIAN
+			bit16 rd:1;
+			bit16 tc:1;
+			bit16 aa:1;
+			bit16 opcode:4;
+			bit16 qr:1;
+			bit16 rcode:4;
+			bit16 nouse:3;
+			bit16 ra:1;
+# elif __BYTE_ORDER == __BIG_ENDIAN	
+			bit16 qr:1;
+			bit16 opcode:4;
+			bit16 aa:1;
+			bit16 tc:1;
+			bit16 rd:1;
+			bit16 ra:1;
+			bit16 nouse:3;
+			bit16 rcode:4;
+# else 
+# 	error "Adjust your <bits/endian.h> defines"
+# endif
+		};
+		bit16 flags;
+	};
+	bit16 qdcnt;
+	bit16 ancnt;
+	bit16 nscnt;
+	bit16 arcnt;
+};
+
+
+
+
+
 
 
 #endif

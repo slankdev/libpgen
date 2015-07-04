@@ -24,7 +24,78 @@ pgen_dns::pgen_dns(){
 void pgen_dns::CLEAR(){
 	pgen_udp::CLEAR();
 
+	DNS.id	   = 0x0000;
+	
+	DNS.flags.qr = 0;
+	DNS.flags.opcode = 0;
+	DNS.flags.aa = 0;
+	DNS.flags.tc = 0;
+	DNS.flags.rd = 1;
+	DNS.flags.ra = 0;
+	DNS.flags.nouse = 0;
+	DNS.flags.rcode = 0;
+
+	DNS.qdcnt = 0x0001;
+	DNS.ancnt = 0x0000;
+	DNS.nscnt = 0x0000;
+	DNS.arcnt = 0x0000;
+	DNS.name  = "example.com";
+	DNS.type  = 0x0001;
+	DNS.cls   = 0x0001;
 }
+
+
+
+void pgen_dns::CAST(const bit8* packet, int len){
+	pgen_udp::CAST(packet, len);	
+	
+	struct MYDNS buf;
+	int dnslen = len - sizeof(struct MYETH)-sizeof(struct MYIP)-
+			sizeof(struct MYUDP);
+	memcpy(&buf, packet + len - dnslen, sizeof(buf));
+
+	char str[128];
+	memset(str, 'A', sizeof(str));
+	int namelen = dnslen - 12 - 4;
+	int type;
+	int cls;
+	const bit8* queryPoint = packet + len - dnslen + 12;
+
+	DNS.id	  = ntohs(buf.id);
+	DNS.flags.qr = buf.qr;
+	DNS.flags.opcode = buf.opcode;
+	DNS.flags.aa = buf.aa;
+	DNS.flags.tc = buf.tc;
+	DNS.flags.rd = buf.rd;
+	DNS.flags.ra = buf.ra;
+	DNS.flags.nouse = buf.nouse;
+	DNS.flags.rcode = buf.rcode;
+	DNS.qdcnt = ntohs(buf.qdcnt);
+	DNS.ancnt = ntohs(buf.ancnt);
+	DNS.nscnt = ntohs(buf.nscnt);
+	DNS.arcnt = ntohs(buf.arcnt);
+	
+	queryPoint++;
+	for(int i=0; i<namelen; i++){
+		if(  !(('A' <= *(queryPoint+i)&&*(queryPoint+i) <= 'Z') || 
+				('a' <= *(queryPoint+i)&&*(queryPoint+i) <= 'z') ||
+					('0'<=*(queryPoint+i)&&*(queryPoint+i) <= '9')  ))
+			str[i] = '.';
+		else
+			str[i] = *(queryPoint+i);
+	}str[namelen-2] = '\0';
+	
+
+	printf("len    : %d \n",len);
+	printf("dnslen : %d \n", dnslen);
+	printf("namelen: %d \n", namelen);
+
+	DNS.name  = str;
+	DNS.type  = (bit16)*(queryPoint+namelen);
+	DNS.cls   = (bit16)*(queryPoint+namelen+2);
+}
+
+
 
 
 void pgen_dns::WRAP(){
@@ -38,13 +109,22 @@ void pgen_dns::WRAP(){
 		u_int16_t cls;
 	}query;
 	
-	udp.len = htons(ntohs(udp.len)+sizeof(struct MYDNSHDR)+
+	udp.len = htons(ntohs(udp.len)+sizeof(struct MYDNS)+
 			sizeof(query)+sizeof(name));
 
 
 	memset(&dns, 0, sizeof dns);
 	dns.id = htons(DNS.id);
-	dns.flags = htons(DNS.flags);
+	
+	if(DNS.flags.qr == 1)	dns.qr = 1;
+	dns.opcode = DNS.flags.opcode;
+	if(DNS.flags.aa == 1)	dns.aa = 1;
+	if(DNS.flags.tc == 1)	dns.tc = 1;
+	if(DNS.flags.rd == 1)	dns.rd = 1;
+	if(DNS.flags.ra == 1)	dns.ra = 1;
+	dns.nouse = DNS.flags.nouse;
+	dns.rcode = DNS.flags.rcode;
+
 	dns.qdcnt = htons(DNS.qdcnt);
 	dns.ancnt = htons(DNS.ancnt);
 	dns.nscnt = htons(DNS.nscnt);
@@ -110,13 +190,12 @@ void pgen_dns::SEND(const char* ifname){
 
 void pgen_dns::SUMMARY(){
 	WRAP();
-
-	if(DNS.flags == 0x0100){
-		printf("Standard query 0x%x %s\n", ntohs(dns.flags),
+//	if(ntohs(dns.flags) == 0x0100){
+		printf("Standard query 0x%04x %s\n", ntohs(dns.id),
 				DNS.name.c_str());
-			
-	}
-	
+//	}else{
+//		printf("not supported\n");	
+//	}
 }
 
 void pgen_dns::INFO(){
@@ -126,8 +205,22 @@ void pgen_dns::INFO(){
 	printf(" * Domain Name System \n");
 	printf("    - Identification  : 0x%04x\n", ntohs(dns.id));
 	printf("    - Flags           : 0x%04x\n", ntohs(dns.flags));
+	printf("         - qr         : %d\n", dns.qr);
+	printf("         - opcode     : %d\n", dns.opcode);
+	printf("         - aa         : %d\n", dns.aa);
+	printf("         - tc         : %d\n", dns.tc);
+	printf("         - rd         : %d\n", dns.rd);
+	printf("         - ra         : %d\n", dns.ra);
+	printf("         - nouse      : %d\n", dns.nouse);
+	printf("         - rcode      : %d\n", dns.rcode);
+	
 	printf("    - Question        : 0x%04x\n", ntohs(dns.qdcnt));
 	printf("    - Answer RRs      : 0x%04x\n", ntohs(dns.ancnt));
 	printf("    - Authority RRs   : 0x%04x\n", ntohs(dns.nscnt));
 	printf("    - Additional RRs  : 0x%04x\n", ntohs(dns.arcnt));
+
+	printf("    - Queries \n");
+	printf("         - name       : %s \n", DNS.name.c_str());
+	printf("         - type       : 0x%04x \n", DNS.type);
+	printf("         - class      : 0x%04x \n", DNS.cls);
 }

@@ -172,7 +172,7 @@ class pgen_tcp : public pgen_ip {
 				char psh;
 				char ack;
 				char urg;
-			}flag ;
+			}flags;
 			int window;
 			int seq;
 			int ack;
@@ -216,13 +216,23 @@ class pgen_udp : public pgen_ip {
 
 class pgen_dns :public pgen_udp {
 	protected:
-		struct MYDNSHDR dns;
+		struct MYDNS dns;
 	public:
 		//static const int minLength = sizeof(struct MYETH);
 		//static const int macLength = sizeof(struct MYETH);
 		struct{
 			u_int16_t id;
-			u_int16_t flags;
+			struct{
+				bit8 qr;
+				bit8 opcode;
+				bit8 aa;
+				bit8 tc;
+				bit8 rd;
+				bit8 ra;
+				bit8 nouse;
+				bit8 rcode;
+			}flags;
+			//u_int16_t flags;
 			u_int16_t qdcnt;
 			u_int16_t ancnt;
 			u_int16_t nscnt;
@@ -238,6 +248,7 @@ class pgen_dns :public pgen_udp {
 		void SUMMARY();
 		void WRAP();
 		void SEND(const char* ifname);
+		void CAST(const bit8*, int);
 };
 
 
