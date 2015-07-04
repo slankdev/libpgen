@@ -39,7 +39,7 @@ build: make g++11
 
 
 
-## 製作者
+## Developer
 
 Handlename  : Slank  
 Fullname    : Hiroki Shirokura  
@@ -61,7 +61,6 @@ Ethernet, ARP, IP, ICMP, TCP, UDP, DNS(over UDP), ar_drone
 
 	$ cd libpgen/src
 	$ sudo make uninstall
-
 
 
 ## LICENCE1
