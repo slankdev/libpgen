@@ -52,6 +52,13 @@ E-mail      : slank.dev@gmail.com
 ## Support Protocols
 Ethernet, ARP, IP, ICMP, TCP, UDP, DNS(over UDP), ar_drone
 
+## Sample Codes
+- DNS query 		libpgen/sample/DNS/
+- MITM attack		libpgen/sample/MITM/
+- Control Drone		libpgen/sample/DRONE/
+
+more infomation see http://slankdev.net/libpgen  
+
 
 ## Install 
 	

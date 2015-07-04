@@ -4,10 +4,10 @@ const char* dev = "wlan0";
 int main(int argc, char** argv){
 	pgen_dns pack;
 	
-	pack.IP.src = pgen_getIP(dev);
+	pack.IP.src.setipbydev(dev);
 	pack.IP.dst = "192.168.179.1";
-	pack.UDP.srcPort = 56112;
-	pack.UDP.dstPort = 53;
+	pack.UDP.src = 56112;
+	pack.UDP.dst = 53;
 	pack.DNS.id	   = 0x62cc;
 	pack.DNS.flags = 0x0100;
 	pack.DNS.qdcnt = 0x0001;
