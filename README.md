@@ -1,6 +1,6 @@
 # libpgen
 Packet generator library for C++
-
+About this library, please watch http://slankdev.net/libpgen
 
 ## 概要、コンセプト
 
