@@ -26,7 +26,7 @@ void pgen_ip::CLEAR(){
 	pgen_eth::CLEAR();
 	IP.src = 0;
 	IP.dst = "127.0.0.1";
-	IP.type = IPPROTO_IP;
+	IP.protocol = IPPROTO_IP;
 	IP.tos = 0;
 	IP.id = 1;
 	IP.ttl = 64;
@@ -66,7 +66,7 @@ void pgen_ip::WRAP(){
 	ip.id = htons(IP.id);
 	ip.frag_off = 0; // ?????
 	ip.ttl = IP.ttl;
-	ip.protocol = IP.type;
+	ip.protocol = IP.protocol;
 	ip.saddr = IP.src._addr;
 	ip.daddr = IP.dst._addr;
 	ip.check = htons(checksum(&ip, sizeof(ip)));
@@ -80,11 +80,13 @@ void pgen_ip::WRAP(){
 
 
 
-void pgen_ip::CAST(bit8* data){
+void pgen_ip::CAST(const bit8* data, int len){
+	pgen_eth::CAST(data, len);
+
 	struct MYIP buf;
-	memcpy(&buf, data, sizeof(buf));
+	memcpy(&buf, data+sizeof(struct MYETH), sizeof(buf));
 	
-	IP.type = buf.protocol;
+	IP.protocol = buf.protocol;
 	IP.src._addr = buf.saddr;
 	IP.dst._addr = buf.daddr;
 	IP.tos = buf.tos;

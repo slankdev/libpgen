@@ -98,9 +98,12 @@ void pgen_tcp::WRAP(){
 
 
 
-void pgen_tcp::CAST(bit8* data){
+void pgen_tcp::CAST(const bit8* data, int len){
+	pgen_ip::CAST(data, len);
+
 	struct MYTCP buf;
-	memcpy(&buf, data, sizeof(buf));
+	memcpy(&buf, data+sizeof(struct MYETH)+sizeof(struct MYIP),
+			sizeof(buf));
 
 	TCP.src = ntohs(buf.source);
 	TCP.dst = ntohs(buf.dest);
@@ -165,4 +168,3 @@ void pgen_tcp::INFO(){
 }
 
 
-void pgen_tcp::setData(const u_char *p, int len){}

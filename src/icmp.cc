@@ -30,8 +30,7 @@ void pgen_icmp::CLEAR(){
 	ICMP.code = 0;
 	ICMP.id = 1;
 	ICMP.seq = 1;
-}
-
+} 
 void pgen_icmp::SEND(const char* ifname){
 	WRAP();		
 	int sock;
@@ -52,9 +51,13 @@ void pgen_icmp::SEND(const char* ifname){
 
 
 
-void pgen_icmp::CAST(bit8* data){
+void pgen_icmp::CAST(const bit8* data, int len){
+	pgen_ip::CAST(data, len);
+
+
 	struct MYICMP buf;
-	memcpy(&buf, data, sizeof(buf));
+	memcpy(&buf, data+sizeof(struct MYETH)+sizeof(struct MYIP), 
+			sizeof(buf));
 
 	ICMP.option = buf.icmp_type;
 	ICMP.code = buf.icmp_code;
@@ -142,4 +145,3 @@ void pgen_icmp::INFO(){
 
 
 
-void pgen_icmp::setData(const u_char *p, int len){}

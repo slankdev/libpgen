@@ -15,9 +15,6 @@ export RM  := rm -rf
 .cc.o: 
 	$(CPP) -std=c++11 -c  $<  -o $@  
 
-SNIFF_SRC = sniff/sniff.cc
-SNIFF_HDR = sniff/sniff.h
-
 
 
 SRC = packet.cc \

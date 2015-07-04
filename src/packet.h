@@ -31,12 +31,13 @@ class pgen_packet{
 		int 	len;
 		u_char 	data[PGEN_PACKLEN];
 	public:
-		
+			
 		pgen_packet();
 		virtual void CLEAR();
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;
 		virtual void SEND(const char* ifname)=0;
+		virtual void CAST(const bit8*, int)=0;
 		void hex();
 		void hexFull();
 };
@@ -50,6 +51,8 @@ class pgen_eth : public pgen_packet {
 	protected:
 		struct MYETH eth; 
 	public:
+		static const int minLength = sizeof(struct MYETH);
+		static const int macLength = sizeof(struct MYETH);
 		struct{
 			int type;
 			macaddr src;
@@ -61,7 +64,7 @@ class pgen_eth : public pgen_packet {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
-		void CAST(bit8*);
+		void CAST(const bit8*, int len);
 };
 
 
@@ -72,6 +75,8 @@ class pgen_arp : public pgen_eth {
 	protected:
 		struct MYARP arp;
 	public:
+		static const int minLength = sizeof(struct MYARP);
+		static const int macLength = sizeof(struct MYARP);
 		struct{
 			int operation;
 			macaddr	srcEth;
@@ -86,7 +91,7 @@ class pgen_arp : public pgen_eth {
 		void WRAP();
 		void SEND(const char* ifname);
 		void SUMMARY();
-		void CAST(bit8*);
+		void CAST(const bit8*, int len);
 };
 
 
@@ -96,8 +101,10 @@ class pgen_ip : public pgen_eth {
 	protected:
 		struct MYIP		ip;
 	public:
+		static const int minLength = sizeof(struct MYIP);
+		static const int macLength = sizeof(struct MYIP);
 		struct{
-			int type;
+			int protocol;
 			ipaddr src;
 			ipaddr dst;
 			int tos; 
@@ -111,7 +118,7 @@ class pgen_ip : public pgen_eth {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
-		void CAST(bit8*);
+		void CAST(const bit8*, int len);
 };
 
 
@@ -123,6 +130,8 @@ class pgen_icmp : public pgen_ip {
 		struct MYICMP icmp;
 		u_char _data[100]; // no use yet
 	public:
+		static const int minLength = sizeof(struct MYICMP);
+		static const int macLength = sizeof(struct MYICMP)+100;//??
 		struct{	
 			int option;
 			int code;
@@ -135,9 +144,8 @@ class pgen_icmp : public pgen_ip {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
-		void setData(const u_char* p, int len); // no use yet
 		void SUMMARY();
-		void CAST(bit8*);
+		void CAST(const bit8*, int len);
 
  };
 
@@ -152,6 +160,8 @@ class pgen_tcp : public pgen_ip {
 		struct MYTCP tcp;
 		u_char _data[100]; // no use yet
 	public:
+		static const int minLength = sizeof(struct MYTCP);
+		static const int macLength = sizeof(struct MYTCP)+100;//??
 		struct{
 			int src;
 			int dst;
@@ -173,9 +183,8 @@ class pgen_tcp : public pgen_ip {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
-		void setData(const u_char* p, int len); // no use yet
 		void SUMMARY();
-		void CAST(bit8*);
+		void CAST(const bit8*, int len);
 };
 
 
@@ -188,6 +197,8 @@ class pgen_udp : public pgen_ip {
 		struct MYUDP udp;
 		u_char _data[100]; // no use yet
 	public:
+		static const int minLength = sizeof(struct MYUDP);
+		static const int macLength = sizeof(struct MYUDP)+100;//??
 		struct{
 			int src;
 			int dst;
@@ -198,8 +209,7 @@ class pgen_udp : public pgen_ip {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
-		void setData(const u_char* p, int len); // no use yet
-		void CAST(bit8*);
+		void CAST(const bit8*, int len);
 };
 
 
@@ -208,6 +218,8 @@ class pgen_dns :public pgen_udp {
 	protected:
 		struct MYDNSHDR dns;
 	public:
+		//static const int minLength = sizeof(struct MYETH);
+		//static const int macLength = sizeof(struct MYETH);
 		struct{
 			u_int16_t id;
 			u_int16_t flags;
@@ -234,6 +246,8 @@ class pgen_ardrone : public pgen_udp {
 		char cmd[256];
 		int   clen;
 	public:
+		static const int minLength = 39;
+		static const int macLength = 100; //???
 		struct{
 			struct{
 				long seq;
@@ -257,6 +271,7 @@ class pgen_ardrone : public pgen_udp {
 		void CLEAR();
 		void WRAP();
 		void SEND(const char* ifname);
+		void CAST(const bit8*, int);
 		void INFO();
 		void SUMMARY();
 		void _printdata();

@@ -68,9 +68,12 @@ void pgen_udp::WRAP(){
 
 
 
-void pgen_udp::CAST(bit8* data){
+void pgen_udp::CAST(const bit8* data, int len){
+	pgen_ip::CAST(data, len);
+
 	struct MYUDP buf;
-	memcpy(&buf, data, sizeof(buf));
+	memcpy(&buf, data+sizeof(struct MYETH)+sizeof(struct MYIP),
+			sizeof(buf));
 	
 	UDP.src = ntohs(buf.source);
 	UDP.dst = ntohs(buf.dest);
@@ -90,6 +93,4 @@ void pgen_udp::INFO(){
 
 
 
-
-void pgen_udp::setData(const u_char *p, int len){}
 

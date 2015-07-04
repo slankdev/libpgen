@@ -63,6 +63,21 @@ void pgen_eth::WRAP(){
 
 
 
+
+void pgen_eth::CAST(const bit8* data, int len){
+	struct MYETH* buf;
+	buf = (struct MYETH*)data;
+
+	ETH.type = ntohs(buf->ether_type);
+	for(int i=0; i<6; i++){
+		ETH.src._addr[i] = buf->ether_shost[i];
+		ETH.dst._addr[i] = buf->ether_dhost[i];
+	}
+}
+
+
+
+
 void pgen_eth::INFO(){
 	WRAP();
 	std::map<int , const char*> _ethtype;
@@ -82,13 +97,3 @@ void pgen_eth::INFO(){
 }
 
 
-void pgen_eth::CAST(bit8* data){
-	struct MYETH* buf;
-	buf = (struct MYETH*)data;
-
-	ETH.type = ntohs(buf->ether_type);
-	for(int i=0; i<6; i++){
-		ETH.src._addr[i] = buf->ether_shost[i];
-		ETH.dst._addr[i] = buf->ether_dhost[i];
-	}
-}

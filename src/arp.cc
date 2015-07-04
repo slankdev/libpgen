@@ -78,9 +78,11 @@ void pgen_arp::WRAP(){
 }
 
 
-void pgen_arp::CAST(bit8* data){
+void pgen_arp::CAST(const bit8* data, int len){
+	pgen_eth::CAST(data, len);
+
 	struct MYARP buf;
-	memcpy(&buf, data, sizeof(buf));;
+	memcpy(&buf, data+sizeof(struct MYETH), sizeof(buf));;
 	
 	union lc{
 		bit32 l;
