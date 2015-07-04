@@ -1,4 +1,6 @@
 # libpgen
+Packet generator library for C++
+
 
 ## 概要、コンセプト
 
