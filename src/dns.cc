@@ -206,7 +206,7 @@ void pgen_dns::WRAP(){
 	memcpy(p, &udp, sizeof udp);
 	p += sizeof(struct MYUDP);
 	memcpy(p, &dns, sizeof dns);
-	p += sizeof(struct MYDNSHDR);
+	p += sizeof(struct MYDNS);
 	memcpy(p, name, count);
 	p += count;
 	memcpy(p, &query, sizeof(query));

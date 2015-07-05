@@ -337,15 +337,6 @@ struct MYUDP{
 
 
 
-struct MYDNSHDR{
-	bit16 id;
-	bit16 flags;
-	bit16 qdcnt;
-	bit16 ancnt;
-	bit16 nscnt;
-	bit16 arcnt;
-};
-
 
 struct MYDNS{
 	bit16 id;
