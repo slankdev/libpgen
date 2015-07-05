@@ -37,7 +37,7 @@ class pgen_packet{
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;
 		virtual void SEND(const char* ifname)=0;
-		virtual void CAST(const bit8*, int)=0;
+		virtual void CAST(const bit8*, const int)=0;
 		void hex();
 		void hexFull();
 };
@@ -64,7 +64,7 @@ class pgen_eth : public pgen_packet {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
-		void CAST(const bit8*, int len);
+		void CAST(const bit8*, const int len);
 };
 
 
@@ -91,7 +91,7 @@ class pgen_arp : public pgen_eth {
 		void WRAP();
 		void SEND(const char* ifname);
 		void SUMMARY();
-		void CAST(const bit8*, int len);
+		void CAST(const bit8*, const int len);
 };
 
 
@@ -118,7 +118,7 @@ class pgen_ip : public pgen_eth {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
-		void CAST(const bit8*, int len);
+		void CAST(const bit8*, const int len);
 };
 
 
@@ -145,7 +145,7 @@ class pgen_icmp : public pgen_ip {
 		void WRAP();
 		void SEND(const char* ifname);
 		void SUMMARY();
-		void CAST(const bit8*, int len);
+		void CAST(const bit8*, const int len);
 
  };
 
@@ -184,7 +184,7 @@ class pgen_tcp : public pgen_ip {
 		void WRAP();
 		void SEND(const char* ifname);
 		void SUMMARY();
-		void CAST(const bit8*, int len);
+		void CAST(const bit8*, const int len);
 };
 
 
@@ -209,7 +209,7 @@ class pgen_udp : public pgen_ip {
 		void INFO();
 		void WRAP();
 		void SEND(const char* ifname);
-		void CAST(const bit8*, int len);
+		void CAST(const bit8*, const int len);
 };
 
 
@@ -237,9 +237,19 @@ class pgen_dns :public pgen_udp {
 			u_int16_t ancnt;
 			u_int16_t nscnt;
 			u_int16_t arcnt;
-			std::string name;
-			u_int16_t type;
-			u_int16_t cls;
+			struct{
+				std::string name;
+				u_int16_t type;
+				u_int16_t cls;
+			}query;
+			struct{
+				bit16 name;
+				bit16 type;
+				bit16 cls;
+				bit32 ttl;
+				bit16 len;
+				ipaddr addr;
+			}answer;
 		}DNS;
 
 		pgen_dns();
@@ -248,7 +258,7 @@ class pgen_dns :public pgen_udp {
 		void SUMMARY();
 		void WRAP();
 		void SEND(const char* ifname);
-		void CAST(const bit8*, int);
+		void CAST(const bit8*, const int);
 };
 
 
@@ -283,7 +293,7 @@ class pgen_ardrone : public pgen_udp {
 		void CLEAR();
 		void WRAP();
 		void SEND(const char* ifname);
-		void CAST(const bit8*, int);
+		void CAST(const bit8*, const int);
 		void INFO();
 		void SUMMARY();
 		void _printdata();

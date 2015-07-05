@@ -109,6 +109,20 @@ class ipaddr{
 			_addr = num;
 			return *this;
 		}
+		ipaddr& operator=(const bit8 num[4]){
+			union lc{
+				unsigned int l;
+				unsigned char c[4];
+			};
+			union lc lc;
+			
+			for(int i=0; i<4; i++)
+				lc.c[i] = num[i];
+
+			_addr = lc.l;
+			return *this;
+		}
+
 		u_char operator[](const int num){
 			union lc{
 				unsigned int l;
@@ -163,6 +177,10 @@ class ipaddr{
 		}
 		bool operator==(const ipaddr iaddr){
 			if(_addr == iaddr._addr)	return true;
+			else						return false;
+		}
+		bool operator!=(const ipaddr iaddr){
+			if(_addr != iaddr._addr)	return true;
 			else						return false;
 		}
 };
@@ -233,13 +251,15 @@ class macaddr{
 				sscanf(buf, "%2x%2x%2x\t%s", &mac[0],&mac[1],&mac[2],buf);
 				if(mac[0]==mymac[0]&&mac[1]==mymac[1]&&mac[2]==mymac[2]){
 					sprintf(bender, "%s", buf);
+					fclose(fp);
 					return bender;
 				}
 				memset(mac, 0, sizeof(mac));
 				memset(bender, 0, strsize);
 				memset(buf, 0, strsize);
-			}fclose(fp);
+			}
 			strcpy(bender, "not-found");
+			fclose(fp);
 			return bender;
 		}
 		bool isEmpty(){
@@ -302,6 +322,11 @@ class macaddr{
 		bool operator==(const ipaddr iaddr){
 			for(int i=0; i<6; i++)
 				if(_addr[i] != _addr[i])	return false;
+			return true;
+		}
+		bool operator!=(const ipaddr iaddr){
+			for(int i=0; i<6; i++)
+				if(_addr[i] == _addr[i])	return false;
 			return true;
 		}
 };

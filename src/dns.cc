@@ -39,27 +39,53 @@ void pgen_dns::CLEAR(){
 	DNS.ancnt = 0x0000;
 	DNS.nscnt = 0x0000;
 	DNS.arcnt = 0x0000;
-	DNS.name  = "example.com";
-	DNS.type  = 0x0001;
-	DNS.cls   = 0x0001;
+	DNS.query.name  = "example.com";
+	DNS.query.type  = 0x0001;
+	DNS.query.cls   = 0x0001;
 }
+
+
+
 
 
 
 void pgen_dns::CAST(const bit8* packet, int len){
 	pgen_udp::CAST(packet, len);	
 	
-	struct MYDNS buf;
-	int dnslen = len - sizeof(struct MYETH)-sizeof(struct MYIP)-
-			sizeof(struct MYUDP);
-	memcpy(&buf, packet + len - dnslen, sizeof(buf));
 
-	char str[128];
-	memset(str, 'A', sizeof(str));
-	int namelen = dnslen - 12 - 4;
-	int type;
-	int cls;
-	const bit8* queryPoint = packet + len - dnslen + 12;
+	const bit8* dnsPoint = packet + sizeof(struct MYETH)
+			+ sizeof(struct MYIP) + sizeof(struct MYUDP);
+	struct MYDNS buf;
+	memcpy(&buf, dnsPoint, sizeof(struct MYDNS));
+
+
+	// query infomation
+	bit8* queryPoint;
+	char url[256];
+	struct query_typecls{
+		bit16 type;
+		bit16 cls;
+	};
+	struct query_typecls* tc;
+	bit32 queryLen;
+
+	// answer infomation
+	bit8* answerPoint;
+	struct answer{
+		bit16 name;
+		bit16 type;
+		bit16 cls;
+		bit32 ttl;
+		//bit16 ttl;
+		bit16 len;
+		bit32 addr[4];
+	};
+	struct answer* ans;
+	bit32 answerLen;
+
+
+
+	queryPoint = (bit8*)(dnsPoint+sizeof(struct MYDNS));
 
 	DNS.id	  = ntohs(buf.id);
 	DNS.flags.qr = buf.qr;
@@ -74,25 +100,44 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	DNS.ancnt = ntohs(buf.ancnt);
 	DNS.nscnt = ntohs(buf.nscnt);
 	DNS.arcnt = ntohs(buf.arcnt);
-	
-	queryPoint++;
-	for(int i=0; i<namelen; i++){
-		if(  !(('A' <= *(queryPoint+i)&&*(queryPoint+i) <= 'Z') || 
-				('a' <= *(queryPoint+i)&&*(queryPoint+i) <= 'z') ||
-					('0'<=*(queryPoint+i)&&*(queryPoint+i) <= '9')  ))
-			str[i] = '.';
-		else
-			str[i] = *(queryPoint+i);
-	}str[namelen-2] = '\0';
-	
 
-	printf("len    : %d \n",len);
-	printf("dnslen : %d \n", dnslen);
-	printf("namelen: %d \n", namelen);
 
-	DNS.name  = str;
-	DNS.type  = (bit16)*(queryPoint+namelen);
-	DNS.cls   = (bit16)*(queryPoint+namelen+2);
+	for(queryLen=0; *(queryPoint+queryLen)!=0; queryLen++){
+		if(queryLen==0)	continue;
+
+		if(('a' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= 'z') ||
+				('A' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= 'Z') || 
+				('0' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= '9')){
+			//printf("%c", *(queryPoint+queryLen));
+			url[queryLen-1] = *(queryPoint+queryLen);
+		}else{
+			url[queryLen-1] = '.';
+			//printf(".");
+			//printf("\'%02x\'",*(queryPointer+queryLen) );
+		}
+	}queryLen += 4 + 1;
+	tc = (struct query_typecls*)(queryPoint + queryLen - 4);
+	
+	DNS.query.name = url;
+	DNS.query.type = ntohs(tc->type);
+	DNS.query.cls  = ntohs(tc->cls);
+
+
+
+	answerPoint = queryPoint + queryLen;
+	ans = (struct answer*)answerPoint;
+
+	DNS.answer.name = htons(ans->name);
+	DNS.answer.type = htons(ans->type);
+	DNS.answer.cls  = htons(ans->cls );
+	DNS.answer.ttl  = htonl(ans->ttl );
+	DNS.answer.len  = htons(ans->len );
+	DNS.answer.addr = (bit8*)(ans->addr);
+	
+	for(int i=0; i<4; i++)
+		printf("%d.", ans->addr[i]);
+	printf("\n");
+
 }
 
 
@@ -102,7 +147,7 @@ void pgen_dns::WRAP(){
 	pgen_udp::WRAP();
 	udp.dest = htons(53);
 
-	char name[DNS.name.length()+2];
+	char name[DNS.query.name.length()+2];
 	int count = 0;
 	struct{
 		u_int16_t type;
@@ -132,7 +177,7 @@ void pgen_dns::WRAP(){
 
 	char *str;
 	char buf[256];
-	strcpy(buf, DNS.name.c_str());
+	strcpy(buf, DNS.query.name.c_str());
 	str = strtok(buf, ".");
 	name[count] = (char)strlen(str);
 	count++;
@@ -151,8 +196,8 @@ void pgen_dns::WRAP(){
 	name[count] = 0x00;
 	count++;
 
-	query.type = htons(DNS.type);
-	query.cls  = htons(DNS.cls);
+	query.type = htons(DNS.query.type);
+	query.cls  = htons(DNS.query.cls);
 
 
 	u_char* p = data;
@@ -190,12 +235,14 @@ void pgen_dns::SEND(const char* ifname){
 
 void pgen_dns::SUMMARY(){
 	WRAP();
-//	if(ntohs(dns.flags) == 0x0100){
-		printf("Standard query 0x%04x %s\n", ntohs(dns.id),
-				DNS.name.c_str());
-//	}else{
-//		printf("not supported\n");	
-//	}
+	if(ntohs(dns.flags) == 0x0100){
+  		printf("Standard query 0x%04x %s\n", ntohs(dns.id),
+  											DNS.query.name.c_str());
+	}else if(ntohs(dns.flags) == 0x8180){
+		printf("Standard query response 0x%04x \n", ntohs(dns.id));
+	}else{
+		printf("not supported\n");	
+	}
 }
 
 void pgen_dns::INFO(){
@@ -205,12 +252,27 @@ void pgen_dns::INFO(){
 	printf(" * Domain Name System \n");
 	printf("    - Identification  : 0x%04x\n", ntohs(dns.id));
 	printf("    - Flags           : 0x%04x\n", ntohs(dns.flags));
-	printf("         - qr         : %d\n", dns.qr);
-	printf("         - opcode     : %d\n", dns.opcode);
-	printf("         - aa         : %d\n", dns.aa);
-	printf("         - tc         : %d\n", dns.tc);
-	printf("         - rd         : %d\n", dns.rd);
-	printf("         - ra         : %d\n", dns.ra);
+	printf("         - qr         : %d", dns.qr);
+	if(dns.qr == 0)				printf("   (query) \n");
+	else						printf("   (response)\n");
+	printf("         - opcode     : %d", dns.opcode);
+	if(dns.opcode == 0)			printf("   (standard query) \n");
+	else if(dns.opcode == 1)	printf("   (inverse query) \n");
+	else if(dns.opcode == 2)	printf("   (server status request) \n");
+	else						printf("   (malformed)\n");
+	printf("         - aa         : %d", dns.aa);
+	if(dns.aa == 1)				printf("   (have authority) \n");
+	else						printf("   (no authority)\n");
+	printf("         - tc         : %d", dns.tc);
+	if(dns.tc == 1)				printf("   (caption) \n");
+	else						printf("   (no caption)\n");
+	printf("         - rd         : %d", dns.rd);
+	if(dns.rd == 1)				printf("   (recursion desired) \n");
+	else						printf("   (no recursion)\n");
+	printf("         - ra         : %d", dns.ra);
+	if(dns.ra == 1)				printf("   (recursion available) \n");
+	else						printf("   (recursion unavailable)\n");
+
 	printf("         - nouse      : %d\n", dns.nouse);
 	printf("         - rcode      : %d\n", dns.rcode);
 	
@@ -220,7 +282,18 @@ void pgen_dns::INFO(){
 	printf("    - Additional RRs  : 0x%04x\n", ntohs(dns.arcnt));
 
 	printf("    - Queries \n");
-	printf("         - name       : %s \n", DNS.name.c_str());
-	printf("         - type       : 0x%04x \n", DNS.type);
-	printf("         - class      : 0x%04x \n", DNS.cls);
+	printf("         - name       : %s \n", DNS.query.name.c_str());
+	printf("         - type       : 0x%04x \n", DNS.query.type);
+	printf("         - class      : 0x%04x \n", DNS.query.cls);
+
+
+	if(dns.qr == 1){
+		printf("    - Answer  \n");
+		printf("         - name       : %d \n", DNS.answer.name);
+		printf("         - type       : %d \n", DNS.answer.type);
+		printf("         - class      : %d \n", DNS.answer.cls);
+		printf("         - ttl        : %d \n", DNS.answer.ttl);
+		printf("         - data len   : %d \n", DNS.answer.len);
+		printf("         - address    : %s \n", DNS.answer.addr.c_str());
+	}
 }

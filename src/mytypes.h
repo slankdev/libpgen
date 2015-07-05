@@ -385,6 +385,20 @@ struct MYDNS{
 
 
 
+struct dns_answer{
+	bit16 name;
+	bit16 type;
+	bit16 cls;
+	bit32 ttl;
+	bit16 len;
+	bit8  addr[4];
+};
+
+
+
+
+
+
 
 
 #endif
