@@ -5,19 +5,15 @@
 
 const char* dev = "eth0";
 
-
 bool callback(const bit8* packet, int len){
-
 	pgen_dns p;
 	p.CAST(packet, len);
 
 	if(p.IP.protocol != 17)		return true;
 	if(!(p.UDP.src == 53))		return true;
 
-
 	p.INFO();
 	return true;
-
 }
 
 
