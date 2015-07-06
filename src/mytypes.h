@@ -11,7 +11,8 @@
 typedef u_int8_t  bit8;
 typedef u_int16_t bit16;
 typedef u_int32_t bit32;
-
+typedef uint64_t  bit64;
+typedef unsigned long long bit128;
 
 
 

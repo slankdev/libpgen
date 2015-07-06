@@ -3,7 +3,7 @@
 #include <sniff.h>
 #include <string.h>
 
-const char* dev = "wlan0";
+const char* dev = "eth0";
 
 
 bool callback(const bit8* packet, int len){
@@ -15,7 +15,7 @@ bool callback(const bit8* packet, int len){
 	if(!(p.UDP.src == 53))		return true;
 
 
-	//p.INFO();
+	p.INFO();
 	return true;
 
 }

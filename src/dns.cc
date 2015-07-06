@@ -72,15 +72,14 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	// answer infomation
 	bit8* answerPoint;
 	struct answer{
-		bit16 name;
-		bit16 type;
-		bit16 cls;
-		bit32 ttl;
-		//bit16 ttl;
-		bit16 len;
-		bit32 addr[4];
+		//bit128  name:16;
+		bit16 type:16;
+		bit16 cls:16;
+		bit32 ttl:32;
+		bit16 len:16;
+		bit8  addr[4];
 	};
-	struct answer* ans;
+	struct answer ans;
 	bit32 answerLen;
 
 
@@ -118,6 +117,7 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	}queryLen += 4 + 1;
 	tc = (struct query_typecls*)(queryPoint + queryLen - 4);
 	
+
 	DNS.query.name = url;
 	DNS.query.type = ntohs(tc->type);
 	DNS.query.cls  = ntohs(tc->cls);
@@ -125,19 +125,37 @@ void pgen_dns::CAST(const bit8* packet, int len){
 
 
 	answerPoint = queryPoint + queryLen;
-	ans = (struct answer*)answerPoint;
+	memcpy(&ans, answerPoint+2, 16);
 
-	DNS.answer.name = htons(ans->name);
-	DNS.answer.type = htons(ans->type);
-	DNS.answer.cls  = htons(ans->cls );
-	DNS.answer.ttl  = htonl(ans->ttl );
-	DNS.answer.len  = htons(ans->len );
-	DNS.answer.addr = (bit8*)(ans->addr);
+
+	//DNS.answer.name = htons(answerPoint);
+	DNS.answer.name = 0;
+	DNS.answer.type = htons(ans.type);
+	DNS.answer.cls  = htons(ans.cls );
+	DNS.answer.ttl  = htonl(ans.ttl );
+	DNS.answer.len  = htons(ans.len );
+	DNS.answer.addr = (ans.addr);
 	
-	for(int i=0; i<4; i++)
-		printf("%d.", ans->addr[i]);
-	printf("\n");
+/*
 
+	printf("----------------------------------\n");
+	
+	printf("type: %04x \n", ntohs(ans.type));
+	printf("cls : %04x \n", ntohs(ans.cls ));
+	printf("ttl : %04x \n", ntohl(ans.ttl ));
+	printf("len : %04x \n", ntohs(ans.len ));
+	
+	for(int i=0;i<4;i++){
+		printf("%d.", ans.addr[i]);	
+	}printf("\n");
+
+	printf("----------------------------------\n");
+	
+	for(int i=0; i<16;i++){
+		printf("\'%02x\'", *(answerPoint+i));
+		if((i+1)%8 == 0)  printf("\n");
+	}
+*/
 }
 
 
@@ -289,11 +307,11 @@ void pgen_dns::INFO(){
 
 	if(dns.qr == 1){
 		printf("    - Answer  \n");
-		printf("         - name       : %d \n", DNS.answer.name);
-		printf("         - type       : %d \n", DNS.answer.type);
-		printf("         - class      : %d \n", DNS.answer.cls);
-		printf("         - ttl        : %d \n", DNS.answer.ttl);
-		printf("         - data len   : %d \n", DNS.answer.len);
+		printf("         - name       : 0x%04x (kaihatutyu)\n", DNS.answer.name);
+		printf("         - type       : 0x%04x \n", DNS.answer.type);
+		printf("         - class      : 0x%04x \n", DNS.answer.cls);
+		printf("         - ttl        : 0x%04x \n", DNS.answer.ttl);
+		printf("         - data len   : 0x%04x \n", DNS.answer.len);
 		printf("         - address    : %s \n", DNS.answer.addr.c_str());
 	}
 }
