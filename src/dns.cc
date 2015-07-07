@@ -56,7 +56,6 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	}
 	pgen_udp::CAST(packet, len);	
 	
-	debug("     into DNS::CAST");
 
 	const bit8* dnsPoint = packet + sizeof(struct MYETH)
 			+ sizeof(struct MYIP) + sizeof(struct MYUDP);
@@ -107,6 +106,7 @@ void pgen_dns::CAST(const bit8* packet, int len){
 		if(queryLen==0)	continue;
 		if(queryLen>= 50){
 			printf("stack abunai!!!\n")	;
+			printf("queryLen is too large(%d)\n", queryLen);
 			return;
 
 		}
@@ -121,7 +121,6 @@ void pgen_dns::CAST(const bit8* packet, int len){
 		}
 	}queryLen += 4 + 1;
 
-	printf("             query length: %d \n", queryLen );
 
 
 
@@ -146,9 +145,6 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	DNS.answer.len  = htons(ans.len );
 	DNS.answer.addr = (ans.addr);
 
-	debug("     exit to DNS::cast");
-	printf("debug info!!!!!\n");
-	printf("   query length: %d \n", queryLen );
 }
 
 
@@ -351,7 +347,7 @@ void pgen_dns::INFO(){
 		printf("         - name       : 0x%04x (kaihatutyu)\n", DNS.answer.name);
 		printf("         - type       : 0x%04x \n", DNS.answer.type);
 		printf("         - class      : 0x%04x \n", DNS.answer.cls);
-		printf("         - ttl        : 0x%04x \n", DNS.answer.ttl);
+		printf("         - ttl        : 0x%08x \n", DNS.answer.ttl);
 		printf("         - data len   : 0x%04x \n", DNS.answer.len);
 		printf("         - address    : %s \n", DNS.answer.addr.c_str());
 	}
