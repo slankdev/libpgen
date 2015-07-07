@@ -70,6 +70,9 @@ void pgen_udp::WRAP(){
 
 void pgen_udp::CAST(const bit8* data, int len){
 	pgen_ip::CAST(data, len);
+	
+	debug("          into UDP::cast");
+
 
 	struct MYUDP buf;
 	memcpy(&buf, data+sizeof(struct MYETH)+sizeof(struct MYIP),
@@ -77,6 +80,8 @@ void pgen_udp::CAST(const bit8* data, int len){
 	
 	UDP.src = ntohs(buf.source);
 	UDP.dst = ntohs(buf.dest);
+
+	debug("          exit UDP::cast");
 }
 
 

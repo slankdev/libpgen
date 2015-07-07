@@ -17,6 +17,17 @@
 #include <netinet/in.h>		/* for struct sockaddr_in */
 		
 
+void debug(){
+	printf("%s:%d \n", __FILE__, __LINE__);	
+}
+
+void debug(const char* str){
+	printf("%s:%d ", __FILE__, __LINE__);	
+	printf("message: %s\n", str);
+}
+
+
+
 pgen_packet::pgen_packet(){
 	CLEAR();
 }

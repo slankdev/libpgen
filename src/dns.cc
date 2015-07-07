@@ -50,8 +50,13 @@ void pgen_dns::CLEAR(){
 
 
 void pgen_dns::CAST(const bit8* packet, int len){
+	if(len<minLength){
+		printf("this packet is too small in this protocol\n");
+		return;
+	}
 	pgen_udp::CAST(packet, len);	
 	
+	debug("     into DNS::CAST");
 
 	const bit8* dnsPoint = packet + sizeof(struct MYETH)
 			+ sizeof(struct MYIP) + sizeof(struct MYUDP);
@@ -72,7 +77,6 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	// answer infomation
 	bit8* answerPoint;
 	struct answer{
-		//bit128  name:16;
 		bit16 type:16;
 		bit16 cls:16;
 		bit32 ttl:32;
@@ -81,8 +85,6 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	};
 	struct answer ans;
 	bit32 answerLen;
-
-
 
 	queryPoint = (bit8*)(dnsPoint+sizeof(struct MYDNS));
 
@@ -103,18 +105,26 @@ void pgen_dns::CAST(const bit8* packet, int len){
 
 	for(queryLen=0; *(queryPoint+queryLen)!=0; queryLen++){
 		if(queryLen==0)	continue;
+		if(queryLen>= 50){
+			printf("stack abunai!!!\n")	;
+			return;
+
+		}
+
 
 		if(('a' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= 'z') ||
 				('A' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= 'Z') || 
 				('0' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= '9')){
-			//printf("%c", *(queryPoint+queryLen));
 			url[queryLen-1] = *(queryPoint+queryLen);
 		}else{
 			url[queryLen-1] = '.';
-			//printf(".");
-			//printf("\'%02x\'",*(queryPointer+queryLen) );
 		}
 	}queryLen += 4 + 1;
+
+	printf("             query length: %d \n", queryLen );
+
+
+
 	tc = (struct query_typecls*)(queryPoint + queryLen - 4);
 	
 
@@ -135,36 +145,17 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	DNS.answer.ttl  = htonl(ans.ttl );
 	DNS.answer.len  = htons(ans.len );
 	DNS.answer.addr = (ans.addr);
-	
-/*
 
-	printf("----------------------------------\n");
-	
-	printf("type: %04x \n", ntohs(ans.type));
-	printf("cls : %04x \n", ntohs(ans.cls ));
-	printf("ttl : %04x \n", ntohl(ans.ttl ));
-	printf("len : %04x \n", ntohs(ans.len ));
-	
-	for(int i=0;i<4;i++){
-		printf("%d.", ans.addr[i]);	
-	}printf("\n");
-
-	printf("----------------------------------\n");
-	
-	for(int i=0; i<16;i++){
-		printf("\'%02x\'", *(answerPoint+i));
-		if((i+1)%8 == 0)  printf("\n");
-	}
-*/
+	debug("     exit to DNS::cast");
+	printf("debug info!!!!!\n");
+	printf("   query length: %d \n", queryLen );
 }
 
 
 
-
 void pgen_dns::WRAP(){
-	pgen_udp::WRAP();
 	udp.dest = htons(53);
-
+	
 	char name[DNS.query.name.length()+2];
 	int count = 0;
 	struct{
@@ -172,8 +163,17 @@ void pgen_dns::WRAP(){
 		u_int16_t cls;
 	}query;
 	
+	if(DNS.flags.qr == 1)
+		_wrap_answer();
+
+
 	udp.len = htons(ntohs(udp.len)+sizeof(struct MYDNS)+
-			sizeof(query)+sizeof(name));
+			sizeof(query)+sizeof(name))+answer_len;
+
+	pgen_udp::WRAP();
+	
+	udp.len = htons(ntohs(udp.len)+sizeof(struct MYDNS)+
+			sizeof(query)+sizeof(name)+answer_len);
 
 
 	memset(&dns, 0, sizeof dns);
@@ -229,9 +229,49 @@ void pgen_dns::WRAP(){
 	p += count;
 	memcpy(p, &query, sizeof(query));
 	p += sizeof(query);
-	
+
+	if(dns.qr == 1){
+		memcpy(p, &answer, sizeof(answer));
+		p += answer_len;
+	}
 	len = p-data;
 }
+
+void pgen_dns::_wrap_query(){}
+
+
+void pgen_dns::_wrap_answer(){
+	
+
+	bit16 name;
+	struct{
+		//bit16 name;
+		bit16 type;
+		bit16 cls ;
+		bit32 ttl ;
+		bit16 len ;
+		bit8  addr[4];
+	}buf;
+	
+	name = htons(0xc00c);
+	buf.type = htons(DNS.answer.type);
+	buf.cls  = htons(DNS.answer.cls );
+	buf.ttl  = htons(DNS.answer.ttl );
+	buf.len  = htons(DNS.answer.len );
+	      
+	buf.addr[0] = DNS.answer.addr[0];
+	buf.addr[1] = DNS.answer.addr[1];
+	buf.addr[2] = DNS.answer.addr[2];
+	buf.addr[3] = DNS.answer.addr[3];
+	
+	memcpy(answer, &name, sizeof(name));
+	memcpy(answer+2, &buf, sizeof(buf));
+	answer_len = sizeof(buf)+2;
+	
+}
+
+
+
 
 
 void pgen_dns::SEND(const char* ifname){
@@ -251,15 +291,16 @@ void pgen_dns::SEND(const char* ifname){
 	close(sock);
 }
 
+
+
+// not coding now
 void pgen_dns::SUMMARY(){
 	WRAP();
-	if(ntohs(dns.flags) == 0x0100){
-  		printf("Standard query 0x%04x %s\n", ntohs(dns.id),
-  											DNS.query.name.c_str());
-	}else if(ntohs(dns.flags) == 0x8180){
-		printf("Standard query response 0x%04x \n", ntohs(dns.id));
+	if(dns.qr == 1){
+  		printf("Query response 0x%04x %s %s\n", ntohs(dns.id), DNS.query.name.c_str(),
+				DNS.answer.addr.c_str());
 	}else{
-		printf("not supported\n");	
+		printf("Query 0x%04x %s\n", ntohs(dns.id), DNS.query.name.c_str());	
 	}
 }
 

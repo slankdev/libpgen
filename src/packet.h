@@ -217,8 +217,10 @@ class pgen_udp : public pgen_ip {
 class pgen_dns :public pgen_udp {
 	protected:
 		struct MYDNS dns;
+		bit8 answer[256];
+		bit32 answer_len;
 	public:
-		//static const int minLength = sizeof(struct MYETH);
+		static const int minLength = sizeof(struct MYETH);
 		//static const int macLength = sizeof(struct MYETH);
 		struct{
 			u_int16_t id;
@@ -232,7 +234,6 @@ class pgen_dns :public pgen_udp {
 				bit8 nouse;
 				bit8 rcode;
 			}flags;
-			//u_int16_t flags;
 			u_int16_t qdcnt;
 			u_int16_t ancnt;
 			u_int16_t nscnt;
@@ -257,6 +258,8 @@ class pgen_dns :public pgen_udp {
 		void INFO();
 		void SUMMARY();
 		void WRAP();
+		void _wrap_query();
+		void _wrap_answer();
 		void SEND(const char* ifname);
 		void CAST(const bit8*, const int);
 };

@@ -5,7 +5,7 @@
 #include <netinet/udp.h>
 #include <net/ethernet.h>
 
-const char* dev = "lo";
+const char* dev = "wlan0";
 
 
 
@@ -22,6 +22,7 @@ bool callback(const u_char* packet, int len){
 	p.SUMMARY();
 	return true;
 }
+
 
 
 

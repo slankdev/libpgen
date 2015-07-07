@@ -8,6 +8,8 @@
 #include "address.h"
 #include "netutil.h"
 
+void debug();
+void debug(const char*);
 
 
 #define PGEN_DEVLEN 256
