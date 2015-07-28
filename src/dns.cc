@@ -1,4 +1,6 @@
 
+
+
 /* include must!!! */
 #include "pgen.h"
 #include "packet.h"
@@ -16,6 +18,8 @@
 #include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+
+
 
 pgen_dns::pgen_dns(){
 	CLEAR();
