@@ -48,13 +48,15 @@ void pgen_ardrone::SEND(const char *ifname){
 
 
 void pgen_ardrone::CAST(const bit8* packet, int len){
+	printf("cstart ");
 	pgen_udp::CAST(packet, len);
+	printf(" cend");
 	
 	char buf[256];
 	packet += sizeof(struct MYETH)+sizeof(struct MYIP)+sizeof(struct MYUDP);
 	len -= sizeof(struct MYETH)+sizeof(struct MYIP)+sizeof(struct MYUDP);
 	
-
+	
 	
 	for(int i=0; i<len; i++){
 		if(packet[i] == 0x0d)	buf[i] = '.';
@@ -148,6 +150,20 @@ void pgen_ardrone::SUMMARY(){
 			ARDRONE.pcmd.yaw.z);
 	printf("REF(seq=%ld, cmd=%ld)\n", ARDRONE.ref.seq, ARDRONE.ref.command);
 }
+
+
+void pgen_ardrone::DSUMMARY(){
+	WRAP();
+
+	printf("%s -> %s (seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
+			IP.src.c_str(), IP.dst.c_str(),
+			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, ARDRONE.pcmd.roll, 
+			ARDRONE.pcmd.pitch, ARDRONE.pcmd.gaz,
+			ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,
+			ARDRONE.pcmd.yaw.z);
+
+}
+
 
 
 void pgen_ardrone::_printdata(){

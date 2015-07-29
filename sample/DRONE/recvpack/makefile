@@ -13,7 +13,7 @@ all: program
 
 
 program: main.cc
-	$(CPP) -std=c++11 main.cc $(OPTION) -lpgen -lsniff -lpcap
+	$(CPP) -std=c++11 main.cc $(OPTION)  -lsniff -lpcap -lpgen 
 
 clean:
 	$(RM) *.o *.out 

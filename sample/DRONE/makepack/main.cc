@@ -8,8 +8,8 @@ const int count = 1;
 int main(){
 	pgen_ardrone pack;
 
-	pack.IP.src = "192.168.1.4";
-	pack.IP.dst = "192.168.1.1";
+	pack.IP.src = "192.168.179.4";
+	pack.IP.dst = "192.168.179.7";
 	pack.UDP.src = 5556;
 	pack.UDP.dst = 5556;
 
@@ -25,11 +25,11 @@ int main(){
 	pack.ARDRONE.ref.command = 0;
 
 	//pack.INFO();
-	for(int i=0; ; i++){
-		printf("%05d: ", i);
+//	for(int i=0; ; i++){
+//		printf("%05d: ", i);
 		pack.SEND(dev);
 		pack.SUMMARY();
 //		pack.ARDRONE.pcmd.seq++;
-		sleep(count);
-	}
+//		sleep(count);
+//	}
 }

@@ -318,6 +318,8 @@ class pgen_ardrone : public pgen_udp {
 		void INFO();
 		void SUMMARY();
 		void _printdata();
+
+		void DSUMMARY();
 };
 
 
