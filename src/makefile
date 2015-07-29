@@ -26,7 +26,8 @@ SRC = packet.cc \
 	  udp.cc \
 	  netutil.cc \
 	  dns.cc \
-	  ardrone.cc
+	  ardrone.cc \
+	  unknown.cc
 HDR = pgen.h \
 	  packconf.h \
 	  address.h \

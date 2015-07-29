@@ -46,6 +46,24 @@ class pgen_packet{
 
 
 
+class pgen_unknown{
+	protected:
+		
+
+	public:
+		pgen_unknown();
+		bool isETH();
+		bool isARP();
+		bool isIP();
+		bool isICMP();
+		bool isTCP();
+		bool isUDP();
+};
+
+
+
+
+
 //#include <net/ethernet.h> 		/* for struct ether_header */
 class pgen_eth : public pgen_packet {
 	protected:
@@ -301,6 +319,7 @@ class pgen_ardrone : public pgen_udp {
 		void SUMMARY();
 		void _printdata();
 };
+
 
 
 

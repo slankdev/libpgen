@@ -23,7 +23,6 @@ static const char* getbender(const char* mac);
 
 
 
-
 class ipaddr{
 	private:
 		
@@ -39,6 +38,12 @@ class ipaddr{
 		}
 		bit32 getbit(){
 			return _addr;	
+		}
+		bool nslookup(const char* host){
+			
+
+			
+			return true;
 		}
 		bool setipbydev(const char* ifname){
 			int sockd;
@@ -96,6 +101,7 @@ class ipaddr{
 			if(_addr == 0)	return true;
 			else			return false;
 		}
+
 		ipaddr& operator=(const ipaddr i){
 			//_addr = i._addr;
 			_addr = i._addr;

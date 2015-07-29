@@ -48,29 +48,20 @@ class libpgen{
  *						print packet info inline
  *		[2015.05.16]	add function nslookup(const)		[]
  *						ipaddr nslookup(url);		 
- *		[2015.05.16]	add function isIPADDR()				[]
- *		[2015.05.16]	add function isMACADDR()			[]
- *		[2015.05.25]	change type int to u_char in addr 	[]
- *						add private or public all value
- *		[2015.06.04]	check packet bin length 			[]
- *						if malformed length 
- *						then alert error message
+ *		[2015.05.16]	add packet type	unknown				[]
+ *						for recv packet
  *
  *
  *
  *
  *		BUG			[date]  about  [fin-date]
- *		[date------]	title		 						[]
- *		[2015.06.28]	address.h:239 has some warning 		[]
+ *		[2015.06.28]	address.h:239 has some warning 		[2015.07.30]
  *						near malloc() and memset() 
  *						in string size is not true
- *		[2015.06.28]	address.h:23 has some warning 		[]
+ *		[2015.06.28]	address.h:23 has some warning 		[2015.07.30]
  *						near malloc() and memset() 
  *						in string size is not true
- *		[2015.06.28]	pgen-func.h:39 has some warning 	[]
- *						near malloc() and memset() 
- *						in string size is not true
- *		[2015.06.28]	dns.cc;60 has memory error			[]
+ *		[2015.06.28]	dns.cc:60 has memory error			[]
  *		
  *		CHANGES
  *		[2015.06.12]	typedef int32 bit32
