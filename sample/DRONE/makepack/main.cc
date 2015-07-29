@@ -9,7 +9,7 @@ int main(){
 	pgen_ardrone pack;
 
 	pack.IP.src = "192.168.179.4";
-	pack.IP.dst = "192.168.179.7";
+	pack.IP.dst = "192.168.179.10";
 	pack.UDP.src = 5556;
 	pack.UDP.dst = 5556;
 
