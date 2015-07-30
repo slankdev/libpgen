@@ -48,9 +48,7 @@ void pgen_ardrone::SEND(const char *ifname){
 
 
 void pgen_ardrone::CAST(const bit8* packet, int len){
-	printf("cstart ");
 	pgen_udp::CAST(packet, len);
-	printf(" cend");
 	
 	char buf[256];
 	packet += sizeof(struct MYETH)+sizeof(struct MYIP)+sizeof(struct MYUDP);

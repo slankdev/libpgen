@@ -29,11 +29,9 @@ void debug(const char* str){
 
 
 pgen_packet::pgen_packet(){
-	CLEAR();
 }
 
 void pgen_packet::CLEAR(){
-	len = 0;
 }
 
 

@@ -168,7 +168,6 @@ struct MYIP{
 #else
 # error	"Please fix <bits/endian.h>"
 #endif
-
 	bit8  tos;
 	bit16 tot_len;
 	bit16 id;

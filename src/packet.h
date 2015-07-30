@@ -19,7 +19,7 @@
 #include <iostream>
 
 
-#define PGEN_PACKLEN 2000
+#define PGEN_PACKLEN 4096
 
 
 
@@ -33,7 +33,7 @@ class pgen_packet{
 	public:
 			
 		pgen_packet();
-		virtual void CLEAR();
+		virtual void CLEAR()=0;
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;
 		virtual void SEND(const char* ifname)=0;
@@ -48,10 +48,17 @@ class pgen_packet{
 
 class pgen_unknown{
 	protected:
-		
+		bool _isETH;
+		bool _isARP;
+		bool _isIP;
+		bool _isICMP;
+		bool _isTCP;
+		bool _isUDP;
 
 	public:
 		pgen_unknown();
+		pgen_unknown(const bit8*, int);
+		bool CAST(const bit8*, int);
 		bool isETH();
 		bool isARP();
 		bool isIP();
