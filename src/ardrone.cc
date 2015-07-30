@@ -153,8 +153,8 @@ void pgen_ardrone::SUMMARY(){
 void pgen_ardrone::DSUMMARY(){
 	WRAP();
 
-	printf("%s -> %s (seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
-			IP.src.c_str(), IP.dst.c_str(),
+	printf("%s -> %s ", IP.src.c_str(), IP.dst.c_str());
+	printf("(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) \n", 
 			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, ARDRONE.pcmd.roll, 
 			ARDRONE.pcmd.pitch, ARDRONE.pcmd.gaz,
 			ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,

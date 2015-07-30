@@ -56,6 +56,11 @@ class pgen_unknown{
 		bool _isUDP;
 
 	public:
+		struct{
+			ipaddr src;
+			ipaddr dst;
+		}L3;
+
 		pgen_unknown();
 		pgen_unknown(const bit8*, int);
 		bool CAST(const bit8*, int);
