@@ -48,7 +48,7 @@ class libpgen{
  *						print packet info inline
  *		[2015.05.16]	add function nslookup(const)		[]
  *						ipaddr nslookup(url);		 
- *		[2015.05.16]	add packet type	unknown				[]
+ *		[2015.07.29]	add packet type	unknown				[2015.07.30]
  *						for recv packet
  *
  *
@@ -62,6 +62,8 @@ class libpgen{
  *						near malloc() and memset() 
  *						in string size is not true
  *		[2015.06.28]	dns.cc:60 has memory error			[]
+ *		[2015.07.30]	CAST has big memory error			[]
+ *						
  *		
  *		CHANGES
  *		[2015.06.12]	typedef int32 bit32
