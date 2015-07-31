@@ -1,3 +1,5 @@
+#include "pgen.h"
+#include "netutil.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,11 +13,11 @@
 #include <netpacket/packet.h>
 #include <netinet/if_ether.h>
 
-#include "netutil.h"
+
 
 
 void sniff(const char* dev, bool (*callback)(const u_char*, int)){
-	u_char packet[10000];
+	u_char packet[20000];
 	bool result = true;
 	int len;
 	int sock;
@@ -30,8 +32,6 @@ void sniff(const char* dev, bool (*callback)(const u_char*, int)){
 			perror("read");
 			return;
 		}
-
 		result = (*callback)(packet, len);
 	}
-
 }

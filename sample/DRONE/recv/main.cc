@@ -1,6 +1,5 @@
 #include <pgen.h>
 #include <stdio.h>
-#include <sniff.h>
 
 const char* dev = "wlan0";
 
