@@ -1,9 +1,6 @@
 #include <pgen.h>
 #include <stdio.h>
 #include <sniff.h>
-#include <netinet/ip.h>
-#include <netinet/udp.h>
-#include <net/ethernet.h>
 
 const char* dev = "wlan0";
 

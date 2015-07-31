@@ -304,6 +304,26 @@ void pgen_dns::SUMMARY(){
 	}
 }
 
+
+
+
+
+void pgen_dns::DSUMMARY(){
+	WRAP();
+
+	printf("%s -> %s ", IP.src.c_str(), IP.dst.c_str());
+
+	if(dns.qr == 1){
+  		printf("(Query response 0x%04x %s %s)\n", ntohs(dns.id), DNS.query.name.c_str(),
+				DNS.answer.addr.c_str());
+	}else{
+		printf("(Query 0x%04x %s)\n", ntohs(dns.id), DNS.query.name.c_str());	
+	}
+}
+
+
+
+
 void pgen_dns::INFO(){
 	WRAP();
 	pgen_udp::INFO();

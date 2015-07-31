@@ -19,7 +19,7 @@
 #include <iostream>
 
 
-#define PGEN_PACKLEN 4096
+#define PGEN_PACKLEN 16384
 
 
 
@@ -287,6 +287,7 @@ class pgen_dns :public pgen_udp {
 		void CLEAR();
 		void INFO();
 		void SUMMARY();
+		void DSUMMARY();
 		void WRAP();
 		void _wrap_query();
 		void _wrap_answer();
