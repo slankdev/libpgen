@@ -27,12 +27,14 @@ SRC = packet.cc \
 	  netutil.cc \
 	  dns.cc \
 	  ardrone.cc \
-	  unknown.cc 
+	  unknown.cc \
+	  sniff.cc
 HDR = pgen.h \
 	  packconf.h \
 	  address.h \
 	  packet.h \
-	  mytypes.h 
+	  mytypes.h \
+	  sniff.h
 OBJ = $(SRC:.cc=.o)
 
 CFLAGS = -Wall -fPIC

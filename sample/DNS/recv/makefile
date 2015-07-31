@@ -13,7 +13,7 @@ all: program
 
 
 program: main.cc
-	$(CPP) main.cc $(OPTION) -lpgen -lsniff -lpcap
+	$(CPP) main.cc $(OPTION) -lpgen 
 
 clean:
 	$(RM) *.o *.out 

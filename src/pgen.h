@@ -7,6 +7,7 @@
 #include "packconf.h"
 #include "address.h"
 #include "netutil.h"
+#include "sniff.h"
 
 void debug();
 void debug(const char*);
