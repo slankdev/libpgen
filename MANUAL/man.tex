@@ -1,0 +1,277 @@
+\documentclass[12pt]{jsarticle}
+
+
+\renewcommand{\baselinestretch}{1}
+\usepackage{comment}
+\usepackage{geometry}
+\geometry{left=20mm,right=20mm,top=20mm,bottom=20mm}
+\parindent = 0pt
+
+
+\begin{document}
+
+\title{~ \\ ~ \\ ~ \\ ~ \\Libpgen Manual version 0.01}
+\author{slank}
+\maketitle
+
+
+\section{はじめに}
+
+
+libpgenはSlank Develop Network (https://slankdev.net) で情報公開をしている
+C/C++のパケットジェネレータのライブラリです。このライブラリは
+ネットワークプログラミング、
+ネットワークの勉強などに最適だと開発者は考えています。\\
+
+
+libpgenはまだ完成段階にはありません。
+様々なエラーを含んでいるかもしれません。ですが少しでも多くの人に使用してもらい、
+開発の強力をしていただけたら、と考えています。\\
+
+
+開発者のメールアドレスはslank.dev@gmail.comで、twitterアカウントは@slankdevです。
+またlibpgenのソースコードはGitHubで公開をしています。
+(https://github.com/slankdev/libpgen)\\
+
+
+エラー報告などがあれば開発者まで連絡をお願いします。
+
+
+
+\newpage
+
+
+
+
+\section{パケット生成の流れ}
+\subsection{パケットクラスのインスタンスを生成}
+libpgenではパケットインスタンスを生成して、それを設定、送信という流れで、
+パケットを送信します。対応プロトコルはEthernet、ARP、IP、ICMP、TCP、UDP、
+DNS、AR Drone
+で、パケットクラスの名前はそれぞれpgen\_eth、pgen\_arp、pgen\_ip、pgen\_icmp、
+pgen\_tcp、pgen\_udp、pgen\_dns、pgen\_ardroneです。
+例えばTCPパケットのインスタンスを生成するときは以下の様になります。
+
+\begin{quote}
+\begin{verbatim}
+pgen_tcp packet;
+\end{verbatim}
+\end{quote}
+
+
+\subsection{パケットを設定}
+
+パケットの設定は、以下で説明するパケットの要素に値を代入していくだけです。
+例えばパケットの送信先IPアドレスを192.168.110.4にするときは以下の様になります。
+
+\begin{quote}
+\begin{verbatim}
+packet.IP.dst = "192.168.110.4";
+\end{verbatim}
+\end{quote}
+
+
+\subsection{パケット送信、情報表示など}
+
+パケットの送信や情報表示は各パケットクラスのメンバ関数を使用します。
+パケットクラスは以下のようなメンバ関数を持ちます。
+
+\begin{quote}
+\begin{verbatim}
+void SEND(const char*); 引数で指定したいんたーふぇーすでパケットを送信します。
+void INFO(); パケットの情報を詳細表示します。
+void SUMMARY(); パケットの情報を一行で簡単に表示します。
+bool CAST(const char*, int); バイト列からパケットクラスにキャストします。パケット解析などに使用します。キャスト失敗時はfalseを返します。
+\end{verbatim}
+\end{quote}
+
+バイト列からパケットにキャストし、送信する場合以下の様になります。
+
+\begin{quote}
+\begin{verbatim}
+if(packet.CAST(paket,len) == false){
+    fprintf(stderr, "cast miss\n");	
+    return;
+}
+packet.SEND("wlan0");
+\end{verbatim}
+\end{quote}
+
+
+
+\newpage
+
+\section{IPアドレス、MACアドレスの操作について}
+libpgenはアドレス操作をipaddrクラスとmacaddrクラスで行います。
+
+\subsection{ipaddrクラス}
+ipaddrクラスはIPアドレスを管理するクラスです。
+このクラスは以下のコンストラクタと、メンバ関数を持ちます。
+またipaddrクラスは＜,＞,==,!=の比較演算子が使用できます。
+IPアドレスの代入はchar配列文字列、ipaddrクラスの代入に対応しています。
+
+\begin{quote}
+\begin{verbatim}
+ipaddr(ipaddr);     引数と同じアドレスを入力します。
+ipaddr(const char*); 引数の文字列から入力します。
+bool setipbydev(const char*); 引数のデバイスのIPアドレスをセットします。失敗時はfalseを返します。
+bool setmascbydev(const char*); 引数のデバイスのネットマスクをセットします。失敗時はfalseを返します。
+bool isEmpty(); アドレスが空(0.0.0.0)である時にtrueを返します。
+char* c_str(); アドレスのNULLポインタ文字列を返します。
+\end{verbatim}
+\end{quote}
+
+
+\subsection{macaddrクラス}                    	
+macaddrクラスもipaddrクラス同様に＜,＞,==,!=の比較演算子が使用できます。
+代入も同様にchar配列文字列、ipaddrクラスの代入に対応しています。
+
+\begin{quote}
+\begin{verbatim}
+macaddr(macaddr);     引数と同じアドレスを入力します。
+macaddr(const char*); 引数の文字列から入力します。
+bool setmacbydev(const char*); 引数のデバイスのMACアドレスをセットします。失敗時はfalseを返します。
+bool isEmpty(); ipaddrクラスと同様です。
+char* c_str(); アドレスのNULLポインタ文字列を返します。
+char* bender(); アドレスの上位３バイトからベンダ名をNULLポインタ文字列で返します。
+\end{verbatim}
+\end{quote}
+
+
+
+
+
+\newpage
+\section{対応プロトコル}                      	
+Ethernet、ARP、IP、ICMP、TCP、UDP、DNS、AR Dro	neに対応しています。
+
+パケットのプロトコル要素のは以下の様にして設定します。
+\begin{quote}
+\begin{verbatim}
+プロトコル.要素名 = 123
+\end{verbatim}
+\end{quote}
+
+各プロトコルの要素は以下の様にlibpgen内で定義されています。
+
+
+\begin{quote}
+\begin{verbatim}
+	
+Ethernet
+src MAC address      : macaddr ETH.src
+dst MAC address      : macaddr ETH.dst
+ether type           : int ETH.type
+
+ARP
+src hardware address : macaddr ARP.srcEth
+src protocol address : ipaddr ARP.srcIp
+dst hardware address : macaddr ARP.dstEth
+dst protocol address : ipaddr ARP.dstIp
+arp operation        : int ARP.operation
+
+IP
+src IP address       : ipaddr IP.src
+dst IP address       : ipaddr IP.dst
+identification       : int IP.id
+type of service      : int IP.tos
+time to leave        : int IP.ttl
+protocol             : int IP.protocol
+
+\end{verbatim}
+\end{quote}
+
+\newpage
+
+\begin{quote}
+\begin{verbatim}
+
+ICMP
+icmp option          : int ICMP.option
+icmp code            : int ICMP.code
+identification       : int ICMP.id
+sequence number      : int ICMP.seq
+
+TCP
+src port             : int TCP.src
+dst port             : int TCP.dst
+flag  -FIN           : char TCP.flags.fin 
+flag  -SYN           : char TCP.flags.syn
+flag  -RST           : char TCP.flags.rst
+flag  -PSH           : char TCP.flags.psh
+flag  -ACK           : char TCP.flags.ack 
+flag  -URG           : char TCP.flags.urg 
+window size          : int TCP.window
+sequence number      : int TCP.seq
+acknowledge number   : int TCP.ack
+
+UDP
+src port             : int UDP.src
+dst port             : int UDP.dst
+
+\end{verbatim}
+\end{quote}
+
+\newpage
+
+\begin{quote}
+\begin{verbatim}
+typedef u_int16_t bit16;
+typedef u_int8_t  bit8;
+
+DNS
+Header
+identification       : bit16 DNS.id
+flag -qr             : bit8 DNS.flags.qr
+flag -opcode         : bit8 DNS.flags.opcode
+flag -aa             : bit8 DNS.flags.aa
+flag -tc             : bit8 DNS.flags.tc
+flag -rd             : bit8 DNS.flags.rd
+flag -ra             : bit8 DNS.flags.ra
+flag -nouse          : bit8 DNS.flags.nouse
+flag -rcode          : bit8 DNS.flags.rcode
+question count       : bit16 DNS.qdcnt
+answer count         : bit16 DNS.ancnt
+auth count           : bit16 DNS.nscnt
+additional count     : bit16 DNS.arcnt
+Query
+name                 : std::string DNS.query.name;
+type                 : bit16 DNS.query.type;
+class                : bit16 DNS.query.cls;
+Answer
+name                 : bit16 DNS.answer.name
+type                 : bit16 DNS.answer.type
+class                : bit16 DNS.answer.cls
+time to leave        : bit32 DNS.answer.ttl
+length               : bit16 DNS.answer.len
+address              : ipaddr DNS.answer.addr
+
+\end{verbatim}
+\end{quote}
+
+\newpage
+
+\begin{quote}
+\begin{verbatim}
+
+AR Drone
+PCMD
+sequence number      : long ar_drone.pcmd.seq
+flag                 : long ar_drone.pcmd.flag
+roll                 : long ar_drone.pcmd.roll
+pitch                : long ar_drone.pcmd.pitch
+gazzer               : long ar_drone.pcmd.gaz
+yaw -x               : long ar_drone.pcmd.yaw.x
+yaw -y               : long ar_drone.pcmd.yaw.y
+yaw	-z               : long ar_drone.pcmd.yaw.z
+REF
+sequence number      : long ar_drone.ref.seq
+command              : long ar_drone.ref.command
+
+\end{verbatim}
+\end{quote}
+
+
+
+
+\end{document}
