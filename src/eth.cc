@@ -77,6 +77,12 @@ void pgen_eth::CAST(const bit8* data, int len){
 
 
 
+void pgen_eth::SUMMARY(){
+	printf("Ethernet(0x%04x) %s -> %s \n", 
+			ETH.type, ETH.src.c_str(), ETH.dst.c_str());
+		
+}
+
 
 void pgen_eth::INFO(){
 	WRAP();

@@ -92,6 +92,7 @@ class pgen_eth : public pgen_packet {
 		pgen_eth();
 		void CLEAR();
 		void INFO();
+		void SUMMARY();
 		void WRAP();
 		void SEND(const char* ifname);
 		void CAST(const bit8*, const int len);
