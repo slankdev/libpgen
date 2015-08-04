@@ -234,3 +234,65 @@ int initRawSocket_test(const char* dev, int promisc){
 	return sock;
 }
 
+
+
+int initRawSocket_new(const char* dev, int promisc, int overIp){
+	int sock;
+	
+	if(overIp){
+			sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+			if(sock < 0){
+				perror("initRawSocket: ");
+				return -1;
+			}
+
+			if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
+				close(sock);
+				return -1;	
+			}
+	}else{
+		
+		struct ifreq ifreq;
+		struct sockaddr_ll sa;
+
+		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+		if(sock < 0){
+			perror("InitRawSocket");
+			return -1;
+		}
+
+		memset(&ifreq, 0, sizeof(struct ifreq));
+		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
+		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
+			perror("InitRawSocket");
+			close(sock);
+			return -1;
+		}
+
+		sa.sll_family = PF_PACKET;
+		sa.sll_protocol = htons(ETH_P_ALL);
+		sa.sll_ifindex  = ifreq.ifr_ifindex;
+		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
+			perror("InitRawSocket");
+			close(sock);
+			return -1;
+		}
+
+		if(promisc){
+			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
+				perror("InitRawSocket");
+				close(sock);
+				return -1;
+			}
+			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
+			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
+				perror("InitRawSocket");
+				close(sock);
+				return -1;
+			}
+		}
+	
+	}
+
+	return sock;
+}

@@ -6,7 +6,7 @@
 #include <string.h>
 
 
-
+/*
 void sniff(const char* dev, bool (*callback)(const u_char*, int)){
 	u_char packet[20000];
 	bool result = true;
@@ -26,7 +26,7 @@ void sniff(const char* dev, bool (*callback)(const u_char*, int)){
 		result = (*callback)(packet, len);
 	}
 }
-
+*/
 
 
 void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
@@ -35,7 +35,7 @@ void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
 	int len;
 	int sock;
 	
-	if((sock=initRawSocket_test(dev, promisc))<0){
+	if((sock=initRawSocket_new(dev, promisc, 0))<0){
 		perror("sniff");
 		return;
 	}
