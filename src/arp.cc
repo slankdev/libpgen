@@ -89,7 +89,7 @@ void pgen_arp::WRAP(){
 
 void pgen_arp::CAST(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "packet length not support \n");
+		fprintf(stderr, "arp packet length not support (%d)\n", len);
 		return;
 	}
 	

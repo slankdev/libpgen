@@ -22,6 +22,21 @@ pgen_packet::pgen_packet(){}
 void pgen_packet::CLEAR(){}
 
 
+bool pgen_packet::addData(const char* byte, int blen){
+	if(len+blen > PGEN_PACKLEN){
+		fprintf(stderr, "addData: byte data is too long\n");
+		return false;
+	}
+	
+	bit8* p = data;
+	memcpy(p+len, byte, blen);
+	len += blen;
+	
+	return true;	
+}
+
+
+
 
 
 void debug(){

@@ -39,6 +39,7 @@ void pgen_ip::CLEAR(){
 	IP.dst = "127.0.0.1";
 	IP.protocol = IPPROTO_IP;
 	IP.tos = 0;
+	IP.frag_off = 0;
 	IP.id = 1;
 	IP.ttl = 64;
 }
@@ -73,9 +74,9 @@ void pgen_ip::WRAP(){
 	ip.ihl = sizeof(ip) / 4;
 	ip.version = 4;
 	ip.tos = IP.tos; //no useing world now
-	ip.tot_len = sizeof(ip);
+	ip.tot_len = sizeof(struct MYIP);
 	ip.id = htons(IP.id);
-	ip.frag_off = 0; // ?????
+	ip.frag_off = htons(IP.frag_off); // ?????
 	ip.ttl = IP.ttl;
 	ip.protocol = IP.protocol;
 	ip.saddr = IP.src._addr;
@@ -93,7 +94,7 @@ void pgen_ip::WRAP(){
 
 void pgen_ip::CAST(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "packet length not support \n");
+		fprintf(stderr, "ip packet length not support (%d)\n", len);
 		return;
 	}
 	
@@ -103,12 +104,14 @@ void pgen_ip::CAST(const bit8* data, int len){
 	struct MYIP buf;
 	memcpy(&buf, data+sizeof(struct MYETH), sizeof(buf));
 	
+	IP.tos = buf.tos;
+	IP.tot_len = ntohs(buf.tot_len);
+	IP.id = ntohs(buf.id);
+	IP.frag_off = ntohs(buf.frag_off);
+	IP.ttl = buf.ttl;
 	IP.protocol = buf.protocol;
 	IP.src._addr = buf.saddr;
 	IP.dst._addr = buf.daddr;
-	IP.tos = buf.tos;
-	IP.id = ntohs(buf.id);
-	IP.ttl = buf.ttl;
 }
 
 

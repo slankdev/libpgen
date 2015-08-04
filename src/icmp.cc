@@ -61,7 +61,7 @@ void pgen_icmp::SEND(const char* ifname){
 
 void pgen_icmp::CAST(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "packet length not support \n");
+		fprintf(stderr, "icmp packet length not support (%d)\n", len);
 		return;
 	}
 	

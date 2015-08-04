@@ -65,7 +65,7 @@ void pgen_dns::CLEAR(){
 
 void pgen_dns::CAST(const bit8* packet, int len){
 	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "packet length not support \n");
+		fprintf(stderr, "dns packet length not support (%d)\n", len);
 		return;
 	}
 	

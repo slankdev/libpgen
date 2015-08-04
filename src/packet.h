@@ -69,6 +69,7 @@ class pgen_packet{
 		void hex();
 		void hexFull();
 		char* TOBYTE();
+		bool addData(const char* , int );
 };
 
 
@@ -81,7 +82,7 @@ class pgen_eth : public pgen_packet {
 		struct MYETH eth; 
 	public:
 		static const int minLen = sizeof(struct MYETH);
-		static const int maxLen = sizeof(struct MYETH);
+		static const int maxLen = PGEN_PACKLEN;
 		struct{
 			int type;
 			macaddr src;
@@ -107,7 +108,7 @@ class pgen_arp : public pgen_eth {
 		struct MYARP arp;
 	public:
 		static const int minLen = pgen_eth::minLen+sizeof(struct MYARP);
-		static const int maxLen = pgen_eth::maxLen+sizeof(struct MYARP);
+		static const int maxLen = PGEN_PACKLEN;
 		struct{
 			int operation;
 			macaddr	srcEth;
@@ -134,14 +135,16 @@ class pgen_ip : public pgen_eth {
 		struct MYIP		ip;
 	public:
 		static const int minLen = pgen_eth::minLen+sizeof(struct MYIP);
-		static const int maxLen = pgen_eth::maxLen+sizeof(struct MYIP);
+		static const int maxLen = PGEN_PACKLEN;
 		struct{
-			int protocol;
+			bit8  tos;
+			bit16 tot_len;
+			bit16 id;
+			bit16 frag_off;
+			bit8  ttl; 
+			bit8  protocol;
 			ipaddr src;
 			ipaddr dst;
-			int tos; 
-			int id; 
-			int ttl; 
 		}IP;
 
 
@@ -165,7 +168,7 @@ class pgen_icmp : public pgen_ip {
 		u_char _data[100]; // no use yet
 	public:
 		static const int minLen = sizeof(struct MYICMP);
-		static const int maxLen = sizeof(struct MYICMP)+100;//??
+		static const int maxLen = PGEN_PACKLEN;//??
 		struct{	
 			int option;
 			int code;
@@ -196,7 +199,7 @@ class pgen_tcp : public pgen_ip {
 		u_char _data[100]; // no use yet
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct MYTCP);
-		static const int maxLen = pgen_ip::maxLen+sizeof(struct MYTCP)+1000;//??
+		static const int maxLen = PGEN_PACKLEN;//??
 		struct{
 			int src;
 			int dst;
@@ -234,7 +237,7 @@ class pgen_udp : public pgen_ip {
 		u_char _data[100]; // no use yet
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct MYUDP);
-		static const int maxLen = pgen_ip::maxLen+sizeof(struct MYUDP)+1000;//??
+		static const int maxLen = PGEN_PACKLEN;//??
 		struct{
 			int src;
 			int dst;
@@ -258,7 +261,7 @@ class pgen_dns :public pgen_udp {
 		bit32 answer_len;
 	public:
 		static const int minLen = pgen_udp::minLen+sizeof(struct MYETH);
-		static const int maxLen = pgen_udp::maxLen+300; //wakanne
+		static const int maxLen = PGEN_PACKLEN; //wakanne
 		struct{
 			u_int16_t id;
 			struct{
@@ -311,7 +314,7 @@ class pgen_ardrone : public pgen_udp {
 		int   clen;
 	public:
 		static const int minLength = pgen_udp::minLen+39;
-		static const int macLength = pgen_udp::maxLen+100; //???
+		static const int macLength = PGEN_PACKLEN; //???
 		struct{
 			struct{
 				long seq;

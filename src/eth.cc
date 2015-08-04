@@ -75,7 +75,7 @@ void pgen_eth::WRAP(){
 
 void pgen_eth::CAST(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "packet length not support \n");
+		fprintf(stderr, "eth packet length not support (%d)\n", len);
 		return;
 	}
 	

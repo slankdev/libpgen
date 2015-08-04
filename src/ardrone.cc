@@ -58,7 +58,7 @@ void pgen_ardrone::SEND(const char *ifname){
 
 void pgen_ardrone::CAST(const bit8* packet, int len){
 	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "packet length not support \n");
+		fprintf(stderr, "ardrone packet length not support (%d)\n", len);
 		return;
 	}
 	
