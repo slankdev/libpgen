@@ -95,6 +95,15 @@ void pgen_ip::CAST(const bit8* data, int len){
 }
 
 
+void pgen_ip::SUMMARY(){
+	WRAP();
+
+	printf("IP %s(%s) -> %s(%s) \n", IP.src.c_str(), ETH.src.c_str(),
+			IP.dst.c_str(), ETH.dst.c_str());
+}
+
+
+
 void pgen_ip::INFO(){
 	WRAP();
 	pgen_eth::INFO();

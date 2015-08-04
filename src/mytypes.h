@@ -2,16 +2,16 @@
 #define TYPES_H
 
 
-#include <netinet/in.h> // for BYTE_ORDER
+//#include <netinet/in.h> // for BYTE_ORDER
 #include <endian.h>		// for BYTE_ORDER
 
 #include <netinet/ip.h>				// i want delete this
 #include <netinet/ip_icmp.h>		// i want delete this
 
-typedef u_int8_t  bit8;
-typedef u_int16_t bit16;
-typedef u_int32_t bit32;
-typedef uint64_t  bit64;
+typedef unsigned char      bit8;
+typedef unsigned short     bit16;
+typedef unsigned int       bit32;
+typedef unsigned long      bit64;
 typedef unsigned long long bit128;
 
 
@@ -236,16 +236,17 @@ struct MYICMP{
 	bit8  icmp_code;			/* type sub code */
 	bit16 icmp_cksum;			/* ones complement checksum of struct */
 	union{
-		bit8   ih_pptr;				/* ICMP_PARAMPROB */
-		struct in_addr ih_gwaddr;	/* gateway address */
-		struct ih_idseq{			/* echo datagram */
+		bit8   ih_pptr;				// ICMP_PARAMPROB 
+		//struct in_addr ih_gwaddr;	// gateway address 
+		bit32 ih_gwaddr;
+		struct{			// echo datagram 
 			bit16 icd_id;
 			bit16 icd_seq;
 		} ih_idseq;
 		bit32  ih_void;
 
-		/* ICMP_UNREACH_NEEDFRAG -- Path MTU Discovery (RFC1191) */
-		struct ih_pmtu{
+		// ICMP_UNREACH_NEEDFRAG -- Path MTU Discovery (RFC1191) 
+		struct{
 			bit16 ipm_void;
 			bit16 ipm_nextmtu;
 		} ih_pmtu;
@@ -274,7 +275,7 @@ struct MYICMP{
 		} id_ts;
 		struct{
 			struct ip idi_ip;
-			/* options and then 64 bits of data */
+			// options and then 64 bits of data 
 		} id_ip;
 		struct icmp_ra_addr id_radv;
 		bit32 id_mask;

@@ -16,6 +16,22 @@
 #include <netinet/ip.h>
 #include <netdb.h>
 
+#include "netutil.h"
+
+
+int sendPacketL2_test(const char* dev, const u_char* packet, int len){
+	int sock;
+	
+	if((sock=initRawSocket(dev, 2)) < 0){
+		fprintf(stderr, "sendPacketL2_test\n");
+		return -1;
+	}
+
+	write(sock, packet, len);
+	close(sock);
+}
+
+
 
 const char* port2service(int port, int protocol){
 	struct servent* serv;
@@ -170,5 +186,51 @@ int initRawSocket(const char* dev, int layer){
 			break;
 	}
 	return sock;	
+}
+
+
+
+int initRawSocket_test(const char* dev, int promisc){
+	struct ifreq ifreq;
+	struct sockaddr_ll sa;
+	int sock;
+
+	if((sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0){
+		perror("InitRawSocket");
+		return -1;
+	}
+
+	memset(&ifreq, 0, sizeof(struct ifreq));
+	strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
+	if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
+		perror("InitRawSocket");
+		close(sock);
+		return -1;
+	}
+
+	sa.sll_family = PF_PACKET;
+	sa.sll_protocol = htons(ETH_P_ALL);
+	sa.sll_ifindex  = ifreq.ifr_ifindex;
+	if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
+		perror("InitRawSocket");
+		close(sock);
+		return -1;
+	}
+
+	if(promisc){
+		if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
+			perror("InitRawSocket");
+			close(sock);
+			return -1;
+		}
+		ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
+		if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
+			perror("InitRawSocket");
+			close(sock);
+			return -1;
+		}
+	}
+
+	return sock;
 }
 

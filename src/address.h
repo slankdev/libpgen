@@ -325,14 +325,17 @@ class macaddr{
 				else							return _addr[i] > _addr[i];
 			}return false;
 		}
-		bool operator==(const ipaddr iaddr){
-			for(int i=0; i<6; i++)
-				if(_addr[i] != _addr[i])	return false;
+		bool operator==(const macaddr iaddr){
+			for(int i=0; i<6; i++){
+				if(_addr[i] != iaddr._addr[i]){
+					return false;
+				}
+			}
 			return true;
 		}
-		bool operator!=(const ipaddr iaddr){
+		bool operator!=(const macaddr iaddr){
 			for(int i=0; i<6; i++)
-				if(_addr[i] == _addr[i])	return false;
+				if(_addr[i] == iaddr._addr[i])	return false;
 			return true;
 		}
 };

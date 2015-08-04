@@ -36,6 +36,7 @@ class pgen_packet{
 		virtual void CLEAR()=0;
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;
+		virtual char* TOBYTE()=0;
 		virtual void SEND(const char* ifname)=0;
 		virtual void CAST(const bit8*, const int)=0;
 		void hex();
@@ -96,6 +97,7 @@ class pgen_eth : public pgen_packet {
 		void WRAP();
 		void SEND(const char* ifname);
 		void CAST(const bit8*, const int len);
+		char* TOBYTE();
 };
 
 
@@ -147,6 +149,7 @@ class pgen_ip : public pgen_eth {
 		pgen_ip();
 		void CLEAR();
 		void INFO();
+		void SUMMARY();
 		void WRAP();
 		void SEND(const char* ifname);
 		void CAST(const bit8*, const int len);

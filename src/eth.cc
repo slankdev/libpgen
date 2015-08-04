@@ -30,6 +30,16 @@ void pgen_eth::CLEAR(){
 	ETH.type = htons(0);
 }
 
+
+char* pgen_eth::TOBYTE(){
+	WRAP();
+	char* p;
+	p = (char*)malloc(len);
+	memcpy(p, data, len);
+	return p;
+}
+
+
 void pgen_eth::SEND(const char* ifname){
 	WRAP();		
 	int sock;
