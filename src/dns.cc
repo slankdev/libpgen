@@ -247,6 +247,8 @@ void pgen_dns::WRAP(){
 		p += answer_len;
 	}
 	len = p-data;
+	
+	_addData_WRAP();
 }
 
 void pgen_dns::_wrap_query(){}

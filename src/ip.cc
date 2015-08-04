@@ -86,6 +86,8 @@ void pgen_ip::WRAP(){
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(ip);
 	len = p - data;
+
+	_addData_WRAP();
 }
 
 

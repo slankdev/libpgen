@@ -33,7 +33,6 @@ pgen_icmp::pgen_icmp(const bit8* packet, int len){
 
 
 void pgen_icmp::CLEAR(){
-	pgen_packet::CLEAR();
 	ICMP.option = 8;
 	ICMP.code = 0;
 	ICMP.id = 1;
@@ -104,6 +103,8 @@ void pgen_icmp::WRAP(){
 	memcpy(p, &icmp, sizeof(icmp));
 	p += sizeof(icmp);
 	len = p-data;
+
+	_addData_WRAP();
 } 
 
 

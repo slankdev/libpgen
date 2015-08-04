@@ -70,6 +70,8 @@ void pgen_udp::WRAP(){
 	memcpy(p, &udp, sizeof udp);
 	p += sizeof(struct udphdr);
 	len = p-data;
+	
+	_addData_WRAP();
 }
 
 

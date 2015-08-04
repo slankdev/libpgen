@@ -83,6 +83,8 @@ void pgen_arp::WRAP(){
 	memcpy(p, &arp, sizeof(arp));
 	p += sizeof(arp);
 	len = p - data;
+
+	_addData_WRAP();
 }
 
 

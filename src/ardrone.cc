@@ -127,6 +127,8 @@ void pgen_ardrone::WRAP(){
 	memcpy(p, cmd, clen);
 	p += clen;
 	len = p-data;
+	
+	_addData_WRAP();
 }
 
 

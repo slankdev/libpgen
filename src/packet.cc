@@ -24,6 +24,16 @@ pgen_packet::pgen_packet(){
 
 
 
+void pgen_packet::_addData_WRAP(){
+	if(additionalLen > 0){
+		memcpy(data+len, additionalData, additionalLen);
+		len += additionalLen;
+	}
+}
+
+
+
+
 bool pgen_packet::addData(const char* byte, int blen){
 	WRAP();
 	
@@ -67,6 +77,8 @@ char* pgen_packet::TOBYTE(){
 
 
 void pgen_packet::hex(){
+	WRAP();
+	
 	unsigned char buf[256];
 	memcpy(buf, data, len);
 
@@ -87,6 +99,7 @@ void pgen_packet::hex(){
 
 
 void pgen_packet::hexFull(){
+	WRAP();
 	unsigned char buf[256];
 	memcpy(buf, data, len);
 	
@@ -108,7 +121,7 @@ void pgen_packet::hexFull(){
 			else{
 				if(buf[addr] < 0x20 || 0x7e < buf[addr])
 					buf[addr] = '.';
-				printf("%c ", buf[addr]);
+				printf("%c", buf[addr]);
 			}
 		}printf("\n");
 	}printf("\n");

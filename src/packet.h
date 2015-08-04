@@ -74,6 +74,7 @@ class pgen_packet{
 		char* TOBYTE();
 		bool addData(const char* , int );
 		int length(){  return len;	}
+		void _addData_WRAP();
 };
 
 

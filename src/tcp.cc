@@ -100,6 +100,8 @@ void pgen_tcp::WRAP(){
 	memcpy(p, &tcp, sizeof(icmp));
 	p += sizeof(tcp);
 	len = p - data;
+	
+	_addData_WRAP();
 }
 
 

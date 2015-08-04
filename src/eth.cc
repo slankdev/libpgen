@@ -30,7 +30,6 @@ pgen_eth::pgen_eth(const bit8* packet, int len){
 
 
 void pgen_eth::CLEAR(){
-	pgen_packet::CLEAR();
 
 	ETH.src = 0;
 	ETH.dst = 0;
@@ -67,6 +66,8 @@ void pgen_eth::WRAP(){
 	memcpy(data, &eth, sizeof eth);
 	p += sizeof(eth);
 	len = p - data;
+	
+	_addData_WRAP();
 }
 
 
