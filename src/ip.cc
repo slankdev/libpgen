@@ -65,7 +65,6 @@ void pgen_ip::SEND(const char* ifname){
 
 
 void pgen_ip::WRAP(){
-	packetType = PGEN_PACKETTYPE_IP;
 	pgen_eth::WRAP();
 	eth.ether_type = htons(MT_ETHERTYPE_IP);
 	memset(data, 0, sizeof data);

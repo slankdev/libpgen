@@ -56,7 +56,6 @@ void pgen_udp::SEND(const char* ifname){
 
 void pgen_udp::WRAP(){
 	pgen_ip::WRAP();
-	ip.protocol = MT_IPPROTO_UDP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
 
 	memset(&udp, 0, sizeof udp);

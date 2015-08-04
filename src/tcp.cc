@@ -65,7 +65,6 @@ void pgen_tcp::SEND(const char* ifname){
 
 void pgen_tcp::WRAP(){
 	pgen_ip::WRAP();
-	packetType = PGEN_PACKETTYPE_TCP;
 	memset(data, 0, sizeof data);
 	ip.protocol = MT_IPPROTO_TCP;
 	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));

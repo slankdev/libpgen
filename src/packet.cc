@@ -17,20 +17,27 @@
 #include <netinet/in.h>		/* for struct sockaddr_in */
 	
 
-pgen_packet::pgen_packet(){}
+pgen_packet::pgen_packet(){
+	len = 0;
+	additionalLen =0;
+}
 
-void pgen_packet::CLEAR(){}
 
 
 bool pgen_packet::addData(const char* byte, int blen){
+	WRAP();
+	
 	if(len+blen > PGEN_PACKLEN){
 		fprintf(stderr, "addData: byte data is too long\n");
 		return false;
 	}
+	if(blen > PGEN_ADDDATALEN){
+		fprintf(stderr, "addData: byte data is too long\n");
+		return false;
+	}
 	
-	bit8* p = data;
-	memcpy(p+len, byte, blen);
-	len += blen;
+	memcpy(additionalData, byte, blen);
+	additionalLen = blen;
 	
 	return true;	
 }

@@ -59,7 +59,6 @@ void pgen_arp::SEND(const char* ifname){
 
 void pgen_arp::WRAP(){
 	pgen_eth::WRAP();
-	packetType = PGEN_PACKETTYPE_ARP;
 	memset(data, 0, sizeof data);
 	eth.ether_type = htons(MT_ETHERTYPE_ARP);
 

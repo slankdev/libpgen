@@ -55,7 +55,6 @@ void pgen_eth::SEND(const char* ifname){
 
 
 void pgen_eth::WRAP(){
-	packetType = PGEN_PACKETTYPE_ETH;
 	memset(data, 0, sizeof data);
 	eth.ether_type = htons(ETH.type);;
 

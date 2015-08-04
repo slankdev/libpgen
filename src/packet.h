@@ -18,7 +18,7 @@
 #include <iostream>
 
 #define PGEN_PACKLEN 16384
-
+#define PGEN_ADDDATALEN 1000
 
 
 
@@ -55,9 +55,12 @@ class pgen_unknown{
 
 class pgen_packet{
 	protected:
-		int 	packetType;
+		//int 	packetType;
 		int 	len;
+		int 	additionalLen;
 		u_char 	data[PGEN_PACKLEN];
+		u_char  additionalData[PGEN_ADDDATALEN];
+
 	public:
 			
 		pgen_packet();
@@ -70,6 +73,7 @@ class pgen_packet{
 		void hexFull();
 		char* TOBYTE();
 		bool addData(const char* , int );
+		int length(){  return len;	}
 };
 
 

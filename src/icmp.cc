@@ -85,7 +85,6 @@ void pgen_icmp::CAST(const bit8* data, int len){
 
 void pgen_icmp::WRAP(){
 	pgen_ip::WRAP();
-	packetType = PGEN_PACKETTYPE_ICMP;
 	memset(data, 0, sizeof(data));
 	ip.protocol = MT_IPPROTO_ICMP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(icmp)) ;
