@@ -92,6 +92,12 @@ void pgen_ip::WRAP(){
 
 
 void pgen_ip::CAST(const bit8* data, int len){
+	if(!( minLen<=len && len<=maxLen )){
+		fprintf(stderr, "packet length not support \n");
+		return;
+	}
+	
+	
 	pgen_eth::CAST(data, len);
 
 	struct MYIP buf;

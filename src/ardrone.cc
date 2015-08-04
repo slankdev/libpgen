@@ -57,6 +57,12 @@ void pgen_ardrone::SEND(const char *ifname){
 
 
 void pgen_ardrone::CAST(const bit8* packet, int len){
+	if(!( minLen<=len && len<=maxLen )){
+		fprintf(stderr, "packet length not support \n");
+		return;
+	}
+	
+	
 	pgen_udp::CAST(packet, len);
 	
 	char buf[256];

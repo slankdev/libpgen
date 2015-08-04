@@ -76,6 +76,12 @@ void pgen_udp::WRAP(){
 
 
 void pgen_udp::CAST(const bit8* data, int len){
+	if(!( minLen<=len && len<=maxLen )){
+		fprintf(stderr, "packet length not support \n");
+		return;
+	}
+	
+	
 	pgen_ip::CAST(data, len);
 	
 

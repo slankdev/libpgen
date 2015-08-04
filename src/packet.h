@@ -80,8 +80,8 @@ class pgen_eth : public pgen_packet {
 	protected:
 		struct MYETH eth; 
 	public:
-		static const int minLength = sizeof(struct MYETH);
-		static const int macLength = sizeof(struct MYETH);
+		static const int minLen = sizeof(struct MYETH);
+		static const int maxLen = sizeof(struct MYETH);
 		struct{
 			int type;
 			macaddr src;
@@ -106,8 +106,8 @@ class pgen_arp : public pgen_eth {
 	protected:
 		struct MYARP arp;
 	public:
-		static const int minLength = sizeof(struct MYARP);
-		static const int macLength = sizeof(struct MYARP);
+		static const int minLen = pgen_eth::minLen+sizeof(struct MYARP);
+		static const int maxLen = pgen_eth::maxLen+sizeof(struct MYARP);
 		struct{
 			int operation;
 			macaddr	srcEth;
@@ -133,8 +133,8 @@ class pgen_ip : public pgen_eth {
 	protected:
 		struct MYIP		ip;
 	public:
-		static const int minLength = sizeof(struct MYIP);
-		static const int macLength = sizeof(struct MYIP);
+		static const int minLen = pgen_eth::minLen+sizeof(struct MYIP);
+		static const int maxLen = pgen_eth::maxLen+sizeof(struct MYIP);
 		struct{
 			int protocol;
 			ipaddr src;
@@ -164,8 +164,8 @@ class pgen_icmp : public pgen_ip {
 		struct MYICMP icmp;
 		u_char _data[100]; // no use yet
 	public:
-		static const int minLength = sizeof(struct MYICMP);
-		static const int macLength = sizeof(struct MYICMP)+100;//??
+		static const int minLen = sizeof(struct MYICMP);
+		static const int maxLen = sizeof(struct MYICMP)+100;//??
 		struct{	
 			int option;
 			int code;
@@ -195,8 +195,8 @@ class pgen_tcp : public pgen_ip {
 		struct MYTCP tcp;
 		u_char _data[100]; // no use yet
 	public:
-		static const int minLength = sizeof(struct MYTCP);
-		static const int macLength = sizeof(struct MYTCP)+100;//??
+		static const int minLen = pgen_ip::minLen+sizeof(struct MYTCP);
+		static const int maxLen = pgen_ip::maxLen+sizeof(struct MYTCP)+1000;//??
 		struct{
 			int src;
 			int dst;
@@ -233,8 +233,8 @@ class pgen_udp : public pgen_ip {
 		struct MYUDP udp;
 		u_char _data[100]; // no use yet
 	public:
-		static const int minLength = sizeof(struct MYUDP);
-		static const int macLength = sizeof(struct MYUDP)+100;//??
+		static const int minLen = pgen_ip::minLen+sizeof(struct MYUDP);
+		static const int maxLen = pgen_ip::maxLen+sizeof(struct MYUDP)+1000;//??
 		struct{
 			int src;
 			int dst;
@@ -257,8 +257,8 @@ class pgen_dns :public pgen_udp {
 		bit8 answer[256];
 		bit32 answer_len;
 	public:
-		static const int minLength = sizeof(struct MYETH);
-		//static const int macLength = sizeof(struct MYETH);
+		static const int minLen = pgen_udp::minLen+sizeof(struct MYETH);
+		static const int maxLen = pgen_udp::maxLen+300; //wakanne
 		struct{
 			u_int16_t id;
 			struct{
@@ -310,8 +310,8 @@ class pgen_ardrone : public pgen_udp {
 		char cmd[256];
 		int   clen;
 	public:
-		static const int minLength = 39;
-		static const int macLength = 100; //???
+		static const int minLength = pgen_udp::minLen+39;
+		static const int macLength = pgen_udp::maxLen+100; //???
 		struct{
 			struct{
 				long seq;

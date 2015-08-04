@@ -64,10 +64,12 @@ void pgen_dns::CLEAR(){
 
 
 void pgen_dns::CAST(const bit8* packet, int len){
-	if(len<minLength){
-		printf("this packet is too small in this protocol\n");
+	if(!( minLen<=len && len<=maxLen )){
+		fprintf(stderr, "packet length not support \n");
 		return;
 	}
+	
+	
 	pgen_udp::CAST(packet, len);	
 	
 
