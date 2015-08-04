@@ -25,6 +25,16 @@ pgen_dns::pgen_dns(){
 	CLEAR();
 }
 
+
+
+pgen_dns::pgen_dns(const bit8* packet, int len){
+	CLEAR();
+	CAST(packet, len);
+}
+
+
+
+
 void pgen_dns::CLEAR(){
 	pgen_udp::CLEAR();
 

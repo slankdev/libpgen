@@ -22,6 +22,13 @@ pgen_udp::pgen_udp(){
 	CLEAR();
 }
 
+
+pgen_udp::pgen_udp(const bit8* packet, int len){
+	CLEAR();
+	CAST(packet, len);
+}
+
+
 void pgen_udp::CLEAR(){
 	pgen_ip::CLEAR();
 	UDP.src = 53;

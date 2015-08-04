@@ -22,6 +22,17 @@
 pgen_ip::pgen_ip(){
 	CLEAR();	
 }
+
+
+
+pgen_ip::pgen_ip(const bit8* packet, int len){
+	CLEAR();	
+	CAST(packet, len);
+}
+
+
+
+
 void pgen_ip::CLEAR(){
 	pgen_eth::CLEAR();
 	IP.src = 0;

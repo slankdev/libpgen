@@ -21,6 +21,15 @@ pgen_tcp::pgen_tcp(){
 	CLEAR();
 }
 
+
+
+pgen_tcp::pgen_tcp(const bit8* packet, int len){
+	CLEAR();
+	CAST(packet, len);
+}
+
+
+
 void pgen_tcp::CLEAR(){
 	pgen_ip::CLEAR();
 	TCP.src = 20;

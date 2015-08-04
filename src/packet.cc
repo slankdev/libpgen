@@ -27,12 +27,14 @@ void debug(const char* str){
 }
 
 
-
-pgen_packet::pgen_packet(){
+char* pgen_packet::TOBYTE(){
+	WRAP();
+	char* p;
+	p = (char*)malloc(len);
+	memcpy(p, data, len);
+	return p;
 }
 
-void pgen_packet::CLEAR(){
-}
 
 
 void pgen_packet::hex(){

@@ -6,7 +6,7 @@
 #include "mytypes.h"
 #include "netutil.h"
 
-
+#define PACKET_MINLEN 14
 
 
 
@@ -27,6 +27,13 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 		fprintf(stderr, "recv packet is too large!\n");
 		return false;
 	}
+	
+	if(len < 14){
+		fprintf(stderr, "recv packet is too small!\n");
+		return false;
+	}
+
+
 	bit8 data[PGEN_PACKLEN];
 	memcpy(data, packet, len);
 

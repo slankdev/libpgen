@@ -24,6 +24,15 @@ pgen_arp::pgen_arp(){
 	CLEAR();
 }
 
+
+
+pgen_arp::pgen_arp(const bit8* packet, int len){
+	CLEAR();
+	CAST(packet, len);
+}
+
+
+
 void pgen_arp::CLEAR(){
 	pgen_eth::CLEAR();
 	ARP.srcIp = 0;

@@ -11,6 +11,15 @@ pgen_ardrone::pgen_ardrone(){
 }
 
 
+
+pgen_ardrone::pgen_ardrone(const bit8* packet, int len){
+	CLEAR();
+	CAST(packet, len);
+}
+
+
+
+
 void pgen_ardrone::CLEAR(){
 	pgen_udp::CLEAR();
 

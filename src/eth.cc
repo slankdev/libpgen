@@ -22,6 +22,13 @@ pgen_eth::pgen_eth(){
 	CLEAR();	
 }
 
+
+pgen_eth::pgen_eth(const bit8* packet, int len){
+	CLEAR();
+	CAST(packet, len);
+}
+
+
 void pgen_eth::CLEAR(){
 	pgen_packet::CLEAR();
 
@@ -30,14 +37,6 @@ void pgen_eth::CLEAR(){
 	ETH.type = htons(0);
 }
 
-
-char* pgen_eth::TOBYTE(){
-	WRAP();
-	char* p;
-	p = (char*)malloc(len);
-	memcpy(p, data, len);
-	return p;
-}
 
 
 void pgen_eth::SEND(const char* ifname){

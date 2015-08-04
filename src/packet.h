@@ -1,7 +1,6 @@
 #ifndef PGEN_PACK_H
 #define PGEN_PACK_H
 
-
 #include "pgen.h"
 #include "packconf.h"
 #include "address.h"
@@ -18,30 +17,7 @@
 #include <string>
 #include <iostream>
 
-
 #define PGEN_PACKLEN 16384
-
-
-
-
-
-class pgen_packet{
-	protected:
-		int 	packetType;
-		int 	len;
-		u_char 	data[PGEN_PACKLEN];
-	public:
-			
-		pgen_packet();
-		virtual void CLEAR()=0;
-		virtual void INFO()=0;	
-		virtual void WRAP()=0;
-		virtual char* TOBYTE()=0;
-		virtual void SEND(const char* ifname)=0;
-		virtual void CAST(const bit8*, const int)=0;
-		void hex();
-		void hexFull();
-};
 
 
 
@@ -77,6 +53,28 @@ class pgen_unknown{
 
 
 
+class pgen_packet{
+	protected:
+		int 	packetType;
+		int 	len;
+		u_char 	data[PGEN_PACKLEN];
+	public:
+			
+		pgen_packet();
+		virtual void CLEAR()=0;
+		virtual void INFO()=0;	
+		virtual void WRAP()=0;
+		virtual void SEND(const char* ifname)=0;
+		virtual void CAST(const bit8*, const int)=0;
+		void hex();
+		void hexFull();
+		char* TOBYTE();
+};
+
+
+
+
+
 //#include <net/ethernet.h> 		/* for struct ether_header */
 class pgen_eth : public pgen_packet {
 	protected:
@@ -91,13 +89,13 @@ class pgen_eth : public pgen_packet {
 		}ETH;
 		
 		pgen_eth();
+		pgen_eth(const bit8*, int);
 		void CLEAR();
 		void INFO();
 		void SUMMARY();
 		void WRAP();
 		void SEND(const char* ifname);
 		void CAST(const bit8*, const int len);
-		char* TOBYTE();
 };
 
 
@@ -119,6 +117,7 @@ class pgen_arp : public pgen_eth {
 		}ARP;
 
 		pgen_arp();
+		pgen_arp(const bit8*, int);
 		void CLEAR();
 		void INFO();
 		void WRAP();
@@ -147,6 +146,7 @@ class pgen_ip : public pgen_eth {
 
 
 		pgen_ip();
+		pgen_ip(const bit8*, int);
 		void CLEAR();
 		void INFO();
 		void SUMMARY();
@@ -174,6 +174,7 @@ class pgen_icmp : public pgen_ip {
 		}ICMP;
 		
 		pgen_icmp();
+		pgen_icmp(const bit8*, int);
 		void CLEAR();
 		void INFO();
 		void WRAP();
@@ -213,6 +214,7 @@ class pgen_tcp : public pgen_ip {
 		}TCP;
 
 		pgen_tcp();
+		pgen_tcp(const bit8*, int);
 		void CLEAR();
 		void INFO();
 		void WRAP();
@@ -239,6 +241,7 @@ class pgen_udp : public pgen_ip {
 		}UDP;
 
 		pgen_udp();
+		pgen_udp(const bit8*, int);
 		void CLEAR();
 		void INFO();
 		void WRAP();
@@ -288,6 +291,7 @@ class pgen_dns :public pgen_udp {
 		}DNS;
 
 		pgen_dns();
+		pgen_dns(const bit8*, int);
 		void CLEAR();
 		void INFO();
 		void SUMMARY();
@@ -328,6 +332,7 @@ class pgen_ardrone : public pgen_udp {
 		}ARDRONE;
 
 		pgen_ardrone();
+		pgen_ardrone(const bit8*, int);
 		void CLEAR();
 		void WRAP();
 		void SEND(const char* ifname);

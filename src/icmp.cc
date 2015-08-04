@@ -24,6 +24,14 @@ pgen_icmp::pgen_icmp(){
 	CLEAR();
 }
 
+
+pgen_icmp::pgen_icmp(const bit8* packet, int len){
+	CLEAR();
+	CAST(packet, len);
+}
+
+
+
 void pgen_icmp::CLEAR(){
 	pgen_packet::CLEAR();
 	ICMP.option = 8;
