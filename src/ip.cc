@@ -42,7 +42,7 @@ void pgen_ip::SEND(const char* ifname){
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = IP.dst._addr;
 	
-	if((sock=initRawSocket(ifname, 3)) < 0)
+	if((sock=initRawSocket(ifname, 0, 1)) < 0)
 		exit(PGEN_ERROR);
 	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
 		exit(PGEN_ERROR);

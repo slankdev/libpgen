@@ -35,7 +35,7 @@ void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
 	int len;
 	int sock;
 	
-	if((sock=initRawSocket_new(dev, promisc, 0))<0){
+	if((sock=initRawSocket(dev, promisc, 0))<0){
 		perror("sniff");
 		return;
 	}

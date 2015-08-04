@@ -44,7 +44,7 @@ void pgen_eth::SEND(const char* ifname){
 	WRAP();		
 	int sock;
 
-	if((sock=initRawSocket(ifname, 2)) < 0){
+	if((sock=initRawSocket(ifname, 0, 0)) < 0){
 		exit(PGEN_ERROR);
 	}
 	if(sendRawPacket(sock, data, len, 2, NULL) < 0)

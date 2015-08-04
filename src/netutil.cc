@@ -22,7 +22,7 @@
 int sendPacketL2_test(const char* dev, const u_char* packet, int len){
 	int sock;
 	
-	if((sock=initRawSocket(dev, 2)) < 0){
+	if((sock=initRawSocket(dev, 0, 0)) < 0){
 		fprintf(stderr, "sendPacketL2_test\n");
 		return -1;
 	}
@@ -135,7 +135,7 @@ int sendRawPacket(int sock, const u_char* data, int len, int layer, struct socka
 
 
 
-int initRawSocket(const char* dev, int layer){
+int initRawSocket_old(const char* dev, int layer){
 	int sock;
 	struct ifreq ifreq;
 	struct sockaddr_ll sa;
@@ -189,7 +189,7 @@ int initRawSocket(const char* dev, int layer){
 }
 
 
-
+/*
 int initRawSocket_test(const char* dev, int promisc){
 	struct ifreq ifreq;
 	struct sockaddr_ll sa;
@@ -233,10 +233,10 @@ int initRawSocket_test(const char* dev, int promisc){
 
 	return sock;
 }
+*/
 
 
-
-int initRawSocket_new(const char* dev, int promisc, int overIp){
+int initRawSocket(const char* dev, int promisc, int overIp){
 	int sock;
 	
 	if(overIp){
