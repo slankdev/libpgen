@@ -51,5 +51,5 @@ bool callback(const u_char* packet, int len){
 
 
 int main(int argc, char** argv){
-	sniff(dev, callback);
+	sniff(dev, callback,1);
 }
