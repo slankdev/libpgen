@@ -15,7 +15,14 @@
 #include <sys/socket.h>
 
 #include <netinet/in.h>		/* for struct sockaddr_in */
-		
+	
+
+pgen_packet::pgen_packet(){}
+
+void pgen_packet::CLEAR(){}
+
+
+
 
 void debug(){
 	printf("%s:%d \n", __FILE__, __LINE__);	
