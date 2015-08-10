@@ -11,28 +11,40 @@
 
 
 pgen_unknown::pgen_unknown(){
-	L3.src = 0;
-	L3.dst = 0;
+	ETH.src = 0;
+	ETH.dst = 0;
+	IP.src = 0;
+	IP.dst = 0;
+	TCP.src = 0;
+	TCP.dst = 0;
+	UDP.src = 0;
+	UDP.dst = 0;
 }
 
 
 pgen_unknown::pgen_unknown(const bit8* packet, int len){
-	L3.src = 0;
-	L3.dst = 0;
+	ETH.src = 0;
+	ETH.dst = 0;
+	IP.src = 0;
+	IP.dst = 0;
+	TCP.src = 0;
+	TCP.dst = 0;
+	UDP.src = 0;
+	UDP.dst = 0;
 	CAST(packet, len);
 }
+
+
 
 bool pgen_unknown::CAST(const bit8* packet, int len){
 	if(len > PGEN_PACKLEN){
 		fprintf(stderr, "recv packet is too large!\n");
 		return false;
 	}
-	
 	if(len < 14){
 		fprintf(stderr, "recv packet is too small!\n");
 		return false;
 	}
-
 
 	bit8 data[PGEN_PACKLEN];
 	memcpy(data, packet, len);
@@ -54,28 +66,35 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 	_isETH = true;
 	eth = (struct MYETH*)p;
 	p += sizeof(struct MYETH);
-	
+	ETH.src.setmacbyarry(eth->ether_shost);
+	ETH.dst.setmacbyarry(eth->ether_dhost);
 
 
 	if(ntohs(eth->ether_type) == MT_ETHERTYPE_IP){
 		_isIP = true;
 		ip = (struct MYIP*)p;
 		p += sizeof(struct MYIP);
-		L3.src._addr = ip->saddr;
-		L3.dst._addr = ip->daddr;
-
+		IP.src._addr = ip->saddr;
+		IP.dst._addr = ip->daddr;
 
 		if(ip->protocol == MT_IPPROTO_ICMP){
 			_isICMP = true;
+			icmp = (struct MYICMP*)p;
 			p += sizeof(struct MYICMP);
 		}
 		else if(ip->protocol == MT_IPPROTO_TCP){
 			_isTCP = true;
+			tcp = (struct MYTCP*)p;
 			p += sizeof(struct MYTCP);
+			TCP.src = ntohs(tcp->source);
+			TCP.dst = ntohs(tcp->dest);
 		}
 		else if(ip->protocol == MT_IPPROTO_UDP){
 			_isUDP = true;
+			udp = (struct MYUDP*)p;
 			p += sizeof(struct MYUDP);
+			UDP.src = ntohs(tcp->source);
+			UDP.dst = ntohs(tcp->dest);
 		}
 		else{
 			//fprintf(stderr, "unknown L4 protocol 0x%04x\n", ip->protocol);
@@ -87,7 +106,7 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 		_isARP = true;
 	}
 	else{
-		//fprintf(stderr, "unknown L3 protocol 0x%04x\n", ntohs(eth->ether_type));
+//		fprintf(stderr, "unknown L3 protocol 0x%04x\n", ntohs(eth->ether_type));
 		return false;
 	}
 	

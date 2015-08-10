@@ -233,6 +233,11 @@ class macaddr{
 			return true;
 				
 		}
+		void setmacbyarry(const u_char* e){
+			for(int i=0; i<6; i++){
+				_addr[i] = e[i];
+			}
+		}
 		char* c_str(){
 			char* str = (char*)malloc(sizeof(char)*19);
 			snprintf(str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",

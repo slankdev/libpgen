@@ -1,5 +1,6 @@
-#ifndef PGEN_PACK_H
-#define PGEN_PACK_H
+#ifndef PACKET_H
+#define PACKET_H
+
 
 #include "pgen.h"
 #include "packconf.h"
@@ -34,9 +35,22 @@ class pgen_unknown{
 
 	public:
 		struct{
+			macaddr src;
+			macaddr dst;
+		}ETH;
+		struct{
 			ipaddr src;
 			ipaddr dst;
-		}L3;
+		}IP;
+		struct{
+			bit16 src;
+			bit16 dst;
+		}TCP;
+		struct{
+			bit16 src;
+			bit16 dst;
+		}UDP;
+
 
 		pgen_unknown();
 		pgen_unknown(const bit8*, int);
@@ -357,4 +371,4 @@ class pgen_ardrone : public pgen_udp {
 
 
 
-#endif
+#endif /* PACKET_H */
