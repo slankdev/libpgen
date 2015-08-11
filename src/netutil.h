@@ -1,6 +1,8 @@
 #ifndef NETUTIL_H
 #define NETUTIL_H
 
+void pgen_sendpacket(const char*, const u_char*, int);
+
 
 const char* port2service(int port, int protocol);
 unsigned short checksum(const void* data, int len);
