@@ -56,11 +56,12 @@ void scan(){
 
 void sendSyn(const char* ipstr){
 	pgen_tcp pack;
+
 	pack.IP.dst = ipstr;
 	pack.IP.src.setipbydev(dev);
-	pack.TCP.frag.syn = 1;
-	pack.TCP.srcPort = 7777;
-	pack.TCP.dstPort = 80;
+	pack.TCP.flags.syn = 1;
+	pack.TCP.src = 7777;
+	pack.TCP.dst = 80;
 	
 	for(int i=0; i<sendCount; i++){
 		pack.SEND(dev);

@@ -3,7 +3,7 @@
 
 const char* dev = "wlan0";
 const char* target = "192.168.179.2";
-const bool spoof = true;
+const bool spoof = false;
 
 
 void func(const u_char* packet, int len){
