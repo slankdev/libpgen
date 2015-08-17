@@ -57,7 +57,10 @@ class ipaddr{
 			}
 			ifr.ifr_addr.sa_family = AF_INET;
 			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
-			ioctl(sockd, SIOCGIFADDR, &ifr);
+			if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
+				close(sockd);
+				return false;
+			}
 			close(sockd);
 			sa = (struct sockaddr_in*)&ifr.ifr_addr;
 			ipstr = inet_ntoa(sa->sin_addr);
@@ -77,7 +80,11 @@ class ipaddr{
 			}
 			ifr.ifr_addr.sa_family = AF_INET;
 			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
-			ioctl(sockd, SIOCGIFNETMASK, &ifr);
+			if(ioctl(sockd, SIOCGIFNETMASK, &ifr) < 0){
+				close(sockd);
+				return false;
+			}
+
 			close(sockd);
 			sa = (struct sockaddr_in*)&ifr.ifr_addr;
 			maskstr = inet_ntoa(sa->sin_addr);
@@ -222,7 +229,10 @@ class macaddr{
 			macstr = (char*)malloc(sizeof(char)*19);
 			ifr.ifr_addr.sa_family = AF_INET;
 			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
-			ioctl(sockd, SIOCGIFHWADDR, &ifr);
+			if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
+				close(sockd);
+				return false;
+			}
 			close(sockd);
 			for(int i=0; i<6; i++)
 				addr[i] = (unsigned char)ifr.ifr_hwaddr.sa_data[i];
