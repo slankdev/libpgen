@@ -6,23 +6,24 @@ export CPP := g++
 export CXX := g++
 export RM := rm -rf
 
-OPTION=-L/home/slank/git/libpgen/src/ -I/home/slank/git/libpgen/src/ 
-program = a.out
+program = mitm2
 
 
 all: program
 
 
 program: main.cc
-	$(CPP) main.cc $(OPTION) -lpgen -o $(program)
+	$(CPP)    main.cc -std=c++11 $(OPTION) -lpgen -o $(program)
 
 clean:
-	$(RM) *.o *.out  $(program)
+	$(RM) *.o *.out $(program)
 
 
 install:
-	$(CP) $(program) /usr/local/bin/ 
+	$(CP) $(program)  /usr/local/bin/
 	
 uninstall:
 	$(RM) /usr/local/$(program)
+
+
 

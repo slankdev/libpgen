@@ -9,15 +9,21 @@ OPTION=-L/home/slank/git/libpgen/src/ -I/home/slank/git/libpgen/src/
 program = a.out
 
 
-all: program
+all: a.out
 
 
 program: main.cc
-	$(CPP)   main.cc -std=c++11 $(OPTION) -lpgen -lpcap -lpthread
+	$(CPP)    main.cc -std=c++11 $(OPTION) -lpgen -lpcap -lpthread -o $(program)
 
 clean:
 	$(RM) *.o *.out 
 
+
+install:
+	$(CP) $(program) /usr/local/bin/ 
+	
+uninstall:
+	rm /usr/local/$(program)
 
 
 
