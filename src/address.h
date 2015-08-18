@@ -19,8 +19,6 @@
 #define FILEPATH "/usr/local/etc/mac_code.list"
 
 
-static const char* getbender(const char* mac);
-
 
 
 class ipaddr{
@@ -39,12 +37,6 @@ class ipaddr{
 		bit32 getbit(){
 			return _addr;	
 		}
-		bool nslookup(const char* host){
-			
-
-			
-			return true;
-		}
 		bool setipbydev(const char* ifname){
 			int sockd;
 			struct ifreq ifr;
@@ -52,12 +44,13 @@ class ipaddr{
 			char* ipstr;
 
 			if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-				perror("socket()!");
+				perror("ipaddr::setipbydev::socket()");
 				return false;
 			}
 			ifr.ifr_addr.sa_family = AF_INET;
 			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
 			if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
+				perror("ipaddr::setipbydev::ioctl()");
 				close(sockd);
 				return false;
 			}
@@ -75,16 +68,16 @@ class ipaddr{
 			char* maskstr;
 
 			if((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-				perror("socket");
+				perror("ipaddr::setmacbydev::socket()");
 				return false;
 			}
 			ifr.ifr_addr.sa_family = AF_INET;
 			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
 			if(ioctl(sockd, SIOCGIFNETMASK, &ifr) < 0){
+				perror("ipaddr::setmacbydev::ioctl()");
 				close(sockd);
 				return false;
 			}
-
 			close(sockd);
 			sa = (struct sockaddr_in*)&ifr.ifr_addr;
 			maskstr = inet_ntoa(sa->sin_addr);
@@ -108,9 +101,7 @@ class ipaddr{
 			if(_addr == 0)	return true;
 			else			return false;
 		}
-
-		ipaddr& operator=(const ipaddr i){
-			//_addr = i._addr;
+		ipaddr& operator=(ipaddr i){
 			_addr = i._addr;
 			return *this;
 		}
@@ -118,11 +109,11 @@ class ipaddr{
 			_addr = inet_addr(str);
 			return *this;
 		}
-		ipaddr& operator=(const int num){
+		ipaddr& operator=(int num){
 			_addr = num;
 			return *this;
 		}
-		ipaddr& operator=(const bit8 num[4]){
+		ipaddr& operator=(const u_char num[4]){
 			union lc{
 				unsigned int l;
 				unsigned char c[4];
@@ -135,7 +126,6 @@ class ipaddr{
 			_addr = lc.l;
 			return *this;
 		}
-
 		u_char operator[](const int num){
 			union lc{
 				unsigned int l;
@@ -157,7 +147,8 @@ class ipaddr{
 					return lc.c[3];
 					break;
 				default:
-					fprintf(stderr, "pgen_ipaddr_t: contents not\n");
+					fprintf(stderr, "ipaddr::operator[]: index is not support\n");
+					exit(-1);
 					break;
 			}
 		}
@@ -188,13 +179,38 @@ class ipaddr{
 				else					return lc.c[i] > ilc.c[i];
 			}return false;
 		}
+		bool operator<=(const ipaddr iaddr){
+			union lc{
+				unsigned int l;
+				unsigned char c[4];
+			};
+			union lc lc, ilc;
+			lc.l = (unsigned int)_addr;
+			ilc.l = (unsigned int)iaddr._addr;
+			
+			for(int i=0; i<4; i++){
+				if(lc.c[i] == ilc.c[i])	continue;
+				else					return lc.c[i] <= ilc.c[i];
+			}return false;
+		}
+		bool operator>=(const ipaddr iaddr){
+			union lc{
+				unsigned int l;
+				unsigned char c[4];
+			};
+			union lc lc, ilc;
+			lc.l = (unsigned int)_addr;
+			ilc.l = (unsigned int)iaddr._addr;
+			for(int i=0; i<4; i++){
+				if(lc.c[i] == ilc.c[i])	continue;
+				else					return lc.c[i] >= ilc.c[i];
+			}return false;
+		}
 		bool operator==(const ipaddr iaddr){
-			if(_addr == iaddr._addr)	return true;
-			else						return false;
+			return _addr==iaddr._addr;
 		}
 		bool operator!=(const ipaddr iaddr){
-			if(_addr != iaddr._addr)	return true;
-			else						return false;
+			return _addr!=iaddr._addr;
 		}
 };
 
@@ -208,8 +224,12 @@ class macaddr{
 		macaddr(){}
 		macaddr(const char* str){
 			unsigned int buf[6];
-			sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
+			int n = sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
 				&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
+			if(n != 6){
+				fprintf(stderr, "macaddr::macaddr(): reading error\n");
+				exit(-1);
+			}
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)buf[i];
 		}
 		macaddr(const macaddr &m){
@@ -223,13 +243,14 @@ class macaddr{
 			u_char addr[6];
 
 			if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
-				perror("socket()!");
+				perror("macaddr::setmacbydev::socket()");
 				return false;
 			}
 			macstr = (char*)malloc(sizeof(char)*19);
 			ifr.ifr_addr.sa_family = AF_INET;
 			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
 			if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
+				perror("macaddr::setmacbydev::ioctl()");
 				close(sockd);
 				return false;
 			}
@@ -258,12 +279,12 @@ class macaddr{
 			FILE *fp;
 			const char* filename = FILEPATH;
 			int strsize = 256;
-			unsigned int  mac[3];
+			unsigned int mac[3];
 			char buf[strsize];
 			char* bender = (char*)malloc(sizeof(char) * strsize);
 			u_char mymac[3];
 			if((fp=fopen(filename, "r")) == NULL){
-				perror("getbenderbymac fopen");
+				perror("macaddr::bender()");
 				strcpy(bender, "error");
 				return bender;
 			}
@@ -284,8 +305,9 @@ class macaddr{
 			return bender;
 		}
 		bool isEmpty(){
-			for(int i=0; i<6; i++)
+			for(int i=0; i<6; i++){
 				if(_addr[i] != 0)	return false;
+			}
 			return true;
 		}
 		macaddr& operator=(const macaddr m){
@@ -294,15 +316,21 @@ class macaddr{
 		}
 		macaddr& operator=(const char* str){
 			unsigned int buf[6];
-			sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
+			int n = sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
 				&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
+			if(n!=6){
+				fprintf(stderr, "macaddr::operator=: reading error\n");
+				exit(-1);
+			}
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)buf[i];
 			return *this;
 		}
+		/*
 		macaddr& operator=(const int num){
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)num;
 			return *this;
 		}
+		*/
 		unsigned char operator[](const int num){
 			switch(num){
 				case 0:
@@ -325,6 +353,7 @@ class macaddr{
 					break;
 				default:
 					fprintf(stderr, "pgen_ipaddr_t: contents not\n");
+					exit(-1);
 					break;
 			}
 		}
@@ -340,17 +369,28 @@ class macaddr{
 				else							return _addr[i] > _addr[i];
 			}return false;
 		}
+		bool operator<=(const macaddr iaddr){
+			for(int i=0; i<6; i++){
+				if(_addr[i] == iaddr._addr[i])	continue;
+				else							return _addr[i] <= _addr[i];
+			}return false;
+		}
+		bool operator>=(const macaddr iaddr){
+			for(int i=0; i<6; i++){
+				if(_addr[i] == iaddr._addr[i])	continue;
+				else							return _addr[i] >= _addr[i];
+			}return false;
+		}
 		bool operator==(const macaddr iaddr){
 			for(int i=0; i<6; i++){
-				if(_addr[i] != iaddr._addr[i]){
-					return false;
-				}
+				if(_addr[i] != iaddr._addr[i])	return false;
 			}
 			return true;
 		}
 		bool operator!=(const macaddr iaddr){
-			for(int i=0; i<6; i++)
+			for(int i=0; i<6; i++){
 				if(_addr[i] == iaddr._addr[i])	return false;
+			}
 			return true;
 		}
 };
