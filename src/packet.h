@@ -248,7 +248,6 @@ class pgen_tcp : public pgen_ip {
 
 
 
-
 //#include <netinet/udp.h>		// for struct udp		
 class pgen_udp : public pgen_ip {
 	protected:
@@ -303,11 +302,11 @@ class pgen_dns :public pgen_udp {
 				u_int16_t cls;
 			}query;
 			struct{
-				bit16 name;
-				bit16 type;
-				bit16 cls;
-				bit32 ttl;
-				bit16 len;
+				bit16  name;
+				bit16  type;
+				bit16  cls;
+				bit32  ttl;
+				bit16  len;
 				ipaddr addr;
 			}answer;
 		}DNS;

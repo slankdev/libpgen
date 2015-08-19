@@ -90,14 +90,14 @@ void pgen_tcp::WRAP(){
 	bp = buf;
 	memcpy(bp, &ip, sizeof(ip));
 	bp += sizeof(ip);
-	memcpy(bp, &tcp, sizeof(icmp));
+	memcpy(bp, &tcp, sizeof(tcp));
 	bp += sizeof(tcp);
 	tcp.check = checksumTcp(buf, bp-buf);
 
 	u_char* p = data;
 	memcpy(p, &ip, sizeof(ip));
 	p += sizeof(ip);
-	memcpy(p, &tcp, sizeof(icmp));
+	memcpy(p, &tcp, sizeof(tcp));
 	p += sizeof(tcp);
 	len = p - data;
 	

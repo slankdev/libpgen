@@ -2,11 +2,9 @@
 #define TYPES_H
 
 
-//#include <netinet/in.h> // for BYTE_ORDER
 #include <endian.h>		// for BYTE_ORDER
 
-#include <netinet/ip.h>				// i want delete this
-#include <netinet/ip_icmp.h>		// i want delete this
+
 
 typedef unsigned char      bit8;
 typedef unsigned short     bit16;
@@ -184,7 +182,6 @@ struct MYIP{
 
 
 
-
 /* Types */
 #define MT_ICMP_ECHOREPLY		0	/* Echo Reply			*/
 #define MT_ICMP_DEST_UNREACH	3	/* Destination Unreachable	*/
@@ -231,6 +228,12 @@ struct MYIP{
 #define MT_ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded	*/
 
 
+struct icmp_ra_addr{
+  bit32 ira_addr;
+  bit32 ira_preference;
+};
+
+
 struct MYICMP{
 	bit8  icmp_type;			/* type of message, see below */
 	bit8  icmp_code;			/* type sub code */
@@ -274,7 +277,7 @@ struct MYICMP{
 			bit32 its_ttime;
 		} id_ts;
 		struct{
-			struct ip idi_ip;
+			struct MYIP idi_ip;
 			// options and then 64 bits of data 
 		} id_ip;
 		struct icmp_ra_addr id_radv;

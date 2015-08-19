@@ -14,6 +14,32 @@ class libpgen{
 }
 
 
+/*	rifactering codes 2015/08/19
+ *
+ *	[*] address.h
+ *	[ ] ardrone.cc
+ *	[ ] arp.cc
+ *	[ ] dns.cc
+ *	[ ] eth.cc
+ *	[ ] icmp.cc
+ *	[ ] ip.cc
+ *	[ ] makefile
+ *	[*] mytypes.h
+ *	[ ] netutil.cc
+ *	[ ] netutil.h
+ *	[ ] packconf.h
+ *	[ ] packet.cc
+ *	[ ] packet.h
+ *	[ ] pgen.h
+ *	[ ] release.h
+ *	[ ] sniff.cc
+ *	[ ] sniff.h
+ *	[ ] tcp.cc
+ *	[ ] udp.cc
+ *	[ ] unknown.cc
+ *
+ * */
+
 
 /*		TODO		[date]  about  [fin-date]
  *

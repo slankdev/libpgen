@@ -1,11 +1,9 @@
-#ifndef PGEN_VARIABLE
-#define PGEN_VARIABLE
+#ifndef ADDRESS_H
+#define ADDRESS_H
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <stdint.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -13,8 +11,10 @@
 #include <netinet/in.h>
 #include <net/if.h>
 
-#include "pgen.h"
-#include "mytypes.h"
+//#include <sys/types.h>
+//#include <stdint.h>
+//#include "mytypes.h"
+//#include "pgen.h"
 
 #define FILEPATH "/usr/local/etc/mac_code.list"
 
@@ -399,4 +399,4 @@ class macaddr{
 
 
 
-#endif
+#endif /* ADDRESS_H */

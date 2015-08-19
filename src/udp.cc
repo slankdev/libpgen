@@ -66,9 +66,9 @@ void pgen_udp::WRAP(){
 	
 	u_char* p = data;
 	memcpy(p, &ip, sizeof ip);
-	p += sizeof(struct iphdr);
+	p += sizeof(struct MYIP);
 	memcpy(p, &udp, sizeof udp);
-	p += sizeof(struct udphdr);
+	p += sizeof(struct MYUDP);
 	len = p-data;
 	
 	_addData_WRAP();

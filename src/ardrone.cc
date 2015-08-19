@@ -121,7 +121,7 @@ void pgen_ardrone::WRAP(){
 
 	u_char* p = data;
 	memcpy(p, &ip, sizeof ip);
-	p += sizeof(struct iphdr);
+	p += sizeof(struct MYIP);
 	memcpy(p, &udp, sizeof udp);
 	p += sizeof(struct MYUDP);
 	memcpy(p, cmd, clen);

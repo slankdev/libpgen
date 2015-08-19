@@ -20,7 +20,7 @@
 
 
 /* option  of ICMP */
-#include <netinet/ip_icmp.h>
+//#include <netinet/ip_icmp.h>
 #define PGEN_ICMPOP_ECHOREPLY		MT_ICMP_ECHOREPLY		 	/* Echo Reply				*/
 #define PGEN_ICMPOP_DEST_UNREACH	MT_ICMP_DEST_UNREACH	  	/* Destination Unreachable	*/
 #define PGEN_ICMPOP_SOURCE_QUENCH	MT_ICMP_SOURCE_QUENCH	 	/* Source Quench			*/
@@ -39,7 +39,7 @@
                                    
 
 /* code of ICMP */
-#include <netinet/ip_icmp.h>
+//#include <netinet/ip_icmp.h>
 #define PGEN_ICMPCODE_NET_UNREACH		MT_ICMP_NET_UNREACH	/* Network Unreachable			*/
 #define PGEN_ICMPCODE_HOST_UNREACH		MT_ICMP_HOST_UNREACH	/* Host Unreachable				*/
 #define PGEN_ICMPCODE_PROT_UNREACH		MT_ICMP_PROT_UNREACH	/* Protocol Unreachable			*/
