@@ -16,25 +16,35 @@ export RM  := rm -rf
 	$(CPP) -std=c++11 -c  $<  -o $@  
 
 
-
-SRC = packet.cc \
+PACKET_CLASS_SRC = \
+	  unknown.cc \
+	  packet.cc \
 	  eth.cc \
 	  arp.cc \
 	  ip.cc \
 	  icmp.cc \
 	  tcp.cc \
 	  udp.cc \
-	  netutil.cc \
 	  dns.cc \
-	  ardrone.cc \
-	  unknown.cc \
+	  ardrone.cc 
+
+SNIFF_SRC = \
 	  sniff.cc
+
+NETUTIL_SRC = \
+	  netutil.cc
+
+SRC = $(PACKET_CLASS_SRC) $(SNIFF_SRC) $(NETUTIL_SRC)
+
+
 HDR = pgen.h \
 	  packconf.h \
 	  address.h \
 	  packet.h \
 	  mytypes.h \
 	  sniff.h
+
+
 OBJ = $(SRC:.cc=.o)
 
 CFLAGS = -Wall -fPIC
