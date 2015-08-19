@@ -11,14 +11,14 @@
 #include <netinet/in.h>
 #include <net/if.h>
 
-//#include <sys/types.h>
-//#include <stdint.h>
-//#include "mytypes.h"
-//#include "pgen.h"
 
 #define FILEPATH "/usr/local/etc/mac_code.list"
 
 
+union lc{
+	unsigned int l;
+	unsigned char c[4];
+};
 
 
 class ipaddr{
@@ -27,15 +27,40 @@ class ipaddr{
 	public:
 		bit32 _addr;		
 		
-		ipaddr(){}
+		ipaddr(){ clear(); }
 		ipaddr(const char* str){
-			_addr = inet_addr(str);
+			int n = inet_pton(AF_INET, str, &_addr);
+			if(n == 0){
+				fprintf(stderr, "ipaddr(const char*): string error \n");
+				exit(-1);
+			}else if(n == -1){
+				perror("ipaddr(const char*)");
+				exit(-1);
+			}
 		}
 		ipaddr(const ipaddr &i){
 			_addr = i._addr;
 		}
-		bit32 getbit(){
-			return _addr;	
+		char* c_str(){
+			char* str = (char*)malloc(sizeof(char)*16);
+			union lc lc;
+			lc.l = (unsigned int)_addr;
+			snprintf(str,sizeof(char[16]),"%u.%u.%u.%u",
+							lc.c[0],lc.c[1],lc.c[2],lc.c[3]);
+			return str;
+		}
+		void clear(){
+			_addr = 0;	
+		}
+		bit8 getOctet(int n){
+			union lc lc;
+			lc.l = _addr;
+			if(n>=4){
+				fprintf(stderr, "ipaddr::operator[]: index is not support\n");
+				exit(-1);
+			}else{
+				return lc.c[n];		
+			}
 		}
 		bool setipbydev(const char* ifname){
 			int sockd;
@@ -45,6 +70,7 @@ class ipaddr{
 
 			if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 				perror("ipaddr::setipbydev::socket()");
+				clear();
 				return false;
 			}
 			ifr.ifr_addr.sa_family = AF_INET;
@@ -52,13 +78,12 @@ class ipaddr{
 			if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
 				perror("ipaddr::setipbydev::ioctl()");
 				close(sockd);
+				clear();
 				return false;
 			}
 			close(sockd);
 			sa = (struct sockaddr_in*)&ifr.ifr_addr;
-			ipstr = inet_ntoa(sa->sin_addr);
-
-			_addr = inet_addr(ipstr);
+			_addr = sa->sin_addr.s_addr;
 			return true;
 		}
 		bool setmaskbydev(const char* ifname){
@@ -69,6 +94,7 @@ class ipaddr{
 
 			if((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 				perror("ipaddr::setmacbydev::socket()");
+				clear();
 				return false;
 			}
 			ifr.ifr_addr.sa_family = AF_INET;
@@ -76,87 +102,35 @@ class ipaddr{
 			if(ioctl(sockd, SIOCGIFNETMASK, &ifr) < 0){
 				perror("ipaddr::setmacbydev::ioctl()");
 				close(sockd);
+				clear();
 				return false;
 			}
 			close(sockd);
 			sa = (struct sockaddr_in*)&ifr.ifr_addr;
-			maskstr = inet_ntoa(sa->sin_addr);
-
-			_addr = inet_addr(maskstr);
+			_addr = sa->sin_addr.s_addr;
 			return true;
-		}
-		char* c_str(){
-			char* str = (char*)malloc(sizeof(char)*16);
-			union lc{
-				unsigned int l;
-				unsigned char c[4];
-			};
-			union lc lc;
-			lc.l = (unsigned int)_addr;
-			snprintf(str,sizeof(char[16]),"%u.%u.%u.%u",
-							lc.c[0],lc.c[1],lc.c[2],lc.c[3]);
-			return str;
-		}
-		bool isEmpty(){
-			if(_addr == 0)	return true;
-			else			return false;
 		}
 		ipaddr& operator=(ipaddr i){
 			_addr = i._addr;
 			return *this;
 		}
 		ipaddr& operator=(const char* str){
-			_addr = inet_addr(str);
+			int n = inet_pton(AF_INET, str, &_addr);
+			if(n == 0){
+				fprintf(stderr, "ipaddr(const char*): string error \n");
+				exit(-1);
+			}else if(n == -1){
+				perror("ipaddr(const char*)");
+				exit(-1);
+			}
+
 			return *this;
 		}
-		ipaddr& operator=(int num){
+		ipaddr& operator=(int num){	// FUGUAI ARUKAMO
 			_addr = num;
 			return *this;
 		}
-		ipaddr& operator=(const u_char num[4]){
-			union lc{
-				unsigned int l;
-				unsigned char c[4];
-			};
-			union lc lc;
-			
-			for(int i=0; i<4; i++)
-				lc.c[i] = num[i];
-
-			_addr = lc.l;
-			return *this;
-		}
-		u_char operator[](const int num){
-			union lc{
-				unsigned int l;
-				unsigned char c[4];
-			};
-			union lc lc;
-			lc.l = _addr;
-			switch(num){
-				case 0:
-					return lc.c[0];
-					break;
-				case 1:
-					return lc.c[1];
-					break;
-				case 2:
-					return lc.c[2];
-					break;
-				case 3:
-					return lc.c[3];
-					break;
-				default:
-					fprintf(stderr, "ipaddr::operator[]: index is not support\n");
-					exit(-1);
-					break;
-			}
-		}
 		bool operator<(const ipaddr iaddr){
-			union lc{
-				unsigned int l;
-				unsigned char c[4];
-			};
 			union lc lc, ilc;
 			lc.l = (unsigned int)_addr;
 			ilc.l = (unsigned int)iaddr._addr;
@@ -164,26 +138,20 @@ class ipaddr{
 			for(int i=0; i<4; i++){
 				if(lc.c[i] == ilc.c[i])	continue;
 				else					return lc.c[i] < ilc.c[i];
-			}return false;
+			}
+			return false;
 		}
 		bool operator>(const ipaddr iaddr){
-			union lc{
-				unsigned int l;
-				unsigned char c[4];
-			};
 			union lc lc, ilc;
 			lc.l = (unsigned int)_addr;
 			ilc.l = (unsigned int)iaddr._addr;
 			for(int i=0; i<4; i++){
 				if(lc.c[i] == ilc.c[i])	continue;
 				else					return lc.c[i] > ilc.c[i];
-			}return false;
+			}
+			return false;
 		}
 		bool operator<=(const ipaddr iaddr){
-			union lc{
-				unsigned int l;
-				unsigned char c[4];
-			};
 			union lc lc, ilc;
 			lc.l = (unsigned int)_addr;
 			ilc.l = (unsigned int)iaddr._addr;
@@ -191,26 +159,24 @@ class ipaddr{
 			for(int i=0; i<4; i++){
 				if(lc.c[i] == ilc.c[i])	continue;
 				else					return lc.c[i] <= ilc.c[i];
-			}return false;
+			}
+			return false;
 		}
 		bool operator>=(const ipaddr iaddr){
-			union lc{
-				unsigned int l;
-				unsigned char c[4];
-			};
 			union lc lc, ilc;
 			lc.l = (unsigned int)_addr;
 			ilc.l = (unsigned int)iaddr._addr;
 			for(int i=0; i<4; i++){
 				if(lc.c[i] == ilc.c[i])	continue;
 				else					return lc.c[i] >= ilc.c[i];
-			}return false;
+			}
+			return false;
 		}
 		bool operator==(const ipaddr iaddr){
-			return _addr==iaddr._addr;
+			return _addr == iaddr._addr;
 		}
 		bool operator!=(const ipaddr iaddr){
-			return _addr!=iaddr._addr;
+			return _addr != iaddr._addr;
 		}
 };
 
@@ -221,7 +187,12 @@ class macaddr{
 	private:
 	public:
 		bit8 _addr[6];
-		macaddr(){}
+	
+		macaddr(){ clear(); }
+		macaddr(const macaddr &m){
+			for(int i=0; i<6; i++)
+				_addr[i] = m._addr[i];
+		}
 		macaddr(const char* str){
 			unsigned int buf[6];
 			int n = sscanf(str, "%02x:%02x:%02x:%02x:%02x:%02x", 
@@ -232,9 +203,27 @@ class macaddr{
 			}
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)buf[i];
 		}
-		macaddr(const macaddr &m){
-			for(int i=0; i<6; i++)
-				_addr[i] = m._addr[i];
+		void setmacbyarry(const u_char* array){
+			for(int i=0; i<6; i++){
+				_addr[i] = array[i];
+			}
+		}
+		char* c_str(){
+			char* str = (char*)malloc(sizeof(char)*19);
+			snprintf(str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
+				_addr[0], _addr[1], _addr[2], _addr[3], _addr[4], _addr[5]);
+			return str;
+		}
+		void clear(){
+			memset(_addr, 0, sizeof(char[6]));	
+		}
+		bit8 getOctet(int n){
+			if(n>=6){
+				fprintf(stderr, "ipaddr::operator[]: index is not support\n");
+				exit(-1);
+			}else{
+				return _addr[n];		
+			}
 		}
 		bool setmacbydev(const char* ifname){
 			int sockd;
@@ -244,6 +233,7 @@ class macaddr{
 
 			if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
 				perror("macaddr::setmacbydev::socket()");
+				clear();
 				return false;
 			}
 			macstr = (char*)malloc(sizeof(char)*19);
@@ -252,63 +242,39 @@ class macaddr{
 			if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
 				perror("macaddr::setmacbydev::ioctl()");
 				close(sockd);
+				clear();
 				return false;
 			}
 			close(sockd);
 			for(int i=0; i<6; i++)
-				addr[i] = (unsigned char)ifr.ifr_hwaddr.sa_data[i];
-			snprintf(macstr ,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
-				*addr, *(addr+1), *(addr+2), *(addr+3), *(addr+4), *(addr+5));
-
-			*this = macstr;
-			return true;
-				
-		}
-		void setmacbyarry(const u_char* e){
-			for(int i=0; i<6; i++){
-				_addr[i] = e[i];
-			}
-		}
-		char* c_str(){
-			char* str = (char*)malloc(sizeof(char)*19);
-			snprintf(str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
-				_addr[0], _addr[1], _addr[2], _addr[3], _addr[4], _addr[5]);
-			return str;
+				_addr[i] = (unsigned char)ifr.ifr_hwaddr.sa_data[i];
+			return true;		
 		}
 		char* bender(){
-			FILE *fp;
-			const char* filename = FILEPATH;
-			int strsize = 256;
 			unsigned int mac[3];
-			char buf[strsize];
-			char* bender = (char*)malloc(sizeof(char) * strsize);
-			u_char mymac[3];
-			if((fp=fopen(filename, "r")) == NULL){
+			int strsize = 64;
+			char  buf[strsize];
+			char* bender = (char*)malloc(strsize);
+			FILE* fp;
+			if((fp=fopen(FILEPATH, "r")) == NULL){
 				perror("macaddr::bender()");
-				strcpy(bender, "error");
+				strncpy(bender, "error", sizeof(strsize));
 				return bender;
 			}
-			for(int i=0; i<3; i++)	mymac[i] = _addr[i];
 			while(fgets(buf, sizeof(buf), fp) != NULL){
 				sscanf(buf, "%2x%2x%2x\t%s", &mac[0],&mac[1],&mac[2],buf);
-				if(mac[0]==mymac[0]&&mac[1]==mymac[1]&&mac[2]==mymac[2]){
-					sprintf(bender, "%s", buf);
+				if(mac[0]==_addr[0]&&mac[1]==_addr[1]&&mac[2]==_addr[2]){
+					snprintf(bender, strsize, "%s", buf);
 					fclose(fp);
 					return bender;
 				}
 				memset(mac, 0, sizeof(mac));
-				memset(bender, 0, strsize);
 				memset(buf, 0, strsize);
+				memset(bender, 0, strsize);
 			}
-			strcpy(bender, "not-found");
+			strncpy(bender, "not-found", sizeof("not-found"));
 			fclose(fp);
 			return bender;
-		}
-		bool isEmpty(){
-			for(int i=0; i<6; i++){
-				if(_addr[i] != 0)	return false;
-			}
-			return true;
 		}
 		macaddr& operator=(const macaddr m){
 			for(int i=0; i<6; i++)	_addr[i] = m._addr[i];
@@ -325,61 +291,33 @@ class macaddr{
 			for(int i=0; i<6; i++)	_addr[i] = (u_char)buf[i];
 			return *this;
 		}
-		/*
-		macaddr& operator=(const int num){
-			for(int i=0; i<6; i++)	_addr[i] = (u_char)num;
-			return *this;
-		}
-		*/
-		unsigned char operator[](const int num){
-			switch(num){
-				case 0:
-					return _addr[0];
-					break;
-				case 1:
-					return _addr[1];
-					break;
-				case 2:
-					return _addr[2];
-					break;
-				case 3:
-					return _addr[3];
-					break;
-				case 4:
-					return _addr[4];
-					break;
-				case 5:
-					return _addr[5];
-					break;
-				default:
-					fprintf(stderr, "pgen_ipaddr_t: contents not\n");
-					exit(-1);
-					break;
-			}
-		}
 		bool operator<(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(_addr[i] == iaddr._addr[i])	continue;
 				else							return _addr[i] < _addr[i];
-			}return false;
+			}
+			return false;
 		}
 		bool operator>(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(_addr[i] == iaddr._addr[i])	continue;
 				else							return _addr[i] > _addr[i];
-			}return false;
+			}
+			return false;
 		}
 		bool operator<=(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(_addr[i] == iaddr._addr[i])	continue;
 				else							return _addr[i] <= _addr[i];
-			}return false;
+			}
+			return false;
 		}
 		bool operator>=(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(_addr[i] == iaddr._addr[i])	continue;
 				else							return _addr[i] >= _addr[i];
-			}return false;
+			}
+			return false;
 		}
 		bool operator==(const macaddr iaddr){
 			for(int i=0; i<6; i++){
@@ -389,9 +327,9 @@ class macaddr{
 		}
 		bool operator!=(const macaddr iaddr){
 			for(int i=0; i<6; i++){
-				if(_addr[i] == iaddr._addr[i])	return false;
+				if(_addr[i] != iaddr._addr[i])	return true;
 			}
-			return true;
+			return false;
 		}
 };
 

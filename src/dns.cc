@@ -152,6 +152,9 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	answerPoint = queryPoint + queryLen;
 	memcpy(&ans, answerPoint+2, 16);
 
+	char ansaddrstr[16];
+	snprintf(ansaddrstr, sizeof(ansaddrstr), "%d.%d.%d.%d", 
+			ans.addr[0], ans.addr[1], ans.addr[2], ans.addr[3]);
 
 	//DNS.answer.name = htons(answerPoint);
 	DNS.answer.name = 0;
@@ -159,8 +162,7 @@ void pgen_dns::CAST(const bit8* packet, int len){
 	DNS.answer.cls  = htons(ans.cls );
 	DNS.answer.ttl  = htonl(ans.ttl );
 	DNS.answer.len  = htons(ans.len );
-	DNS.answer.addr = (ans.addr);
-
+	DNS.answer.addr = ansaddrstr;
 }
 
 
@@ -207,7 +209,7 @@ void pgen_dns::WRAP(){
 
 	char *str;
 	char buf[256];
-	strcpy(buf, DNS.query.name.c_str());
+	strncpy(buf, DNS.query.name.c_str(), sizeof(buf));
 	str = strtok(buf, ".");
 	name[count] = (char)strlen(str);
 	count++;
@@ -273,10 +275,10 @@ void pgen_dns::_wrap_answer(){
 	buf.ttl  = htons(DNS.answer.ttl );
 	buf.len  = htons(DNS.answer.len );
 	      
-	buf.addr[0] = DNS.answer.addr[0];
-	buf.addr[1] = DNS.answer.addr[1];
-	buf.addr[2] = DNS.answer.addr[2];
-	buf.addr[3] = DNS.answer.addr[3];
+	buf.addr[0] = DNS.answer.addr.getOctet(0);
+	buf.addr[1] = DNS.answer.addr.getOctet(1);
+	buf.addr[2] = DNS.answer.addr.getOctet(2);
+	buf.addr[3] = DNS.answer.addr.getOctet(3);
 	
 	memcpy(answer, &name, sizeof(name));
 	memcpy(answer+2, &buf, sizeof(buf));

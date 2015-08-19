@@ -24,7 +24,7 @@ class libpgen{
  *	[ ] icmp.cc
  *	[ ] ip.cc
  *	[ ] makefile
- *	[*] mytypes.h
+ *	[ ] mytypes.h
  *	[ ] netutil.cc
  *	[ ] netutil.h
  *	[ ] packconf.h

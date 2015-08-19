@@ -73,8 +73,8 @@ void pgen_arp::WRAP(){
 		arp.arp_tha[i] = ARP.dstEth._addr[i];
 	}
 	for(int i=0; i<4; i++){
-		arp.arp_spa[i] = ARP.srcIp[i];
-		arp.arp_tpa[i] = ARP.dstIp[i];
+		arp.arp_spa[i] = ARP.srcIp.getOctet(i);
+		arp.arp_tpa[i] = ARP.dstIp.getOctet(i);
 	}
 		
 	u_char* p = data;

@@ -1,5 +1,5 @@
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef MYTYPES_H
+#define MYTYPES_H
 
 
 #include <endian.h>		// for BYTE_ORDER
@@ -396,4 +396,4 @@ struct dns_answer{
 
 
 
-#endif
+#endif /* MYTYPES_H */
