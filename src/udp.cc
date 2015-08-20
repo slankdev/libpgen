@@ -35,26 +35,24 @@ void pgen_udp::CLEAR(){
 	UDP.dst = 53;
 }
 
+
 void pgen_udp::SEND(const char* ifname){
 	WRAP();		
-	int sock;
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = IP.dst._addr;
-
-	if((sock=initRawSocket(ifname, 0, 1)) < 0)
+	
+	if(pgen_sendpacket_L3(ifname, data, len, (struct sockaddr*)&addr) < 0)
 		exit(-1);
-	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
-		exit(PGEN_ERROR);
-
-	close(sock);
 }
 
 
 
+
 void pgen_udp::WRAP(){
+	IP.protocol = 17;
 	pgen_ip::WRAP();
 	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
 

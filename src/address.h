@@ -276,6 +276,10 @@ class macaddr{
 			fclose(fp);
 			return bender;
 		}
+		macaddr& operator=(int n){
+			for(int i=0; i<6; i++)  _addr[i] = n;
+			return *this;
+		}
 		macaddr& operator=(const macaddr m){
 			for(int i=0; i<6; i++)	_addr[i] = m._addr[i];
 			return *this;

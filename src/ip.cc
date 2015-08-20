@@ -45,21 +45,17 @@ void pgen_ip::CLEAR(){
 }
 
 
+
 void pgen_ip::SEND(const char* ifname){
 	WRAP();		
-	int sock;
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = IP.dst._addr;
 	
-	if((sock=initRawSocket(ifname, 0, 1)) < 0)
-		exit(PGEN_ERROR);
-	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
-		exit(PGEN_ERROR);
-
-	close(sock);
+	if(pgen_sendpacket_L3(ifname, data, len, (struct sockaddr*)&addr) < 0)
+		exit(-1);
 }
 
 

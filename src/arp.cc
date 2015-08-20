@@ -45,14 +45,8 @@ void pgen_arp::CLEAR(){
 
 void pgen_arp::SEND(const char* ifname){
 	WRAP();		
-	int sock;
-	
-	if((sock=initRawSocket(ifname, 0, 0)) < 0)
-		exit(PGEN_ERROR);
-	if(sendRawPacket(sock, data, len, 2, NULL) < 0)
-		exit(PGEN_ERROR);
-
-	close(sock);
+	if(pgen_sendpacket_L2(ifname, data, len) < 0)
+		exit(-1);	
 }
 
 
@@ -86,6 +80,7 @@ void pgen_arp::WRAP(){
 
 	_addData_WRAP();
 }
+
 
 
 void pgen_arp::CAST(const bit8* data, int len){

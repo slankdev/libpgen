@@ -30,7 +30,6 @@ pgen_eth::pgen_eth(const bit8* packet, int len){
 
 
 void pgen_eth::CLEAR(){
-
 	ETH.src = 0;
 	ETH.dst = 0;
 	ETH.type = htons(0);
@@ -40,15 +39,8 @@ void pgen_eth::CLEAR(){
 
 void pgen_eth::SEND(const char* ifname){
 	WRAP();		
-	int sock;
-
-	if((sock=initRawSocket(ifname, 0, 0)) < 0){
-		exit(PGEN_ERROR);
-	}
-	if(sendRawPacket(sock, data, len, 2, NULL) < 0)
-		exit(PGEN_ERROR);
-
-	close(sock);
+	if(pgen_sendpacket_L2(ifname, data, len) < 0)
+		exit(-1);	
 }
 
 
