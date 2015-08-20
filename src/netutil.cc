@@ -23,43 +23,65 @@
 
 
 
-// this functions 's test is not try yet
-void sniff_with_filter(const char* dev, bool (*callback)(const u_char*, int), 
-										int promisc, struct sniff_filter* filter){
-	u_char packet[20000];
-	bool result = true;
-	int len;
+static int initRawSocket(const char* dev, int promisc, int overIp){
 	int sock;
-	pgen_unknown buf;
 	
-	if((sock=initRawSocket(dev, promisc, 0))<0){
-		perror("sniff");
-		return;
+	if(overIp){
+			sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+			if(sock < 0){
+				perror("initRawSocket: ");
+				return -1;
+			}
+
+			if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
+				close(sock);
+				return -1;	
+			}
+	}else{
+		
+		struct ifreq ifreq;
+		struct sockaddr_ll sa;
+
+		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+		if(sock < 0){
+			perror("InitRawSocket");
+			return -1;
+		}
+
+		memset(&ifreq, 0, sizeof(struct ifreq));
+		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
+		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
+			perror("InitRawSocket");
+			close(sock);
+			return -1;
+		}
+
+		sa.sll_family = PF_PACKET;
+		sa.sll_protocol = htons(ETH_P_ALL);
+		sa.sll_ifindex  = ifreq.ifr_ifindex;
+		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
+			perror("InitRawSocket");
+			close(sock);
+			return -1;
+		}
+
+		if(promisc){
+			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
+				perror("InitRawSocket");
+				close(sock);
+				return -1;
+			}
+			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
+			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
+				perror("InitRawSocket");
+				close(sock);
+				return -1;
+			}
+		}
+	
 	}
 
-	for(;result;){
-		if((len = read(sock, packet, sizeof(packet))) < 0){
-			perror("read");
-			return;
-		}
-		buf.CAST(packet, len);
-
-		// read filter
-		if(filter->flag.ipsrc){
-			if(buf.IP.src != filter->ipsrc)	return;
-		}
-		if(filter->flag.ipdst){
-			if(buf.IP.dst != filter->ipdst)	return;
-		}
-		if(filter->flag.ethsrc){
-			if(buf.ETH.src != filter->ethsrc)	return;
-		}
-		if(filter->flag.ipdst){
-			if(buf.ETH.dst != filter->ethdst)	return;
-		}
-
-		result = (*callback)(packet, len);
-	}
+	return sock;
 }
 
 
@@ -200,66 +222,4 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 	return checksum((u_int16_t*)&p.ip.ip_ttl, PHLEN+datalen-sizeof(struct ip));
 }
 
-
-
-int initRawSocket(const char* dev, int promisc, int overIp){
-	int sock;
-	
-	if(overIp){
-			sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
-			if(sock < 0){
-				perror("initRawSocket: ");
-				return -1;
-			}
-
-			if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
-				close(sock);
-				return -1;	
-			}
-	}else{
-		
-		struct ifreq ifreq;
-		struct sockaddr_ll sa;
-
-		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-		if(sock < 0){
-			perror("InitRawSocket");
-			return -1;
-		}
-
-		memset(&ifreq, 0, sizeof(struct ifreq));
-		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
-		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
-			perror("InitRawSocket");
-			close(sock);
-			return -1;
-		}
-
-		sa.sll_family = PF_PACKET;
-		sa.sll_protocol = htons(ETH_P_ALL);
-		sa.sll_ifindex  = ifreq.ifr_ifindex;
-		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
-			perror("InitRawSocket");
-			close(sock);
-			return -1;
-		}
-
-		if(promisc){
-			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
-				perror("InitRawSocket");
-				close(sock);
-				return -1;
-			}
-			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
-			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
-				perror("InitRawSocket");
-				close(sock);
-				return -1;
-			}
-		}
-	
-	}
-
-	return sock;
-}
 

@@ -25,8 +25,8 @@ class libpgen{
  *	[ ] ip.cc
  *	[ ] makefile
  *	[ ] mytypes.h
- *	[ ] netutil.cc
- *	[ ] netutil.h
+ *	[*] netutil.cc
+ *	[*] netutil.h
  *	[ ] packconf.h
  *	[ ] packet.cc
  *	[ ] packet.h
@@ -37,7 +37,7 @@ class libpgen{
  *	[ ] tcp.cc
  *	[ ] udp.cc
  *	[ ] unknown.cc
- *
+ *	
  * */
 
 
@@ -76,6 +76,7 @@ class libpgen{
  *						ipaddr nslookup(url);		 
  *		[2015.07.29]	add packet type	unknown				[2015.07.30]
  *						for recv packet
+ *		[2015.08.21]    add func sniff_with_filter()		[]
  *
  *
  *
