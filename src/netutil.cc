@@ -24,23 +24,21 @@
 
 
 
-int sendPacketL2_test(const char* dev, const u_char* packet, int len){
+
+
+
+
+bool pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
 	int sock;
 	
 	if((sock=initRawSocket(dev, 0, 0)) < 0){
 		fprintf(stderr, "sendPacketL2_test\n");
-		return -1;
+		return false;
 	}
 
 	write(sock, packet, len);
 	close(sock);
-}
-
-
-
-
-void pgen_sendpacket(const char* dev, const u_char* packet, int len){
-		sendPacketL2_test(dev, packet, len);
+	return true;
 }
 
 
