@@ -2,7 +2,7 @@
 #define NETUTIL_H
 
 bool pgen_sendpacket_L2(const char*, const u_char*, int);
-bool pgen_sendpacket_L3(const char*, const u_char*, int);
+//bool pgen_sendpacket_L3(const char*, const u_char*, int);
 int sendRawPacket(int sock, const u_char* data, int len, 
 		int layer, struct sockaddr* sap);
 
