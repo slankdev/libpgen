@@ -23,7 +23,6 @@ class libpgen{
  *	[ ] eth.cc
  *	[ ] icmp.cc
  *	[ ] ip.cc
- *	[ ] makefile
  *	[ ] mytypes.h
  *	[*] netutil.cc
  *	[*] netutil.h
@@ -32,8 +31,6 @@ class libpgen{
  *	[ ] packet.h
  *	[ ] pgen.h
  *	[ ] release.h
- *	[ ] sniff.cc
- *	[ ] sniff.h
  *	[ ] tcp.cc
  *	[ ] udp.cc
  *	[ ] unknown.cc
