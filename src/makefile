@@ -28,8 +28,6 @@ PACKET_CLASS_SRC = \
 	  dns.cc \
 	  ardrone.cc 
 
-SNIFF_SRC = \
-	  sniff.cc
 
 NETUTIL_SRC = \
 	  netutil.cc
@@ -41,8 +39,7 @@ HDR = pgen.h \
 	  packconf.h \
 	  address.h \
 	  packet.h \
-	  mytypes.h \
-	  sniff.h
+	  mytypes.h 
 
 
 OBJ = $(SRC:.cc=.o)

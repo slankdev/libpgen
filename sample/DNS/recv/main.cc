@@ -28,7 +28,9 @@ void func(const u_char* packet, int len){
 
 
 bool callback(const u_char* packet, int len){
+	printf("test[\n");
 	pgen_unknown buf1(packet, len);
+	printf("]test\n");
 	pgen_udp buf2;
 	pgen_dns pack;
 
