@@ -47,24 +47,6 @@ void pgen_ardrone::SEND(const char* ifname){
 	if(pgen_sendpacket_L3(ifname, data, len, (struct sockaddr*)&addr) < 0)
 		exit(-1);
 }
-/*
-void pgen_ardrone::SEND(const char *ifname){
-	WRAP();		
-	int sock;
-	
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof addr);
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = IP.dst._addr;
-
-	if((sock=initRawSocket(ifname, 0,1)) < 0)
-		exit(-1);
-	if(sendRawPacket(sock, data, len, 3, (struct sockaddr*)&addr) < 0)
-		exit(PGEN_ERROR);
-
-	close(sock);
-}
-*/
 
 
 void pgen_ardrone::CAST(const bit8* packet, int len){
