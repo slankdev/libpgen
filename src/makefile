@@ -74,7 +74,6 @@ copyheader:
 	$(CP) packet.h      /usr/local/include/packet.h
 	$(CP) pgen.h        /usr/local/include/pgen.h
 	$(CP) release.h     /usr/local/include/release.h
-	$(CP) sniff.h       /usr/local/include/sniff.h
 
 copymaclist:
 	$(CP) mac_code.list /usr/local/etc/mac_code.list
@@ -91,7 +90,6 @@ deleteheader:
 	$(RM) /usr/local/include/packet.h
 	$(RM) /usr/local/include/pgen.h
 	$(RM) /usr/local/include/release.h
-	$(RM) /usr/local/include/sniff.h
 
 detelemaclist:
 	$(RM) /usr/local/etc/mac_code.list
