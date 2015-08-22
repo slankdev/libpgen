@@ -4,32 +4,28 @@ const char* dev = "wlan0";
 
 
 int main(int argc, char** argv){
-	pgen_dns pack;
+	pgen_dns p;
+
+	p.IP.src = "192.168.179.1";;
+	p.IP.dst = "192.168.179.7";
+	p.UDP.src = 56112;
+	p.UDP.dst = 53;
 	
+	p.DNS.flags.qr = 1;
+	p.DNS.flags.ra = 1;
+	p.DNS.ancnt = 1;
+	p.DNS.query.name  = "slankdev.net";
 	
+	p.DNS.answer.type = 1;
+	p.DNS.answer.cls  = 1;
+	p.DNS.answer.ttl  = 5;
+	p.DNS.answer.len  = 0x04;
+	p.DNS.answer.addr = "123.123.123.123";
 
 
-
-	pack.IP.src = "192.168.179.1";;
-	pack.IP.dst = "192.168.179.7";
-	pack.UDP.src = 56112;
-	pack.UDP.dst = 53;
-	
-	pack.DNS.flags.qr = 1;
-	pack.DNS.flags.ra = 1;
-	pack.DNS.ancnt = 1;
-	pack.DNS.query.name  = "slankdev.net";
-	
-	pack.DNS.answer.type = 1;
-	pack.DNS.answer.cls  = 1;
-	pack.DNS.answer.ttl  = 5;
-	pack.DNS.answer.len  = 0x04;
-	pack.DNS.answer.addr = "123.123.123.123";
-
-
-	pack.INFO();
+	p.INFO();
 	for(;;){
-		pack.SEND(dev);
+		p.SEND(dev);
 		sleep(1);
 	}
 }
