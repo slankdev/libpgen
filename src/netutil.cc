@@ -20,7 +20,152 @@
 #include "netutil.h"
 
 
+static int initRawSocket(const char* dev, int promisc, int overIp);
 
+
+
+
+
+
+void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
+	u_char packet[20000];
+	bool result = true;
+	int len;
+	int sock;
+	
+	if((sock=initRawSocket(dev, promisc, 0))<0){
+		perror("sniff");
+		return;
+	}
+
+	for(;result;){
+		if((len = read(sock, packet, sizeof(packet))) < 0){
+			perror("read");
+			return;
+		}
+		result = (*callback)(packet, len);
+	}
+}
+
+
+
+
+int pgen_sendpacket_L3(const char* dev, const u_char* packet, int len, struct sockaddr* sa){
+	int sock;
+	int sendlen;
+
+	if((sock=initRawSocket(dev, 0, 1)) < 0){
+		fprintf(stderr, "sendPacketL3\n");
+		return -1;
+	}
+	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
+	if(sendlen < 0){
+		perror("pgen_sendpacket_L2");
+	}
+
+	close(sock);
+	return sendlen;
+}
+
+
+
+
+int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
+	int sock;
+	int sendlen;
+
+	if((sock=initRawSocket(dev, 0, 0)) < 0){
+		fprintf(stderr, "sendPacketL2\n");
+		return -1;
+	}
+	sendlen = write(sock, packet, len);
+	if(sendlen < 0){
+		perror("pgen_sendpacket_L2");
+	}
+
+
+	close(sock);
+	return sendlen;
+}
+
+
+
+char* pgen_port2service(int port, int protocol){
+	static char str[16];
+	struct servent* serv;
+	if(protocol == 1){
+		serv = getservbyport(htons(port), "tcp");
+	}else if(protocol == 2){
+		serv = getservbyport(htons(port), "udp");
+	}else{
+		fprintf(stderr, "pgen_port2service: second argument is not support\n");
+		strncpy(str, "error", sizeof(str)-1);
+		return str;
+	}
+
+	if(serv == NULL){
+		strncpy(str, "not-found", sizeof(str)-1);
+		return str;
+	}else{
+		strncpy(str, serv->s_name, sizeof(str)-1);
+		return str;
+	}
+}
+
+
+
+
+unsigned short checksum(const void* data, int len){
+	//unsigned long sum = 0;
+	unsigned short sum = 0;
+	unsigned short* buf = (unsigned short*)data;
+
+	while (len > 1) {
+		sum += *buf;
+		buf++;
+		len -= 2;
+	}
+	if (len == 1)
+		sum += *(unsigned char *)buf;
+
+	sum = (sum & 0xffff) + (sum >> 16);
+	sum = (sum & 0xffff) + (sum >> 16);
+	return ~sum;
+}
+
+
+
+unsigned short checksumTcp(const u_char *dp, int datalen){
+	struct tcphdr tcp;
+	struct ip ip;
+	char data[100];
+	memcpy(&ip, dp, sizeof(struct ip));
+	dp += sizeof(struct ip);
+	memcpy(&tcp, dp, sizeof(struct tcphdr));
+	dp += sizeof(struct tcphdr);
+	memcpy(data, dp, datalen-sizeof(struct tcphdr)-sizeof(struct ip));
+	dp += datalen-sizeof(struct tcphdr)-sizeof(struct ip);
+	
+	struct tpack {
+	  struct ip ip;
+	  struct tcphdr tcp;
+	  u_char data[100];
+	}p;
+	
+	memcpy(&p.ip, &ip, sizeof(struct ip));
+	memcpy(&p.tcp , &tcp, sizeof(struct tcphdr));
+	memcpy(&p.data, data, datalen-sizeof(struct tcphdr)-sizeof(struct ip));
+
+	p.ip.ip_ttl = 0;
+	p.ip.ip_p      = IPPROTO_TCP;
+	p.ip.ip_src.s_addr = ip.ip_src.s_addr;
+	p.ip.ip_dst.s_addr = ip.ip_dst.s_addr;
+	p.ip.ip_sum    = htons((sizeof p.tcp) );
+
+#define PHLEN 12
+	p.tcp.th_sum = 0;
+	return checksum((u_int16_t*)&p.ip.ip_ttl, PHLEN+datalen-sizeof(struct ip));
+}
 
 
 static int initRawSocket(const char* dev, int promisc, int overIp){
@@ -82,144 +227,6 @@ static int initRawSocket(const char* dev, int promisc, int overIp){
 	}
 
 	return sock;
-}
-
-
-
-
-
-void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
-	u_char packet[20000];
-	bool result = true;
-	int len;
-	int sock;
-	
-	if((sock=initRawSocket(dev, promisc, 0))<0){
-		perror("sniff");
-		return;
-	}
-
-	for(;result;){
-		if((len = read(sock, packet, sizeof(packet))) < 0){
-			perror("read");
-			return;
-		}
-		result = (*callback)(packet, len);
-	}
-}
-
-
-
-
-int pgen_sendpacket_L3(const char* dev, const u_char* packet, int len, struct sockaddr* sa){
-	int sock;
-	int sendlen;
-
-	if((sock=initRawSocket(dev, 0, 1)) < 0){
-		fprintf(stderr, "sendPacketL3\n");
-		return -1;
-	}
-	
-	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
-	if(sendlen < 0){
-		perror("pgen_sendpacket_L2");
-	}
-
-	close(sock);
-	return sendlen;
-}
-
-
-
-
-int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
-	int sock;
-	int sendlen;
-
-	if((sock=initRawSocket(dev, 0, 0)) < 0){
-		fprintf(stderr, "sendPacketL2\n");
-		return -1;
-	}
-
-	sendlen = write(sock, packet, len);
-	if(sendlen < 0){
-		perror("pgen_sendpacket_L2");
-	}
-
-
-	close(sock);
-	return sendlen;
-}
-
-
-
-const char* port2service(int port, int protocol){
-	struct servent* serv;
-	if(protocol == 1)
-		serv = getservbyport(htons(port), "tcp");
-	else if(protocol == 2)
-		serv = getservbyport(htons(port), "udp");
-	else
-		return "port2service error";
-
-	if(serv == NULL)
-		return "not found";
-	else
-		return serv->s_name;
-}
-
-
-
-
-unsigned short checksum(const void* data, int len){
-	unsigned long sum = 0;
-	unsigned short* buf = (unsigned short*)data;
-
-	while (len > 1) {
-		sum += *buf;
-		buf++;
-		len -= 2;
-	}
-	if (len == 1)
-		sum += *(unsigned char *)buf;
-
-	sum = (sum & 0xffff) + (sum >> 16);
-	sum = (sum & 0xffff) + (sum >> 16);
-	return ~sum;
-}
-
-
-
-unsigned short checksumTcp(const u_char *dp, int datalen){
-	struct tcphdr tcp;
-	struct ip ip;
-	char data[100];
-	memcpy(&ip, dp, sizeof(struct ip));
-	dp += sizeof(struct ip);
-	memcpy(&tcp, dp, sizeof(struct tcphdr));
-	dp += sizeof(struct tcphdr);
-	memcpy(data, dp, datalen-sizeof(struct tcphdr)-sizeof(struct ip));
-	dp += datalen-sizeof(struct tcphdr)-sizeof(struct ip);
-	
-	struct tpack {
-	  struct ip ip;
-	  struct tcphdr tcp;
-	  u_char data[100];
-	}p;
-	
-	memcpy(&p.ip, &ip, sizeof(struct ip));
-	memcpy(&p.tcp , &tcp, sizeof(struct tcphdr));
-	memcpy(&p.data, data, datalen-sizeof(struct tcphdr)-sizeof(struct ip));
-
-	p.ip.ip_ttl = 0;
-	p.ip.ip_p      = IPPROTO_TCP;
-	p.ip.ip_src.s_addr = ip.ip_src.s_addr;
-	p.ip.ip_dst.s_addr = ip.ip_dst.s_addr;
-	p.ip.ip_sum    = htons((sizeof p.tcp) );
-
-#define PHLEN 12
-	p.tcp.th_sum = 0;
-	return checksum((u_int16_t*)&p.ip.ip_ttl, PHLEN+datalen-sizeof(struct ip));
 }
 
 

@@ -35,6 +35,10 @@ pgen_unknown::pgen_unknown(const bit8* packet, int len){
 }
 
 
+void pgen_unknown::SUMMARY(){
+	printf("unknown (length=%d)\n", len);
+}
+
 
 bool pgen_unknown::CAST(const bit8* packet, int len){
 	if(len > PGEN_PACKLEN){
@@ -45,6 +49,7 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 		fprintf(stderr, "recv packet is too small!\n");
 		return false;
 	}
+	this->len = len;
 
 	bit8 data[PGEN_PACKLEN];
 	memcpy(data, packet, len);

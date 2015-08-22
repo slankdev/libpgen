@@ -162,9 +162,9 @@ void pgen_tcp::INFO(){
 
 	printf(" * Transmission Control Protocol \n");
 	printf("    - Source Port     :  %d (%s) \n",
-			ntohs(tcp.source), port2service(ntohs(tcp.source), 1));
+			ntohs(tcp.source), pgen_port2service(ntohs(tcp.source), 1));
 	printf("    - Dest Port       :  %d (%s) \n", 
-			ntohs(tcp.dest), port2service(ntohs(tcp.dest), 1));
+			ntohs(tcp.dest), pgen_port2service(ntohs(tcp.dest), 1));
 	printf("    - Frags           :  ");
 	if(tcp.fin == 1)	printf("F");
 	if(tcp.syn == 1)	printf("S");

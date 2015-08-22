@@ -32,7 +32,7 @@ class pgen_unknown{
 		bool _isICMP;
 		bool _isTCP;
 		bool _isUDP;
-
+		int len;
 	public:
 		struct{
 			macaddr src;
@@ -54,6 +54,7 @@ class pgen_unknown{
 
 		pgen_unknown();
 		pgen_unknown(const bit8*, int);
+		void SUMMARY();
 		bool CAST(const bit8*, int);
 		bool isETH();
 		bool isARP();

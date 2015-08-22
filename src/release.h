@@ -66,7 +66,7 @@ class libpgen{
  *   	[2015.05.10]	make myPacket structure in TCP		[2015.05.10]
  *		[2015.05.10]	make myPacket structure in UDP		[2015.05.10]
  *		[2015.05.10]	add macro of packet options			[2015.05.10]
- *		[2015.05.11]	add function port2service(int)		[2015.05.11]
+ *		[2015.05.11]	add function pgen_port2service(int)		[2015.05.11]
  *		[2015.05.16]	add function summary(void)			[2015.06.23]
  *						print packet info inline
  *		[2015.05.16]	add function nslookup(const)		[]

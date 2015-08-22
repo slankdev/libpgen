@@ -101,9 +101,9 @@ void pgen_udp::INFO(){
 
 	printf(" * User Datagram Protocol \n");
 	printf("    - Source Port     :  %d (%s)\n", 
-			ntohs(udp.source), port2service(ntohs(udp.source), 2));
+			ntohs(udp.source), pgen_port2service(ntohs(udp.source), 2));
 	printf("    - Destination Port:  %d (%s)\n", 
-			ntohs(udp.dest), port2service(ntohs(udp.dest), 2));
+			ntohs(udp.dest), pgen_port2service(ntohs(udp.dest), 2));
 }
 
 

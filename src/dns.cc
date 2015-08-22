@@ -223,7 +223,7 @@ void pgen_dns::WRAP(){
 
 	char *str;
 	char buf[256];
-	strncpy(buf, DNS.query.name.c_str(), sizeof(buf));
+	strncpy(buf, DNS.query.name.c_str(), sizeof(buf)-1);
 	str = strtok(buf, ".");
 	name[count] = (char)strlen(str);
 	count++;

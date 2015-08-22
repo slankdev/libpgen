@@ -42,10 +42,11 @@ class ipaddr{
 			_addr = i._addr;
 		}
 		char* c_str(){
-			char* str = (char*)malloc(sizeof(char)*16);
+			//char* str = (char*)malloc(sizeof(char)*16);
+			static char str[16];
 			union lc lc;
 			lc.l = (unsigned int)_addr;
-			snprintf(str,sizeof(char[16]),"%u.%u.%u.%u",
+			snprintf(str,sizeof(char[16])-1,"%u.%u.%u.%u",
 							lc.c[0],lc.c[1],lc.c[2],lc.c[3]);
 			return str;
 		}
@@ -209,7 +210,7 @@ class macaddr{
 			}
 		}
 		char* c_str(){
-			char* str = (char*)malloc(sizeof(char)*19);
+			static char str[19];
 			snprintf(str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
 				_addr[0], _addr[1], _addr[2], _addr[3], _addr[4], _addr[5]);
 			return str;
@@ -252,27 +253,26 @@ class macaddr{
 		}
 		char* bender(){
 			unsigned int mac[3];
-			int strsize = 64;
-			char  buf[strsize];
-			char* bender = (char*)malloc(strsize);
+			char  buf[64];
+			static char bender[64];
 			FILE* fp;
 			if((fp=fopen(FILEPATH, "r")) == NULL){
 				perror("macaddr::bender()");
-				strncpy(bender, "error", sizeof(strsize));
+				strncpy(bender, "error", sizeof(bender)-1);
 				return bender;
 			}
 			while(fgets(buf, sizeof(buf), fp) != NULL){
 				sscanf(buf, "%2x%2x%2x\t%s", &mac[0],&mac[1],&mac[2],buf);
 				if(mac[0]==_addr[0]&&mac[1]==_addr[1]&&mac[2]==_addr[2]){
-					snprintf(bender, strsize, "%s", buf);
+					snprintf(bender, sizeof(bender), "%s", buf);
 					fclose(fp);
 					return bender;
 				}
 				memset(mac, 0, sizeof(mac));
-				memset(buf, 0, strsize);
-				memset(bender, 0, strsize);
+				memset(buf, 0, sizeof(buf));
+				memset(bender, 0, sizeof(bender));
 			}
-			strncpy(bender, "not-found", sizeof("not-found"));
+			strncpy(bender, "not-found", sizeof(bender)-1);
 			fclose(fp);
 			return bender;
 		}
