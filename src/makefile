@@ -26,7 +26,8 @@ PACKET_CLASS_SRC = \
 	  tcp.cc \
 	  udp.cc \
 	  dns.cc \
-	  ardrone.cc 
+	  ardrone.cc \
+	  debug.cc
 
 
 NETUTIL_SRC = \
@@ -39,7 +40,8 @@ HDR = pgen.h \
 	  packconf.h \
 	  address.h \
 	  packet.h \
-	  mytypes.h 
+	  mytypes.h \
+	  debug.h
 
 
 OBJ = $(SRC:.cc=.o)

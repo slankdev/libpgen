@@ -22,8 +22,6 @@
 #define PGEN_ADDDATALEN 1000
 
 
-
-
 class pgen_unknown{
 	protected:
 		bool _isETH;
@@ -51,9 +49,9 @@ class pgen_unknown{
 			bit16 dst;
 		}UDP;
 
-
 		pgen_unknown();
 		pgen_unknown(const bit8*, int);
+		void CLEAR();
 		void SUMMARY();
 		bool CAST(const bit8*, int);
 		bool isETH();
@@ -70,15 +68,14 @@ class pgen_unknown{
 
 class pgen_packet{
 	protected:
-		//int 	packetType;
 		int 	len;
 		int 	additionalLen;
 		u_char 	data[PGEN_PACKLEN];
 		u_char  additionalData[PGEN_ADDDATALEN];
 
 	public:
-			
 		pgen_packet();
+		virtual void help()=0;
 		virtual void CLEAR()=0;
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;

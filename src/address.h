@@ -23,6 +23,7 @@ union lc{
 
 class ipaddr{
 	private:
+		char _c_str[32];
 		
 	public:
 		bit32 _addr;		
@@ -42,13 +43,11 @@ class ipaddr{
 			_addr = i._addr;
 		}
 		char* c_str(){
-			//char* str = (char*)malloc(sizeof(char)*16);
-			static char str[16];
 			union lc lc;
 			lc.l = (unsigned int)_addr;
-			snprintf(str,sizeof(char[16])-1,"%u.%u.%u.%u",
+			snprintf(_c_str, sizeof(char[16])-1,"%u.%u.%u.%u",
 							lc.c[0],lc.c[1],lc.c[2],lc.c[3]);
-			return str;
+			return _c_str;
 		}
 		void clear(){
 			_addr = 0;	
@@ -186,6 +185,8 @@ class ipaddr{
 
 class macaddr{
 	private:
+		char _c_str[32];
+		char _bender[32];
 	public:
 		bit8 _addr[6];
 	
@@ -210,10 +211,9 @@ class macaddr{
 			}
 		}
 		char* c_str(){
-			static char str[19];
-			snprintf(str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
+			snprintf(_c_str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
 				_addr[0], _addr[1], _addr[2], _addr[3], _addr[4], _addr[5]);
-			return str;
+			return _c_str;
 		}
 		void clear(){
 			memset(_addr, 0, sizeof(char[6]));	
@@ -229,7 +229,6 @@ class macaddr{
 		bool setmacbydev(const char* ifname){
 			int sockd;
 			struct ifreq ifr;
-			char* macstr;
 			u_char addr[6];
 
 			if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
@@ -237,7 +236,6 @@ class macaddr{
 				clear();
 				return false;
 			}
-			macstr = (char*)malloc(sizeof(char)*19);
 			ifr.ifr_addr.sa_family = AF_INET;
 			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
 			if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
@@ -254,27 +252,26 @@ class macaddr{
 		char* bender(){
 			unsigned int mac[3];
 			char  buf[64];
-			static char bender[64];
 			FILE* fp;
 			if((fp=fopen(FILEPATH, "r")) == NULL){
 				perror("macaddr::bender()");
-				strncpy(bender, "error", sizeof(bender)-1);
-				return bender;
+				strncpy(_bender, "error", sizeof(_bender)-1);
+				return _bender;
 			}
 			while(fgets(buf, sizeof(buf), fp) != NULL){
 				sscanf(buf, "%2x%2x%2x\t%s", &mac[0],&mac[1],&mac[2],buf);
 				if(mac[0]==_addr[0]&&mac[1]==_addr[1]&&mac[2]==_addr[2]){
-					snprintf(bender, sizeof(bender), "%s", buf);
+					snprintf(_bender, sizeof(_bender), "%s", buf);
 					fclose(fp);
-					return bender;
+					return _bender;
 				}
 				memset(mac, 0, sizeof(mac));
 				memset(buf, 0, sizeof(buf));
-				memset(bender, 0, sizeof(bender));
+				memset(_bender, 0, sizeof(_bender));
 			}
-			strncpy(bender, "not-found", sizeof(bender)-1);
+			strncpy(_bender, "not-found", sizeof(_bender)-1);
 			fclose(fp);
-			return bender;
+			return _bender;
 		}
 		macaddr& operator=(int n){
 			for(int i=0; i<6; i++)  _addr[i] = n;

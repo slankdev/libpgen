@@ -5,7 +5,6 @@
 #include "address.h"
 
 
-
 void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc);
 
 int  pgen_sendpacket_L2(const char*, const u_char*, int);

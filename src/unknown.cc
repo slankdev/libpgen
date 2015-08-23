@@ -6,23 +6,23 @@
 #include "mytypes.h"
 #include "netutil.h"
 
+#include "debug.h"
 #define PACKET_MINLEN 14
 
 
 
 pgen_unknown::pgen_unknown(){
-	ETH.src = 0;
-	ETH.dst = 0;
-	IP.src = 0;
-	IP.dst = 0;
-	TCP.src = 0;
-	TCP.dst = 0;
-	UDP.src = 0;
-	UDP.dst = 0;
+	CLEAR();
 }
 
 
 pgen_unknown::pgen_unknown(const bit8* packet, int len){
+	CLEAR();
+	CAST(packet, len);
+}
+
+
+void pgen_unknown::CLEAR(){
 	ETH.src = 0;
 	ETH.dst = 0;
 	IP.src = 0;
@@ -31,22 +31,25 @@ pgen_unknown::pgen_unknown(const bit8* packet, int len){
 	TCP.dst = 0;
 	UDP.src = 0;
 	UDP.dst = 0;
-	CAST(packet, len);
 }
 
 
 void pgen_unknown::SUMMARY(){
-	printf("unknown (length=%d)\n", len);
+	printf("unknown(packet=");
+	if(isTCP())			printf("TCP %s:%d > %s:%d", IP.src.c_str(), TCP.src, IP.dst.c_str(), TCP.dst);
+	else if(isUDP())	printf("UDP %s:%d > %s:%d", IP.src.c_str(), UDP.src, IP.dst.c_str(), UDP.dst);
+	else if(isICMP())	printf("ICMP %s > %s", IP.src.c_str(), IP.dst.c_str());
+	else if(isIP())		printf("IP   %s > %s", IP.src.c_str(), IP.dst.c_str()); 
+	else if(isARP())	printf("ARP  %s > %s", ETH.src.c_str(), ETH.dst.c_str()); 
+	else if(isETH())	printf("ETH  %s > %s", ETH.src.c_str(), ETH.dst.c_str());
+	else				printf("no support");
+	printf(" len=%d\n", len);
 }
 
 
 bool pgen_unknown::CAST(const bit8* packet, int len){
-	if(len > PGEN_PACKLEN){
-		fprintf(stderr, "recv packet is too large!\n");
-		return false;
-	}
-	if(len < 14){
-		fprintf(stderr, "recv packet is too small!\n");
+	if(!(14 < len && len < PGEN_PACKLEN)){
+		fprintf(stderr, "recv packet length is not support (len=%d)\n", len);
 		return false;
 	}
 	this->len = len;
@@ -74,7 +77,6 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 	ETH.src.setmacbyarry(eth->ether_shost);
 	ETH.dst.setmacbyarry(eth->ether_dhost);
 
-
 	if(ntohs(eth->ether_type) == MT_ETHERTYPE_IP){
 		_isIP = true;
 		ip = (struct MYIP*)p;
@@ -96,10 +98,11 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 		}
 		else if(ip->protocol == MT_IPPROTO_UDP){
 			_isUDP = true;
+			
 			udp = (struct MYUDP*)p;
 			p += sizeof(struct MYUDP);
-			UDP.src = ntohs(tcp->source);
-			UDP.dst = ntohs(tcp->dest);
+			UDP.src = ntohs(udp->source);
+			UDP.dst = ntohs(udp->dest);
 		}
 		else{
 			//fprintf(stderr, "unknown L4 protocol 0x%04x\n", ip->protocol);
