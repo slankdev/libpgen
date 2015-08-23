@@ -120,9 +120,9 @@ void pgen_arp::CAST(const bit8* data, int len){
 
 
 void pgen_arp::SUMMARY(){
-	if(ARP.operation == 2){
+	if(ARP.operation == 1){
 		printf("who has %s tell %s \n", ARP.dstIp.c_str(), ARP.srcEth.c_str());
-	}else if(ARP.operation == 1){
+	}else if(ARP.operation == 2){
 		printf("%s is at %s\n", ARP.srcIp.c_str(), ARP.srcEth.c_str());	
 	}else{
 		printf("other arp operation!! \n");	

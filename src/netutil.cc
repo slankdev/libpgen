@@ -20,7 +20,6 @@
 #include "netutil.h"
 
 
-static int initRawSocket(const char* dev, int promisc, int overIp);
 
 
 
@@ -82,7 +81,6 @@ int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
 	if(sendlen < 0){
 		perror("pgen_sendpacket_L2");
 	}
-
 
 	close(sock);
 	return sendlen;
@@ -168,7 +166,7 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 }
 
 
-static int initRawSocket(const char* dev, int promisc, int overIp){
+int initRawSocket(const char* dev, int promisc, int overIp){
 	int sock;
 	
 	if(overIp){

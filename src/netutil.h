@@ -14,5 +14,6 @@ char* pgen_port2service(int port, int protocol);
 unsigned short checksum(const void* data, int len);
 unsigned short checksumTcp(const u_char* dp, int datalen);
 
+int initRawSocket(const char* dev, int promisc, int overIp);
 
 #endif /* NETUTIL_H */

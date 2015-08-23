@@ -11,6 +11,35 @@
 
 
 
+bool pgen_unknown::IPaddris(ipaddr addr){
+	if(!isIP()) return false;
+	printf("ipaddr is %s ", addr.c_str());
+	SUMMARY();
+	return (addr==IP.src || addr==IP.dst);
+}
+bool pgen_unknown::MACaddris(macaddr addr){
+	if(!isETH()) return false;
+	printf("macaddr is %s ", addr.c_str());
+	SUMMARY();
+	return (addr==ETH.src || addr==ETH.dst);
+}
+bool pgen_unknown::TCPportis(unsigned short port){
+	if(!isTCP()) return false;
+	printf("tcp port is %d ", port);
+	SUMMARY();
+	return (port==TCP.src || port==TCP.dst);	
+}
+bool pgen_unknown::UDPportis(unsigned short port){
+	if(!isUDP()) return false;
+	printf("udp port is %d ", port);
+	SUMMARY();
+	return (port==UDP.src || port==UDP.dst);	
+}
+
+
+
+
+
 pgen_unknown::pgen_unknown(){
 	CLEAR();
 }
@@ -40,20 +69,31 @@ void pgen_unknown::CLEAR(){
 }
 
 
+
+
+
 void pgen_unknown::SUMMARY(){
-	printf("unknown(packet=");
+	printf("unknown(packet=[");
+	if(isTCP()) printf("TCP|");
+	if(isUDP()) printf("UDP|");
+	if(isICMP()) printf("ICMP|");
+	if(isIP()) printf("IP|");
+	if(isARP()) printf("ARP|");
+	if(isETH()) printf("ETH]  ");
+
+
 	if(isTCP())			
-		printf("TCP %s:%d > %s:%d", IP.src.c_str(), TCP.src, IP.dst.c_str(), TCP.dst);
+		printf("%s:%d > %s:%d", IP.src.c_str(), TCP.src, IP.dst.c_str(), TCP.dst);
 	else if(isUDP())	
-		printf("UDP %s:%d > %s:%d", IP.src.c_str(), UDP.src, IP.dst.c_str(), UDP.dst);
+		printf("%s:%d > %s:%d", IP.src.c_str(), UDP.src, IP.dst.c_str(), UDP.dst);
 	else if(isICMP())	
-		printf("ICMP %s > %s", IP.src.c_str(), IP.dst.c_str());
+		printf("%s > %s", IP.src.c_str(), IP.dst.c_str());
 	else if(isIP())		
-		printf("IP   %s > %s", IP.src.c_str(), IP.dst.c_str()); 
+		printf("%s > %s", IP.src.c_str(), IP.dst.c_str()); 
 	else if(isARP())	
-		printf("ARP  %s > %s", ETH.src.c_str(), ETH.dst.c_str()); 
+		printf("%s > %s", ETH.src.c_str(), ETH.dst.c_str()); 
 	else if(isETH())	
-		printf("ETH  %s > %s", ETH.src.c_str(), ETH.dst.c_str());
+		printf("%s > %s", ETH.src.c_str(), ETH.dst.c_str());
 	else			
 		printf("no support");
 	printf(" len=%d\n", len);

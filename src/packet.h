@@ -59,6 +59,11 @@ class pgen_unknown{
 		bool isICMP();
 		bool isTCP();
 		bool isUDP();
+
+		bool IPaddris(ipaddr addr);
+		bool MACaddris(macaddr addr);
+		bool TCPportis(unsigned short port);
+		bool UDPportis(unsigned short port);
 };
 
 
@@ -74,7 +79,6 @@ class pgen_packet{
 
 	public:
 		pgen_packet();
-		virtual void help()=0;
 		virtual void CLEAR()=0;
 		virtual void INFO()=0;	
 		virtual void WRAP()=0;
@@ -86,6 +90,7 @@ class pgen_packet{
 		bool addData(const char* , int );
 		int length(){  return len;	}
 		void _addData_WRAP();
+		u_char* test();
 };
 
 

@@ -137,8 +137,8 @@ void pgen_tcp::SUMMARY(){
 	int seq = tcp.seq;
 	int win = tcp.window;
 	int len = tcp.doff;
-	int sport = tcp.source;
-	int dport = tcp.dest;
+	int sport = ntohs(tcp.source);
+	int dport = ntohs(tcp.dest);
 	
 	std::string flag;
 	if(tcp.fin == 1)	flag+= "FIN";

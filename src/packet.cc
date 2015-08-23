@@ -13,6 +13,12 @@
 
 #include <netinet/in.h>		/* for struct sockaddr_in */
 	
+u_char* pgen_packet::test(){
+	u_char* p = (u_char*)malloc(len);
+	memcpy(p, data, len);
+	return p;
+}
+
 
 pgen_packet::pgen_packet(){
 	len = 0;
