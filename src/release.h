@@ -26,7 +26,6 @@ class libpgen{
  *	[ ] mytypes.h
  *	[*] netutil.cc
  *	[*] netutil.h
- *	[ ] packconf.h
  *	[ ] packet.cc
  *	[ ] packet.h
  *	[ ] pgen.h

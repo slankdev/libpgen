@@ -1,7 +1,6 @@
 /* include must!!! */
 #include "pgen.h"
 #include "packet.h"
-#include "packconf.h"
 #include "address.h"
 
 #include "netutil.h"

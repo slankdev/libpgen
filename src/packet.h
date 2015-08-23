@@ -3,7 +3,6 @@
 
 
 #include "pgen.h"
-#include "packconf.h"
 #include "address.h"
 #include "mytypes.h"
 
