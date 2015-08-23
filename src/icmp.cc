@@ -2,10 +2,8 @@
 #include <string>
 #include <iostream>
 
-/* include must!!! */
 #include "packet.h"
 #include "address.h"
-#include "packconf.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

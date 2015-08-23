@@ -1,8 +1,6 @@
 #include "packet.h"
 #include "pgen.h"
 #include "address.h"
-
-/* include must!!! */
 #include "packconf.h"
 
 #include <stdio.h>

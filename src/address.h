@@ -10,7 +10,7 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <net/if.h>
-
+#include "mytypes.h"
 
 #define FILEPATH "/usr/local/etc/mac_code.list"
 

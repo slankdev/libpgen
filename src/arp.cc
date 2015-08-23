@@ -1,8 +1,6 @@
 #include "packet.h"
 #include "address.h"
-
-/* include must!!! */
-#include "packconf.h"
+#include "mytypes.h"
 
 #include <map>
 #include <stdio.h>

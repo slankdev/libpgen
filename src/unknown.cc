@@ -31,31 +31,42 @@ void pgen_unknown::CLEAR(){
 	TCP.dst = 0;
 	UDP.src = 0;
 	UDP.dst = 0;
+	_isETH = false;
+	_isARP = false;
+	_isIP  = false;
+	_isICMP= false;
+	_isTCP = false;
+	_isUDP = false;
 }
 
 
 void pgen_unknown::SUMMARY(){
 	printf("unknown(packet=");
-	if(isTCP())			printf("TCP %s:%d > %s:%d", IP.src.c_str(), TCP.src, IP.dst.c_str(), TCP.dst);
-	else if(isUDP())	printf("UDP %s:%d > %s:%d", IP.src.c_str(), UDP.src, IP.dst.c_str(), UDP.dst);
-	else if(isICMP())	printf("ICMP %s > %s", IP.src.c_str(), IP.dst.c_str());
-	else if(isIP())		printf("IP   %s > %s", IP.src.c_str(), IP.dst.c_str()); 
-	else if(isARP())	printf("ARP  %s > %s", ETH.src.c_str(), ETH.dst.c_str()); 
-	else if(isETH())	printf("ETH  %s > %s", ETH.src.c_str(), ETH.dst.c_str());
-	else				printf("no support");
+	if(isTCP())			
+		printf("TCP %s:%d > %s:%d", IP.src.c_str(), TCP.src, IP.dst.c_str(), TCP.dst);
+	else if(isUDP())	
+		printf("UDP %s:%d > %s:%d", IP.src.c_str(), UDP.src, IP.dst.c_str(), UDP.dst);
+	else if(isICMP())	
+		printf("ICMP %s > %s", IP.src.c_str(), IP.dst.c_str());
+	else if(isIP())		
+		printf("IP   %s > %s", IP.src.c_str(), IP.dst.c_str()); 
+	else if(isARP())	
+		printf("ARP  %s > %s", ETH.src.c_str(), ETH.dst.c_str()); 
+	else if(isETH())	
+		printf("ETH  %s > %s", ETH.src.c_str(), ETH.dst.c_str());
+	else			
+		printf("no support");
 	printf(" len=%d\n", len);
 }
 
 
 bool pgen_unknown::CAST(const bit8* packet, int len){
+	CLEAR();
 	if(!(14 < len && len < PGEN_PACKLEN)){
 		fprintf(stderr, "recv packet length is not support (len=%d)\n", len);
 		return false;
 	}
 	this->len = len;
-
-	bit8 data[PGEN_PACKLEN];
-	memcpy(data, packet, len);
 
 	struct MYETH*  eth;
 	struct MYARP*  arp;
@@ -63,14 +74,8 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 	struct MYICMP* icmp;
 	struct MYTCP*  tcp;
 	struct MYUDP*  udp;
-	_isETH = false;
-	_isARP = false;
-	_isIP  = false;
-	_isICMP= false;
-	_isTCP = false;
-	_isUDP = false;
 		
-	const bit8* p = data;
+	const bit8* p = packet;
 	_isETH = true;
 	eth = (struct MYETH*)p;
 	p += sizeof(struct MYETH);
@@ -98,7 +103,6 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 		}
 		else if(ip->protocol == MT_IPPROTO_UDP){
 			_isUDP = true;
-			
 			udp = (struct MYUDP*)p;
 			p += sizeof(struct MYUDP);
 			UDP.src = ntohs(udp->source);
@@ -114,7 +118,7 @@ bool pgen_unknown::CAST(const bit8* packet, int len){
 		_isARP = true;
 	}
 	else{
-//		fprintf(stderr, "unknown L3 protocol 0x%04x\n", ntohs(eth->ether_type));
+		//fprintf(stderr, "unknown L3 protocol 0x%04x\n", ntohs(eth->ether_type));
 		return false;
 	}
 	

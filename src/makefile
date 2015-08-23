@@ -37,10 +37,11 @@ SRC = $(PACKET_CLASS_SRC) $(SNIFF_SRC) $(NETUTIL_SRC)
 
 
 HDR = pgen.h \
-	  packconf.h \
 	  address.h \
 	  packet.h \
 	  mytypes.h \
+	  netutil.h \
+	  release.h \
 	  debug.h
 
 
@@ -72,10 +73,10 @@ copyheader:
 	$(CP) address.h     /usr/local/include/address.h
 	$(CP) mytypes.h     /usr/local/include/mytypes.h
 	$(CP) netutil.h     /usr/local/include/netutil.h
-	$(CP) packconf.h    /usr/local/include/packconf.h
 	$(CP) packet.h      /usr/local/include/packet.h
 	$(CP) pgen.h        /usr/local/include/pgen.h
 	$(CP) release.h     /usr/local/include/release.h
+	$(CP) release.h     /usr/local/include/debug.h
 
 copymaclist:
 	$(CP) mac_code.list /usr/local/etc/mac_code.list
@@ -88,10 +89,11 @@ deleteheader:
 	$(RM) /usr/local/include/address.h
 	$(RM) /usr/local/include/mytypes.h
 	$(RM) /usr/local/include/netutil.h
-	$(RM) /usr/local/include/packconf.h
 	$(RM) /usr/local/include/packet.h
 	$(RM) /usr/local/include/pgen.h
 	$(RM) /usr/local/include/release.h
+	$(RM) /usr/local/include/debug.h
+
 
 detelemaclist:
 	$(RM) /usr/local/etc/mac_code.list
