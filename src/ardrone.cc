@@ -7,21 +7,21 @@
 
 
 pgen_ardrone::pgen_ardrone(){
-	CLEAR();
+	clear();
 }
 
 
 
 pgen_ardrone::pgen_ardrone(const bit8* packet, int len){
-	CLEAR();
-	CAST(packet, len);
+	clear();
+	cast(packet, len);
 }
 
 
 
 
-void pgen_ardrone::CLEAR(){
-	pgen_udp::CLEAR();
+void pgen_ardrone::clear(){
+	pgen_udp::clear();
 
 	ARDRONE.pcmd.seq   = 0;
 	ARDRONE.pcmd.flag  = 0;
@@ -36,8 +36,8 @@ void pgen_ardrone::CLEAR(){
 }
 
 
-void pgen_ardrone::SEND(const char* ifname){
-	WRAP();		
+void pgen_ardrone::send(const char* ifname){
+	compile();		
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
@@ -49,14 +49,14 @@ void pgen_ardrone::SEND(const char* ifname){
 }
 
 
-void pgen_ardrone::CAST(const bit8* packet, int len){
+void pgen_ardrone::cast(const bit8* packet, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "ardrone packet length not support (%d)\n", len);
 		return;
 	}
 	
 	
-	pgen_udp::CAST(packet, len);
+	pgen_udp::cast(packet, len);
 	
 	char buf[256];
 	packet += sizeof(struct MYETH)+sizeof(struct MYIP)+sizeof(struct MYUDP);
@@ -82,8 +82,8 @@ void pgen_ardrone::CAST(const bit8* packet, int len){
 
 
 
-void pgen_ardrone::WRAP(){
-	pgen_udp::WRAP();
+void pgen_ardrone::compile(){
+	pgen_udp::compile();
 
 	char cmd1[64];
 	char cmd2[64];
@@ -121,13 +121,13 @@ void pgen_ardrone::WRAP(){
 	p += clen;
 	len = p-data;
 	
-	_addData_WRAP();
+	compile();
 }
 
 
-void pgen_ardrone::INFO(){
-	WRAP();
-	pgen_udp::INFO();
+void pgen_ardrone::info(){
+	compile();
+	pgen_udp::info();
 	
 	printf(" * AR Drone packet\n");
 	printf("    - PCMD MAG\n");
@@ -150,7 +150,7 @@ void pgen_ardrone::INFO(){
 
 
 void pgen_ardrone::SUMMARY(){
-	WRAP();
+	compile();
 	printf("AR Drone PCMD(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
 			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, ARDRONE.pcmd.roll, 
 			ARDRONE.pcmd.pitch, ARDRONE.pcmd.gaz,
@@ -161,7 +161,7 @@ void pgen_ardrone::SUMMARY(){
 
 
 void pgen_ardrone::DSUMMARY(){
-	WRAP();
+	compile();
 
 	printf("%s -> %s ", IP.src.c_str(), IP.dst.c_str());
 	printf("(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) \n", 

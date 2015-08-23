@@ -19,20 +19,20 @@
 
 
 pgen_arp::pgen_arp(){
-	CLEAR();
+	clear();
 }
 
 
 
 pgen_arp::pgen_arp(const bit8* packet, int len){
-	CLEAR();
-	CAST(packet, len);
+	clear();
+	cast(packet, len);
 }
 
 
 
-void pgen_arp::CLEAR(){
-	pgen_eth::CLEAR();
+void pgen_arp::clear(){
+	pgen_eth::clear();
 	ARP.srcIp = 0;
 	ARP.dstIp = 0;
 	ARP.srcEth = 0;
@@ -41,16 +41,16 @@ void pgen_arp::CLEAR(){
 }   
 
 
-void pgen_arp::SEND(const char* ifname){
-	WRAP();		
+void pgen_arp::send(const char* ifname){
+	compile();		
 	if(pgen_sendpacket_L2(ifname, data, len) < 0)
 		exit(-1);	
 }
 
 
 
-void pgen_arp::WRAP(){
-	pgen_eth::WRAP();
+void pgen_arp::compile(){
+	pgen_eth::compile();
 	memset(data, 0, sizeof data);
 	eth.ether_type = htons(MT_ETHERTYPE_ARP);
 
@@ -81,14 +81,14 @@ void pgen_arp::WRAP(){
 
 
 
-void pgen_arp::CAST(const bit8* data, int len){
+void pgen_arp::cast(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "arp packet length not support (%d)\n", len);
 		return;
 	}
 	
 	
-	pgen_eth::CAST(data, len);
+	pgen_eth::cast(data, len);
 
 	struct MYARP buf;
 	memcpy(&buf, data+sizeof(struct MYETH), sizeof(buf));;
@@ -130,9 +130,9 @@ void pgen_arp::SUMMARY(){
 }
 
 
-void pgen_arp::INFO(){
-	WRAP();
-	pgen_eth::INFO();	
+void pgen_arp::info(){
+	compile();
+	pgen_eth::info();	
 
 	std::map<int, const char*> _arpopcode;
 	_arpopcode[1] = "ARP Request";

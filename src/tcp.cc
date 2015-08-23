@@ -17,20 +17,20 @@
 #include <netinet/tcp.h>		// for struct tcp		
 
 pgen_tcp::pgen_tcp(){
-	CLEAR();
+	clear();
 }
 
 
 
 pgen_tcp::pgen_tcp(const bit8* packet, int len){
-	CLEAR();
-	CAST(packet, len);
+	clear();
+	cast(packet, len);
 }
 
 
 
-void pgen_tcp::CLEAR(){
-	pgen_ip::CLEAR();
+void pgen_tcp::clear(){
+	pgen_ip::clear();
 	TCP.src = 20;
 	TCP.dst = 80;
 	TCP.flags.fin = 0;
@@ -45,8 +45,8 @@ void pgen_tcp::CLEAR(){
 }
 
 
-void pgen_tcp::SEND(const char* ifname){
-	WRAP();		
+void pgen_tcp::send(const char* ifname){
+	compile();		
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
@@ -59,8 +59,8 @@ void pgen_tcp::SEND(const char* ifname){
 
 
 
-void pgen_tcp::WRAP(){
-	pgen_ip::WRAP();
+void pgen_tcp::compile(){
+	pgen_ip::compile();
 	memset(data, 0, sizeof data);
 	ip.protocol = MT_IPPROTO_TCP;
 	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
@@ -104,14 +104,14 @@ void pgen_tcp::WRAP(){
 
 
 
-void pgen_tcp::CAST(const bit8* data, int len){
+void pgen_tcp::cast(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "tcp packet length not support (%d)\n", len);
 		return;
 	}
 	
 	
-	pgen_ip::CAST(data, len);
+	pgen_ip::cast(data, len);
 
 	struct MYTCP buf;
 	memcpy(&buf, data+sizeof(struct MYETH)+sizeof(struct MYIP),
@@ -155,9 +155,9 @@ void pgen_tcp::SUMMARY(){
 			sport, dport, flag.c_str(), seq, win, len);
 }
 
-void pgen_tcp::INFO(){
-	WRAP();
-	pgen_ip::INFO();
+void pgen_tcp::info(){
+	compile();
+	pgen_ip::info();
 
 	printf(" * Transmission Control Protocol \n");
 	printf("    - Source Port     :  %d (%s) \n",

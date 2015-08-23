@@ -18,21 +18,21 @@
 
 
 pgen_dns::pgen_dns(){
-	CLEAR();
+	clear();
 }
 
 
 
 pgen_dns::pgen_dns(const bit8* packet, int len){
-	CLEAR();
-	CAST(packet, len);
+	clear();
+	cast(packet, len);
 }
 
 
 
 
-void pgen_dns::CLEAR(){
-	pgen_udp::CLEAR();
+void pgen_dns::clear(){
+	pgen_udp::clear();
 
 	DNS.id	   = 0x0000;
 	
@@ -59,8 +59,8 @@ void pgen_dns::CLEAR(){
 
 
 
-void pgen_dns::SEND(const char* ifname){
-	WRAP();		
+void pgen_dns::send(const char* ifname){
+	compile();		
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
@@ -73,14 +73,14 @@ void pgen_dns::SEND(const char* ifname){
 
 
 
-void pgen_dns::CAST(const bit8* packet, int len){
+void pgen_dns::cast(const bit8* packet, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "dns packet length not support (%d)\n", len);
 		return;
 	}
 	
 	
-	pgen_udp::CAST(packet, len);	
+	pgen_udp::cast(packet, len);	
 	
 
 	const bit8* dnsPoint = packet + sizeof(struct MYETH)
@@ -177,7 +177,7 @@ void pgen_dns::CAST(const bit8* packet, int len){
 
 
 
-void pgen_dns::WRAP(){
+void pgen_dns::compile(){
 	udp.dest = htons(53);
 	
 	char name[DNS.query.name.length()+2];
@@ -194,7 +194,7 @@ void pgen_dns::WRAP(){
 	udp.len = htons(ntohs(udp.len)+sizeof(struct MYDNS)+
 			sizeof(query)+sizeof(name))+answer_len;
 
-	pgen_udp::WRAP();
+	pgen_udp::compile();
 	
 	udp.len = htons(ntohs(udp.len)+sizeof(struct MYDNS)+
 			sizeof(query)+sizeof(name)+answer_len);
@@ -302,7 +302,7 @@ void pgen_dns::_wrap_answer(){
 
 // not coding now
 void pgen_dns::SUMMARY(){
-	WRAP();
+	compile();
 	if(dns.qr == 1){
   		printf("Query response 0x%04x %s %s\n", ntohs(dns.id), DNS.query.name.c_str(),
 				DNS.answer.addr.c_str());
@@ -316,7 +316,7 @@ void pgen_dns::SUMMARY(){
 
 
 void pgen_dns::DSUMMARY(){
-	WRAP();
+	compile();
 
 	printf("%s -> %s ", IP.src.c_str(), IP.dst.c_str());
 
@@ -331,9 +331,9 @@ void pgen_dns::DSUMMARY(){
 
 
 
-void pgen_dns::INFO(){
-	WRAP();
-	pgen_udp::INFO();
+void pgen_dns::info(){
+	compile();
+	pgen_udp::info();
 
 	printf(" * Domain Name System \n");
 	printf("    - Identification  : 0x%04x\n", ntohs(dns.id));

@@ -18,25 +18,25 @@
 #include <netinet/udp.h>		// for struct udp		
 
 pgen_udp::pgen_udp(){
-	CLEAR();
+	clear();
 }
 
 
 pgen_udp::pgen_udp(const bit8* packet, int len){
-	CLEAR();
-	CAST(packet, len);
+	clear();
+	cast(packet, len);
 }
 
 
-void pgen_udp::CLEAR(){
-	pgen_ip::CLEAR();
+void pgen_udp::clear(){
+	pgen_ip::clear();
 	UDP.src = 53;
 	UDP.dst = 53;
 }
 
 
-void pgen_udp::SEND(const char* ifname){
-	WRAP();		
+void pgen_udp::send(const char* ifname){
+	compile();		
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
@@ -50,9 +50,9 @@ void pgen_udp::SEND(const char* ifname){
 
 
 
-void pgen_udp::WRAP(){
+void pgen_udp::compile(){
 	IP.protocol = 17;
-	pgen_ip::WRAP();
+	pgen_ip::compile();
 	ip.tot_len = htons(sizeof(ip) + sizeof(udp));
 
 	memset(&udp, 0, sizeof udp);
@@ -73,14 +73,14 @@ void pgen_udp::WRAP(){
 
 
 
-void pgen_udp::CAST(const bit8* data, int len){
+void pgen_udp::cast(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "udp packet length not support (%d)\n", len);
 		return;
 	}
 	
 	
-	pgen_ip::CAST(data, len);
+	pgen_ip::cast(data, len);
 	
 
 
@@ -94,9 +94,9 @@ void pgen_udp::CAST(const bit8* data, int len){
 }
 
 
-void pgen_udp::INFO(){
-	WRAP();
-	pgen_ip::INFO();
+void pgen_udp::info(){
+	compile();
+	pgen_ip::info();
 
 	printf(" * User Datagram Protocol \n");
 	printf("    - Source Port     :  %d (%s)\n", 

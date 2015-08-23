@@ -38,7 +38,7 @@ void pgen_packet::_addData_WRAP(){
 
 
 bool pgen_packet::addData(const char* byte, int blen){
-	WRAP();
+	compile();
 	
 	if(len+blen > PGEN_PACKLEN){
 		fprintf(stderr, "addData: byte data is too long\n");
@@ -70,7 +70,7 @@ void debug(const char* str){
 
 
 char* pgen_packet::TOBYTE(){
-	WRAP();
+	compile();
 	char* p;
 	p = (char*)malloc(len);
 	memcpy(p, data, len);
@@ -80,7 +80,7 @@ char* pgen_packet::TOBYTE(){
 
 
 void pgen_packet::hex(){
-	WRAP();
+	compile();
 	
 	unsigned char buf[256];
 	memcpy(buf, data, len);
@@ -102,7 +102,7 @@ void pgen_packet::hex(){
 
 
 void pgen_packet::hexFull(){
-	WRAP();
+	compile();
 	unsigned char buf[256];
 	memcpy(buf, data, len);
 	

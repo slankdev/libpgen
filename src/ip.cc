@@ -20,21 +20,21 @@
 
 
 pgen_ip::pgen_ip(){
-	CLEAR();	
+	clear();	
 }
 
 
 
 pgen_ip::pgen_ip(const bit8* packet, int len){
-	CLEAR();	
-	CAST(packet, len);
+	clear();	
+	cast(packet, len);
 }
 
 
 
 
-void pgen_ip::CLEAR(){
-	pgen_eth::CLEAR();
+void pgen_ip::clear(){
+	pgen_eth::clear();
 	IP.src = 0;
 	IP.dst = "127.0.0.1";
 	IP.protocol = IPPROTO_IP;
@@ -46,8 +46,8 @@ void pgen_ip::CLEAR(){
 
 
 
-void pgen_ip::SEND(const char* ifname){
-	WRAP();		
+void pgen_ip::send(const char* ifname){
+	compile();		
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
@@ -60,8 +60,8 @@ void pgen_ip::SEND(const char* ifname){
 
 
 
-void pgen_ip::WRAP(){
-	pgen_eth::WRAP();
+void pgen_ip::compile(){
+	pgen_eth::compile();
 	eth.ether_type = htons(MT_ETHERTYPE_IP);
 	memset(data, 0, sizeof data);
 
@@ -89,14 +89,14 @@ void pgen_ip::WRAP(){
 
 
 
-void pgen_ip::CAST(const bit8* data, int len){
+void pgen_ip::cast(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "ip packet length not support (%d)\n", len);
 		return;
 	}
 	
 	
-	pgen_eth::CAST(data, len);
+	pgen_eth::cast(data, len);
 
 	struct MYIP buf;
 	memcpy(&buf, data+sizeof(struct MYETH), sizeof(buf));
@@ -113,7 +113,7 @@ void pgen_ip::CAST(const bit8* data, int len){
 
 
 void pgen_ip::SUMMARY(){
-	WRAP();
+	compile();
 
 	printf("IP %s(%s) -> %s(%s) \n", IP.src.c_str(), ETH.src.c_str(),
 			IP.dst.c_str(), ETH.dst.c_str());
@@ -121,9 +121,9 @@ void pgen_ip::SUMMARY(){
 
 
 
-void pgen_ip::INFO(){
-	WRAP();
-	pgen_eth::INFO();
+void pgen_ip::info(){
+	compile();
+	pgen_eth::info();
 	
 	std::map<int, const char*> _ipprot;
 	_ipprot[0]  = "Not Set. Empty IP Packet";

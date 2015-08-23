@@ -41,17 +41,17 @@ bool pgen_unknown::UDPportis(unsigned short port){
 
 
 pgen_unknown::pgen_unknown(){
-	CLEAR();
+	clear();
 }
 
 
 pgen_unknown::pgen_unknown(const bit8* packet, int len){
-	CLEAR();
-	CAST(packet, len);
+	clear();
+	cast(packet, len);
 }
 
 
-void pgen_unknown::CLEAR(){
+void pgen_unknown::clear(){
 	ETH.src = 0;
 	ETH.dst = 0;
 	IP.src = 0;
@@ -100,8 +100,8 @@ void pgen_unknown::SUMMARY(){
 }
 
 
-bool pgen_unknown::CAST(const bit8* packet, int len){
-	CLEAR();
+bool pgen_unknown::cast(const bit8* packet, int len){
+	clear();
 	if(!(14 < len && len < PGEN_PACKLEN)){
 		fprintf(stderr, "recv packet length is not support (len=%d)\n", len);
 		return false;

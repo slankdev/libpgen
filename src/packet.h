@@ -50,9 +50,9 @@ class pgen_unknown{
 
 		pgen_unknown();
 		pgen_unknown(const bit8*, int);
-		void CLEAR();
+		void clear();
 		void SUMMARY();
-		bool CAST(const bit8*, int);
+		bool cast(const bit8*, int);
 		bool isETH();
 		bool isARP();
 		bool isIP();
@@ -79,11 +79,11 @@ class pgen_packet{
 
 	public:
 		pgen_packet();
-		virtual void CLEAR()=0;
-		virtual void INFO()=0;	
-		virtual void WRAP()=0;
-		virtual void SEND(const char* ifname)=0;
-		virtual void CAST(const bit8*, const int)=0;
+		virtual void clear()=0;
+		virtual void info()=0;	
+		virtual void compile()=0;
+		virtual void send(const char* ifname)=0;
+		virtual void cast(const bit8*, const int)=0;
 		void hex();
 		void hexFull();
 		char* TOBYTE();
@@ -112,12 +112,12 @@ class pgen_eth : public pgen_packet {
 		
 		pgen_eth();
 		pgen_eth(const bit8*, int);
-		void CLEAR();
-		void INFO();
+		void clear();
+		void info();
 		void SUMMARY();
-		void WRAP();
-		void SEND(const char* ifname);
-		void CAST(const bit8*, const int len);
+		void compile();
+		void send(const char* ifname);
+		void cast(const bit8*, const int len);
 };
 
 
@@ -140,12 +140,12 @@ class pgen_arp : public pgen_eth {
 
 		pgen_arp();
 		pgen_arp(const bit8*, int);
-		void CLEAR();
-		void INFO();
-		void WRAP();
-		void SEND(const char* ifname);
+		void clear();
+		void info();
+		void compile();
+		void send(const char* ifname);
 		void SUMMARY();
-		void CAST(const bit8*, const int len);
+		void cast(const bit8*, const int len);
 };
 
 
@@ -171,12 +171,12 @@ class pgen_ip : public pgen_eth {
 
 		pgen_ip();
 		pgen_ip(const bit8*, int);
-		void CLEAR();
-		void INFO();
+		void clear();
+		void info();
 		void SUMMARY();
-		void WRAP();
-		void SEND(const char* ifname);
-		void CAST(const bit8*, const int len);
+		void compile();
+		void send(const char* ifname);
+		void cast(const bit8*, const int len);
 };
 
 
@@ -199,12 +199,12 @@ class pgen_icmp : public pgen_ip {
 		
 		pgen_icmp();
 		pgen_icmp(const bit8*, int);
-		void CLEAR();
-		void INFO();
-		void WRAP();
-		void SEND(const char* ifname);
+		void clear();
+		void info();
+		void compile();
+		void send(const char* ifname);
 		void SUMMARY();
-		void CAST(const bit8*, const int len);
+		void cast(const bit8*, const int len);
 
  };
 
@@ -239,12 +239,12 @@ class pgen_tcp : public pgen_ip {
 
 		pgen_tcp();
 		pgen_tcp(const bit8*, int);
-		void CLEAR();
-		void INFO();
-		void WRAP();
-		void SEND(const char* ifname);
+		void clear();
+		void info();
+		void compile();
+		void send(const char* ifname);
 		void SUMMARY();
-		void CAST(const bit8*, const int len);
+		void cast(const bit8*, const int len);
 };
 
 
@@ -265,11 +265,11 @@ class pgen_udp : public pgen_ip {
 
 		pgen_udp();
 		pgen_udp(const bit8*, int);
-		void CLEAR();
-		void INFO();
-		void WRAP();
-		void SEND(const char* ifname);
-		void CAST(const bit8*, const int len);
+		void clear();
+		void info();
+		void compile();
+		void send(const char* ifname);
+		void cast(const bit8*, const int len);
 };
 
 
@@ -315,15 +315,15 @@ class pgen_dns :public pgen_udp {
 
 		pgen_dns();
 		pgen_dns(const bit8*, int);
-		void CLEAR();
-		void INFO();
+		void clear();
+		void info();
 		void SUMMARY();
 		void DSUMMARY();
-		void WRAP();
+		void compile();
 		void _wrap_query();
 		void _wrap_answer();
-		void SEND(const char* ifname);
-		void CAST(const bit8*, const int);
+		void send(const char* ifname);
+		void cast(const bit8*, const int);
 };
 
 
@@ -356,11 +356,11 @@ class pgen_ardrone : public pgen_udp {
 
 		pgen_ardrone();
 		pgen_ardrone(const bit8*, int);
-		void CLEAR();
-		void WRAP();
-		void SEND(const char* ifname);
-		void CAST(const bit8*, const int);
-		void INFO();
+		void clear();
+		void compile();
+		void send(const char* ifname);
+		void cast(const bit8*, const int);
+		void info();
 		void SUMMARY();
 		void _printdata();
 

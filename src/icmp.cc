@@ -19,18 +19,18 @@
 
 
 pgen_icmp::pgen_icmp(){
-	CLEAR();
+	clear();
 }
 
 
 pgen_icmp::pgen_icmp(const bit8* packet, int len){
-	CLEAR();
-	CAST(packet, len);
+	clear();
+	cast(packet, len);
 }
 
 
 
-void pgen_icmp::CLEAR(){
+void pgen_icmp::clear(){
 	ICMP.option = 8;
 	ICMP.code = 0;
 	ICMP.id = 1;
@@ -38,8 +38,8 @@ void pgen_icmp::CLEAR(){
 } 
 
 
-void pgen_icmp::SEND(const char* ifname){
-	WRAP();		
+void pgen_icmp::send(const char* ifname){
+	compile();		
 	
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof addr);
@@ -52,14 +52,14 @@ void pgen_icmp::SEND(const char* ifname){
 
 
 
-void pgen_icmp::CAST(const bit8* data, int len){
+void pgen_icmp::cast(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "icmp packet length not support (%d)\n", len);
 		return;
 	}
 	
 	
-	pgen_ip::CAST(data, len);
+	pgen_ip::cast(data, len);
 
 
 	struct MYICMP buf;
@@ -76,8 +76,8 @@ void pgen_icmp::CAST(const bit8* data, int len){
 
 
 
-void pgen_icmp::WRAP(){
-	pgen_ip::WRAP();
+void pgen_icmp::compile(){
+	pgen_ip::compile();
 	memset(data, 0, sizeof(data));
 	ip.protocol = MT_IPPROTO_ICMP;
 	ip.tot_len = htons(sizeof(ip) + sizeof(icmp)) ;
@@ -104,7 +104,7 @@ void pgen_icmp::WRAP(){
 
 
 void pgen_icmp::SUMMARY(){
-	INFO();
+	info();
 
 	if(ICMP.option == PGEN_ICMPOP_ECHO && ICMP.code == 0){
 		printf("Echo Request id=%d seq=%d ttl=%d \n", 
@@ -124,9 +124,9 @@ void pgen_icmp::SUMMARY(){
 }
 
 
-void pgen_icmp::INFO(){
-	WRAP();
-	pgen_ip::INFO();
+void pgen_icmp::info(){
+	compile();
+	pgen_ip::info();
 
 	std::map<int, const char*>  _icmpoption;
 	_icmpoption[0] = "Echo Reply";

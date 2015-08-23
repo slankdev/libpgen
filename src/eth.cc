@@ -19,17 +19,17 @@
 
 
 pgen_eth::pgen_eth(){
-	CLEAR();	
+	clear();	
 }
 
 
 pgen_eth::pgen_eth(const bit8* packet, int len){
-	CLEAR();
-	CAST(packet, len);
+	clear();
+	cast(packet, len);
 }
 
 
-void pgen_eth::CLEAR(){
+void pgen_eth::clear(){
 	ETH.src = 0;
 	ETH.dst = 0;
 	ETH.type = htons(0);
@@ -37,15 +37,15 @@ void pgen_eth::CLEAR(){
 
 
 
-void pgen_eth::SEND(const char* ifname){
-	WRAP();		
+void pgen_eth::send(const char* ifname){
+	compile();		
 	if(pgen_sendpacket_L2(ifname, data, len) < 0)
 		exit(-1);	
 }
 
 
 
-void pgen_eth::WRAP(){
+void pgen_eth::compile(){
 	memset(data, 0, sizeof data);
 	eth.ether_type = htons(ETH.type);;
 
@@ -65,7 +65,7 @@ void pgen_eth::WRAP(){
 
 
 
-void pgen_eth::CAST(const bit8* data, int len){
+void pgen_eth::cast(const bit8* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "eth packet length not support (%d)\n", len);
 		return;
@@ -84,15 +84,15 @@ void pgen_eth::CAST(const bit8* data, int len){
 
 
 
-void pgen_eth::SUMMARY(){
+void pgen_eth::summary(){
 	printf("Ethernet(0x%04x) %s -> %s \n", 
 			ETH.type, ETH.src.c_str(), ETH.dst.c_str());
 		
 }
 
 
-void pgen_eth::INFO(){
-	WRAP();
+void pgen_eth::info(){
+	compile();
 	std::map<int , const char*> _ethtype;
 	_ethtype[0x0800] = "IPv4";
 	_ethtype[0x0806] = "ARP";
