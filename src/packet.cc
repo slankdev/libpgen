@@ -1,56 +1,46 @@
+
 #include "packet.h"
 #include "pgen.h"
-#include "address.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
 
-#include <netinet/in.h>		/* for struct sockaddr_in */
-	
-u_char* pgen_packet::test(){
-	u_char* p = (u_char*)malloc(len);
-	memcpy(p, data, len);
-	return p;
-}
+
 
 
 pgen_packet::pgen_packet(){
 	len = 0;
-	additionalLen =0;
+	ext_data_len =0;
+	memset(data, 0, sizeof(data));
+	memset(ext_data, 0, sizeof(ext_data));
 }
 
 
 
 void pgen_packet::_addData_WRAP(){
-	if(additionalLen > 0){
-		memcpy(data+len, additionalData, additionalLen);
-		len += additionalLen;
+	if(ext_data_len > 0){
+		memcpy(data+len, ext_data, sizeof(ext_data));
+		len += ext_data_len;
 	}
 }
 
 
 
 
-bool pgen_packet::addData(const char* byte, int blen){
+bool pgen_packet::addData(const u_char* byte, int blen){
 	compile();
 	
-	if(len+blen > PGEN_PACKLEN){
+	if(len+blen > PGEN_MAX_PACKET_LEN){
 		fprintf(stderr, "addData: byte data is too long\n");
 		return false;
 	}
-	if(blen > PGEN_ADDDATALEN){
+	if(blen > PGEN_MAX_EXT_DATA_LEN){
 		fprintf(stderr, "addData: byte data is too long\n");
 		return false;
 	}
 	
-	memcpy(additionalData, byte, blen);
-	additionalLen = blen;
+	memcpy(ext_data, byte, blen);
+	ext_data_len = blen;
 	
 	return true;	
 }
@@ -59,74 +49,42 @@ bool pgen_packet::addData(const char* byte, int blen){
 
 
 
-void debug(){
-	printf("%s:%d \n", __FILE__, __LINE__);	
-}
-
-void debug(const char* str){
-	printf("%s:%d ", __FILE__, __LINE__);	
-	printf("message: %s\n", str);
-}
-
-
-char* pgen_packet::TOBYTE(){
-	compile();
-	char* p;
-	p = (char*)malloc(len);
-	memcpy(p, data, len);
-	return p;
-}
-
-
 
 void pgen_packet::hex(){
 	compile();
-	
-	unsigned char buf[256];
-	memcpy(buf, data, len);
+	printf("hexdump len: %d \n", len);
 
-	printf("\nHexDump len: %d\n", len);
-	for(int address=0; address<len; address+=0x10){
-		printf("%08x     ", address);
-		for(int addr=address, i=0; i<0x10; i++, addr++){
-			if(addr%8==0 && addr%16!=0)	printf(" ");
-			if(address+i > len)
+	int row=0;
+	int column=0;
+	for(row=0; (row+column)<16+len; row+=16){
+		for(column=0; column<=15; column++){
+			if(!(row+column < len)){
 				printf("   ");
-			else{
-				printf("%02x ", buf[addr] & 0xff);
+			}else{
+				if((row+column)%16 == 0) printf("%04x:    ", row+column);
+				if((row+column)%8  == 0 && (row+column)%16 != 0) printf(" ");
+				printf("%02x ", data[row+column]);
 			}
 		}
-		printf("\n");
-	}printf("\n");
-}
 
-
-void pgen_packet::hexFull(){
-	compile();
-	unsigned char buf[256];
-	memcpy(buf, data, len);
-	
-	printf("\nHexDump len: %d\n", len);
-	for(int address=0; address<len; address+=0x10){
-		printf("%08x     ", address);
-		for(int addr=address, i=0; i<0x10; i++, addr++){
-			if(addr%8==0 && addr%16!=0)	printf(" ");
-			if(address+i > len)
-				printf("   ");
-			else
-				printf("%02x ", buf[addr] & 0xff);
-		}
-		printf("   ");
-		for(int addr=address, i=0; i<0x10; i++, addr++){
-			if(addr%0X08==0 && addr%0x10!=0)	printf(" ");
-			if(address+i > len)
+		for(column=0; column<=15; column++){
+			if(!(row+column < len)){
 				printf(" ");
-			else{
-				if(buf[addr] < 0x20 || 0x7e < buf[addr])
-					buf[addr] = '.';
-				printf("%c", buf[addr]);
+			}else{
+				if((row+column)%16 == 0) 
+					printf("  ");
+				if((row+column)%8 == 0 && (row+column)%16!=0) 
+					printf("  ");
+				
+				if(0x20<=data[row+column] && data[row+column]<=0x7E)
+					printf("%c", data[row+column]);
+				else
+					printf(".");
+				
+				if((row+column+1)%16 == 0)	
+					printf("\n");
 			}
-		}printf("\n");
-	}printf("\n");
+		}
+	}
+	printf("\n");
 }
-

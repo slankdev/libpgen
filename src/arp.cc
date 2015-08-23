@@ -24,7 +24,7 @@ pgen_arp::pgen_arp(){
 
 
 
-pgen_arp::pgen_arp(const bit8* packet, int len){
+pgen_arp::pgen_arp(const u_char* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -37,7 +37,7 @@ void pgen_arp::clear(){
 	ARP.dstIp = 0;
 	ARP.srcEth = 0;
 	ARP.dstEth = 0;
-	ARP.operation = PGEN_ARPOP_REQEST;
+	ARP.operation = 1; // arp request
 }   
 
 
@@ -81,7 +81,7 @@ void pgen_arp::compile(){
 
 
 
-void pgen_arp::cast(const bit8* data, int len){
+void pgen_arp::cast(const u_char* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "arp packet length not support (%d)\n", len);
 		return;
@@ -119,7 +119,7 @@ void pgen_arp::cast(const bit8* data, int len){
 
 
 
-void pgen_arp::SUMMARY(){
+void pgen_arp::summary(){
 	if(ARP.operation == 1){
 		printf("who has %s tell %s \n", ARP.dstIp.c_str(), ARP.srcEth.c_str());
 	}else if(ARP.operation == 2){
@@ -143,7 +143,7 @@ void pgen_arp::info(){
 
 	printf(" * Address Resolution Protocol \n");
 	printf("    - Opcode          :  %s (%d) \n", 
-			_arpopcode[ntohs(arp.arp_op)], ntohs(arp.arp_op));
+			_arpopcode[ARP.operation], ARP.operation);
 	printf("    - Sender Mac      :  %s (%s) \n", 
 			ARP.srcEth.c_str(), ARP.srcEth.bender());
 	printf("    - Sender IP       :  %s  \n", 

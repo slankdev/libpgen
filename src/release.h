@@ -3,8 +3,6 @@
 
 
 
-
-
 class libpgen{
 	static const char* version = "0.01";
 	static const char* name = "libpgen";

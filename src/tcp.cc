@@ -16,13 +16,15 @@
 #include <sys/socket.h>
 #include <netinet/tcp.h>		// for struct tcp		
 
+
+
 pgen_tcp::pgen_tcp(){
 	clear();
 }
 
 
 
-pgen_tcp::pgen_tcp(const bit8* packet, int len){
+pgen_tcp::pgen_tcp(const u_char* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -104,7 +106,7 @@ void pgen_tcp::compile(){
 
 
 
-void pgen_tcp::cast(const bit8* data, int len){
+void pgen_tcp::cast(const u_char* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "tcp packet length not support (%d)\n", len);
 		return;
@@ -133,13 +135,9 @@ void pgen_tcp::cast(const bit8* data, int len){
 
 
 
-void pgen_tcp::SUMMARY(){
-	int seq = tcp.seq;
-	int win = tcp.window;
+void pgen_tcp::summary(){
+	compile();
 	int len = tcp.doff;
-	int sport = ntohs(tcp.source);
-	int dport = ntohs(tcp.dest);
-	
 	std::string flag;
 	if(tcp.fin == 1)	flag+= "FIN";
 	if(tcp.syn == 1)	flag+= "SYN";
@@ -147,12 +145,9 @@ void pgen_tcp::SUMMARY(){
 	if(tcp.psh == 1)	flag+= "PSH";
 	if(tcp.ack == 1)	flag+= "ACK";
 	if(tcp.urg == 1)	flag+= "URG";
-
-
-
 	
 	printf("%d > %d [%s] seq=%d win=%d len=%d\n",
-			sport, dport, flag.c_str(), seq, win, len);
+			TCP.src, TCP.dst, flag.c_str(), TCP.seq, TCP.window, len);
 }
 
 void pgen_tcp::info(){
@@ -161,9 +156,9 @@ void pgen_tcp::info(){
 
 	printf(" * Transmission Control Protocol \n");
 	printf("    - Source Port     :  %d (%s) \n",
-			ntohs(tcp.source), pgen_port2service(ntohs(tcp.source), 1));
+			TCP.src, pgen_port2service(TCP.src, 1));
 	printf("    - Dest Port       :  %d (%s) \n", 
-			ntohs(tcp.dest), pgen_port2service(ntohs(tcp.dest), 1));
+			TCP.dst, pgen_port2service(TCP.dst, 1));
 	printf("    - Frags           :  ");
 	if(tcp.fin == 1)	printf("F");
 	if(tcp.syn == 1)	printf("S");
@@ -172,10 +167,10 @@ void pgen_tcp::info(){
 	if(tcp.ack == 1)	printf("A");
 	if(tcp.urg == 1)	printf("U");
 	printf("\n");
-	printf("    - Window size     :  %d \n", ntohs(tcp.window));
+	printf("    - Window size     :  %d \n", TCP.window);
 	printf("    - Checksum        :  0x%04x \n", ntohs(tcp.check));
-	printf("    - sequence        :  %u \n", ntohl(tcp.seq));
-	printf("    - acknowledge     :  %u \n", ntohl(tcp.ack_seq));
+	printf("    - sequence        :  %u \n", TCP.seq);
+	printf("    - acknowledge     :  %u \n", TCP.ack);
 
 }
 

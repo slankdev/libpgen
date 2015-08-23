@@ -22,7 +22,7 @@ pgen_udp::pgen_udp(){
 }
 
 
-pgen_udp::pgen_udp(const bit8* packet, int len){
+pgen_udp::pgen_udp(const u_char* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -73,7 +73,7 @@ void pgen_udp::compile(){
 
 
 
-void pgen_udp::cast(const bit8* data, int len){
+void pgen_udp::cast(const u_char* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "udp packet length not support (%d)\n", len);
 		return;
@@ -94,17 +94,23 @@ void pgen_udp::cast(const bit8* data, int len){
 }
 
 
+
+void pgen_udp::summary(){
+	printf("UDP(%d -> %d) \n", UDP.src, UDP.dst);
+}
+
+
+
 void pgen_udp::info(){
 	compile();
 	pgen_ip::info();
 
 	printf(" * User Datagram Protocol \n");
 	printf("    - Source Port     :  %d (%s)\n", 
-			ntohs(udp.source), pgen_port2service(ntohs(udp.source), 2));
+			ntohs(UDP.src), pgen_port2service(UDP.src, 2));
 	printf("    - Destination Port:  %d (%s)\n", 
-			ntohs(udp.dest), pgen_port2service(ntohs(udp.dest), 2));
+			ntohs(UDP.dst), pgen_port2service(UDP.dst, 2));
 }
-
 
 
 

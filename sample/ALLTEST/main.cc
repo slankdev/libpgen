@@ -22,14 +22,14 @@ int main(int argc, char** argv){
 	macsrc.setmacbydev(dev);
 	ipsrc.setipbydev(dev);
 
-	test_eth();
-    test_arp();
-    test_ip();
-    test_icmp();
+	//test_eth();
+    //test_arp();
+    //test_ip();
+    //test_icmp();
     test_tcp();
-    test_udp();
-    test_dns();
-    test_ardrone();
+    //test_udp();
+    //test_dns();
+    //test_ardrone();
 }
 
 
@@ -41,7 +41,7 @@ void test_eth(){
 	p.ETH.dst = macdst;
 	p.ETH.type = 0;
 		
-	p.SEND(dev);
+	p.send(dev);
 }
 void test_arp(){
 	pgen_arp p;
@@ -54,7 +54,7 @@ void test_arp(){
 	p.ARP.dstIp  = ipdst;
 	p.ARP.operation = PGEN_ARPOP_REQEST;
 		
-	p.SEND(dev);
+	p.send(dev);
 }
 void test_ip(){
 	pgen_ip p;
@@ -62,7 +62,7 @@ void test_ip(){
 	p.IP.src = ipsrc;
 	p.IP.dst = ipdst;
 	
-	p.SEND(dev);
+	p.send(dev);
 }
 void test_icmp(){
 	pgen_icmp p;
@@ -72,7 +72,7 @@ void test_icmp(){
 	p.ICMP.option = PGEN_ICMPOP_ECHO;
 	p.ICMP.code   = PGEN_ICMPCODE_NET_UNREACH;
 	
-	p.SEND(dev);
+	p.send(dev);
 }
 void test_tcp(){
 	pgen_tcp p;
@@ -83,7 +83,8 @@ void test_tcp(){
 	p.TCP.dst = portdst;
 	p.TCP.flags.syn = 1;
 
-	p.SEND(dev);
+	p.send(dev);
+	p.info();
 }
 void test_udp(){
 	pgen_udp p;
@@ -93,7 +94,7 @@ void test_udp(){
 	p.UDP.src = portsrc;
 	p.UDP.dst = portdst;
 
-	p.SEND(dev);
+	p.send(dev);
 }
 void test_dns(){
 	pgen_dns p;
@@ -108,7 +109,7 @@ void test_dns(){
 	p.DNS.ancnt = 1;
 	p.DNS.query.name  = "slankdev.net";
 
-	p.SEND(dev);
+	p.send(dev);
 }
 void test_ardrone(){
 	pgen_ardrone p;
@@ -129,5 +130,5 @@ void test_ardrone(){
 	p.ARDRONE.ref.seq = 0;
 	p.ARDRONE.ref.command = 0;
 
-	p.SEND(dev);
+	p.send(dev);
 }

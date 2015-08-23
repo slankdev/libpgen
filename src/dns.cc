@@ -23,7 +23,7 @@ pgen_dns::pgen_dns(){
 
 
 
-pgen_dns::pgen_dns(const bit8* packet, int len){
+pgen_dns::pgen_dns(const u_char* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -52,6 +52,13 @@ void pgen_dns::clear(){
 	DNS.query.name  = "example.com";
 	DNS.query.type  = 0x0001;
 	DNS.query.cls   = 0x0001;
+
+	DNS.answer.name = 0;
+	DNS.answer.type = 0;
+	DNS.answer.cls  = 0;
+	DNS.answer.ttl  = 0;
+	DNS.answer.len  = 0;
+	DNS.answer.addr = 0;
 }
 
 
@@ -73,7 +80,7 @@ void pgen_dns::send(const char* ifname){
 
 
 
-void pgen_dns::cast(const bit8* packet, int len){
+void pgen_dns::cast(const u_char* packet, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "dns packet length not support (%d)\n", len);
 		return;
@@ -301,7 +308,7 @@ void pgen_dns::_wrap_answer(){
 
 
 // not coding now
-void pgen_dns::SUMMARY(){
+void pgen_dns::summary(){
 	compile();
 	if(dns.qr == 1){
   		printf("Query response 0x%04x %s %s\n", ntohs(dns.id), DNS.query.name.c_str(),

@@ -23,7 +23,7 @@ pgen_eth::pgen_eth(){
 }
 
 
-pgen_eth::pgen_eth(const bit8* packet, int len){
+pgen_eth::pgen_eth(const u_char* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -106,7 +106,7 @@ void pgen_eth::info(){
 	printf("    - Source          :  %s (%s)   \n" , 
 			ETH.src.c_str(), ETH.src.bender());
 	printf("    - Type            :  %s  (0x%04x)   \n", 
-			_ethtype[htons(eth.ether_type)] ,htons(eth.ether_type));
+			_ethtype[ETH.type] ,ETH.type);
 }
 
 

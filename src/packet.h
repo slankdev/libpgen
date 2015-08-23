@@ -17,93 +17,46 @@
 #include <string>
 #include <iostream>
 
-#define PGEN_PACKLEN 16384
-#define PGEN_ADDDATALEN 1000
 
-
-class pgen_unknown{
-	protected:
-		bool _isETH;
-		bool _isARP;
-		bool _isIP;
-		bool _isICMP;
-		bool _isTCP;
-		bool _isUDP;
-		int len;
-	public:
-		struct{
-			macaddr src;
-			macaddr dst;
-		}ETH;
-		struct{
-			ipaddr src;
-			ipaddr dst;
-		}IP;
-		struct{
-			bit16 src;
-			bit16 dst;
-		}TCP;
-		struct{
-			bit16 src;
-			bit16 dst;
-		}UDP;
-
-		pgen_unknown();
-		pgen_unknown(const bit8*, int);
-		void clear();
-		void SUMMARY();
-		bool cast(const bit8*, int);
-		bool isETH();
-		bool isARP();
-		bool isIP();
-		bool isICMP();
-		bool isTCP();
-		bool isUDP();
-
-		bool IPaddris(ipaddr addr);
-		bool MACaddris(macaddr addr);
-		bool TCPportis(unsigned short port);
-		bool UDPportis(unsigned short port);
-};
-
-
+#define PGEN_MAX_PACKET_LEN 10000
+#define PGEN_MAX_EXT_DATA_LEN 1000
 
 
 
 class pgen_packet{
-	protected:
-		int 	len;
-		int 	additionalLen;
-		u_char 	data[PGEN_PACKLEN];
-		u_char  additionalData[PGEN_ADDDATALEN];
-
 	public:
+		int 	len;
+		int 	ext_data_len;
+		u_char 	data[PGEN_MAX_PACKET_LEN];
+		u_char  ext_data[PGEN_MAX_EXT_DATA_LEN];
+		
 		pgen_packet();
 		virtual void clear()=0;
 		virtual void info()=0;	
+		virtual void summary()=0;
 		virtual void compile()=0;
 		virtual void send(const char* ifname)=0;
-		virtual void cast(const bit8*, const int)=0;
+		virtual void cast(const u_char*, const int)=0;
+	
 		void hex();
-		void hexFull();
-		char* TOBYTE();
-		bool addData(const char* , int );
-		int length(){  return len;	}
+
+		void compile_addData();
+		
+		
+		bool addData(const u_char* , int );
 		void _addData_WRAP();
-		u_char* test();
 };
 
 
 
 
 
-//#include <net/ethernet.h> 		/* for struct ether_header */
 class pgen_eth : public pgen_packet {
 	protected:
 		struct MYETH eth; 
 	public:
 		static const int minLen = sizeof(struct MYETH);
-		static const int maxLen = PGEN_PACKLEN;
+		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int type;
 			macaddr src;
@@ -111,25 +64,24 @@ class pgen_eth : public pgen_packet {
 		}ETH;
 		
 		pgen_eth();
-		pgen_eth(const bit8*, int);
+		pgen_eth(const u_char*, int);
 		void clear();
 		void info();
-		void SUMMARY();
+		void summary();
 		void compile();
 		void send(const char* ifname);
-		void cast(const bit8*, const int len);
+		void cast(const u_char*, const int len);
 };
 
 
 
 
-//#include <netinet/if_ether.h>	/* for struct ether_arp 	*/
 class pgen_arp : public pgen_eth {
 	protected:
 		struct MYARP arp;
 	public:
 		static const int minLen = pgen_eth::minLen+sizeof(struct MYARP);
-		static const int maxLen = PGEN_PACKLEN;
+		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int operation;
 			macaddr	srcEth;
@@ -139,24 +91,23 @@ class pgen_arp : public pgen_eth {
 		}ARP;
 
 		pgen_arp();
-		pgen_arp(const bit8*, int);
+		pgen_arp(const u_char*, int);
 		void clear();
 		void info();
 		void compile();
 		void send(const char* ifname);
-		void SUMMARY();
-		void cast(const bit8*, const int len);
+		void summary();
+		void cast(const u_char*, const int len);
 };
 
 
 
-//#include <netinet/ip.h>			/* for struct iphdr			*/
 class pgen_ip : public pgen_eth {
 	protected:
 		struct MYIP		ip;
 	public:
 		static const int minLen = pgen_eth::minLen+sizeof(struct MYIP);
-		static const int maxLen = PGEN_PACKLEN;
+		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			bit8  tos;
 			bit16 tot_len;
@@ -170,26 +121,24 @@ class pgen_ip : public pgen_eth {
 
 
 		pgen_ip();
-		pgen_ip(const bit8*, int);
+		pgen_ip(const u_char*, int);
 		void clear();
 		void info();
-		void SUMMARY();
+		void summary();
 		void compile();
 		void send(const char* ifname);
-		void cast(const bit8*, const int len);
+		void cast(const u_char*, const int len);
 };
 
 
 
 
-//#include <netinet/ip_icmp.h>	/* for struct icmp			*/
 class pgen_icmp : public pgen_ip {
 	protected:
 		struct MYICMP icmp;
-		u_char _data[100]; // no use yet
 	public:
 		static const int minLen = sizeof(struct MYICMP);
-		static const int maxLen = PGEN_PACKLEN;//??
+		static const int maxLen = PGEN_MAX_PACKET_LEN;//??
 		struct{	
 			int option;
 			int code;
@@ -198,13 +147,13 @@ class pgen_icmp : public pgen_ip {
 		}ICMP;
 		
 		pgen_icmp();
-		pgen_icmp(const bit8*, int);
+		pgen_icmp(const u_char*, int);
 		void clear();
 		void info();
 		void compile();
 		void send(const char* ifname);
-		void SUMMARY();
-		void cast(const bit8*, const int len);
+		void summary();
+		void cast(const u_char*, const int len);
 
  };
 
@@ -213,14 +162,12 @@ class pgen_icmp : public pgen_ip {
 
 
 
-//#include <netinet/tcp.h>		// for struct tcp		
 class pgen_tcp : public pgen_ip {
 	protected:
 		struct MYTCP tcp;
-		u_char _data[100]; // no use yet
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct MYTCP);
-		static const int maxLen = PGEN_PACKLEN;//??
+		static const int maxLen = PGEN_MAX_PACKET_LEN;//??
 		struct{
 			int src;
 			int dst;
@@ -238,39 +185,40 @@ class pgen_tcp : public pgen_ip {
 		}TCP;
 
 		pgen_tcp();
-		pgen_tcp(const bit8*, int);
+		pgen_tcp(const u_char*, int);
 		void clear();
 		void info();
 		void compile();
 		void send(const char* ifname);
-		void SUMMARY();
-		void cast(const bit8*, const int len);
+		void summary();
+		void cast(const u_char*, const int len);
 };
 
 
 
 
-//#include <netinet/udp.h>		// for struct udp		
 class pgen_udp : public pgen_ip {
 	protected:
 		struct MYUDP udp;
-		u_char _data[100]; // no use yet
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct MYUDP);
-		static const int maxLen = PGEN_PACKLEN;//??
+		static const int maxLen = PGEN_MAX_PACKET_LEN;//??
 		struct{
 			int src;
 			int dst;
 		}UDP;
 
 		pgen_udp();
-		pgen_udp(const bit8*, int);
+		pgen_udp(const u_char*, int);
 		void clear();
 		void info();
+		void summary();
 		void compile();
 		void send(const char* ifname);
-		void cast(const bit8*, const int len);
+		void cast(const u_char*, const int len);
 };
+
+
 
 
 
@@ -281,7 +229,7 @@ class pgen_dns :public pgen_udp {
 		bit32 answer_len;
 	public:
 		static const int minLen = pgen_udp::minLen+sizeof(struct MYETH);
-		static const int maxLen = PGEN_PACKLEN; //wakanne
+		static const int maxLen = PGEN_MAX_PACKET_LEN; //wakanne
 		struct{
 			u_int16_t id;
 			struct{
@@ -314,16 +262,17 @@ class pgen_dns :public pgen_udp {
 		}DNS;
 
 		pgen_dns();
-		pgen_dns(const bit8*, int);
+		pgen_dns(const u_char*, int);
 		void clear();
 		void info();
-		void SUMMARY();
-		void DSUMMARY();
+		void summary();
 		void compile();
+		void send(const char* ifname);
+		void cast(const u_char*, const int);
+		
 		void _wrap_query();
 		void _wrap_answer();
-		void send(const char* ifname);
-		void cast(const bit8*, const int);
+		void DSUMMARY();
 };
 
 
@@ -334,7 +283,7 @@ class pgen_ardrone : public pgen_udp {
 		int   clen;
 	public:
 		static const int minLength = pgen_udp::minLen+39;
-		static const int macLength = PGEN_PACKLEN; //???
+		static const int macLength = PGEN_MAX_PACKET_LEN; //???
 		struct{
 			struct{
 				long seq;
@@ -355,18 +304,63 @@ class pgen_ardrone : public pgen_udp {
 		}ARDRONE;
 
 		pgen_ardrone();
-		pgen_ardrone(const bit8*, int);
+		pgen_ardrone(const u_char*, int);
 		void clear();
 		void compile();
-		void send(const char* ifname);
-		void cast(const bit8*, const int);
 		void info();
-		void SUMMARY();
-		void _printdata();
+		void summary();
+		void send(const char* ifname);
+		void cast(const u_char*, const int);
 
 		void DSUMMARY();
+		void _printdata();
 };
 
+
+
+
+
+
+
+class pgen_unknown{
+	public:
+		int len;
+		
+		bool isETH;
+		bool isARP;
+		bool isIP;
+		bool isICMP;
+		bool isTCP;
+		bool isUDP;
+		
+		struct{
+			macaddr src;
+			macaddr dst;
+		}ETH;
+		struct{
+			ipaddr src;
+			ipaddr dst;
+		}IP;
+		struct{
+			bit16 src;
+			bit16 dst;
+		}TCP;
+		struct{
+			bit16 src;
+			bit16 dst;
+		}UDP;
+
+		pgen_unknown();
+		pgen_unknown(const u_char*, int);
+		void clear();
+		void summary();
+		bool cast(const u_char*, int);
+
+		bool IPaddris(ipaddr addr);
+		bool MACaddris(macaddr addr);
+		bool TCPportis(unsigned short port);
+		bool UDPportis(unsigned short port);
+};
 
 
 

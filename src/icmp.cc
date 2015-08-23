@@ -23,7 +23,7 @@ pgen_icmp::pgen_icmp(){
 }
 
 
-pgen_icmp::pgen_icmp(const bit8* packet, int len){
+pgen_icmp::pgen_icmp(const u_char* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -33,8 +33,8 @@ pgen_icmp::pgen_icmp(const bit8* packet, int len){
 void pgen_icmp::clear(){
 	ICMP.option = 8;
 	ICMP.code = 0;
-	ICMP.id = 1;
-	ICMP.seq = 1;
+	ICMP.id = 0;
+	ICMP.seq = 0;
 } 
 
 
@@ -103,21 +103,15 @@ void pgen_icmp::compile(){
 
 
 
-void pgen_icmp::SUMMARY(){
+void pgen_icmp::summary(){
 	info();
 
 	if(ICMP.option == PGEN_ICMPOP_ECHO && ICMP.code == 0){
 		printf("Echo Request id=%d seq=%d ttl=%d \n", 
-				ntohs(icmp.icmp_hun.ih_idseq.icd_id),
-				ntohs(icmp.icmp_hun.ih_idseq.icd_seq),
-				ip.ttl
-				);
+				ICMP.id, ICMP.seq, IP.ttl );
 	}else if(ICMP.option == PGEN_ICMPOP_ECHOREPLY && ICMP.code == 0){
 		printf("Echo Relay   id=%d seq=%d ttl=%d\n", 
-				ntohs(icmp.icmp_hun.ih_idseq.icd_id),
-				ntohs(icmp.icmp_hun.ih_idseq.icd_seq),
-				ip.ttl
-			  );
+				ICMP.id, ICMP.seq, IP.ttl );
 	}else{
 		printf("other icmp type\n");	
 	}
@@ -140,10 +134,10 @@ void pgen_icmp::info(){
 	_icmpcode[255]  = "Not Set";
 
 	printf(" * Internet Control Message Protocol \n");
-	printf("    - Type            :  %s (%d)\n", 
-			_icmpoption[icmp.icmp_type] , icmp.icmp_type);
+	printf("    - Option          :  %s (%d)\n", 
+			_icmpoption[ICMP.option] , ICMP.option);
 	printf("    - Code            :  %s (%d)\n",  
-			_icmpcode[icmp.icmp_code], icmp.icmp_code);
+			_icmpcode[ICMP.code], ICMP.code);
 	printf("    - id(BE/LE)       :  %d/%d \n", 
 			htons(icmp.icmp_hun.ih_idseq.icd_seq), icmp.icmp_hun.ih_idseq.icd_id);
 	printf("    - seq num(BE/LE)  :  %d/%d \n", 

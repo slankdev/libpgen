@@ -25,7 +25,7 @@ pgen_ip::pgen_ip(){
 
 
 
-pgen_ip::pgen_ip(const bit8* packet, int len){
+pgen_ip::pgen_ip(const u_char* packet, int len){
 	clear();	
 	cast(packet, len);
 }
@@ -35,13 +35,14 @@ pgen_ip::pgen_ip(const bit8* packet, int len){
 
 void pgen_ip::clear(){
 	pgen_eth::clear();
+	IP.tos = 0;
+	IP.tot_len = 0;
+	IP.id = 1;
+	IP.frag_off = 0;
+	IP.ttl = 64;
+	IP.protocol = IPPROTO_IP;
 	IP.src = 0;
 	IP.dst = "127.0.0.1";
-	IP.protocol = IPPROTO_IP;
-	IP.tos = 0;
-	IP.frag_off = 0;
-	IP.id = 1;
-	IP.ttl = 64;
 }
 
 
@@ -112,9 +113,8 @@ void pgen_ip::cast(const bit8* data, int len){
 }
 
 
-void pgen_ip::SUMMARY(){
+void pgen_ip::summary(){
 	compile();
-
 	printf("IP %s(%s) -> %s(%s) \n", IP.src.c_str(), ETH.src.c_str(),
 			IP.dst.c_str(), ETH.dst.c_str());
 }
@@ -138,8 +138,8 @@ void pgen_ip::info(){
 	printf("    - Source          :  %s \n", IP.src.c_str());
 	printf("    - Destination     :  %s \n", IP.dst.c_str());
 	printf("    - Protocol        :  %s (%u) \n", 
-			_ipprot[ip.protocol],  ip.protocol);
-	printf("    - Time to Leave   :  %d \n", ip.ttl);
-	printf("    - Total Length    :  %d \n", ntohs(ip.tot_len));
-	printf("    - Identification  :  %d \n", htons(ip.id));
+			_ipprot[IP.protocol],  IP.protocol);
+	printf("    - Time to Leave   :  %d \n", IP.ttl);
+	printf("    - Total Length    :  %d \n", IP.tot_len);
+	printf("    - Identification  :  %d \n", IP.id);
 }

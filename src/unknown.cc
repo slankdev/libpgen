@@ -7,32 +7,34 @@
 #include "netutil.h"
 
 #include "debug.h"
+
+
 #define PACKET_MINLEN 14
 
 
 
 bool pgen_unknown::IPaddris(ipaddr addr){
-	if(!isIP()) return false;
+	if(!isIP) return false;
 	printf("ipaddr is %s ", addr.c_str());
-	SUMMARY();
+	summary();
 	return (addr==IP.src || addr==IP.dst);
 }
 bool pgen_unknown::MACaddris(macaddr addr){
-	if(!isETH()) return false;
+	if(!isETH) return false;
 	printf("macaddr is %s ", addr.c_str());
-	SUMMARY();
+	summary();
 	return (addr==ETH.src || addr==ETH.dst);
 }
 bool pgen_unknown::TCPportis(unsigned short port){
-	if(!isTCP()) return false;
+	if(!isTCP) return false;
 	printf("tcp port is %d ", port);
-	SUMMARY();
+	summary();
 	return (port==TCP.src || port==TCP.dst);	
 }
 bool pgen_unknown::UDPportis(unsigned short port){
-	if(!isUDP()) return false;
+	if(!isUDP) return false;
 	printf("udp port is %d ", port);
-	SUMMARY();
+	summary();
 	return (port==UDP.src || port==UDP.dst);	
 }
 
@@ -60,39 +62,39 @@ void pgen_unknown::clear(){
 	TCP.dst = 0;
 	UDP.src = 0;
 	UDP.dst = 0;
-	_isETH = false;
-	_isARP = false;
-	_isIP  = false;
-	_isICMP= false;
-	_isTCP = false;
-	_isUDP = false;
+	isETH = false;
+	isARP = false;
+	isIP  = false;
+	isICMP= false;
+	isTCP = false;
+	isUDP = false;
 }
 
 
 
 
 
-void pgen_unknown::SUMMARY(){
+void pgen_unknown::summary(){
 	printf("unknown(packet=[");
-	if(isTCP()) printf("TCP|");
-	if(isUDP()) printf("UDP|");
-	if(isICMP()) printf("ICMP|");
-	if(isIP()) printf("IP|");
-	if(isARP()) printf("ARP|");
-	if(isETH()) printf("ETH]  ");
+	if(isTCP) printf("TCP|");
+	if(isUDP) printf("UDP|");
+	if(isICMP) printf("ICMP|");
+	if(isIP) printf("IP|");
+	if(isARP) printf("ARP|");
+	if(isETH) printf("ETH]  ");
 
 
-	if(isTCP())			
+	if(isTCP)			
 		printf("%s:%d > %s:%d", IP.src.c_str(), TCP.src, IP.dst.c_str(), TCP.dst);
-	else if(isUDP())	
+	else if(isUDP)	
 		printf("%s:%d > %s:%d", IP.src.c_str(), UDP.src, IP.dst.c_str(), UDP.dst);
-	else if(isICMP())	
+	else if(isICMP)	
 		printf("%s > %s", IP.src.c_str(), IP.dst.c_str());
-	else if(isIP())		
+	else if(isIP)		
 		printf("%s > %s", IP.src.c_str(), IP.dst.c_str()); 
-	else if(isARP())	
+	else if(isARP)	
 		printf("%s > %s", ETH.src.c_str(), ETH.dst.c_str()); 
-	else if(isETH())	
+	else if(isETH)	
 		printf("%s > %s", ETH.src.c_str(), ETH.dst.c_str());
 	else			
 		printf("no support");
@@ -102,7 +104,7 @@ void pgen_unknown::SUMMARY(){
 
 bool pgen_unknown::cast(const bit8* packet, int len){
 	clear();
-	if(!(14 < len && len < PGEN_PACKLEN)){
+	if(!(14 < len && len < PGEN_MAX_PACKET_LEN)){
 		fprintf(stderr, "recv packet length is not support (len=%d)\n", len);
 		return false;
 	}
@@ -116,33 +118,33 @@ bool pgen_unknown::cast(const bit8* packet, int len){
 	struct MYUDP*  udp;
 		
 	const bit8* p = packet;
-	_isETH = true;
+	isETH = true;
 	eth = (struct MYETH*)p;
 	p += sizeof(struct MYETH);
 	ETH.src.setmacbyarry(eth->ether_shost);
 	ETH.dst.setmacbyarry(eth->ether_dhost);
 
 	if(ntohs(eth->ether_type) == MT_ETHERTYPE_IP){
-		_isIP = true;
+		isIP = true;
 		ip = (struct MYIP*)p;
 		p += sizeof(struct MYIP);
 		IP.src._addr = ip->saddr;
 		IP.dst._addr = ip->daddr;
 
 		if(ip->protocol == MT_IPPROTO_ICMP){
-			_isICMP = true;
+			isICMP = true;
 			icmp = (struct MYICMP*)p;
 			p += sizeof(struct MYICMP);
 		}
 		else if(ip->protocol == MT_IPPROTO_TCP){
-			_isTCP = true;
+			isTCP = true;
 			tcp = (struct MYTCP*)p;
 			p += sizeof(struct MYTCP);
 			TCP.src = ntohs(tcp->source);
 			TCP.dst = ntohs(tcp->dest);
 		}
 		else if(ip->protocol == MT_IPPROTO_UDP){
-			_isUDP = true;
+			isUDP = true;
 			udp = (struct MYUDP*)p;
 			p += sizeof(struct MYUDP);
 			UDP.src = ntohs(udp->source);
@@ -155,7 +157,7 @@ bool pgen_unknown::cast(const bit8* packet, int len){
 	}
 	
 	else if(ntohs(eth->ether_type) == MT_ETHERTYPE_ARP){
-		_isARP = true;
+		isARP = true;
 	}
 	else{
 		//fprintf(stderr, "unknown L3 protocol 0x%04x\n", ntohs(eth->ether_type));
@@ -165,22 +167,3 @@ bool pgen_unknown::cast(const bit8* packet, int len){
 	return true;
 }
 
-
-bool pgen_unknown::isETH(){
-	return _isETH;
-}
-bool pgen_unknown::isARP(){
-	return _isARP;
-}
-bool pgen_unknown::isIP(){
-	return _isIP;
-}
-bool pgen_unknown::isICMP(){
-	return _isICMP;
-}
-bool pgen_unknown::isTCP(){
-	return _isTCP;
-}
-bool pgen_unknown::isUDP(){
-	return _isUDP;
-}

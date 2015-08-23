@@ -12,7 +12,7 @@ pgen_ardrone::pgen_ardrone(){
 
 
 
-pgen_ardrone::pgen_ardrone(const bit8* packet, int len){
+pgen_ardrone::pgen_ardrone(const u_char* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -49,7 +49,7 @@ void pgen_ardrone::send(const char* ifname){
 }
 
 
-void pgen_ardrone::cast(const bit8* packet, int len){
+void pgen_ardrone::cast(const u_char* packet, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "ardrone packet length not support (%d)\n", len);
 		return;
@@ -149,7 +149,7 @@ void pgen_ardrone::info(){
 
 
 
-void pgen_ardrone::SUMMARY(){
+void pgen_ardrone::summary(){
 	compile();
 	printf("AR Drone PCMD(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
 			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, ARDRONE.pcmd.roll, 
