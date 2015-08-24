@@ -87,11 +87,13 @@ void pgen_arp::cast(const u_char* data, int len){
 		return;
 	}
 	
-	
 	pgen_eth::cast(data, len);
 
-	struct MYARP buf;
-	memcpy(&buf, data+sizeof(struct MYETH), sizeof(buf));;
+	const u_char* p = data;
+	struct MYARP *buf;
+	p += sizeof(struct MYETH);
+	buf = (struct MYARP*)p;
+	p += sizeof(struct MYARP);
 	
 	union lc{
 		bit32 l;
@@ -99,18 +101,19 @@ void pgen_arp::cast(const u_char* data, int len){
 	};
 	lc slc, dlc;
 
-	ARP.operation = ntohs(buf.arp_op);
+	ARP.operation = ntohs(buf->arp_op);
 	for(int i=0; i<6; i++){
-		ARP.srcEth._addr[i] = buf.arp_sha[i];
-		ARP.dstEth._addr[i] = buf.arp_tha[i];
+		ARP.srcEth._addr[i] = buf->arp_sha[i];
+		ARP.dstEth._addr[i] = buf->arp_tha[i];
 	}
 	for(int i=0; i<4; i++){
-		slc.c[i] = buf.arp_spa[i];
-		dlc.c[i] = buf.arp_tpa[i];
+		slc.c[i] = buf->arp_spa[i];
+		dlc.c[i] = buf->arp_tpa[i];
 	}
 	ARP.srcIp = slc.l;
 	ARP.dstIp = dlc.l;
-
+	
+	addData(p, len-(p-data));
 }
 
 
