@@ -137,8 +137,8 @@ class pgen_icmp : public pgen_ip {
 	protected:
 		struct MYICMP icmp;
 	public:
-		static const int minLen = sizeof(struct MYICMP);
-		static const int maxLen = PGEN_MAX_PACKET_LEN;//??
+		static const int minLen = pgen_ip::minLen+sizeof(struct MYICMP);
+		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{	
 			int option;
 			int code;
@@ -167,7 +167,7 @@ class pgen_tcp : public pgen_ip {
 		struct MYTCP tcp;
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct MYTCP);
-		static const int maxLen = PGEN_MAX_PACKET_LEN;//??
+		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int src;
 			int dst;
@@ -202,7 +202,7 @@ class pgen_udp : public pgen_ip {
 		struct MYUDP udp;
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct MYUDP);
-		static const int maxLen = PGEN_MAX_PACKET_LEN;//??
+		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int src;
 			int dst;
@@ -228,8 +228,8 @@ class pgen_dns :public pgen_udp {
 		bit8 answer[256];
 		bit32 answer_len;
 	public:
-		static const int minLen = pgen_udp::minLen+sizeof(struct MYETH);
-		static const int maxLen = PGEN_MAX_PACKET_LEN; //wakanne
+		static const int minLen = pgen_udp::minLen+sizeof(struct MYDNS);
+		static const int maxLen = PGEN_MAX_PACKET_LEN; 
 		struct{
 			u_int16_t id;
 			struct{
@@ -282,8 +282,8 @@ class pgen_ardrone : public pgen_udp {
 		char cmd[256];
 		int   clen;
 	public:
-		static const int minLength = pgen_udp::minLen+39;
-		static const int macLength = PGEN_MAX_PACKET_LEN; //???
+		static const int minLength = pgen_udp::minLen+39; // minimum ardrone packet
+		static const int macLength = PGEN_MAX_PACKET_LEN;
 		struct{
 			struct{
 				long seq;
