@@ -65,21 +65,24 @@ void pgen_eth::compile(){
 
 
 
-void pgen_eth::cast(const bit8* data, int len){
+void pgen_eth::cast(const u_char* data, int len){
 	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "eth packet length not support (%d)\n", len);
+		fprintf(stderr, "eth packet length not support (len=%d)\n", len);
 		return;
 	}
-	
-	
+	const u_char* p = data;
 	struct MYETH* buf;
-	buf = (struct MYETH*)data;
+	buf = (struct MYETH*)p;
+	p += sizeof(struct MYETH);
+	
 
 	ETH.type = ntohs(buf->ether_type);
 	for(int i=0; i<6; i++){
 		ETH.src._addr[i] = buf->ether_shost[i];
 		ETH.dst._addr[i] = buf->ether_dhost[i];
 	}
+
+	addData(p, len-(p-data));
 }
 
 
