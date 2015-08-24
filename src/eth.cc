@@ -26,7 +26,6 @@ void pgen_eth::send_L2(const char* ifname){
 
 
 
-
 pgen_eth::pgen_eth(){
 	clear();	
 }
@@ -46,11 +45,6 @@ void pgen_eth::clear(){
 
 
 
-void pgen_eth::send(const char* ifname){
-	compile();		
-	if(pgen_sendpacket_L2(ifname, data, len) < 0)
-		exit(-1);	
-}
 
 
 

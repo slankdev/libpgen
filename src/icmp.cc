@@ -37,18 +37,6 @@ void pgen_icmp::clear(){
 } 
 
 
-void pgen_icmp::send(const char* ifname){
-	compile();		
-	
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof addr);
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = IP.dst._addr;
-	
-	if(pgen_sendpacket_L3(ifname, data, len, (struct sockaddr*)&addr) < 0)
-		exit(-1);
-}
-
 
 
 void pgen_icmp::cast(const bit8* data, int len){

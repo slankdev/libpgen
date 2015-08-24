@@ -43,12 +43,6 @@ void pgen_arp::clear(){
 }   
 
 
-void pgen_arp::send(const char* ifname){
-	compile();		
-	if(pgen_sendpacket_L2(ifname, data, len) < 0)
-		exit(-1);	
-}
-
 
 
 void pgen_arp::compile(){

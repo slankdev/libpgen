@@ -54,9 +54,9 @@ class pgen_eth : public pgen_packet {
 		static const int minLen = sizeof(struct MYETH);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
-			int type;
-			macaddr src;
 			macaddr dst;
+			macaddr src;
+			int type;
 		}ETH;
 		
 		pgen_eth();
@@ -65,7 +65,7 @@ class pgen_eth : public pgen_packet {
 		void info();
 		void summary();
 		void compile();
-		void send(const char* ifname);
+		void send(const char* ifname){send_L2(ifname);}
 		void send_L2(const char* ifname);
 		void cast(const u_char*, const int len);
 };
@@ -92,7 +92,7 @@ class pgen_arp : public pgen_eth {
 		void clear();
 		void info();
 		void compile();
-		void send(const char* ifname);
+		void send(const char* ifname){send_L2(ifname);}
 		void summary();
 		void cast(const u_char*, const int len);
 };
@@ -123,7 +123,7 @@ class pgen_ip : public pgen_eth {
 		void info();
 		void summary();
 		void compile();
-		void send(const char* ifname);
+		void send(const char* ifname){send_L3(ifname);}
 		void send_L3(const char* ifname);
 		void cast(const u_char*, const int len);
 };
@@ -149,7 +149,7 @@ class pgen_icmp : public pgen_ip {
 		void clear();
 		void info();
 		void compile();
-		void send(const char* ifname);
+		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void cast(const u_char*, const int len);
 
@@ -187,8 +187,8 @@ class pgen_tcp : public pgen_ip {
 		void clear();
 		void info();
 		void compile();
-		void send(const char* ifname);
 		void summary();
+		void send(const char* ifname){send_L3(ifname);}
 		void cast(const u_char*, const int len);
 };
 
@@ -213,7 +213,7 @@ class pgen_udp : public pgen_ip {
 		void info();
 		void summary();
 		void compile();
-		void send(const char* ifname);
+		void send(const char* ifname){send_L3(ifname);}
 		void cast(const u_char*, const int len);
 };
 
@@ -266,7 +266,7 @@ class pgen_dns :public pgen_udp {
 		void info();
 		void summary();
 		void compile();
-		void send(const char* ifname);
+		void send(const char* ifname){send_L3(ifname);}
 		void cast(const u_char*, const int);
 		
 		void _wrap_query();
@@ -308,7 +308,7 @@ class pgen_ardrone : public pgen_udp {
 		void compile();
 		void info();
 		void summary();
-		void send(const char* ifname);
+		void send(const char* ifname){send_L3(ifname);}
 		void cast(const u_char*, const int);
 
 		void DSUMMARY();

@@ -13,6 +13,7 @@ class libpgen{
 
 
 /*	rifactering codes 2015/08/19
+ *	[ ] return char* function (ipaddr.c_str()  etc...) check
  *
  *	[*] address.h
  *	[ ] ardrone.cc
@@ -31,7 +32,8 @@ class libpgen{
  *	[ ] tcp.cc
  *	[ ] udp.cc
  *	[ ] unknown.cc
- *	
+ *	[*] debug.h
+ *	[*] debug.cc
  * */
 
 

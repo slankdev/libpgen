@@ -66,20 +66,6 @@ void pgen_dns::clear(){
 
 
 
-void pgen_dns::send(const char* ifname){
-	compile();		
-	
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof addr);
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = IP.dst._addr;
-	
-	if(pgen_sendpacket_L3(ifname, data, len, (struct sockaddr*)&addr) < 0)
-		exit(-1);
-}
-
-
-
 void pgen_dns::cast(const u_char* packet, int len){
 	if(!( minLen<=len && len<=maxLen )){
 		fprintf(stderr, "dns packet length not support (%d)\n", len);
@@ -196,7 +182,7 @@ void pgen_dns::compile(){
 	if(DNS.flags.qr == 1)
 		_wrap_answer();
 
-	UDP.dest = (53);
+	UDP.dst = 53;
 	UDP.len = UDP.len + sizeof(struct MYDNS) + sizeof(query) + sizeof(name) + answer_len;
 	pgen_udp::compile();
 

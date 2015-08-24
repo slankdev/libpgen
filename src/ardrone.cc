@@ -36,18 +36,6 @@ void pgen_ardrone::clear(){
 }
 
 
-void pgen_ardrone::send(const char* ifname){
-	compile();		
-	
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof addr);
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = IP.dst._addr;
-	
-	if(pgen_sendpacket_L3(ifname, data, len, (struct sockaddr*)&addr) < 0)
-		exit(-1);
-}
-
 
 void pgen_ardrone::cast(const u_char* packet, int len){
 	if(!( minLen<=len && len<=maxLen )){
