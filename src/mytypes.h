@@ -12,6 +12,12 @@ typedef unsigned int       bit32;
 typedef unsigned long      bit64;
 typedef unsigned long long bit128;
 
+#define ETH_HDR_LEN sizeof(struct MYETH)
+#define ARP_HDR_LEN sizeof(struct MYARP)
+#define IP_HDR_LEN  sizeof(struct MYIP)
+#define TCP_HDR_LEN sizeof(struct MYTCP)
+#define UDP_HDR_LEN sizeof(struct MYUDP)
+
 
 
  

@@ -19,7 +19,7 @@ class libpgen{
  *	[ ] ardrone.cc
  *	[ ] arp.cc
  *	[ ] dns.cc
- *	[ ] eth.cc
+ *	[*] eth.cc
  *	[ ] icmp.cc
  *	[ ] ip.cc
  *	[ ] mytypes.h
