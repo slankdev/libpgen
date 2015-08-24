@@ -62,11 +62,10 @@ void pgen_tcp::send(const char* ifname){
 
 
 void pgen_tcp::compile(){
+	IP.tot_len = (sizeof(ip) + 20);
+	IP.protocol = MT_IPPROTO_TCP;
 	pgen_ip::compile();
 	memset(data, 0, sizeof data);
-	ip.protocol = MT_IPPROTO_TCP;
-	//ip.tot_len = htons(sizeof(ip) + sizeof(tcp));
-	ip.tot_len = htons(sizeof(ip) + 20);
 	u_char buf[1000];
 	u_char *bp;
 	memset(buf, 0, sizeof buf);
@@ -93,6 +92,8 @@ void pgen_tcp::compile(){
 	tcp.check = checksumTcp(buf, bp-buf);
 
 	u_char* p = data;
+	memcpy(p, &eth, sizeof eth);
+	p += sizeof(eth);
 	memcpy(p, &ip, sizeof(ip));
 	p += sizeof(ip);
 	memcpy(p, &tcp, sizeof(tcp));

@@ -112,23 +112,29 @@ char* pgen_port2service(int port, int protocol){
 
 
 
+unsigned short checksum(unsigned short *data, int len){
+  u_int32_t sum = 0; 
 
-unsigned short checksum(const void* data, int len){
-	unsigned short sum = 0;
-	unsigned short* buf = (unsigned short*)data;
+  for (; len > 1; len -= 2) {
+    sum += *data++;
+    if (sum & 0x80000000) 
+      sum = (sum & 0xffff) + (sum >> 16);
+  }
 
-	while (len > 1) {
-		sum += *buf;
-		buf++;
-		len -= 2;
-	}
-	if (len == 1)
-		sum += *(unsigned char *)buf;
+  if (len == 1) {
+    u_int16_t i = 0;
+    *(u_char*) (&i) = *(u_char *) data;
+    sum += i;
+  }
 
-	sum = (sum & 0xffff) + (sum >> 16);
-	sum = (sum & 0xffff) + (sum >> 16);
-	return ~sum;
+  while (sum >> 16)
+    sum = (sum & 0xffff) + (sum >> 16);
+
+  return ~sum;
 }
+
+
+
 
 
 
@@ -163,6 +169,11 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 	p.tcp.th_sum = 0;
 	return checksum((u_int16_t*)&p.ip.ip_ttl, PHLEN+datalen-sizeof(struct ip));
 }
+
+
+
+
+
 
 
 int initRawSocket(const char* dev, int promisc, int overIp){

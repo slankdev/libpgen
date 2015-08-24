@@ -204,6 +204,7 @@ class pgen_udp : public pgen_ip {
 		struct{
 			int src;
 			int dst;
+			bit16 len;
 		}UDP;
 
 		pgen_udp();

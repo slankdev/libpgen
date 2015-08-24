@@ -11,7 +11,7 @@ int  pgen_sendpacket_L2(const char*, const u_char*, int);
 int  pgen_sendpacket_L3(const char*, const u_char*, int, struct sockaddr*);
 
 char* pgen_port2service(int port, int protocol);
-unsigned short checksum(const void* data, int len);
+unsigned short checksum(unsigned short *data, int len);
 unsigned short checksumTcp(const u_char* dp, int datalen);
 
 int initRawSocket(const char* dev, int promisc, int overIp);

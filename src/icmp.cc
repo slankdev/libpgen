@@ -4,6 +4,7 @@
 
 #include "packet.h"
 #include "address.h"
+#include "netutil.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -13,8 +14,6 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-//#include <netinet/ip_icmp.h>
-#include "netutil.h"
 
 
 
@@ -77,10 +76,10 @@ void pgen_icmp::cast(const bit8* data, int len){
 
 
 void pgen_icmp::compile(){
+	IP.tot_len = (sizeof(ip) + sizeof(icmp)) ;
+	IP.protocol = MT_IPPROTO_ICMP;
 	pgen_ip::compile();
 	memset(data, 0, sizeof(data));
-	ip.protocol = MT_IPPROTO_ICMP;
-	ip.tot_len = htons(sizeof(ip) + sizeof(icmp)) ;
 
 	memset(&icmp, 0, sizeof icmp);
 	icmp.icmp_type = ICMP.option;
@@ -89,9 +88,11 @@ void pgen_icmp::compile(){
 	icmp.icmp_void = 0;
 	icmp.icmp_hun.ih_idseq.icd_id = htons(ICMP.id);
 	icmp.icmp_hun.ih_idseq.icd_seq = htons(ICMP.seq);
-	icmp.icmp_cksum = checksum(&icmp, sizeof icmp);
+	icmp.icmp_cksum = checksum((unsigned short*)&icmp, sizeof icmp);
 
 	u_char* p = data;
+	memcpy(p, &eth, sizeof eth);
+	p += sizeof(eth);
 	memcpy(p, &ip, sizeof(ip));
 	p += sizeof(ip);
 	memcpy(p, &icmp, sizeof(icmp));
@@ -139,7 +140,7 @@ void pgen_icmp::info(){
 	printf("    - Code            :  %s (%d)\n",  
 			_icmpcode[ICMP.code], ICMP.code);
 	printf("    - id(BE/LE)       :  %d/%d \n", 
-			htons(icmp.icmp_hun.ih_idseq.icd_seq), icmp.icmp_hun.ih_idseq.icd_id);
+			htons(icmp.icmp_hun.ih_idseq.icd_id), icmp.icmp_hun.ih_idseq.icd_id);
 	printf("    - seq num(BE/LE)  :  %d/%d \n", 
 			htons(icmp.icmp_hun.ih_idseq.icd_seq), icmp.icmp_hun.ih_idseq.icd_seq);
 	printf("    - Header Checksum :  0x%x \n", icmp.icmp_cksum);

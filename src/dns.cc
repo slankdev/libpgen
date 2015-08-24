@@ -185,7 +185,6 @@ void pgen_dns::cast(const u_char* packet, int len){
 
 
 void pgen_dns::compile(){
-	udp.dest = htons(53);
 	
 	char name[DNS.query.name.length()+2];
 	int count = 0;
@@ -197,14 +196,9 @@ void pgen_dns::compile(){
 	if(DNS.flags.qr == 1)
 		_wrap_answer();
 
-
-	udp.len = htons(ntohs(udp.len)+sizeof(struct MYDNS)+
-			sizeof(query)+sizeof(name))+answer_len;
-
+	UDP.dest = (53);
+	UDP.len = UDP.len + sizeof(struct MYDNS) + sizeof(query) + sizeof(name) + answer_len;
 	pgen_udp::compile();
-	
-	udp.len = htons(ntohs(udp.len)+sizeof(struct MYDNS)+
-			sizeof(query)+sizeof(name)+answer_len);
 
 
 	memset(&dns, 0, sizeof dns);
@@ -250,6 +244,8 @@ void pgen_dns::compile(){
 
 
 	u_char* p = data;
+	memcpy(p, &eth, sizeof eth);
+	p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(struct MYIP);
 	memcpy(p, &udp, sizeof udp);

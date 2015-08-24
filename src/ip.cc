@@ -55,7 +55,8 @@ void pgen_ip::send_L3(const char* ifname){
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = IP.dst._addr;
 	
-	if(pgen_sendpacket_L3(ifname, data, len, (struct sockaddr*)&addr) < 0)
+	if(pgen_sendpacket_L3(ifname, data+sizeof(struct MYETH), len-sizeof(struct MYETH),
+				(struct sockaddr*)&addr) < 0)
 		exit(-1);
 }
 
@@ -76,24 +77,27 @@ void pgen_ip::send(const char* ifname){
 
 
 void pgen_ip::compile(){
+	ETH.type = MT_ETHERTYPE_IP;
 	pgen_eth::compile();
-	eth.ether_type = htons(MT_ETHERTYPE_IP);
 	memset(data, 0, sizeof data);
 
 	memset(&ip, 0, sizeof ip);
 	ip.ihl = sizeof(ip) / 4;
 	ip.version = 4;
 	ip.tos = IP.tos; //no useing world now
-	ip.tot_len = sizeof(struct MYIP);
+	ip.tot_len = htons(IP.tot_len);
 	ip.id = htons(IP.id);
 	ip.frag_off = htons(IP.frag_off); // ?????
 	ip.ttl = IP.ttl;
 	ip.protocol = IP.protocol;
 	ip.saddr = IP.src._addr;
 	ip.daddr = IP.dst._addr;
-	ip.check = htons(checksum(&ip, sizeof(ip)));
+	ip.check = 0;
+	ip.check = checksum((unsigned short*)&ip, sizeof(ip));
 
 	u_char* p = data;
+	memcpy(p, &eth, sizeof eth);
+	p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(ip);
 	len = p - data;

@@ -56,15 +56,15 @@ void pgen_eth::send(const char* ifname){
 
 void pgen_eth::compile(){
 	memset(data, 0, sizeof data);
-	eth.ether_type = htons(ETH.type);;
 
+	eth.ether_type = htons(ETH.type);
 	for(int i=0; i< 6; i++){
 		eth.ether_shost[i] = ETH.src._addr[i];	
 		eth.ether_dhost[i] = ETH.dst._addr[i];	
 	}
 
 	u_char* p = data;
-	memcpy(data, &eth, sizeof eth);
+	memcpy(p, &eth, sizeof eth);
 	p += sizeof(eth);
 	len = p - data;
 	

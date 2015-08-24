@@ -113,6 +113,8 @@ void pgen_ardrone::compile(){
 	udp.len = htons(ntohs(udp.len) + clen);
 
 	u_char* p = data;
+	memcpy(p, &eth, sizeof eth);
+	p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
 	p += sizeof(struct MYIP);
 	memcpy(p, &udp, sizeof udp);
