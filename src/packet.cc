@@ -7,13 +7,11 @@
 
 
 
-
-pgen_packet::pgen_packet(){
-	len = 0;
-	ext_data_len =0;
-	memset(data, 0, sizeof(data));
-	memset(ext_data, 0, sizeof(ext_data));
+void pgen_packet::compile_addData(){
 }
+
+
+
 
 
 
@@ -26,7 +24,19 @@ void pgen_packet::_addData_WRAP(){
 
 
 
+void pgen_packet::addData(const u_char* byte, int len){
+	if(len > this->len){
+		fprintf(stderr, "pgen_packet::addData(): Extension Data is too long\n");
+		return;
+	}
+	
+	memcpy(ext_data, byte, len);
+	ext_data_len = len;
+	
+	return;	
+}
 
+/*
 bool pgen_packet::addData(const u_char* byte, int blen){
 	compile();
 	
@@ -44,9 +54,16 @@ bool pgen_packet::addData(const u_char* byte, int blen){
 	
 	return true;	
 }
+*/
 
 
 
+pgen_packet::pgen_packet(){
+	len = 0;
+	ext_data_len =0;
+	memset(data, 0, sizeof(data));
+	memset(ext_data, 0, sizeof(ext_data));
+}
 
 
 

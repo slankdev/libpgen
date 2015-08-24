@@ -39,11 +39,9 @@ class pgen_packet{
 		virtual void cast(const u_char*, const int)=0;
 	
 		void hex();
+		void addData(const u_char* , int );
 
 		void compile_addData();
-		
-		
-		bool addData(const u_char* , int );
 		void _addData_WRAP();
 };
 
