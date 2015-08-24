@@ -65,7 +65,8 @@ void pgen_eth::cast(const u_char* data, int len){
 		fprintf(stderr, "pgen_eth::cast(): packet len isn`t support (len=%d)\n", this->len);
 		return;
 	}
-	const u_char* p = this->data;
+
+	const u_char* p = data;
 	struct MYETH* buf;
 	buf = (struct MYETH*)p;
 	p += ETH_HDR_LEN;
@@ -76,7 +77,7 @@ void pgen_eth::cast(const u_char* data, int len){
 	}
 	this->ETH.type = ntohs(buf->ether_type);
 
-	addData(p, this->len-(p-data));
+	addData(p, len-(p-data));
 }
 
 

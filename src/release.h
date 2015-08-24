@@ -15,23 +15,26 @@ class libpgen{
 /*	rifactering codes 2015/08/19
  *	[ ] return char* function (ipaddr.c_str()  etc...) check
  *
+ *	[ ] pgen.h
+ *
  *	[*] address.h
- *	[ ] ardrone.cc
- *	[ ] arp.cc
- *	[ ] dns.cc
- *	[*] eth.cc
- *	[ ] icmp.cc
- *	[ ] ip.cc
- *	[ ] mytypes.h
- *	[*] netutil.cc
- *	[*] netutil.h
+ *
  *	[ ] packet.cc
  *	[ ] packet.h
- *	[ ] pgen.h
- *	[ ] release.h
+ *  [*] eth.cc
+ *	[*] arp.cc
+ *	[ ] ip.cc
+ *	[ ] icmp.cc
  *	[ ] tcp.cc
  *	[ ] udp.cc
+ *	[ ] dns.cc
+ *	[ ] ardrone.cc
  *	[ ] unknown.cc
+ *
+ *  [ ] mytypes.h
+ *	[*] netutil.cc
+ *	[*] netutil.h
+ *	[*] release.h
  *	[*] debug.h
  *	[*] debug.cc
  * */

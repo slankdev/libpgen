@@ -35,42 +35,42 @@ pgen_arp::pgen_arp(const u_char* packet, int len){
 
 void pgen_arp::clear(){
 	pgen_eth::clear();
-	ARP.srcIp = 0;
-	ARP.dstIp = 0;
-	ARP.srcEth = 0;
-	ARP.dstEth = 0;
-	ARP.operation = 1; // arp request
+	this->ARP.srcIp = 0;
+	this->ARP.dstIp = 0;
+	this->ARP.srcEth = 0;
+	this->ARP.dstEth = 0;
+	this->ARP.operation = 1; // arp request
 }   
 
 
 
-
 void pgen_arp::compile(){
+	this->ETH.type = MT_ETHERTYPE_ARP;
 	pgen_eth::compile();
-	memset(data, 0, sizeof data);
-	eth.ether_type = htons(MT_ETHERTYPE_ARP);
+	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 
-	memset(&arp, 0, sizeof arp);
-	arp.arp_hrd = htons(MT_ARPHRD_ETHER);
-	arp.arp_pro = htons(MT_ETHERTYPE_IP);
-	arp.arp_hln = 6;
-	arp.arp_pln = 4;
-	arp.arp_op  = htons(ARP.operation);
+	memset(&(this->arp), 0, ARP_HDR_LEN);
+	
+	this->arp.arp_hrd = htons(MT_ARPHRD_ETHER);
+	this->arp.arp_pro = htons(MT_ETHERTYPE_IP);
+	this->arp.arp_hln = 6;
+	this->arp.arp_pln = 4;
+	this->arp.arp_op  = htons(this->ARP.operation);
 	for(int i=0; i<6; i++){
-		arp.arp_sha[i] = ARP.srcEth._addr[i];
-		arp.arp_tha[i] = ARP.dstEth._addr[i];
+		this->arp.arp_sha[i] = this->ARP.srcEth._addr[i];
+		this->arp.arp_tha[i] = this->ARP.dstEth._addr[i];
 	}
 	for(int i=0; i<4; i++){
-		arp.arp_spa[i] = ARP.srcIp.getOctet(i);
-		arp.arp_tpa[i] = ARP.dstIp.getOctet(i);
+		this->arp.arp_spa[i] = this->ARP.srcIp.getOctet(i);
+		this->arp.arp_tpa[i] = this->ARP.dstIp.getOctet(i);
 	}
 		
-	u_char* p = data;
-	memcpy(p, &eth, sizeof(eth));
-	p += sizeof(eth);
-	memcpy(p, &arp, sizeof(arp));
-	p += sizeof(arp);
-	len = p - data;
+	u_char* p = this->data;
+	memcpy(p, &this->eth, ETH_HDR_LEN);
+	p += ETH_HDR_LEN;
+	memcpy(p, &this->arp, ARP_HDR_LEN);
+	p += ARP_HDR_LEN;
+	len = p - this->data;
 
 	compile_addData();
 }
@@ -78,18 +78,18 @@ void pgen_arp::compile(){
 
 
 void pgen_arp::cast(const u_char* data, int len){
-	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "arp packet length not support (%d)\n", len);
+	if(!(this->minLen<=len && len<=this->maxLen)){
+		fprintf(stderr, "pgen_arp::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
 	
 	pgen_eth::cast(data, len);
 
 	const u_char* p = data;
-	struct MYARP *buf;
-	p += sizeof(struct MYETH);
+	struct MYARP* buf;
+	p += ETH_HDR_LEN;
 	buf = (struct MYARP*)p;
-	p += sizeof(struct MYARP);
+	p += ARP_HDR_LEN;
 	
 	union lc{
 		bit32 l;
@@ -97,28 +97,25 @@ void pgen_arp::cast(const u_char* data, int len){
 	};
 	lc slc, dlc;
 
-	ARP.operation = ntohs(buf->arp_op);
+	this->ARP.operation = ntohs(buf->arp_op);
 	for(int i=0; i<6; i++){
-		ARP.srcEth._addr[i] = buf->arp_sha[i];
-		ARP.dstEth._addr[i] = buf->arp_tha[i];
+		this->ARP.srcEth._addr[i] = buf->arp_sha[i];
+		this->ARP.dstEth._addr[i] = buf->arp_tha[i];
 	}
 	for(int i=0; i<4; i++){
 		slc.c[i] = buf->arp_spa[i];
 		dlc.c[i] = buf->arp_tpa[i];
 	}
-	ARP.srcIp = slc.l;
-	ARP.dstIp = dlc.l;
+	this->ARP.srcIp = slc.l;
+	this->ARP.dstIp = dlc.l;
 	
 	addData(p, len-(p-data));
 }
 
 
 
-
-
-
-
 void pgen_arp::summary(){
+	printf("ARP{");
 	if(ARP.operation == 1){
 		printf("who has %s tell %s \n", ARP.dstIp.c_str(), ARP.srcEth.c_str());
 	}else if(ARP.operation == 2){
@@ -126,7 +123,9 @@ void pgen_arp::summary(){
 	}else{
 		printf("other arp operation!! \n");	
 	}
+	printf("} \n");
 }
+
 
 
 void pgen_arp::info(){
@@ -151,3 +150,6 @@ void pgen_arp::info(){
 			ARP.dstEth.c_str(), ARP.dstEth.bender());
 	printf("    - Target IP       :  %s  \n", ARP.dstIp.c_str() );
 }
+
+
+
