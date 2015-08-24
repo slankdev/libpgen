@@ -37,7 +37,7 @@ class pgen_packet{
 		virtual void compile()=0;
 		virtual void send(const char* ifname)=0;
 		virtual void cast(const u_char*, const int)=0;
-	
+		
 		void hex();
 		void addData(const u_char* , int );
 		void compile_addData(); 
@@ -66,6 +66,7 @@ class pgen_eth : public pgen_packet {
 		void summary();
 		void compile();
 		void send(const char* ifname);
+		void send_L2(const char* ifname);
 		void cast(const u_char*, const int len);
 };
 
@@ -123,6 +124,7 @@ class pgen_ip : public pgen_eth {
 		void summary();
 		void compile();
 		void send(const char* ifname);
+		void send_L3(const char* ifname);
 		void cast(const u_char*, const int len);
 };
 

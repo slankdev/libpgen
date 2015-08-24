@@ -18,6 +18,15 @@
 
 
 
+void pgen_eth::send_L2(const char* ifname){
+	compile();		
+	if(pgen_sendpacket_L2(ifname, data, len) < 0)
+		exit(-1);	
+}
+
+
+
+
 pgen_eth::pgen_eth(){
 	clear();	
 }

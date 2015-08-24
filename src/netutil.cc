@@ -114,7 +114,6 @@ char* pgen_port2service(int port, int protocol){
 
 
 unsigned short checksum(const void* data, int len){
-	//unsigned long sum = 0;
 	unsigned short sum = 0;
 	unsigned short* buf = (unsigned short*)data;
 

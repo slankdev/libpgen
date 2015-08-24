@@ -9,7 +9,6 @@
 
 
 
-
 void pgen_packet::compile_addData(){
 	if(ext_data_len == 0) return;
 	if(ext_data_len+len >= PGEN_MAX_PACKET_LEN){
@@ -20,9 +19,6 @@ void pgen_packet::compile_addData(){
 	memcpy(p, ext_data, ext_data_len);
 	this->len += ext_data_len;
 }
-
-
-
 
 
 

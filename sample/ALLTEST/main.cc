@@ -43,6 +43,7 @@ void test_eth(){
 		
 	p.send(dev);
 }
+
 void test_arp(){
 	pgen_arp p;
 
@@ -56,6 +57,7 @@ void test_arp(){
 		
 	p.send(dev);
 }
+
 void test_ip(){
 	pgen_ip p;
 	

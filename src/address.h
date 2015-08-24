@@ -45,7 +45,7 @@ class ipaddr{
 		char* c_str(){
 			union lc lc;
 			lc.l = (unsigned int)this->_addr;
-			snprintf(_c_str, sizeof(char[16])-1,"%u.%u.%u.%u",
+			snprintf(_c_str, sizeof(_c_str)-1,"%u.%u.%u.%u",
 							lc.c[0],lc.c[1],lc.c[2],lc.c[3]);
 			return _c_str;
 		}

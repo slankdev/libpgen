@@ -47,6 +47,20 @@ void pgen_ip::clear(){
 
 
 
+void pgen_ip::send_L3(const char* ifname){
+	compile();	
+	
+	struct sockaddr_in addr;
+	memset(&addr, 0, sizeof addr);
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = IP.dst._addr;
+	
+	if(pgen_sendpacket_L3(ifname, data, len, (struct sockaddr*)&addr) < 0)
+		exit(-1);
+}
+
+
+
 void pgen_ip::send(const char* ifname){
 	compile();		
 	
@@ -96,20 +110,23 @@ void pgen_ip::cast(const bit8* data, int len){
 		return;
 	}
 	
-	
 	pgen_eth::cast(data, len);
-
-	struct MYIP buf;
-	memcpy(&buf, data+sizeof(struct MYETH), sizeof(buf));
+	struct MYIP *buf;
+	const u_char* p = data;
+	p += sizeof(struct MYETH);
+	buf = (struct MYIP*)p;
+	p += sizeof(struct MYIP);
 	
-	IP.tos = buf.tos;
-	IP.tot_len = ntohs(buf.tot_len);
-	IP.id = ntohs(buf.id);
-	IP.frag_off = ntohs(buf.frag_off);
-	IP.ttl = buf.ttl;
-	IP.protocol = buf.protocol;
-	IP.src._addr = buf.saddr;
-	IP.dst._addr = buf.daddr;
+	IP.tos = buf->tos;
+	IP.tot_len = ntohs(buf->tot_len);
+	IP.id = ntohs(buf->id);
+	IP.frag_off = ntohs(buf->frag_off);
+	IP.ttl = buf->ttl;
+	IP.protocol = buf->protocol;
+	IP.src._addr = buf->saddr;
+	IP.dst._addr = buf->daddr;
+
+	addData(p, len-(p-data));
 }
 
 
