@@ -85,9 +85,10 @@ void pgen_arp::cast(const u_char* data, int len){
 	
 	pgen_eth::cast(data, len);
 
-	const u_char* p = data;
 	struct MYARP* buf;
+	const u_char* p = data;
 	p += ETH_HDR_LEN;
+
 	buf = (struct MYARP*)p;
 	p += ARP_HDR_LEN;
 	

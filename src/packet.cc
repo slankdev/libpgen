@@ -9,6 +9,17 @@
 
 
 
+
+pgen_packet::pgen_packet(){
+	len = 0;
+	ext_data_len =0;
+	memset(data, 0, sizeof(data));
+	memset(ext_data, 0, sizeof(ext_data));
+}
+
+
+
+
 void pgen_packet::compile_addData(){
 	if(ext_data_len == 0) return;
 	if(ext_data_len+len >= PGEN_MAX_PACKET_LEN){
@@ -35,15 +46,6 @@ void pgen_packet::addData(const u_char* byte, int len){
 	return;	
 }
 
-
-
-
-pgen_packet::pgen_packet(){
-	len = 0;
-	ext_data_len =0;
-	memset(data, 0, sizeof(data));
-	memset(ext_data, 0, sizeof(ext_data));
-}
 
 
 
@@ -86,3 +88,7 @@ void pgen_packet::hex(){
 	}
 	printf("\n");
 }
+
+
+
+
