@@ -7,25 +7,28 @@
 
 
 
+
+
+
 void pgen_packet::compile_addData(){
-}
-
-
-
-
-
-
-void pgen_packet::_addData_WRAP(){
-	if(ext_data_len > 0){
-		memcpy(data+len, ext_data, sizeof(ext_data));
-		len += ext_data_len;
+	if(ext_data_len == 0) return;
+	if(ext_data_len+len >= PGEN_MAX_PACKET_LEN){
+		fprintf(stderr, "pgen_packet::compile_addData(): packet length is too large\n");
 	}
+
+	u_char* p = this->data + this->len;
+	memcpy(p, ext_data, ext_data_len);
+	this->len += ext_data_len;
 }
+
+
+
+
 
 
 
 void pgen_packet::addData(const u_char* byte, int len){
-	if(len > this->len){
+	if(len > PGEN_MAX_EXT_DATA_LEN){
 		fprintf(stderr, "pgen_packet::addData(): Extension Data is too long\n");
 		return;
 	}
@@ -36,25 +39,6 @@ void pgen_packet::addData(const u_char* byte, int len){
 	return;	
 }
 
-/*
-bool pgen_packet::addData(const u_char* byte, int blen){
-	compile();
-	
-	if(len+blen > PGEN_MAX_PACKET_LEN){
-		fprintf(stderr, "addData: byte data is too long\n");
-		return false;
-	}
-	if(blen > PGEN_MAX_EXT_DATA_LEN){
-		fprintf(stderr, "addData: byte data is too long\n");
-		return false;
-	}
-	
-	memcpy(ext_data, byte, blen);
-	ext_data_len = blen;
-	
-	return true;	
-}
-*/
 
 
 
@@ -77,6 +61,7 @@ void pgen_packet::hex(){
 		for(column=0; column<=15; column++){
 			if(!(row+column < len)){
 				printf("   ");
+				if((row+column)%8  == 0 && (row+column)%16 != 0) printf(" ");
 			}else{
 				if((row+column)%16 == 0) printf("%04x:    ", row+column);
 				if((row+column)%8  == 0 && (row+column)%16 != 0) printf(" ");

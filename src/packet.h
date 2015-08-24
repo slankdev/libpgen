@@ -40,9 +40,7 @@ class pgen_packet{
 	
 		void hex();
 		void addData(const u_char* , int );
-
-		void compile_addData();
-		void _addData_WRAP();
+		void compile_addData(); 
 };
 
 

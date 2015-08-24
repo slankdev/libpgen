@@ -68,7 +68,7 @@ void pgen_udp::compile(){
 	p += sizeof(struct MYUDP);
 	len = p-data;
 	
-	_addData_WRAP();
+	compile_addData();
 }
 
 

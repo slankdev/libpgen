@@ -98,13 +98,13 @@ void pgen_icmp::compile(){
 	p += sizeof(icmp);
 	len = p-data;
 
-	_addData_WRAP();
+	compile_addData();
 } 
 
 
 
 void pgen_icmp::summary(){
-	info();
+	compile();
 
 	if(ICMP.option == PGEN_ICMPOP_ECHO && ICMP.code == 0){
 		printf("Echo Request id=%d seq=%d ttl=%d \n", 

@@ -59,7 +59,7 @@ void pgen_eth::compile(){
 	p += sizeof(eth);
 	len = p - data;
 	
-	_addData_WRAP();
+	compile_addData();
 }
 
 

@@ -121,7 +121,7 @@ void pgen_ardrone::compile(){
 	p += clen;
 	len = p-data;
 	
-	_addData_WRAP();
+	compile_addData();
 }
 
 

@@ -267,7 +267,7 @@ void pgen_dns::compile(){
 	}
 	len = p-data;
 	
-	_addData_WRAP();
+	compile_addData();
 }
 
 void pgen_dns::_wrap_query(){}

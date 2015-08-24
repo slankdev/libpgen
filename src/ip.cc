@@ -84,7 +84,7 @@ void pgen_ip::compile(){
 	p += sizeof(ip);
 	len = p - data;
 
-	_addData_WRAP();
+	compile_addData();
 }
 
 

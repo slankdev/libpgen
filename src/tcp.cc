@@ -99,7 +99,7 @@ void pgen_tcp::compile(){
 	p += sizeof(tcp);
 	len = p - data;
 	
-	_addData_WRAP();
+	compile_addData();
 }
 
 

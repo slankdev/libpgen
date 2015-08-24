@@ -76,7 +76,7 @@ void pgen_arp::compile(){
 	p += sizeof(arp);
 	len = p - data;
 
-	_addData_WRAP();
+	compile_addData();
 }
 
 
