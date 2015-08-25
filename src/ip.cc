@@ -81,7 +81,7 @@ void pgen_ip::compile(){
 
 void pgen_ip::cast(const bit8* data, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
-		fprintf(stderr, "pgen_arp::cast(): packet len isn`t support (%d)\n", len);
+		fprintf(stderr, "pgen_ip::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
 	

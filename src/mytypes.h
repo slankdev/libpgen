@@ -15,6 +15,7 @@ typedef unsigned long long bit128;
 #define ETH_HDR_LEN sizeof(struct MYETH)
 #define ARP_HDR_LEN sizeof(struct MYARP)
 #define IP_HDR_LEN  sizeof(struct MYIP)
+#define ICMP_HDR_LEN  sizeof(struct MYICMP)
 #define TCP_HDR_LEN sizeof(struct MYTCP)
 #define UDP_HDR_LEN sizeof(struct MYUDP)
 

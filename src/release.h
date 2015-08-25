@@ -24,7 +24,7 @@ class libpgen{
  *  [*] eth.cc
  *	[*] arp.cc
  *	[*] ip.cc
- *	[ ] icmp.cc
+ *	[*] icmp.cc
  *	[ ] tcp.cc
  *	[ ] udp.cc
  *	[ ] dns.cc

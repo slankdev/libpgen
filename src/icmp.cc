@@ -17,9 +17,14 @@
 
 
 
+
+
+
+
 pgen_icmp::pgen_icmp(){
 	clear();
 }
+
 
 
 pgen_icmp::pgen_icmp(const u_char* packet, int len){
@@ -39,72 +44,72 @@ void pgen_icmp::clear(){
 
 
 
-void pgen_icmp::cast(const bit8* data, int len){
-	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "icmp packet length not support (%d)\n", len);
-		return;
-	}
-	
-	
-	pgen_ip::cast(data, len);
-
-
-	struct MYICMP buf;
-	memcpy(&buf, data+sizeof(struct MYETH)+sizeof(struct MYIP), 
-			sizeof(buf));
-
-	ICMP.option = buf.icmp_type;
-	ICMP.code = buf.icmp_code;
-	ICMP.id = ntohs(buf.icmp_hun.ih_idseq.icd_id);
-	ICMP.seq = ntohs(buf.icmp_hun.ih_idseq.icd_seq);
-
-} 
-
-
-
 
 void pgen_icmp::compile(){
-	IP.tot_len = (sizeof(ip) + sizeof(icmp)) ;
-	IP.protocol = MT_IPPROTO_ICMP;
+	this->IP.tot_len = IP_HDR_LEN + ICMP_HDR_LEN;
+	this->IP.protocol = MT_IPPROTO_ICMP;
 	pgen_ip::compile();
-	memset(data, 0, sizeof(data));
 
-	memset(&icmp, 0, sizeof icmp);
-	icmp.icmp_type = ICMP.option;
-	icmp.icmp_code = ICMP.code;
-	icmp.icmp_cksum = 0;
-	icmp.icmp_void = 0;
-	icmp.icmp_hun.ih_idseq.icd_id = htons(ICMP.id);
-	icmp.icmp_hun.ih_idseq.icd_seq = htons(ICMP.seq);
-	icmp.icmp_cksum = checksum((unsigned short*)&icmp, sizeof icmp);
+	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 
-	u_char* p = data;
-	memcpy(p, &eth, sizeof eth);
-	p += sizeof(eth);
-	memcpy(p, &ip, sizeof(ip));
-	p += sizeof(ip);
-	memcpy(p, &icmp, sizeof(icmp));
-	p += sizeof(icmp);
-	len = p-data;
+	memset(&this->icmp, 0, ICMP_HDR_LEN);
+	this->icmp.icmp_type = this->ICMP.option;
+	this->icmp.icmp_code = this->ICMP.code;
+	this->icmp.icmp_cksum = 0;
+	this->icmp.icmp_void = 0;
+	this->icmp.icmp_hun.ih_idseq.icd_id = htons(this->ICMP.id);
+	this->icmp.icmp_hun.ih_idseq.icd_seq = htons(this->ICMP.seq);
+	this->icmp.icmp_cksum = checksum((unsigned short*)&this->icmp, ICMP_HDR_LEN);
+
+	u_char* p = this->data;
+	memcpy(p, &this->eth, ETH_HDR_LEN);
+	p += ETH_HDR_LEN;
+	memcpy(p, &this->ip, IP_HDR_LEN);
+	p += IP_HDR_LEN;
+	memcpy(p, &this->icmp, ICMP_HDR_LEN);
+	p += ICMP_HDR_LEN;
+	len = p-this->data;
 
 	compile_addData();
 } 
 
 
 
+
+void pgen_icmp::cast(const bit8* data, int len){
+	if(!(this->minLen<=len && len<=this->maxLen)){
+		fprintf(stderr, "pgen_icmp::cast(): packet len isn`t support (%d)\n", len);
+		return;
+	}
+	
+	pgen_ip::cast(data, len);
+
+	struct MYICMP buf;
+	memcpy(&buf, data+ETH_HDR_LEN+IP_HDR_LEN, sizeof(buf));
+
+	this->ICMP.option = buf.icmp_type;
+	this->ICMP.code = buf.icmp_code;
+	this->ICMP.id = ntohs(buf.icmp_hun.ih_idseq.icd_id);
+	this->ICMP.seq = ntohs(buf.icmp_hun.ih_idseq.icd_seq);
+} 
+
+
+
+
 void pgen_icmp::summary(){
 	compile();
-
+	printf("ICMP{ ");
 	if(ICMP.option == PGEN_ICMPOP_ECHO && ICMP.code == 0){
-		printf("Echo Request id=%d seq=%d ttl=%d \n", 
+		printf("Echo Request id=%d seq=%d ttl=%d }\n", 
 				ICMP.id, ICMP.seq, IP.ttl );
 	}else if(ICMP.option == PGEN_ICMPOP_ECHOREPLY && ICMP.code == 0){
-		printf("Echo Relay   id=%d seq=%d ttl=%d\n", 
+		printf("Echo Relay   id=%d seq=%d ttl=%d }\n", 
 				ICMP.id, ICMP.seq, IP.ttl );
 	}else{
-		printf("other icmp type\n");	
+		printf("other icmp type }\n");	
 	}
 }
+
 
 
 void pgen_icmp::info(){
@@ -133,6 +138,7 @@ void pgen_icmp::info(){
 			htons(icmp.icmp_hun.ih_idseq.icd_seq), icmp.icmp_hun.ih_idseq.icd_seq);
 	printf("    - Header Checksum :  0x%x \n", icmp.icmp_cksum);
 }
+
 
 
 
