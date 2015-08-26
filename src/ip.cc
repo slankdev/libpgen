@@ -87,11 +87,9 @@ void pgen_ip::cast(const bit8* data, int len){
 	
 	pgen_eth::cast(data, len);
 
-	struct MYIP *buf;
 	const u_char* p = data;
 	p += ETH_HDR_LEN;
-	
-	buf = (struct MYIP*)p;
+	struct MYIP* buf = (struct MYIP*)p;
 	p += IP_HDR_LEN;
 	
 	this->IP.tos = buf->tos;
@@ -102,7 +100,8 @@ void pgen_ip::cast(const bit8* data, int len){
 	this->IP.protocol = buf->protocol;
 	this->IP.src._addr = buf->saddr;
 	this->IP.dst._addr = buf->daddr;
-
+	
+	len = p - data;
 	addData(p, len-(p-data));
 }
 

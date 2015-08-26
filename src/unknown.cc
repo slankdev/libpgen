@@ -13,29 +13,21 @@
 
 
 
-bool pgen_unknown::IPaddris(ipaddr addr){
+bool pgen_unknown::ipaddris(ipaddr addr){
 	if(!isIP) return false;
-	printf("ipaddr is %s ", addr.c_str());
-	summary();
 	return (addr==IP.src || addr==IP.dst);
 }
-bool pgen_unknown::MACaddris(macaddr addr){
+bool pgen_unknown::macaddris(macaddr addr){
 	if(!isETH) return false;
-	printf("macaddr is %s ", addr.c_str());
-	summary();
 	return (addr==ETH.src || addr==ETH.dst);
 }
-bool pgen_unknown::TCPportis(unsigned short port){
-	if(!isTCP) return false;
-	printf("tcp port is %d ", port);
-	summary();
-	return (port==TCP.src || port==TCP.dst);	
-}
-bool pgen_unknown::UDPportis(unsigned short port){
-	if(!isUDP) return false;
-	printf("udp port is %d ", port);
-	summary();
-	return (port==UDP.src || port==UDP.dst);	
+bool pgen_unknown::portis(unsigned short port){
+	if(!(isUDP || isTCP)) return false;
+	if(isTCP){
+		return (port==TCP.src || port==TCP.dst);	
+	}else{
+		return (port==UDP.src || port==UDP.dst);	
+	}
 }
 
 

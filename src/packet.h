@@ -277,9 +277,6 @@ class pgen_dns :public pgen_udp {
 
 
 class pgen_ardrone : public pgen_udp {
-	protected:
-		char cmd[256];
-		int   clen;
 	public:
 		static const int minLength = pgen_udp::minLen+39; // minimum ardrone packet
 		static const int macLength = PGEN_MAX_PACKET_LEN;
@@ -312,7 +309,6 @@ class pgen_ardrone : public pgen_udp {
 		void info();
 
 		void DSUMMARY();
-		void _printdata();
 };
 
 
@@ -355,10 +351,9 @@ class pgen_unknown{
 		bool cast(const u_char*, int);
 		void summary();
 
-		bool IPaddris(ipaddr addr);
-		bool MACaddris(macaddr addr);
-		bool TCPportis(unsigned short port);
-		bool UDPportis(unsigned short port);
+		bool ipaddris(ipaddr addr);
+		bool macaddris(macaddr addr);
+		bool portis(unsigned short port);
 };
 
 

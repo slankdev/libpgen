@@ -19,16 +19,16 @@ class libpgen{
  *
  *	[*] address.h
  *
- *	[ ] packet.h
+ *	[*] packet.h
  *	[*] packet.cc
  *  [*] eth.cc
  *	[*] arp.cc
  *	[*] ip.cc
  *	[*] icmp.cc
- *	[ ] tcp.cc
- *	[ ] udp.cc
+ *	[*] tcp.cc
+ *	[*] udp.cc
  *	[ ] dns.cc
- *	[ ] ardrone.cc
+ *	[*] ardrone.cc
  *	[ ] unknown.cc
  *
  *  [ ] mytypes.h

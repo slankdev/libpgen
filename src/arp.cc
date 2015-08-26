@@ -110,6 +110,7 @@ void pgen_arp::cast(const u_char* data, int len){
 	this->ARP.srcIp = slc.l;
 	this->ARP.dstIp = dlc.l;
 	
+	len = p - data;
 	addData(p, len-(p-data));
 }
 

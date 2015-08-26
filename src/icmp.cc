@@ -35,10 +35,10 @@ pgen_icmp::pgen_icmp(const u_char* packet, int len){
 
 
 void pgen_icmp::clear(){
-	ICMP.option = 8;
-	ICMP.code = 0;
-	ICMP.id = 0;
-	ICMP.seq = 0;
+	this->ICMP.option = 8;
+	this->ICMP.code = 0;
+	this->ICMP.id = 0;
+	this->ICMP.seq = 0;
 } 
 
 
@@ -76,7 +76,7 @@ void pgen_icmp::compile(){
 
 
 
-void pgen_icmp::cast(const bit8* data, int len){
+void pgen_icmp::cast(const u_char* data, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_icmp::cast(): packet len isn`t support (%d)\n", len);
 		return;
@@ -84,13 +84,20 @@ void pgen_icmp::cast(const bit8* data, int len){
 	
 	pgen_ip::cast(data, len);
 
-	struct MYICMP buf;
-	memcpy(&buf, data+ETH_HDR_LEN+IP_HDR_LEN, sizeof(buf));
+	const u_char* p = data;
+	p += ETH_HDR_LEN;
+	p += IP_HDR_LEN;
+	
+	struct MYICMP *buf = (struct MYICMP*)p;
+	p += ICMP_HDR_LEN;
 
-	this->ICMP.option = buf.icmp_type;
-	this->ICMP.code = buf.icmp_code;
-	this->ICMP.id = ntohs(buf.icmp_hun.ih_idseq.icd_id);
-	this->ICMP.seq = ntohs(buf.icmp_hun.ih_idseq.icd_seq);
+	this->ICMP.option = buf->icmp_type;
+	this->ICMP.code = buf->icmp_code;
+	this->ICMP.id = ntohs(buf->icmp_hun.ih_idseq.icd_id);
+	this->ICMP.seq = ntohs(buf->icmp_hun.ih_idseq.icd_seq);
+
+	this->len = p - data;
+	addData(p, len-(p-data));
 } 
 
 

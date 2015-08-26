@@ -62,6 +62,119 @@ void pgen_dns::clear(){
 }
 
 
+void pgen_dns::compile(){
+	char name[DNS.query.name.length()+2];
+	int count = 0;
+	struct{
+		u_int16_t type;
+		u_int16_t cls;
+	}query;
+	
+	if(DNS.flags.qr == 1)
+		_wrap_answer();
+
+	UDP.dst = 53;
+	UDP.len = UDP.len + sizeof(struct MYDNS) + sizeof(query) + sizeof(name) + answer_len;
+	pgen_udp::compile();
+
+
+	memset(&dns, 0, sizeof dns);
+	dns.id = htons(DNS.id);
+	
+	if(DNS.flags.qr == 1)	dns.qr = 1;
+	dns.opcode = DNS.flags.opcode;
+	if(DNS.flags.aa == 1)	dns.aa = 1;
+	if(DNS.flags.tc == 1)	dns.tc = 1;
+	if(DNS.flags.rd == 1)	dns.rd = 1;
+	if(DNS.flags.ra == 1)	dns.ra = 1;
+	dns.nouse = DNS.flags.nouse;
+	dns.rcode = DNS.flags.rcode;
+
+	dns.qdcnt = htons(DNS.qdcnt);
+	dns.ancnt = htons(DNS.ancnt);
+	dns.nscnt = htons(DNS.nscnt);
+	dns.arcnt = htons(DNS.arcnt);
+
+	char *str;
+	char buf[256];
+	strncpy(buf, DNS.query.name.c_str(), sizeof(buf)-1);
+	str = strtok(buf, ".");
+	name[count] = (char)strlen(str);
+	count++;
+	for(int i=0; i<strlen(str); i++){
+		name[count] = str[i];
+		count++;
+	}
+	while((str=strtok(NULL, ".")) != NULL){
+		name[count] = (char)strlen(str);
+		count++;
+		for(int i=0; i<strlen(str); i++){
+			name[count] = str[i];
+			count++;
+		}
+	}
+	name[count] = 0x00;
+	count++;
+
+	query.type = htons(DNS.query.type);
+	query.cls  = htons(DNS.query.cls);
+
+
+	u_char* p = data;
+	memcpy(p, &eth, sizeof eth);
+	p += sizeof(eth);
+	memcpy(p, &ip, sizeof ip);
+	p += sizeof(struct MYIP);
+	memcpy(p, &udp, sizeof udp);
+	p += sizeof(struct MYUDP);
+	memcpy(p, &dns, sizeof dns);
+	p += sizeof(struct MYDNS);
+	memcpy(p, name, count);
+	p += count;
+	memcpy(p, &query, sizeof(query));
+	p += sizeof(query);
+
+	if(dns.qr == 1){
+		memcpy(p, &answer, sizeof(answer));
+		p += answer_len;
+	}
+	len = p-data;
+	
+	compile_addData();
+}
+
+void pgen_dns::_wrap_query(){}
+
+
+void pgen_dns::_wrap_answer(){
+	bit16 name;
+	struct{
+		//bit16 name;
+		bit16 type;
+		bit16 cls ;
+		bit32 ttl ;
+		bit16 len ;
+		bit8  addr[4];
+	}buf;
+	
+	name = htons(0xc00c);
+	buf.type = htons(DNS.answer.type);
+	buf.cls  = htons(DNS.answer.cls );
+	buf.ttl  = htons(DNS.answer.ttl );
+	buf.len  = htons(DNS.answer.len );
+	      
+	buf.addr[0] = DNS.answer.addr.getOctet(0);
+	buf.addr[1] = DNS.answer.addr.getOctet(1);
+	buf.addr[2] = DNS.answer.addr.getOctet(2);
+	buf.addr[3] = DNS.answer.addr.getOctet(3);
+	
+	memcpy(answer, &name, sizeof(name));
+	memcpy(answer+2, &buf, sizeof(buf));
+	answer_len = sizeof(buf)+2;
+}
+
+
+
 
 
 
@@ -166,123 +279,6 @@ void pgen_dns::cast(const u_char* packet, int len){
 	DNS.answer.ttl  = htonl(ans.ttl );
 	DNS.answer.len  = htons(ans.len );
 	DNS.answer.addr = ansaddrstr;
-}
-
-
-
-void pgen_dns::compile(){
-	
-	char name[DNS.query.name.length()+2];
-	int count = 0;
-	struct{
-		u_int16_t type;
-		u_int16_t cls;
-	}query;
-	
-	if(DNS.flags.qr == 1)
-		_wrap_answer();
-
-	UDP.dst = 53;
-	UDP.len = UDP.len + sizeof(struct MYDNS) + sizeof(query) + sizeof(name) + answer_len;
-	pgen_udp::compile();
-
-
-	memset(&dns, 0, sizeof dns);
-	dns.id = htons(DNS.id);
-	
-	if(DNS.flags.qr == 1)	dns.qr = 1;
-	dns.opcode = DNS.flags.opcode;
-	if(DNS.flags.aa == 1)	dns.aa = 1;
-	if(DNS.flags.tc == 1)	dns.tc = 1;
-	if(DNS.flags.rd == 1)	dns.rd = 1;
-	if(DNS.flags.ra == 1)	dns.ra = 1;
-	dns.nouse = DNS.flags.nouse;
-	dns.rcode = DNS.flags.rcode;
-
-	dns.qdcnt = htons(DNS.qdcnt);
-	dns.ancnt = htons(DNS.ancnt);
-	dns.nscnt = htons(DNS.nscnt);
-	dns.arcnt = htons(DNS.arcnt);
-
-	char *str;
-	char buf[256];
-	strncpy(buf, DNS.query.name.c_str(), sizeof(buf)-1);
-	str = strtok(buf, ".");
-	name[count] = (char)strlen(str);
-	count++;
-	for(int i=0; i<strlen(str); i++){
-		name[count] = str[i];
-		count++;
-	}
-	while((str=strtok(NULL, ".")) != NULL){
-		name[count] = (char)strlen(str);
-		count++;
-		for(int i=0; i<strlen(str); i++){
-			name[count] = str[i];
-			count++;
-		}
-	}
-	name[count] = 0x00;
-	count++;
-
-	query.type = htons(DNS.query.type);
-	query.cls  = htons(DNS.query.cls);
-
-
-	u_char* p = data;
-	memcpy(p, &eth, sizeof eth);
-	p += sizeof(eth);
-	memcpy(p, &ip, sizeof ip);
-	p += sizeof(struct MYIP);
-	memcpy(p, &udp, sizeof udp);
-	p += sizeof(struct MYUDP);
-	memcpy(p, &dns, sizeof dns);
-	p += sizeof(struct MYDNS);
-	memcpy(p, name, count);
-	p += count;
-	memcpy(p, &query, sizeof(query));
-	p += sizeof(query);
-
-	if(dns.qr == 1){
-		memcpy(p, &answer, sizeof(answer));
-		p += answer_len;
-	}
-	len = p-data;
-	
-	compile_addData();
-}
-
-void pgen_dns::_wrap_query(){}
-
-
-void pgen_dns::_wrap_answer(){
-	
-
-	bit16 name;
-	struct{
-		//bit16 name;
-		bit16 type;
-		bit16 cls ;
-		bit32 ttl ;
-		bit16 len ;
-		bit8  addr[4];
-	}buf;
-	
-	name = htons(0xc00c);
-	buf.type = htons(DNS.answer.type);
-	buf.cls  = htons(DNS.answer.cls );
-	buf.ttl  = htons(DNS.answer.ttl );
-	buf.len  = htons(DNS.answer.len );
-	      
-	buf.addr[0] = DNS.answer.addr.getOctet(0);
-	buf.addr[1] = DNS.answer.addr.getOctet(1);
-	buf.addr[2] = DNS.answer.addr.getOctet(2);
-	buf.addr[3] = DNS.answer.addr.getOctet(3);
-	
-	memcpy(answer, &name, sizeof(name));
-	memcpy(answer+2, &buf, sizeof(buf));
-	answer_len = sizeof(buf)+2;
-	
 }
 
 

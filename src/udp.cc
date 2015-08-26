@@ -40,24 +40,24 @@ void pgen_udp::clear(){
 
 
 void pgen_udp::compile(){
-	IP.protocol = 17;
-	IP.tot_len = (sizeof(ip) + UDP.len);
+	this->IP.protocol = 17;
+	this->IP.tot_len = IP_HDR_LEN + this->UDP.len;
 	pgen_ip::compile();
 
-	memset(&udp, 0, sizeof udp);
-	udp.source = htons(UDP.src);
-	udp.dest   = htons(UDP.dst);
-	udp.len    = htons(UDP.len);
-	udp.check  = 0;
+	memset(&this->udp, 0, UDP_HDR_LEN);
+	this->udp.source = htons(this->UDP.src);
+	this->udp.dest   = htons(this->UDP.dst);
+	this->udp.len    = htons(this->UDP.len);
+	this->udp.check  = 0;
 	
-	u_char* p = data;
-	memcpy(p, &eth, sizeof eth);
-	p += sizeof(eth);
-	memcpy(p, &ip, sizeof ip);
-	p += sizeof(struct MYIP);
-	memcpy(p, &udp, sizeof udp);
-	p += sizeof(struct MYUDP);
-	len = p-data;
+	u_char* p = this->data;
+	memcpy(p, &this->eth, ETH_HDR_LEN);
+	p += ETH_HDR_LEN;
+	memcpy(p, &this->ip, IP_HDR_LEN);
+	p += IP_HDR_LEN;
+	memcpy(p, &this->udp, UDP_HDR_LEN);
+	p += UDP_HDR_LEN;
+	len = p - this->data;
 	
 	compile_addData();
 }
@@ -65,23 +65,26 @@ void pgen_udp::compile(){
 
 
 void pgen_udp::cast(const u_char* data, int len){
-	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "udp packet length not support (%d)\n", len);
+	if(!(this->minLen<=len && len<=this->maxLen)){
+		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
 	
-	
 	pgen_ip::cast(data, len);
+
+	const u_char* p = data;
+	p += ETH_HDR_LEN;
+	p += IP_HDR_LEN;
+
+	struct MYUDP *buf = (struct MYUDP*)p;
+	p += UDP_HDR_LEN;
+
+	this->UDP.src = ntohs(buf->source);
+	this->UDP.dst = ntohs(buf->dest);
+	this->UDP.len = ntohs(buf->len);
 	
-
-
-	struct MYUDP buf;
-	memcpy(&buf, data+sizeof(struct MYETH)+sizeof(struct MYIP),
-			sizeof(buf));
-	
-	UDP.src = ntohs(buf.source);
-	UDP.dst = ntohs(buf.dest);
-
+	this->len = p - data;
+	addData(p, len-(p-data));
 }
 
 
@@ -101,6 +104,7 @@ void pgen_udp::info(){
 			UDP.src, pgen_port2service(UDP.src, 2));
 	printf("    - Destination Port:  %d (%s)\n", 
 			UDP.dst, pgen_port2service(UDP.dst, 2));
+	printf("    - Length          :  %d \n", UDP.len);
 }
 
 
