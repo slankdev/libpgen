@@ -334,11 +334,12 @@ void pgen_dns::cast(const u_char* packet, int len){
 // not coding now
 void pgen_dns::summary(){
 	compile();
+	printf("DNS{ ");
 	if(dns.qr == 1){
-  		printf("Query response 0x%04x %s %s\n", ntohs(dns.id), DNS.query[1].name.c_str(),
-				DNS.answer[1].addr.c_str());
+  		printf("Query response 0x%04x %s %s }\n", ntohs(dns.id), DNS.query[0].name.c_str(),
+				DNS.answer[0].addr.c_str());
 	}else{
-		printf("Query 0x%04x %s\n", ntohs(dns.id), DNS.query[1].name.c_str());	
+		printf("Query 0x%04x %s }\n", ntohs(dns.id), DNS.query[0].name.c_str());	
 	}
 }
 
