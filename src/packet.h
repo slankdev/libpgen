@@ -170,12 +170,12 @@ class pgen_tcp : public pgen_ip {
 			int src;
 			int dst;
 			struct{
-				char fin;
-				char syn;
-				char rst;
-				char psh;
-				char ack;
-				char urg;
+				char fin:1;
+				char syn:1;
+				char rst:1;
+				char psh:1;
+				char ack:1;
+				char urg:1;
 			}flags;
 			int window;
 			int seq;
@@ -232,14 +232,14 @@ class pgen_dns :public pgen_udp {
 		struct{
 			u_int16_t id;
 			struct{
-				bit8 qr;
-				bit8 opcode;
-				bit8 aa;
-				bit8 tc;
-				bit8 rd;
-				bit8 ra;
-				bit8 nouse;
-				bit8 rcode;
+				bit8 qr:1;
+				bit8 opcode:4;
+				bit8 aa:1;
+				bit8 tc:1;
+				bit8 rd:1;
+				bit8 ra:1;
+				bit8 nouse:3;
+				bit8 rcode:4;
 			}flags;
 			u_int16_t qdcnt;
 			u_int16_t ancnt;
@@ -320,14 +320,12 @@ class pgen_ardrone : public pgen_udp {
 class pgen_unknown{
 	public:
 		int len;
-		
 		bool isETH;
 		bool isARP;
 		bool isIP;
 		bool isICMP;
 		bool isTCP;
 		bool isUDP;
-		
 		struct{
 			macaddr src;
 			macaddr dst;
