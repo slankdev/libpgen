@@ -92,3 +92,7 @@ void pgen_packet::hex(){
 
 
 
+void pgen_packet::send_handle(pgen_t* handle){
+	compile();
+	pgen_sendpacket_handle(handle, this->data, this->len);
+}

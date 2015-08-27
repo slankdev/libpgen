@@ -18,11 +18,46 @@
 
 #include "pgen.h"
 #include "netutil.h"
+#include "packet.h"
 
 
 
 
 
+pgen_t* pgen_open(const char* dev, int promisc, void* nouseyet){
+	pgen_t* p = (pgen_t*)malloc(sizeof(pgen_t));
+	
+	p->fd = initRawSocket(dev, promisc, 0);
+	if(p->fd < 0){
+		perror("pgen_open()");
+		p =  NULL;
+	}
+
+	return p;
+}
+
+
+
+void pgen_close(pgen_t* p){
+	free(p);
+	return ;	
+}
+
+
+
+void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
+	u_char packet[20000];
+	bool result = true;
+	int len;
+	
+	for(;result;){
+		if((len = read(handle->fd, packet, sizeof(packet))) < 0){
+			perror("sniff_handle");
+			return;
+		}
+		result = (*callback)(packet, len);
+	}
+}
 
 
 
@@ -39,7 +74,7 @@ void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
 
 	for(;result;){
 		if((len = read(sock, packet, sizeof(packet))) < 0){
-			perror("read");
+			perror("sniff");
 			return;
 		}
 		result = (*callback)(packet, len);
@@ -47,6 +82,15 @@ void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
 }
 
 
+
+int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
+	int sendlen = write(p->fd, packet, len);
+	if(sendlen < 0){
+		perror("pgen_sendpacket_handle");
+	}
+
+	return sendlen;
+}
 
 
 
@@ -86,6 +130,7 @@ int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
 	close(sock);
 	return sendlen;
 }
+
 
 
 
@@ -198,14 +243,14 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 		if(sock < 0){
-			perror("InitRawSocket");
+			perror("initRawSocket");
 			return -1;
 		}
 
 		memset(&ifreq, 0, sizeof(struct ifreq));
 		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
 		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
-			perror("InitRawSocket");
+			perror("initRawSocket");
 			close(sock);
 			return -1;
 		}
@@ -214,20 +259,20 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		sa.sll_protocol = htons(ETH_P_ALL);
 		sa.sll_ifindex  = ifreq.ifr_ifindex;
 		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
-			perror("InitRawSocket");
+			perror("initRawSocket");
 			close(sock);
 			return -1;
 		}
 
 		if(promisc){
 			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
-				perror("InitRawSocket");
+				perror("initRawSocket");
 				close(sock);
 				return -1;
 			}
 			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
 			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
-				perror("InitRawSocket");
+				perror("initRawSocket");
 				close(sock);
 				return -1;
 			}

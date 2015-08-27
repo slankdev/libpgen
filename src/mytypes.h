@@ -5,6 +5,21 @@
 #include <endian.h>		// for BYTE_ORDER
 
 
+typedef struct pgen pgen_t;
+
+struct pgen_opt{
+	int overip;	
+};
+
+struct pgen{
+	int fd;
+	struct pgen_opt opt;
+};
+
+
+
+
+
 
 typedef unsigned char      bit8;
 typedef unsigned short     bit16;

@@ -41,6 +41,7 @@ class pgen_packet{
 		void hex();
 		void addData(const u_char* , int );
 		void compile_addData(); 
+		void send_handle(pgen_t*);
 };
 
 
