@@ -18,6 +18,7 @@ typedef unsigned long long bit128;
 #define ICMP_HDR_LEN  sizeof(struct MYICMP)
 #define TCP_HDR_LEN sizeof(struct MYTCP)
 #define UDP_HDR_LEN sizeof(struct MYUDP)
+#define DNS_HDR_LEN sizeof(struct MYDNS)
 
 
 

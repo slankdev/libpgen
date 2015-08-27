@@ -6,6 +6,9 @@
 #include "netutil.h"
 
 #include <map>
+#include <string>
+#include <vector>
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,6 +18,31 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+
+static char* get_dns_name(const char* iurl){
+	int result_len = 64;
+	char* result = (char*)malloc(result_len);
+	char url[result_len];
+	std::vector<std::string> vec;
+	
+	memcpy(url, iurl, sizeof(url));
+	memset(result, 0, result_len);
+	
+	for(char *tp=strtok(url, "."); tp!=NULL; tp=strtok(NULL, ".")){
+		if(tp != NULL)
+			vec.push_back(tp);
+	}
+
+	for(int i=0; i<vec.size(); i++){
+		char buf[100];
+		snprintf(buf, sizeof(buf), ".%s", vec[i].c_str());
+		buf[0] = (int)strlen(vec[i].c_str());
+		buf[strlen(vec[i].c_str())+1] = '\0';
+		
+		strncat(result, buf, result_len-strlen(result));
+	}
+	return result;
+}
 
 
 pgen_dns::pgen_dns(){
@@ -35,7 +63,6 @@ void pgen_dns::clear(){
 	pgen_udp::clear();
 
 	DNS.id	   = 0x0000;
-	
 	DNS.flags.qr = 0;
 	DNS.flags.opcode = 0;
 	DNS.flags.aa = 0;
@@ -44,50 +71,111 @@ void pgen_dns::clear(){
 	DNS.flags.ra = 0;
 	DNS.flags.nouse = 0;
 	DNS.flags.rcode = 0;
-
 	DNS.qdcnt = 0x0001;
 	DNS.ancnt = 0x0000;
 	DNS.nscnt = 0x0000;
 	DNS.arcnt = 0x0000;
+	
+	clear_query();
+	clear_answer();
+}	
+
+
+void pgen_dns::clear_query(){
 	DNS.query.name  = "example.com";
 	DNS.query.type  = 0x0001;
 	DNS.query.cls   = 0x0001;
-
-	DNS.answer.name = 0;
-	DNS.answer.type = 0;
-	DNS.answer.cls  = 0;
-	DNS.answer.ttl  = 0;
-	DNS.answer.len  = 0;
-	DNS.answer.addr = 0;
 }
+
+void pgen_dns::clear_answer(){
+	DNS.answer.name = 0xc00c;
+	DNS.answer.type = 0x0001;
+	DNS.answer.cls  = 0x0001;
+	DNS.answer.ttl  = 0x00000b44;
+	DNS.answer.len  = 0x0004;
+	DNS.answer.addr = "127.0.0.1";
+}
+
 
 
 void pgen_dns::compile_query(){
+	memset(query_data, 0, sizeof(query_data));
+	query_data_len = 0;
+	
+	char* name;
+	struct{
+		bit16 type;
+		bit16 cls;
+	}q_data;
+
+	name = get_dns_name(DNS.query.name.c_str());
+	q_data.type = htons(DNS.query.type);
+	q_data.cls  = htons(DNS.query.cls);
+	
+	bit8* p = query_data;
+	memcpy(p, name, strlen(name)+1);
+	p += strlen(name)+1;
+	memcpy(p, &q_data, sizeof(q_data));
+	p += sizeof(q_data);
+
+	query_data_len = p - query_data;
+}
+
+
+
+void pgen_dns::compile_answer(){
+	memset(answer_data, 0, sizeof(answer_data));
+	answer_data_len = 0;
+	
+	if(DNS.flags.qr != 1)
+		return;
+
+	struct{
+		bit16 name;
+		bit16 type;
+		bit16 cls;
+	}a_data1;
+	bit32 ttl;
+	struct{
+		bit16 len;
+		bit8 addr[4];
+			
+	}a_data2;
+
+	a_data1.name = htons(DNS.answer.name);
+	a_data1.type = htons(DNS.answer.type);
+	a_data1.cls  = htons(DNS.answer.cls);
+	ttl  = htonl(DNS.answer.ttl);
+	a_data2.len  = htons(DNS.answer.len);
+	for(int i=0; i<4; i++)
+		a_data2.addr[i] = DNS.answer.addr.getOctet(i);
+
+	bit8* p = answer_data;
+	memcpy(p, &a_data1, sizeof(a_data1));
+	p += sizeof(a_data1);
+	memcpy(p, &ttl, sizeof(ttl));
+	p += sizeof(ttl);
+	memcpy(p, &a_data2, sizeof(a_data2));
+	p += sizeof(a_data2);
+	
+	answer_data_len = p - answer_data;
+	
 
 }
 
-void pgen_dns::compile_answer(){}
+
 
 
 void pgen_dns::compile(){
-	char name[DNS.query.name.length()+2];
-	int count = 0;
-	struct{
-		u_int16_t type;
-		u_int16_t cls;
-	}query;
-	
-	if(DNS.flags.qr == 1)
-		_wrap_answer();
+	compile_query();
+	compile_answer();
 
 	UDP.dst = 53;
-	UDP.len = UDP.len + sizeof(struct MYDNS) + sizeof(query) + sizeof(name) + answer_len;
+	UDP.len = UDP_HDR_LEN + DNS_HDR_LEN + query_data_len + answer_data_len;
 	pgen_udp::compile();
-
 
 	memset(&dns, 0, sizeof dns);
 	dns.id = htons(DNS.id);
-	
 	if(DNS.flags.qr == 1)	dns.qr = 1;
 	dns.opcode = DNS.flags.opcode;
 	if(DNS.flags.aa == 1)	dns.aa = 1;
@@ -102,31 +190,6 @@ void pgen_dns::compile(){
 	dns.nscnt = htons(DNS.nscnt);
 	dns.arcnt = htons(DNS.arcnt);
 
-	char *str;
-	char buf[256];
-	strncpy(buf, DNS.query.name.c_str(), sizeof(buf)-1);
-	str = strtok(buf, ".");
-	name[count] = (char)strlen(str);
-	count++;
-	for(int i=0; i<strlen(str); i++){
-		name[count] = str[i];
-		count++;
-	}
-	while((str=strtok(NULL, ".")) != NULL){
-		name[count] = (char)strlen(str);
-		count++;
-		for(int i=0; i<strlen(str); i++){
-			name[count] = str[i];
-			count++;
-		}
-	}
-	name[count] = 0x00;
-	count++;
-
-	query.type = htons(DNS.query.type);
-	query.cls  = htons(DNS.query.cls);
-
-
 	u_char* p = data;
 	memcpy(p, &eth, sizeof eth);
 	p += sizeof(eth);
@@ -136,22 +199,16 @@ void pgen_dns::compile(){
 	p += sizeof(struct MYUDP);
 	memcpy(p, &dns, sizeof dns);
 	p += sizeof(struct MYDNS);
-	memcpy(p, name, count);
-	p += count;
-	memcpy(p, &query, sizeof(query));
-	p += sizeof(query);
-
-	if(dns.qr == 1){
-		memcpy(p, &answer, sizeof(answer));
-		p += answer_len;
-	}
-	len = p-data;
 	
-	compile_addData();
+	memcpy(p, &query_data, query_data_len);
+	p += query_data_len;
+	memcpy(p, &answer_data, answer_data_len);
+	p += answer_data_len;
+	
+	len = p - data;
 }
 
 
-void pgen_dns::_wrap_query(){}
 
 
 void pgen_dns::_wrap_answer(){
@@ -176,9 +233,9 @@ void pgen_dns::_wrap_answer(){
 	buf.addr[2] = DNS.answer.addr.getOctet(2);
 	buf.addr[3] = DNS.answer.addr.getOctet(3);
 	
-	memcpy(answer, &name, sizeof(name));
-	memcpy(answer+2, &buf, sizeof(buf));
-	answer_len = sizeof(buf)+2;
+	memcpy(answer_data, &name, sizeof(name));
+	memcpy(answer_data+2, &buf, sizeof(buf));
+	answer_data_len = sizeof(buf)+2;
 }
 
 

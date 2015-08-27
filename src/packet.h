@@ -224,8 +224,10 @@ class pgen_udp : public pgen_ip {
 class pgen_dns :public pgen_udp {
 	protected:
 		struct MYDNS dns;
-		bit8 answer[256];
-		bit32 answer_len;
+		bit8  query_data[256];
+		bit32 query_data_len;
+		bit8  answer_data[256];
+		bit32 answer_data_len;
 	public:
 		static const int minLen = pgen_udp::minLen+sizeof(struct MYDNS);
 		static const int maxLen = PGEN_MAX_PACKET_LEN; 
@@ -269,10 +271,11 @@ class pgen_dns :public pgen_udp {
 		void summary();
 		void info();
 		
+		void clear_query();
+		void clear_answer();
 		void compile_query();
 		void compile_answer();
 		
-		void _wrap_query();
 		void _wrap_answer();
 		void DSUMMARY();
 };
