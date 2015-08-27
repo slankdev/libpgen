@@ -117,15 +117,14 @@ void pgen_arp::cast(const u_char* data, int len){
 
 
 void pgen_arp::summary(){
-	printf("ARP{");
+	printf("ARP{ ");
 	if(ARP.operation == 1){
-		printf("who has %s tell %s \n", ARP.dstIp.c_str(), ARP.srcEth.c_str());
+		printf("who has %s tell %s }\n", ARP.dstIp.c_str(), ARP.srcEth.c_str());
 	}else if(ARP.operation == 2){
-		printf("%s is at %s\n", ARP.srcIp.c_str(), ARP.srcEth.c_str());	
+		printf("%s is at %s }\n", ARP.srcIp.c_str(), ARP.srcEth.c_str());	
 	}else{
-		printf("other arp operation!! \n");	
+		printf("other arp operation!! }\n");	
 	}
-	printf("} \n");
 }
 
 
