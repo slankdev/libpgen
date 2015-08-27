@@ -62,52 +62,6 @@ struct MYETH{
 #define MT_ARPHRD_EUI64			27		/* EUI-64.  */
 #define MT_ARPHRD_INFINIBAND	32		/* InfiniBand.  */
 
-/* Dummy types for non ARP hardware */
-#define MT_ARPHRD_SLIP			256
-#define MT_ARPHRD_CSLIP			257
-#define MT_ARPHRD_SLIP6			258
-#define MT_ARPHRD_CSLIP6		259
-#define MT_ARPHRD_RSRVD			260		/* Notional KISS type.  */
-#define MT_ARPHRD_ADAPT			264
-#define MT_ARPHRD_ROSE			270
-#define MT_ARPHRD_X25			271		/* CCITT X.25.  */
-#define MT_ARPHRD_HWX25			272		/* Boards with X.25 in firmware.  */
-#define MT_ARPHRD_PPP			512
-#define MT_ARPHRD_CISCO			513		/* Cisco HDLC.  */
-#define MT_ARPHRD_HDLC		ARPHRD_CISCO
-#define MT_ARPHRD_LAPB			516		/* LAPB.  */
-#define MT_ARPHRD_DDCMP			517		/* Digital's DDCMP.  */
-#define	MT_ARPHRD_RAWHDLC		518		/* Raw HDLC.  */
-
-#define MT_ARPHRD_TUNNEL		768		/* IPIP tunnel.  */
-#define MT_ARPHRD_TUNNEL6		769		/* IPIP6 tunnel.  */
-#define MT_ARPHRD_FRAD			770     /* Frame Relay Access Device.  */
-#define MT_ARPHRD_SKIP			771		/* SKIP vif.  */
-#define MT_ARPHRD_LOOPBACK		772		/* Loopback device.  */
-#define MT_ARPHRD_LOCALTLK		773		/* Localtalk device.  */
-#define MT_ARPHRD_FDDI			774		/* Fiber Distributed Data Interface. */
-#define MT_ARPHRD_BIF			775     /* AP1000 BIF.  */
-#define MT_ARPHRD_SIT			776		/* sit0 device - IPv6-in-IPv4.  */
-#define MT_ARPHRD_IPDDP			777		/* IP-in-DDP tunnel.  */
-#define MT_ARPHRD_IPGRE			778		/* GRE over IP.  */
-#define MT_ARPHRD_PIMREG		779		/* PIMSM register interface.  */
-#define MT_ARPHRD_HIPPI			780		/* High Performance Parallel I'face. */
-#define MT_ARPHRD_ASH			781		/* (Nexus Electronics) Ash.  */
-#define MT_ARPHRD_ECONET		782		/* Acorn Econet.  */
-#define MT_ARPHRD_IRDA			783		/* Linux-IrDA.  */
-#define MT_ARPHRD_FCPP			784		/* Point to point fibrechanel.  */
-#define MT_ARPHRD_FCAL			785		/* Fibrechanel arbitrated loop.  */
-#define MT_ARPHRD_FCPL			786		/* Fibrechanel public loop.  */
-#define MT_ARPHRD_FCFABRIC		787		/* Fibrechanel fabric.  */
-#define MT_ARPHRD_IEEE802_TR 	800		/* Magic type ident for TR.  */
-#define MT_ARPHRD_IEEE80211 	801		/* IEEE 802.11.  */
-#define MT_ARPHRD_IEEE80211_PRISM 		802	/* IEEE 802.11 + Prism2 header.  */
-#define MT_ARPHRD_IEEE80211_RADIOTAP	803	/* IEEE 802.11 + radiotap header.  */
-#define MT_ARPHRD_IEEE802154 			804	/* IEEE 802.15.4 header.  */
-#define MT_ARPHRD_IEEE802154_PHY 		805	/* IEEE 802.15.4 PHY header.  */
-         
-#define MT_ARPHRD_VOID	  		0xFFFF	/* Void type, nothing is known.  */
-#define MT_ARPHRD_NONE	  		0xFFFE	/* Zero header length.  */
 
 #define	MT_ARPOP_REQUEST	1		/* ARP request.  */
 #define	MT_ARPOP_REPLY		2		/* ARP reply.  */
@@ -383,23 +337,6 @@ struct MYDNS{
 	bit16 nscnt;
 	bit16 arcnt;
 };
-
-
-
-
-/*
-struct dns_answer{
-	bit16 name;
-	bit16 type;
-	bit16 cls;
-	bit32 ttl;
-	bit16 len;
-	bit8  addr[4];
-};
-*/
-
-
-
 
 
 

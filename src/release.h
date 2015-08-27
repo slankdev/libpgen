@@ -15,7 +15,7 @@ class libpgen{
 /*	rifactering codes 2015/08/19
  *	[ ] return char* function (ipaddr.c_str()  etc...) check
  *
- *	[ ] pgen.h
+ *	[*] pgen.h
  *
  *	[*] address.h
  *
@@ -27,11 +27,11 @@ class libpgen{
  *	[*] icmp.cc
  *	[*] tcp.cc
  *	[*] udp.cc
- *	[ ] dns.cc
+ *	[*] dns.cc
  *	[*] ardrone.cc
  *	[*] unknown.cc
  *
- *  [ ] mytypes.h
+ *  [*] mytypes.h
  *	[*] netutil.cc
  *	[*] netutil.h
  *	[*] release.h
@@ -68,16 +68,14 @@ class libpgen{
  *   	[2015.05.10]	make myPacket structure in TCP		[2015.05.10]
  *		[2015.05.10]	make myPacket structure in UDP		[2015.05.10]
  *		[2015.05.10]	add macro of packet options			[2015.05.10]
- *		[2015.05.11]	add function pgen_port2service(int)		[2015.05.11]
+ *		[2015.05.11]	add function pgen_port2service()	[2015.05.11]
  *		[2015.05.16]	add function summary(void)			[2015.06.23]
  *						print packet info inline
- *		[2015.05.16]	add function nslookup(const)		[]
- *						ipaddr nslookup(url);		 
  *		[2015.07.29]	add packet type	unknown				[2015.07.30]
  *						for recv packet
- *		[2015.08.21]    add func sniff_with_filter()		[]
- *
- *
+ *		[2015.05.16]	add function nslookup(const)		[]
+ *						ipaddr nslookup(url);		 
+ *		[2015.08.27]	dns packet auth additional			[]
  *
  *
  *		BUG			[date]  about  [fin-date]
@@ -87,8 +85,8 @@ class libpgen{
  *		[2015.06.28]	address.h:23 has some warning 		[2015.07.30]
  *						near malloc() and memset() 
  *						in string size is not true
- *		[2015.06.28]	dns.cc:60 has memory error			[]
- *		[2015.07.30]	CAST has big memory error			[]
+ *		[2015.06.28]	dns.cc:60 has memory error			[2015.08.27]
+ *		[2015.07.30]	CAST has big memory error			[2015.08.27]
  *						
  *		
  *		CHANGES

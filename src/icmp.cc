@@ -106,10 +106,10 @@ void pgen_icmp::cast(const u_char* data, int len){
 void pgen_icmp::summary(){
 	compile();
 	printf("ICMP{ ");
-	if(ICMP.option == PGEN_ICMPOP_ECHO && ICMP.code == 0){
+	if(ICMP.option == 8 && ICMP.code == 0){
 		printf("Echo Request id=%d seq=%d ttl=%d }\n", 
 				ICMP.id, ICMP.seq, IP.ttl );
-	}else if(ICMP.option == PGEN_ICMPOP_ECHOREPLY && ICMP.code == 0){
+	}else if(ICMP.option == 0 && ICMP.code == 0){
 		printf("Echo Relay   id=%d seq=%d ttl=%d }\n", 
 				ICMP.id, ICMP.seq, IP.ttl );
 	}else{
