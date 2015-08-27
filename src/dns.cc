@@ -18,31 +18,26 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+void debug(const char* p){
+	for(int i=0; ; i++){
+		if(p[i] == 0) break;
 
-static char* get_dns_name(const char* iurl){
-	int result_len = 64;
-	char* result = (char*)malloc(result_len);
-	char url[result_len];
-	std::vector<std::string> vec;
-	
-	memcpy(url, iurl, sizeof(url));
-	memset(result, 0, result_len);
-	
-	for(char *tp=strtok(url, "."); tp!=NULL; tp=strtok(NULL, ".")){
-		if(tp != NULL)
-			vec.push_back(tp);
+		if(65 <= p[i] && p[i] <= 122){
+			printf("%c", p[i]);	
+		}else{
+			printf("(%d)", p[i]);
+		}
 	}
-
-	for(int i=0; i<vec.size(); i++){
-		char buf[100];
-		snprintf(buf, sizeof(buf), ".%s", vec[i].c_str());
-		buf[0] = (int)strlen(vec[i].c_str());
-		buf[strlen(vec[i].c_str())+1] = '\0';
-		
-		strncat(result, buf, result_len-strlen(result));
-	}
-	return result;
+	printf("%%\n");
 }
+
+
+
+static bool is_dns_name_charcter(char );
+static char* get_dns_name(const char* );
+
+
+
 
 
 pgen_dns::pgen_dns(){
@@ -219,9 +214,37 @@ void pgen_dns::compile(){
 
 
 int pgen_dns::cast_query(const u_char* packet, int len){
+	char* name;
+	struct q_data{
+		bit16 type;
+		bit16 cls;
+	};
+	const struct q_data* buf;
+
+	const u_char* p = packet;
+	p += ETH_HDR_LEN;
+	p += IP_HDR_LEN;
+	p += UDP_HDR_LEN;
+	p += DNS_HDR_LEN;
+
 	
-	
-	return 0;
+	for(int i=0; i<DNS.ancnt; i++){
+		name = (char*)(p+1);
+		for(int j=0; name[j]!='\0'; j++){
+			if(!is_dns_name_charcter(name[j])){
+				name[j] = '.';
+			}
+		}
+		p += strlen(name) + 2;
+		buf = (struct q_data*)p;
+		p += sizeof(struct q_data);
+
+		DNS.query[i].name = name;
+		DNS.query[i].type = ntohs(buf->type);
+		DNS.query[i].cls  = ntohs(buf->cls);
+	}
+
+	return p - packet;
 }
 
 int pgen_dns::cast_answer(const u_char* packet, int len){
@@ -420,3 +443,41 @@ void pgen_dns::info(){
 		printf("         - address    : %s \n", DNS.answer[i].addr.c_str());
 	}
 }
+
+
+
+
+
+
+
+static bool is_dns_name_charcter(char c){
+	return (('a'<=c && c<='z') || ('A'<=c && c<='Z') || ('0'<=c && c<='9')|| c=='-');
+}
+
+
+
+static char* get_dns_name(const char* iurl){
+	int result_len = 64;
+	char* result = (char*)malloc(result_len);
+	char url[result_len];
+	std::vector<std::string> vec;
+	
+	memcpy(url, iurl, sizeof(url));
+	memset(result, 0, result_len);
+	
+	for(char *tp=strtok(url, "."); tp!=NULL; tp=strtok(NULL, ".")){
+		if(tp != NULL)
+			vec.push_back(tp);
+	}
+
+	for(int i=0; i<vec.size(); i++){
+		char buf[100];
+		snprintf(buf, sizeof(buf), ".%s", vec[i].c_str());
+		buf[0] = (int)strlen(vec[i].c_str());
+		buf[strlen(vec[i].c_str())+1] = '\0';
+		
+		strncat(result, buf, result_len-strlen(result));
+	}
+	return result;
+}
+
