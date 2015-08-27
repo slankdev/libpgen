@@ -140,7 +140,6 @@ void pgen_dns::compile_answer(){
 	struct{
 		bit16 len;
 		bit8 addr[4];
-			
 	}a_data2;
 
 
@@ -212,7 +211,6 @@ void pgen_dns::compile(){
 
 
 
-
 int pgen_dns::cast_query(const u_char* packet, int len){
 	char* name;
 	struct q_data{
@@ -221,14 +219,14 @@ int pgen_dns::cast_query(const u_char* packet, int len){
 	};
 	const struct q_data* buf;
 
+	packet += ETH_HDR_LEN;
+	packet += IP_HDR_LEN;
+	packet += UDP_HDR_LEN;
+	packet += DNS_HDR_LEN;
 	const u_char* p = packet;
-	p += ETH_HDR_LEN;
-	p += IP_HDR_LEN;
-	p += UDP_HDR_LEN;
-	p += DNS_HDR_LEN;
 
 	
-	for(int i=0; i<DNS.ancnt; i++){
+	for(int i=0; i<DNS.qdcnt; i++){
 		name = (char*)(p+1);
 		for(int j=0; name[j]!='\0'; j++){
 			if(!is_dns_name_charcter(name[j])){
@@ -247,8 +245,46 @@ int pgen_dns::cast_query(const u_char* packet, int len){
 	return p - packet;
 }
 
+
+
 int pgen_dns::cast_answer(const u_char* packet, int len){
-	return 0;	
+	struct a_data1{
+		bit16 name;
+		bit16 type;
+		bit16 cls;
+	};
+	bit32 ttl;
+	struct a_data2{
+		bit16 len;
+		bit8 addr[4];		
+	};
+
+	packet += ETH_HDR_LEN;
+	packet += IP_HDR_LEN;
+	packet += UDP_HDR_LEN;
+	packet += DNS_HDR_LEN;
+	packet += query_data_len;
+	const u_char* p = packet;
+	
+	for(int i=0; i<DNS.ancnt; i++){
+		struct a_data1* buf1 = (struct a_data1*)p;
+		p += sizeof(struct a_data1);
+		bit32* buf_ttl = (bit32*)p;
+		p += sizeof(bit32);
+		struct a_data2* buf2 = (struct a_data2*)p;
+		p += sizeof(struct a_data2);
+		
+		DNS.answer[i].name = ntohs(buf1->name);
+		DNS.answer[i].type = ntohs(buf1->type);
+		DNS.answer[i].cls  = ntohs(buf1->cls);
+		DNS.answer[i].ttl  = ntohl(*buf_ttl);
+		DNS.answer[i].len  = ntohs(buf2->len);
+		for(int j=0; j<4; j++)
+			DNS.answer[i].addr.setOctet(j, buf2->addr[j]);
+
+	}
+
+	return p - packet;
 }
 
 
@@ -283,90 +319,12 @@ void pgen_dns::cast(const u_char* packet, int len){
 	this->DNS.nscnt = ntohs(buf->nscnt);
 	this->DNS.arcnt = ntohs(buf->arcnt);
 	
-	query_data_len = 0;
-	query_data_len += cast_query(packet, len);	
+	query_data_len = cast_query(packet, len);	
 	p += query_data_len;
-
-	answer_data_len = 0;
-	answer_data_len += cast_answer(packet, len);
+	answer_data_len = cast_answer(packet, len);
 	p += answer_data_len;
 
 	this->len = p - packet;
-	
-		
-
-	/*
-	// query infomation
-	bit8* queryPoint;
-	char url[256];
-	struct query_typecls{
-		bit16 type;
-		bit16 cls;
-	};
-	struct query_typecls* tc;
-	bit32 queryLen;
-
-	// answer infomation
-	bit8* answerPoint;
-	struct answer{
-		bit16 type:16;
-		bit16 cls:16;
-		bit32 ttl:32;
-		bit16 len:16;
-		bit8  addr[4];
-	};
-	struct answer ans;
-	bit32 answerLen;
-
-	queryPoint = (bit8*)(dnsPoint+sizeof(struct MYDNS));
-
-
-	for(queryLen=0; *(queryPoint+queryLen)!=0; queryLen++){
-		if(queryLen==0)	continue;
-		if(queryLen>= 50){
-			printf("stack abunai!!!\n")	;
-			printf("queryLen is too large(%d)\n", queryLen);
-			return;
-
-		}
-
-
-		if(('a' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= 'z') ||
-				('A' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= 'Z') || 
-				('0' <=  *(queryPoint+queryLen) && *(queryPoint+queryLen) <= '9')){
-			url[queryLen-1] = *(queryPoint+queryLen);
-		}else{
-			url[queryLen-1] = '.';
-		}
-	}queryLen += 4 + 1;
-
-
-
-
-	tc = (struct query_typecls*)(queryPoint + queryLen - 4);
-	
-
-	DNS.query.name = url;
-	DNS.query.type = ntohs(tc->type);
-	DNS.query.cls  = ntohs(tc->cls);
-
-
-	answerPoint = queryPoint + queryLen;
-	memcpy(&ans, answerPoint+2, 16);
-
-	char ansaddrstr[16];
-	snprintf(ansaddrstr, sizeof(ansaddrstr), "%d.%d.%d.%d", 
-			ans.addr[0], ans.addr[1], ans.addr[2], ans.addr[3]);
-
-	//DNS.answer.name = htons(answerPoint);
-	DNS.answer.name = 0;
-	DNS.answer.type = htons(ans.type);
-	DNS.answer.cls  = htons(ans.cls );
-	DNS.answer.ttl  = htonl(ans.ttl );
-	DNS.answer.len  = htons(ans.len );
-	DNS.answer.addr = ansaddrstr;
-
-*/
 }
 
 

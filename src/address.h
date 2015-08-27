@@ -52,6 +52,16 @@ class ipaddr{
 		void clear(){
 			this->_addr = 0;	
 		}
+		void setOctet(int n, int num){
+			union lc lc;
+			if(n>=4){
+				fprintf(stderr, "ipaddr::setOctet(): index is not support\n");
+				exit(-1);
+			}else{
+				lc.c[n] = num;
+				this->_addr = lc.l;
+			}
+		}
 		bit8 getOctet(int n){
 			union lc lc;
 			lc.l = this->_addr;
@@ -218,6 +228,14 @@ class macaddr{
 		}
 		void clear(){
 			memset(this->_addr, 0, sizeof(char[6]));	
+		}
+		void setOctet(int n, int num){
+			if(n>=6){
+				fprintf(stderr, "macaddr::setOctet(): index is not support\n");
+				exit(-1);
+			}else{
+				this->_addr[n] = num;
+			}
 		}
 		bit8 getOctet(int n){
 			if(n>=6){
