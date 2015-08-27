@@ -220,7 +220,8 @@ class pgen_udp : public pgen_ip {
 
 
 
-
+#define MAX_QUERY  16
+#define MAX_ANSWER 16
 class pgen_dns :public pgen_udp {
 	protected:
 		struct MYDNS dns;
@@ -229,7 +230,7 @@ class pgen_dns :public pgen_udp {
 		bit8  answer_data[256];
 		bit32 answer_data_len;
 	public:
-		static const int minLen = pgen_udp::minLen+sizeof(struct MYDNS);
+		static const int minLen = pgen_udp::minLen+DNS_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN; 
 		struct{
 			u_int16_t id;
@@ -251,7 +252,7 @@ class pgen_dns :public pgen_udp {
 				std::string name;
 				u_int16_t type;
 				u_int16_t cls;
-			}query;
+			}query[MAX_QUERY];
 			struct{
 				bit16  name;
 				bit16  type;
@@ -259,14 +260,14 @@ class pgen_dns :public pgen_udp {
 				bit32  ttl;
 				bit16  len;
 				ipaddr addr;
-			}answer;
+			}answer[MAX_ANSWER];
 		}DNS;
 
 		pgen_dns();
 		pgen_dns(const u_char*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int);
+		void cast(const u_char*, int);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
@@ -275,6 +276,9 @@ class pgen_dns :public pgen_udp {
 		void clear_answer();
 		void compile_query();
 		void compile_answer();
+		int  cast_query(const u_char*, int);
+		int  cast_answer(const u_char*, int);
+		
 		
 		void _wrap_answer();
 		void DSUMMARY();

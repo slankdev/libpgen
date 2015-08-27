@@ -82,18 +82,22 @@ void pgen_dns::clear(){
 
 
 void pgen_dns::clear_query(){
-	DNS.query.name  = "example.com";
-	DNS.query.type  = 0x0001;
-	DNS.query.cls   = 0x0001;
+	for(int i=0; i<MAX_QUERY; i++){
+		DNS.query[i].name  = "example.com";
+		DNS.query[i].type  = 0x0001;
+		DNS.query[i].cls   = 0x0001;
+	}
 }
 
 void pgen_dns::clear_answer(){
-	DNS.answer.name = 0xc00c;
-	DNS.answer.type = 0x0001;
-	DNS.answer.cls  = 0x0001;
-	DNS.answer.ttl  = 0x00000b44;
-	DNS.answer.len  = 0x0004;
-	DNS.answer.addr = "127.0.0.1";
+	for(int i=0; i<MAX_ANSWER; i++){
+		DNS.answer[i].name = 0xc00c;
+		DNS.answer[i].type = 0x0001;
+		DNS.answer[i].cls  = 0x0001;
+		DNS.answer[i].ttl  = 0x00000b44;
+		DNS.answer[i].len  = 0x0004;
+		DNS.answer[i].addr = "127.0.0.1";
+	}
 }
 
 
@@ -108,15 +112,17 @@ void pgen_dns::compile_query(){
 		bit16 cls;
 	}q_data;
 
-	name = get_dns_name(DNS.query.name.c_str());
-	q_data.type = htons(DNS.query.type);
-	q_data.cls  = htons(DNS.query.cls);
-	
 	bit8* p = query_data;
-	memcpy(p, name, strlen(name)+1);
-	p += strlen(name)+1;
-	memcpy(p, &q_data, sizeof(q_data));
-	p += sizeof(q_data);
+	for(int j=0; j<DNS.qdcnt; j++){
+		name = get_dns_name(DNS.query[j].name.c_str());
+		q_data.type = htons(DNS.query[j].type);
+		q_data.cls  = htons(DNS.query[j].cls);
+		
+		memcpy(p, name, strlen(name)+1);
+		p += strlen(name)+1;
+		memcpy(p, &q_data, sizeof(q_data));
+		p += sizeof(q_data);
+	}
 
 	query_data_len = p - query_data;
 }
@@ -129,7 +135,7 @@ void pgen_dns::compile_answer(){
 	
 	if(DNS.flags.qr != 1)
 		return;
-
+	
 	struct{
 		bit16 name;
 		bit16 type;
@@ -142,25 +148,26 @@ void pgen_dns::compile_answer(){
 			
 	}a_data2;
 
-	a_data1.name = htons(DNS.answer.name);
-	a_data1.type = htons(DNS.answer.type);
-	a_data1.cls  = htons(DNS.answer.cls);
-	ttl  = htonl(DNS.answer.ttl);
-	a_data2.len  = htons(DNS.answer.len);
-	for(int i=0; i<4; i++)
-		a_data2.addr[i] = DNS.answer.addr.getOctet(i);
 
 	bit8* p = answer_data;
-	memcpy(p, &a_data1, sizeof(a_data1));
-	p += sizeof(a_data1);
-	memcpy(p, &ttl, sizeof(ttl));
-	p += sizeof(ttl);
-	memcpy(p, &a_data2, sizeof(a_data2));
-	p += sizeof(a_data2);
-	
-	answer_data_len = p - answer_data;
-	
+	for(int j=0; j<DNS.ancnt; j++){
 
+		a_data1.name = htons(DNS.answer[j].name);
+		a_data1.type = htons(DNS.answer[j].type);
+		a_data1.cls  = htons(DNS.answer[j].cls);
+		ttl  = htonl(DNS.answer[j].ttl);
+		a_data2.len  = htons(DNS.answer[j].len);
+		for(int i=0; i<4; i++)
+			a_data2.addr[i] = DNS.answer[j].addr.getOctet(i);
+
+		memcpy(p, &a_data1, sizeof(a_data1));
+		p += sizeof(a_data1);
+		memcpy(p, &ttl, sizeof(ttl));
+		p += sizeof(ttl);
+		memcpy(p, &a_data2, sizeof(a_data2));
+		p += sizeof(a_data2);
+	}
+	answer_data_len = p - answer_data;
 }
 
 
@@ -176,12 +183,12 @@ void pgen_dns::compile(){
 
 	memset(&dns, 0, sizeof dns);
 	dns.id = htons(DNS.id);
-	if(DNS.flags.qr == 1)	dns.qr = 1;
+	dns.qr = DNS.flags.qr;
 	dns.opcode = DNS.flags.opcode;
-	if(DNS.flags.aa == 1)	dns.aa = 1;
-	if(DNS.flags.tc == 1)	dns.tc = 1;
-	if(DNS.flags.rd == 1)	dns.rd = 1;
-	if(DNS.flags.ra == 1)	dns.ra = 1;
+	dns.aa = DNS.flags.aa;
+	dns.tc = DNS.flags.tc;
+	dns.rd = DNS.flags.rd;
+	dns.ra = DNS.flags.ra;
 	dns.nouse = DNS.flags.nouse;
 	dns.rcode = DNS.flags.rcode;
 
@@ -211,55 +218,61 @@ void pgen_dns::compile(){
 
 
 
-void pgen_dns::_wrap_answer(){
-	bit16 name;
-	struct{
-		//bit16 name;
-		bit16 type;
-		bit16 cls ;
-		bit32 ttl ;
-		bit16 len ;
-		bit8  addr[4];
-	}buf;
+int pgen_dns::cast_query(const u_char* packet, int len){
 	
-	name = htons(0xc00c);
-	buf.type = htons(DNS.answer.type);
-	buf.cls  = htons(DNS.answer.cls );
-	buf.ttl  = htons(DNS.answer.ttl );
-	buf.len  = htons(DNS.answer.len );
-	      
-	buf.addr[0] = DNS.answer.addr.getOctet(0);
-	buf.addr[1] = DNS.answer.addr.getOctet(1);
-	buf.addr[2] = DNS.answer.addr.getOctet(2);
-	buf.addr[3] = DNS.answer.addr.getOctet(3);
 	
-	memcpy(answer_data, &name, sizeof(name));
-	memcpy(answer_data+2, &buf, sizeof(buf));
-	answer_data_len = sizeof(buf)+2;
+	return 0;
+}
+
+int pgen_dns::cast_answer(const u_char* packet, int len){
+	return 0;	
 }
 
 
 
-
-
-
-
 void pgen_dns::cast(const u_char* packet, int len){
-	if(!( minLen<=len && len<=maxLen )){
-		fprintf(stderr, "dns packet length not support (%d)\n", len);
+	if(!(this->minLen<=len && len<=this->maxLen)){
+		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
-	
-	
+
 	pgen_udp::cast(packet, len);	
+	const u_char* p = packet;
+
+	p += ETH_HDR_LEN;
+	p += IP_HDR_LEN;
+	p += UDP_HDR_LEN;
 	
+	struct MYDNS* buf = (struct MYDNS*)p;
+	p += DNS_HDR_LEN;
 
-	const bit8* dnsPoint = packet + sizeof(struct MYETH)
-			+ sizeof(struct MYIP) + sizeof(struct MYUDP);
-	struct MYDNS buf;
-	memcpy(&buf, dnsPoint, sizeof(struct MYDNS));
+	this->DNS.id = ntohs(buf->id);
+	this->DNS.flags.qr = buf->qr;
+	this->DNS.flags.opcode = buf->opcode;
+	this->DNS.flags.aa = buf->aa;
+	this->DNS.flags.tc = buf->tc;
+	this->DNS.flags.rd = buf->rd;
+	this->DNS.flags.ra = buf->ra;
+	this->DNS.flags.nouse = buf->nouse;
+	this->DNS.flags.rcode = buf->rcode;
+	this->DNS.qdcnt = ntohs(buf->qdcnt);
+	this->DNS.ancnt = ntohs(buf->ancnt);
+	this->DNS.nscnt = ntohs(buf->nscnt);
+	this->DNS.arcnt = ntohs(buf->arcnt);
+	
+	query_data_len = 0;
+	query_data_len += cast_query(packet, len);	
+	p += query_data_len;
 
+	answer_data_len = 0;
+	answer_data_len += cast_answer(packet, len);
+	p += answer_data_len;
 
+	this->len = p - packet;
+	
+		
+
+	/*
 	// query infomation
 	bit8* queryPoint;
 	char url[256];
@@ -283,20 +296,6 @@ void pgen_dns::cast(const u_char* packet, int len){
 	bit32 answerLen;
 
 	queryPoint = (bit8*)(dnsPoint+sizeof(struct MYDNS));
-
-	DNS.id	  = ntohs(buf.id);
-	DNS.flags.qr = buf.qr;
-	DNS.flags.opcode = buf.opcode;
-	DNS.flags.aa = buf.aa;
-	DNS.flags.tc = buf.tc;
-	DNS.flags.rd = buf.rd;
-	DNS.flags.ra = buf.ra;
-	DNS.flags.nouse = buf.nouse;
-	DNS.flags.rcode = buf.rcode;
-	DNS.qdcnt = ntohs(buf.qdcnt);
-	DNS.ancnt = ntohs(buf.ancnt);
-	DNS.nscnt = ntohs(buf.nscnt);
-	DNS.arcnt = ntohs(buf.arcnt);
 
 
 	for(queryLen=0; *(queryPoint+queryLen)!=0; queryLen++){
@@ -329,7 +328,6 @@ void pgen_dns::cast(const u_char* packet, int len){
 	DNS.query.cls  = ntohs(tc->cls);
 
 
-
 	answerPoint = queryPoint + queryLen;
 	memcpy(&ans, answerPoint+2, 16);
 
@@ -344,6 +342,8 @@ void pgen_dns::cast(const u_char* packet, int len){
 	DNS.answer.ttl  = htonl(ans.ttl );
 	DNS.answer.len  = htons(ans.len );
 	DNS.answer.addr = ansaddrstr;
+
+*/
 }
 
 
@@ -354,29 +354,15 @@ void pgen_dns::cast(const u_char* packet, int len){
 void pgen_dns::summary(){
 	compile();
 	if(dns.qr == 1){
-  		printf("Query response 0x%04x %s %s\n", ntohs(dns.id), DNS.query.name.c_str(),
-				DNS.answer.addr.c_str());
+  		printf("Query response 0x%04x %s %s\n", ntohs(dns.id), DNS.query[1].name.c_str(),
+				DNS.answer[1].addr.c_str());
 	}else{
-		printf("Query 0x%04x %s\n", ntohs(dns.id), DNS.query.name.c_str());	
+		printf("Query 0x%04x %s\n", ntohs(dns.id), DNS.query[1].name.c_str());	
 	}
 }
 
 
 
-
-
-void pgen_dns::DSUMMARY(){
-	compile();
-
-	printf("%s -> %s ", IP.src.c_str(), IP.dst.c_str());
-
-	if(dns.qr == 1){
-  		printf("(Query response 0x%04x %s %s)\n", ntohs(dns.id), DNS.query.name.c_str(),
-				DNS.answer.addr.c_str());
-	}else{
-		printf("(Query 0x%04x %s)\n", ntohs(dns.id), DNS.query.name.c_str());	
-	}
-}
 
 
 
@@ -417,19 +403,20 @@ void pgen_dns::info(){
 	printf("    - Authority RRs   : 0x%04x\n", ntohs(dns.nscnt));
 	printf("    - Additional RRs  : 0x%04x\n", ntohs(dns.arcnt));
 
-	printf("    - Queries \n");
-	printf("         - name       : %s \n", DNS.query.name.c_str());
-	printf("         - type       : 0x%04x \n", DNS.query.type);
-	printf("         - class      : 0x%04x \n", DNS.query.cls);
-
-
-	if(dns.qr == 1){
-		printf("    - Answer  \n");
-		printf("         - name       : 0x%04x (kaihatutyu)\n", DNS.answer.name);
-		printf("         - type       : 0x%04x \n", DNS.answer.type);
-		printf("         - class      : 0x%04x \n", DNS.answer.cls);
-		printf("         - ttl        : 0x%08x \n", DNS.answer.ttl);
-		printf("         - data len   : 0x%04x \n", DNS.answer.len);
-		printf("         - address    : %s \n", DNS.answer.addr.c_str());
+	for(int i=0; i<DNS.qdcnt; i++){
+		printf("    - Queries[%d] \n", i);
+		printf("         - name       : %s \n", DNS.query[i].name.c_str());
+		printf("         - type       : 0x%04x \n", DNS.query[i].type);
+		printf("         - class      : 0x%04x \n", DNS.query[i].cls);
+	}
+	
+	for(int i=0; i<DNS.ancnt; i++){
+		printf("    - Answer[%d]  \n", i);
+		printf("         - name       : 0x%04x (kaihatutyu)\n", DNS.answer[i].name);
+		printf("         - type       : 0x%04x \n", DNS.answer[i].type);
+		printf("         - class      : 0x%04x \n", DNS.answer[i].cls);
+		printf("         - ttl        : 0x%08x \n", DNS.answer[i].ttl);
+		printf("         - data len   : 0x%04x \n", DNS.answer[i].len);
+		printf("         - address    : %s \n", DNS.answer[i].addr.c_str());
 	}
 }
