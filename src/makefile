@@ -76,7 +76,7 @@ copyheader:
 	$(CP) packet.h      /usr/local/include/packet.h
 	$(CP) pgen.h        /usr/local/include/pgen.h
 	$(CP) release.h     /usr/local/include/release.h
-	$(CP) release.h     /usr/local/include/debug.h
+	$(CP) debug.h     /usr/local/include/debug.h
 
 copymaclist:
 	$(CP) mac_code.list /usr/local/etc/mac_code.list

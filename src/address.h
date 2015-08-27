@@ -188,6 +188,19 @@ class ipaddr{
 		bool operator!=(const ipaddr iaddr){
 			return this->_addr != iaddr._addr;
 		}
+		ipaddr  operator++(int){
+			ipaddr newaddr = *this;
+			union lc lc;
+			lc.l = this->_addr;
+			for(int i=3; i>=0; i--){
+				if(lc.c[i] < 255){	
+					lc.c[i]++;
+					break;
+				}
+			}
+			this->_addr = lc.l;
+			return newaddr;
+		}
 };
 
 
@@ -267,6 +280,12 @@ class macaddr{
 			for(int i=0; i<6; i++)
 				this->_addr[i] = (unsigned char)ifr.ifr_hwaddr.sa_data[i];
 			return true;		
+		}
+		bool setmacbroadcast(){
+			for(int i=0; i<6; i++){
+				_addr[i] = 0xff;
+			}
+			return true;
 		}
 		char* bender(){
 			unsigned int mac[3];

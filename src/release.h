@@ -3,15 +3,6 @@
 
 
 
-class libpgen{
-	static const char* version = "0.01";
-	static const char* name = "libpgen";
-	static const char* fullname = "libpgen ver 0.01";
-	static const char* author = "slank (Hiroki Shirokura)";
-	static const char* author_email = "slank.dev@gmail.com";
-}
-
-
 /*	rifactering codes 2015/08/19
  *	[ ] return char* function (ipaddr.c_str()  etc...) check
  *
