@@ -269,6 +269,9 @@ class pgen_dns :public pgen_udp {
 		void summary();
 		void info();
 		
+		void compile_query();
+		void compile_answer();
+		
 		void _wrap_query();
 		void _wrap_answer();
 		void DSUMMARY();

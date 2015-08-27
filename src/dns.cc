@@ -62,6 +62,13 @@ void pgen_dns::clear(){
 }
 
 
+void pgen_dns::compile_query(){
+
+}
+
+void pgen_dns::compile_answer(){}
+
+
 void pgen_dns::compile(){
 	char name[DNS.query.name.length()+2];
 	int count = 0;
@@ -142,6 +149,7 @@ void pgen_dns::compile(){
 	
 	compile_addData();
 }
+
 
 void pgen_dns::_wrap_query(){}
 
