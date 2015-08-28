@@ -19,7 +19,7 @@
 
 
 #define PGEN_MAX_PACKET_LEN 10000
-#define PGEN_MAX_EXT_DATA_LEN 1000
+#define PGEN_MAX_EXT_DATA_LEN 98000
 
 
 
@@ -39,6 +39,7 @@ class pgen_packet{
 		virtual void info()=0;	
 		
 		void hex();
+		int  length();
 		void addData(const u_char* , int );
 		void compile_addData(); 
 		void send_handle(pgen_t*);

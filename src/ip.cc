@@ -101,8 +101,8 @@ void pgen_ip::cast(const bit8* data, int len){
 	this->IP.src._addr = buf->saddr;
 	this->IP.dst._addr = buf->daddr;
 	
-	len = p - data;
-	addData(p, len-(p-data));
+	this->len = p - data;
+	addData(p, len-(this->len));
 }
 
 

@@ -18,6 +18,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+
+
 void debug(const char* p){
 	for(int i=0; ; i++){
 		if(p[i] == 0) break;
@@ -172,7 +174,7 @@ void pgen_dns::compile(){
 	compile_answer();
 
 	UDP.dst = 53;
-	UDP.len = UDP_HDR_LEN + DNS_HDR_LEN + query_data_len + answer_data_len;
+	UDP.len = UDP_HDR_LEN + DNS_HDR_LEN + query_data_len + answer_data_len + ext_data_len;
 	pgen_udp::compile();
 
 	memset(&dns, 0, sizeof dns);
@@ -207,11 +209,18 @@ void pgen_dns::compile(){
 	p += answer_data_len;
 	
 	len = p - data;
+
+	compile_addData();
 }
 
 
 
-int pgen_dns::cast_query(const u_char* packet, int len){
+
+// madamada koko kakinaoshite hoshii
+int pgen_dns::cast_query(const u_char* bpacket, int len){
+	u_char* packet = (u_char*)malloc(len);
+	memcpy(packet, bpacket, len);
+	
 	char* name;
 	struct q_data{
 		bit16 type;
@@ -224,8 +233,8 @@ int pgen_dns::cast_query(const u_char* packet, int len){
 	packet += UDP_HDR_LEN;
 	packet += DNS_HDR_LEN;
 	const u_char* p = packet;
-
 	
+
 	for(int i=0; i<DNS.qdcnt; i++){
 		name = (char*)(p+1);
 		for(int j=0; name[j]!='\0'; j++){
@@ -323,8 +332,10 @@ void pgen_dns::cast(const u_char* packet, int len){
 	p += query_data_len;
 	answer_data_len = cast_answer(packet, len);
 	p += answer_data_len;
-
+	
+	
 	this->len = p - packet;
+	addData(p, len-(this->len));
 }
 
 

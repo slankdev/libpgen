@@ -91,6 +91,13 @@ void pgen_packet::hex(){
 
 
 
+int pgen_packet::length(){
+	compile();
+	return this->len;
+}
+
+
+
 
 void pgen_packet::send_handle(pgen_t* handle){
 	compile();

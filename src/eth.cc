@@ -77,8 +77,8 @@ void pgen_eth::cast(const u_char* data, int len){
 	}
 	this->ETH.type = ntohs(buf->ether_type);
 	
-	len = p - data;
-	addData(p, len-(p-data));
+	this->len = p - data;
+	addData(p, len-(this->len));
 }
 
 
