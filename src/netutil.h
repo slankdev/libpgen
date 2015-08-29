@@ -7,7 +7,7 @@
 
 
 
-pgen_t* pgen_open(const char* dev, int promisc, void*);
+pgen_t* pgen_open(const char* dev, void*);
 void pgen_close(pgen_t* p);
 
 

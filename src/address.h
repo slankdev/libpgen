@@ -77,7 +77,6 @@ class ipaddr{
 			int sockd;
 			struct ifreq ifr;
 			struct sockaddr_in *sa;
-			char* ipstr;
 
 			if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 				perror("ipaddr::setipbydev::socket()");
@@ -101,7 +100,6 @@ class ipaddr{
 			int sockd;
 			struct ifreq ifr;
 			struct sockaddr_in *sa;
-			char* maskstr;
 
 			if((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 				perror("ipaddr::setmacbydev::socket()");
@@ -263,7 +261,6 @@ class macaddr{
 		bool setmacbydev(const char* ifname){
 			int sockd;
 			struct ifreq ifr;
-			u_char addr[6];
 
 			if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
 				perror("macaddr::setmacbydev::socket()");

@@ -62,9 +62,7 @@ bool pgen_unknown::cast(const bit8* packet, int len){
 	this->len = len;
 
 	struct MYETH*  eth;
-	struct MYARP*  arp;
 	struct MYIP*   ip;
-	struct MYICMP* icmp;
 	struct MYTCP*  tcp;
 	struct MYUDP*  udp;
 		
@@ -84,7 +82,6 @@ bool pgen_unknown::cast(const bit8* packet, int len){
 
 		if(ip->protocol == MT_IPPROTO_ICMP){
 			this->isICMP = true;
-			icmp = (struct MYICMP*)p;
 			p += sizeof(struct MYICMP);
 		}
 		else if(ip->protocol == MT_IPPROTO_TCP){

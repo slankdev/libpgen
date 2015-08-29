@@ -24,10 +24,10 @@
 
 
 
-pgen_t* pgen_open(const char* dev, int promisc, void* nouseyet){
+pgen_t* pgen_open(const char* dev, void* nouseyet){
 	pgen_t* p = (pgen_t*)malloc(sizeof(pgen_t));
 	
-	p->fd = initRawSocket(dev, promisc, 0);
+	p->fd = initRawSocket(dev, 1, 0);
 	if(p->fd < 0){
 		perror("pgen_open()");
 		p =  NULL;
@@ -86,9 +86,7 @@ void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
 int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	int sendlen = write(p->fd, packet, len);
 	if(sendlen < 0){
-		pgen_ip ip(packet, len);
-		if(len!=ip.length())	printf("warning!!\n");
-		//perror("pgen_sendpacket_handle");
+		perror("pgen_sendpacket_handle");
 	}
 
 	return sendlen;
@@ -256,31 +254,6 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			close(sock);
 			return -1;
 		}
-
-	
-		// set socket option 
-		int n=212992;
-		if(setsockopt(sock, SOL_SOCKET, SO_SNDBUF, &n, sizeof(n)) < 0){
-			perror("initRawSocket::setsockopt");
-			close(sock);
-			return -1;
-		}
-		/*
-		int ln=sizeof(n);
-		if(getsockopt(sock, SOL_SOCKET, SO_SNDBUF, &n, (socklen_t*)&ln) < 0){
-			perror("initRawSocket::getsockopt");
-			close(sock);
-			return -1;
-		}
-		printf("sndbuf: %d \n", n);
-		*/
-
-
-
-
-
-
-
 		sa.sll_family = PF_PACKET;
 		sa.sll_protocol = htons(ETH_P_ALL);
 		sa.sll_ifindex  = ifreq.ifr_ifindex;
@@ -305,10 +278,6 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		}
 	
 	}
-
-
-
-
 
 	return sock;
 }

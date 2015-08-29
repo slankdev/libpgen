@@ -262,7 +262,7 @@ int pgen_dns::cast_answer(const u_char* packet, int len){
 		bit16 type;
 		bit16 cls;
 	};
-	bit32 ttl;
+	//bit32 ttl;
 	struct a_data2{
 		bit16 len;
 		bit8 addr[4];		
@@ -440,7 +440,7 @@ static char* get_dns_name(const char* iurl){
 			vec.push_back(tp);
 	}
 
-	for(int i=0; i<vec.size(); i++){
+	for(int i=0; i<(int)vec.size(); i++){
 		char buf[100];
 		snprintf(buf, sizeof(buf), ".%s", vec[i].c_str());
 		buf[0] = (int)strlen(vec[i].c_str());

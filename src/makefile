@@ -13,7 +13,7 @@ export RM  := rm -rf
 .SUFFIXES: .out .c .cc .o .h 
 
 .cc.o: 
-	$(CPP) -std=c++11 -c  $<  -o $@  
+	$(CPP) -Wall -std=c++11 -c  $<  -o $@  
 
 
 PACKET_CLASS_SRC = \
