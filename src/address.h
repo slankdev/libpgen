@@ -43,11 +43,12 @@ class ipaddr{
 			this->_addr = i._addr;
 		}
 		char* c_str(){
+			char* _str = (char*)malloc(16);
 			union lc lc;
 			lc.l = (unsigned int)this->_addr;
-			snprintf(_c_str, sizeof(_c_str)-1,"%u.%u.%u.%u",
+			snprintf(_str, sizeof(_c_str)-1,"%u.%u.%u.%u",
 							lc.c[0],lc.c[1],lc.c[2],lc.c[3]);
-			return _c_str;
+			return _str;
 		}
 		void clear(){
 			this->_addr = 0;	
@@ -234,10 +235,11 @@ class macaddr{
 			}
 		}
 		char* c_str(){
-			snprintf(_c_str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
+			char* _str = (char*)malloc(18);
+			snprintf(_str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
 				this->_addr[0], this->_addr[1], this->_addr[2], 
 				this->_addr[3], this->_addr[4], this->_addr[5]);
-			return _c_str;
+			return _str;
 		}
 		void clear(){
 			memset(this->_addr, 0, sizeof(char[6]));	
