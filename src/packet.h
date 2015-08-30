@@ -266,6 +266,12 @@ class pgen_dns :public pgen_udp {
 				ipaddr addr;
 			}answer[MAX_ANSWER];
 			struct{
+				bit16 name;
+				bit16 type;
+				bit16 cls;
+				bit16 ttl;
+				bit16 len;
+
 				// auth field
 				int a;
 			}auth[MAX_AUTH];
