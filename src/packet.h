@@ -224,6 +224,8 @@ class pgen_udp : public pgen_ip {
 
 #define MAX_QUERY  16
 #define MAX_ANSWER 16
+#define MAX_AUTH   16
+#define MAX_ADD    16
 class pgen_dns :public pgen_udp {
 	protected:
 		struct MYDNS dns;
@@ -263,6 +265,14 @@ class pgen_dns :public pgen_udp {
 				bit16  len;
 				ipaddr addr;
 			}answer[MAX_ANSWER];
+			struct{
+				// auth field
+				int a;
+			}auth[MAX_AUTH];
+			struct{
+				// additional field
+				int a;
+			}addition[MAX_ADD];
 		}DNS;
 
 		pgen_dns();
@@ -278,12 +288,12 @@ class pgen_dns :public pgen_udp {
 		void clear_answer();
 		void compile_query();
 		void compile_answer();
+		void comlipe_auth();
+		void compile_addition();
 		int  cast_query(const u_char*, int);
 		int  cast_answer(const u_char*, int);
-		
-		
-		void _wrap_answer();
-		void DSUMMARY();
+		int  cast_auth(const u_char* packet, int len);
+		int  cast_addition(const u_char* packet, int len);
 };
 
 

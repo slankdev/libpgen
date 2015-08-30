@@ -167,6 +167,8 @@ void pgen_dns::compile_answer(){
 }
 
 
+void pgen_dns::comlipe_auth(){}
+void pgen_dns::compile_addition(){}
 
 
 void pgen_dns::compile(){
@@ -294,6 +296,15 @@ int pgen_dns::cast_answer(const u_char* packet, int len){
 	}
 
 	return p - packet;
+}
+
+
+
+int pgen_dns::cast_auth(const u_char* packet, int len){
+	return -1;
+}
+int pgen_dns::cast_addition(const u_char* packet, int len){
+	return -1;
 }
 
 
