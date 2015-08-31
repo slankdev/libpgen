@@ -7,7 +7,7 @@ void debugprint(int flag, const char* str){
 }
 
 
-void hex(const u_char* data, int len){
+void hexdump(const u_char* data, int len){
 	printf("hexdump len: %d \n", len);
 
 	int row=0;

@@ -64,7 +64,7 @@ void sendSyn(const char* ipstr){
 	pack.TCP.dst = 80;
 	
 	for(int i=0; i<sendCount; i++){
-		pack.SEND(dev);
+		pack.send(dev);
 		sleep(1);
 	}
 }

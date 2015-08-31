@@ -233,6 +233,10 @@ class pgen_dns :public pgen_udp {
 		bit32 query_data_len;
 		bit8  answer_data[256];
 		bit32 answer_data_len;
+		bit8  auth_data[256];
+		bit32 auth_data_len;
+		bit8  addition_data[256];
+		bit32 addition_data_len;
 	public:
 		static const int minLen = pgen_udp::minLen+DNS_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN; 
@@ -263,7 +267,10 @@ class pgen_dns :public pgen_udp {
 				bit16  cls;
 				bit32  ttl;
 				bit16  len;
-				ipaddr addr;
+				
+				//ipaddr addr;
+
+				bit8 data[32];
 			}answer[MAX_ANSWER];
 			struct{
 				bit16 name;
@@ -271,13 +278,17 @@ class pgen_dns :public pgen_udp {
 				bit16 cls;
 				bit16 ttl;
 				bit16 len;
-
-				// auth field
-				int a;
+				
+				bit8  data[32];
 			}auth[MAX_AUTH];
 			struct{
-				// additional field
-				int a;
+				bit16 name;
+				bit16 type;
+				bit16 cls;
+				bit16 ttl;
+				bit16 len;
+				
+				bit8  data[32];
 			}addition[MAX_ADD];
 		}DNS;
 
@@ -289,12 +300,15 @@ class pgen_dns :public pgen_udp {
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
+		void debug();
 		
 		void clear_query();
 		void clear_answer();
+		void clear_auth();
+		void clear_addition();
 		void compile_query();
 		void compile_answer();
-		void comlipe_auth();
+		void compile_auth();
 		void compile_addition();
 		int  cast_query(const u_char*, int);
 		int  cast_answer(const u_char*, int);
@@ -346,6 +360,8 @@ class pgen_ardrone : public pgen_udp {
 
 
 class pgen_unknown{
+	private:
+		bit8 data[PGEN_MAX_PACKET_LEN];
 	public:
 		int len;
 		bool isETH;
@@ -377,6 +393,7 @@ class pgen_unknown{
 		bool cast(const u_char*, int);
 		void summary();
 
+		void hex();
 		bool ipaddris(ipaddr addr);
 		bool macaddris(macaddr addr);
 		bool portis(unsigned short port);

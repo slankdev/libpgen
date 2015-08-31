@@ -12,6 +12,8 @@
 #include <net/if.h>
 #include "mytypes.h"
 
+#include <string>
+
 #define FILEPATH "/usr/local/etc/mac_code.list"
 
 
@@ -41,6 +43,10 @@ class ipaddr{
 		}
 		ipaddr(const ipaddr &i){
 			this->_addr = i._addr;
+		}
+		// no test
+		ipaddr(std::string str){
+			*this = str.c_str();		
 		}
 		char* c_str(){
 			char* _str = (char*)malloc(16);
@@ -137,6 +143,11 @@ class ipaddr{
 		}
 		ipaddr& operator=(int num){	// FUGUAI ARUKAMO
 			this->_addr = num;
+			return *this;
+		}
+		// no test
+		ipaddr& operator=(std::string str){
+			*this = str.c_str();
 			return *this;
 		}
 		bool operator<(const ipaddr iaddr){

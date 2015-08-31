@@ -75,6 +75,8 @@ void pgen_dns::clear(){
 	
 	clear_query();
 	clear_answer();
+	clear_auth();
+	clear_addition();
 }	
 
 
@@ -86,6 +88,8 @@ void pgen_dns::clear_query(){
 	}
 }
 
+
+
 void pgen_dns::clear_answer(){
 	for(int i=0; i<MAX_ANSWER; i++){
 		DNS.answer[i].name = 0xc00c;
@@ -93,7 +97,34 @@ void pgen_dns::clear_answer(){
 		DNS.answer[i].cls  = 0x0001;
 		DNS.answer[i].ttl  = 0x00000b44;
 		DNS.answer[i].len  = 0x0004;
-		DNS.answer[i].addr = "127.0.0.1";
+		//DNS.answer[i].addr = "127.0.0.1";
+		memset(DNS.answer[i].data, 0, sizeof(DNS.answer[i].data));
+	}
+}
+
+
+
+void pgen_dns::clear_auth(){
+	for(int i=0; i<MAX_AUTH; i++){
+		DNS.auth[i].name = 0xc00c;
+		DNS.auth[i].type = 0x0001;
+		DNS.auth[i].cls  = 0x0001;
+		DNS.auth[i].ttl  = 0x00000b44;
+		DNS.auth[i].len  = 0x0004;
+		memset(DNS.auth[i].data, 0, sizeof(DNS.auth[i].data));
+	}
+}
+
+
+
+void pgen_dns::clear_addition(){
+	for(int i=0; i<MAX_ADD; i++){
+		DNS.addition[i].name = 0xc00c;
+		DNS.addition[i].type = 0x0001;
+		DNS.addition[i].cls  = 0x0001;
+		DNS.addition[i].ttl  = 0x00000b44;
+		DNS.addition[i].len  = 0x0004;
+		memset(DNS.addition[i].data, 0, sizeof(DNS.addition[i].data));
 	}
 }
 
@@ -125,7 +156,7 @@ void pgen_dns::compile_query(){
 }
 
 
-
+/*
 void pgen_dns::compile_answer(){
 	memset(answer_data, 0, sizeof(answer_data));
 	answer_data_len = 0;
@@ -165,18 +196,146 @@ void pgen_dns::compile_answer(){
 	}
 	answer_data_len = p - answer_data;
 }
+*/
 
 
-void pgen_dns::comlipe_auth(){}
-void pgen_dns::compile_addition(){}
+void pgen_dns::compile_answer(){
+	memset(answer_data, 0, sizeof(answer_data));
+	answer_data_len = 0;
+	
+	if(DNS.flags.qr != 1)
+		return;
+	
+	bit16 name;
+	bit16 type;
+	bit16 cls;
+	bit32 ttl;
+	bit16 len;
+	bit8* data;
+
+
+	bit8* p = answer_data;
+	for(int j=0; j<DNS.ancnt; j++){
+
+		name = htons(DNS.answer[j].name);
+		type = htons(DNS.answer[j].type);
+		cls  = htons(DNS.answer[j].cls);
+		ttl  = htonl(DNS.answer[j].ttl);
+		len  = htons(DNS.answer[j].len);
+		data = DNS.answer[j].data;
+
+		memcpy(p, &name, sizeof(name));
+		p += sizeof(name);
+		memcpy(p, &type, sizeof(type));
+		p += sizeof(type);
+		memcpy(p, &cls, sizeof(cls));
+		p += sizeof(cls);
+		memcpy(p, &ttl, sizeof(ttl));
+		p += sizeof(ttl);
+		memcpy(p, &len, sizeof(len));
+		p += sizeof(len);
+		memcpy(p, data, DNS.answer[j].len);
+		p += DNS.answer[j].len;
+	}
+	answer_data_len = p - answer_data;
+
+}
+
+
+void pgen_dns::compile_auth(){
+	memset(auth_data, 0, sizeof(auth_data));
+	auth_data_len = 0;
+	
+	if(DNS.flags.qr != 1)
+		return;
+	
+	bit16 name;
+	bit16 type;
+	bit16 cls;
+	bit32 ttl;
+	bit16 len;
+	bit8* data;
+
+
+	bit8* p = auth_data;
+	for(int j=0; j<DNS.nscnt; j++){
+
+		name = htons(DNS.auth[j].name);
+		type = htons(DNS.auth[j].type);
+		cls  = htons(DNS.auth[j].cls);
+		ttl  = htonl(DNS.auth[j].ttl);
+		len  = htons(DNS.auth[j].len);
+		data = DNS.auth[j].data;
+
+		memcpy(p, &name, sizeof(name));
+		p += sizeof(name);
+		memcpy(p, &type, sizeof(type));
+		p += sizeof(type);
+		memcpy(p, &cls, sizeof(cls));
+		p += sizeof(cls);
+		memcpy(p, &ttl, sizeof(ttl));
+		p += sizeof(ttl);
+		memcpy(p, &len, sizeof(len));
+		p += sizeof(len);
+		memcpy(p, data, DNS.auth[j].len);
+		p += DNS.auth[j].len;
+	}
+	auth_data_len = p - auth_data;
+
+}
+
+
+void pgen_dns::compile_addition(){
+	memset(addition_data, 0, sizeof(addition_data));
+	addition_data_len = 0;
+	
+	if(DNS.flags.qr != 1)
+		return;
+	
+	bit16 name;
+	bit16 type;
+	bit16 cls;
+	bit32 ttl;
+	bit16 len;
+	bit8* data;
+
+
+	bit8* p = addition_data;
+	for(int j=0; j<DNS.arcnt; j++){
+		name = htons(DNS.addition[j].name);
+		type = htons(DNS.addition[j].type);
+		cls  = htons(DNS.addition[j].cls);
+		ttl  = htonl(DNS.addition[j].ttl);
+		len  = htons(DNS.addition[j].len);
+		data = DNS.addition[j].data;
+
+		memcpy(p, &name, sizeof(name));
+		p += sizeof(name);
+		memcpy(p, &type, sizeof(type));
+		p += sizeof(type);
+		memcpy(p, &cls, sizeof(cls));
+		p += sizeof(cls);
+		memcpy(p, &ttl, sizeof(ttl));
+		p += sizeof(ttl);
+		memcpy(p, &len, sizeof(len));
+		p += sizeof(len);
+		memcpy(p, data, DNS.addition[j].len);
+		p += DNS.addition[j].len;
+	}
+	addition_data_len = p - addition_data;
+
+}
 
 
 void pgen_dns::compile(){
+	this->len = 0;
 	compile_query();
 	compile_answer();
+	compile_auth();
+	compile_addition();
 
 	UDP.dst = 53;
-	UDP.len = UDP_HDR_LEN + DNS_HDR_LEN + query_data_len + answer_data_len + ext_data_len;
+	UDP.len = UDP_HDR_LEN + DNS_HDR_LEN + query_data_len + answer_data_len + auth_data_len + addition_data_len;
 	pgen_udp::compile();
 
 	memset(&dns, 0, sizeof dns);
@@ -209,10 +368,12 @@ void pgen_dns::compile(){
 	p += query_data_len;
 	memcpy(p, &answer_data, answer_data_len);
 	p += answer_data_len;
+	memcpy(p, &auth_data, auth_data_len);
+	p += auth_data_len;
+	memcpy(p, &addition_data, addition_data_len);
+	p += addition_data_len;
 	
 	len = p - data;
-
-	compile_addData();
 }
 
 
@@ -257,8 +418,10 @@ int pgen_dns::cast_query(const u_char* bpacket, int len){
 }
 
 
-
-int pgen_dns::cast_answer(const u_char* packet, int len){
+/*
+int pgen_dns::cast_answer(const u_char* bpacket, int len){
+	u_char* packet = (u_char*)malloc(len);
+	memcpy(packet, bpacket, len);
 	struct a_data1{
 		bit16 name;
 		bit16 type;
@@ -270,6 +433,45 @@ int pgen_dns::cast_answer(const u_char* packet, int len){
 		bit8 addr[4];		
 	};
 
+
+	packet += eth_hdr_len;
+	packet += ip_hdr_len;
+	packet += udp_hdr_len;
+	packet += dns_hdr_len;
+	packet += query_data_len;
+	const u_char* p = packet;
+	
+	for(int i=0; i<dns.ancnt; i++){
+		struct a_data1* buf1 = (struct a_data1*)p;
+		p += sizeof(struct a_data1);
+		bit32* buf_ttl = (bit32*)p;
+		p += sizeof(bit32);
+		struct a_data2* buf2 = (struct a_data2*)p;
+		p += sizeof(struct a_data2);
+		
+		dns.answer[i].name = ntohs(buf1->name);
+		dns.answer[i].type = ntohs(buf1->type);
+		dns.answer[i].cls  = ntohs(buf1->cls);
+		dns.answer[i].ttl  = ntohl(*buf_ttl);
+		dns.answer[i].len  = ntohs(buf2->len);
+		for(int j=0; j<4; j++)
+			dns.answer[i].addr.setoctet(j, buf2->addr[j]);
+		
+	}
+
+	return p - packet;
+}
+*/
+
+int pgen_dns::cast_answer(const u_char* packet, int blen){
+	
+	bit16* name;
+	bit16* type;
+	bit16* cls;
+	bit32* ttl;
+	bit16* len;
+	
+
 	packet += ETH_HDR_LEN;
 	packet += IP_HDR_LEN;
 	packet += UDP_HDR_LEN;
@@ -278,21 +480,31 @@ int pgen_dns::cast_answer(const u_char* packet, int len){
 	const u_char* p = packet;
 	
 	for(int i=0; i<DNS.ancnt; i++){
-		struct a_data1* buf1 = (struct a_data1*)p;
-		p += sizeof(struct a_data1);
-		bit32* buf_ttl = (bit32*)p;
-		p += sizeof(bit32);
-		struct a_data2* buf2 = (struct a_data2*)p;
-		p += sizeof(struct a_data2);
+		name = (bit16*)p;
+		p += 2;
+		type = (bit16*)p;
+		p += 2;
+		cls  = (bit16*)p;
+		p += 2;
+		ttl  = (bit32*)p;
+		p += 4;
+		len  = (bit16*)p;
+		p += 2;
 		
-		DNS.answer[i].name = ntohs(buf1->name);
-		DNS.answer[i].type = ntohs(buf1->type);
-		DNS.answer[i].cls  = ntohs(buf1->cls);
-		DNS.answer[i].ttl  = ntohl(*buf_ttl);
-		DNS.answer[i].len  = ntohs(buf2->len);
-		for(int j=0; j<4; j++)
-			DNS.answer[i].addr.setOctet(j, buf2->addr[j]);
-
+		DNS.answer[i].name = ntohs(*name);
+		DNS.answer[i].type = ntohs(*type);
+		DNS.answer[i].cls  = ntohs(*cls);
+		DNS.answer[i].ttl  = ntohl(*ttl);
+		DNS.answer[i].len  = ntohs(*len);
+		memcpy(DNS.answer[i].data, p, DNS.answer[i].len);
+		p += DNS.answer[i].len;
+		/*
+		printf("answer[%d].name = 0x%x \n", i, DNS.answer[i].name);
+		printf("answer[%d].type = %d \n", i, DNS.answer[i].type);
+		printf("answer[%d].cls  = %d \n", i, DNS.answer[i].cls );
+		printf("answer[%d].ttl  = %d \n", i, DNS.answer[i].ttl );
+		printf("answer[%d].len  = %d \n", i, DNS.answer[i].len );
+		*/
 	}
 
 	return p - packet;
@@ -300,11 +512,108 @@ int pgen_dns::cast_answer(const u_char* packet, int len){
 
 
 
-int pgen_dns::cast_auth(const u_char* packet, int len){
-	return -1;
+int pgen_dns::cast_auth(const u_char* packet, int blen){
+	
+	bit16* name;
+	bit16* type;
+	bit16* cls;
+	bit32* ttl;
+	bit16* len;
+	
+
+	packet += ETH_HDR_LEN;
+	packet += IP_HDR_LEN;
+	packet += UDP_HDR_LEN;
+	packet += DNS_HDR_LEN;
+	packet += query_data_len;
+	packet += answer_data_len;
+	const u_char* p = packet;
+	
+	for(int i=0; i<DNS.nscnt; i++){
+		name = (bit16*)p;
+		p += 2;
+		type = (bit16*)p;
+		p += 2;
+		cls  = (bit16*)p;
+		p += 2;
+		ttl  = (bit32*)p;
+		p += 4;
+		len  = (bit16*)p;
+		p += 2;
+		
+		DNS.auth[i].name = ntohs(*name);
+		DNS.auth[i].type = ntohs(*type);
+		DNS.auth[i].cls  = ntohs(*cls);
+		DNS.auth[i].ttl  = ntohl(*ttl);
+		DNS.auth[i].len  = ntohs(*len);
+		memcpy(DNS.auth[i].data, p, DNS.auth[i].len);
+		p += DNS.auth[i].len;
+		/*
+		printf("auth[%d].name = 0x%x \n", i, DNS.auth[i].name);
+		printf("auth[%d].type = %d \n", i, DNS.auth[i].type);
+		printf("auth[%d].cls  = %d \n", i, DNS.auth[i].cls );
+		printf("auth[%d].ttl  = %d \n", i, DNS.auth[i].ttl );
+		printf("auth[%d].len  = %d \n", i, DNS.auth[i].len );
+		*/
+	}
+
+	return p - packet;
 }
-int pgen_dns::cast_addition(const u_char* packet, int len){
-	return -1;
+
+
+int pgen_dns::cast_addition(const u_char* packet, int blen){
+	
+	bit16* name;
+	bit16* type;
+	bit16* cls;
+	bit32* ttl;
+	bit16* len;
+	
+
+	packet += ETH_HDR_LEN;
+	packet += IP_HDR_LEN;
+	packet += UDP_HDR_LEN;
+	packet += DNS_HDR_LEN;
+	packet += query_data_len;
+	packet += answer_data_len;
+	packet += auth_data_len;
+	const u_char* p = packet;
+	
+	for(int i=0; i<DNS.arcnt; i++){
+		name = (bit16*)p;
+		p += 2;
+		type = (bit16*)p;
+		p += 2;
+		cls  = (bit16*)p;
+		p += 2;
+		ttl  = (bit32*)p;
+		p += 4;
+		len  = (bit16*)p;
+		p += 2;
+		
+		DNS.addition[i].name = ntohs(*name);
+		DNS.addition[i].type = ntohs(*type);
+		DNS.addition[i].cls  = ntohs(*cls);
+		DNS.addition[i].ttl  = ntohl(*ttl);
+		DNS.addition[i].len  = ntohs(*len);
+		memcpy(DNS.addition[i].data, p, DNS.addition[i].len);
+		p += DNS.addition[i].len;
+		
+		/*
+		printf("addition[%d].name = 0x%x \n", i, DNS.addition[i].name);
+		printf("addition[%d].type = %d \n", i, DNS.addition[i].type);
+		printf("addition[%d].cls  = %d \n", i, DNS.addition[i].cls );
+		printf("addition[%d].ttl  = %d \n", i, DNS.addition[i].ttl );
+		printf("addition[%d].len  = %d \n", i, DNS.addition[i].len );
+		printf("addition[%d].data = ", i);
+		for(int k=0; k<DNS.addition[i].len; k++){
+			printf("%d.", *(DNS.addition[i].data+k));
+		}
+		printf("\n");
+		*/
+	}
+
+	return p - packet;
 }
 
 
@@ -344,9 +653,13 @@ void pgen_dns::cast(const u_char* packet, int len){
 	answer_data_len = cast_answer(packet, len);
 	p += answer_data_len;
 	
+	auth_data_len = cast_auth(packet, len);
+	p += auth_data_len;
+	addition_data_len = cast_addition(packet, len);
+	p += addition_data_len;
+	
 	
 	this->len = p - packet;
-	addData(p, len-(this->len));
 }
 
 
@@ -359,7 +672,7 @@ void pgen_dns::summary(){
 	printf("DNS{ ");
 	if(dns.qr == 1){
   		printf("Query response 0x%04x %s %s }\n", ntohs(dns.id), DNS.query[0].name.c_str(),
-				DNS.answer[0].addr.c_str());
+				DNS.answer[0].data);
 	}else{
 		printf("Query 0x%04x %s }\n", ntohs(dns.id), DNS.query[0].name.c_str());	
 	}
@@ -367,6 +680,35 @@ void pgen_dns::summary(){
 
 
 
+
+void pgen_dns::debug(){
+	compile();
+		
+	printf(" **Domain Name System *******************************\n");
+	printf("    - Identification  : 0x%04x\n", ntohs(dns.id));
+	printf("    - Question        : 0x%04x\n", ntohs(dns.qdcnt));
+	printf("    - Answer RRs      : 0x%04x\n", ntohs(dns.ancnt));
+	printf("    - Authority RRs   : 0x%04x\n", ntohs(dns.nscnt));
+	printf("    - Additional RRs  : 0x%04x\n", ntohs(dns.arcnt));
+
+	for(int i=0; i<DNS.qdcnt; i++){
+		printf("    - Queries[%d] \n", i);
+		printf("         - name       : %s \n", DNS.query[i].name.c_str());
+		printf("         - type       : 0x%04x \n", DNS.query[i].type);
+		printf("         - class      : 0x%04x \n", DNS.query[i].cls);
+	}
+	
+	for(int i=0; i<DNS.ancnt; i++){
+		printf("    - Answer[%d]  \n", i);
+		printf("         - name       : 0x%04x (kaihatutyu)\n", DNS.answer[i].name);
+		printf("         - type       : 0x%04x \n", DNS.answer[i].type);
+		printf("         - class      : 0x%04x \n", DNS.answer[i].cls);
+		printf("         - ttl        : 0x%08x \n", DNS.answer[i].ttl);
+		printf("         - data len   : 0x%04x \n", DNS.answer[i].len);
+		printf("         - address    : %s \n", DNS.answer[i].data);
+	}
+	printf(" ****************************************************\n");
+}
 
 
 
@@ -415,13 +757,33 @@ void pgen_dns::info(){
 	}
 	
 	for(int i=0; i<DNS.ancnt; i++){
-		printf("    - Answer[%d]  \n", i);
+		printf("    - Answers[%d]  \n", i);
 		printf("         - name       : 0x%04x (kaihatutyu)\n", DNS.answer[i].name);
 		printf("         - type       : 0x%04x \n", DNS.answer[i].type);
 		printf("         - class      : 0x%04x \n", DNS.answer[i].cls);
 		printf("         - ttl        : 0x%08x \n", DNS.answer[i].ttl);
 		printf("         - data len   : 0x%04x \n", DNS.answer[i].len);
-		printf("         - address    : %s \n", DNS.answer[i].addr.c_str());
+		printf("         - address    : %s \n", DNS.answer[i].data);
+	}
+
+	for(int i=0; i<DNS.nscnt; i++){
+		printf("    - Authoritative nameservers[%d]  \n", i);
+		printf("         - name       : 0x%04x (kaihatutyu)\n", DNS.auth[i].name);
+		printf("         - type       : 0x%04x \n", DNS.auth[i].type);
+		printf("         - class      : 0x%04x \n", DNS.auth[i].cls);
+		printf("         - ttl        : 0x%08x \n", DNS.auth[i].ttl);
+		printf("         - data len   : 0x%04x \n", DNS.auth[i].len);
+		//printf("         - address    : %s \n", DNS.auth[i].data);
+	}
+
+	for(int i=0; i<DNS.arcnt; i++){
+		printf("    - Additional records[%d]  \n", i);
+		printf("         - name       : 0x%04x (kaihatutyu)\n", DNS.addition[i].name);
+		printf("         - type       : 0x%04x \n", DNS.addition[i].type);
+		printf("         - class      : 0x%04x \n", DNS.addition[i].cls);
+		printf("         - ttl        : 0x%08x \n", DNS.addition[i].ttl);
+		printf("         - data len   : 0x%04x \n", DNS.addition[i].len);
+		//printf("         - address    : %s \n", DNS.addition[i].data);
 	}
 }
 
