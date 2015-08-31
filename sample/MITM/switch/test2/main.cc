@@ -49,10 +49,9 @@ void filter(const u_char* packet, int len){
 	pgen_unknown buf(packet, len);
 
 	if(!(buf.isUDP && buf.portis(53))) return;
-
+	
 	pgen_dns dns(packet, len);
-	dns.info();
-	printf("\n\n");
+	dns.summary();
 }
 
 

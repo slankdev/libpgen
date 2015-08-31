@@ -37,6 +37,7 @@ void debug(const char* p){
 
 static bool is_dns_name_charcter(char );
 static char* get_dns_name(const char* );
+static void dns_print_record_data(const bit8* data, int len, int type);
 
 
 
@@ -156,7 +157,7 @@ void pgen_dns::compile_query(){
 }
 
 
-/*
+/*//[[[
 void pgen_dns::compile_answer(){
 	memset(answer_data, 0, sizeof(answer_data));
 	answer_data_len = 0;
@@ -196,7 +197,7 @@ void pgen_dns::compile_answer(){
 	}
 	answer_data_len = p - answer_data;
 }
-*/
+*///]]]
 
 
 void pgen_dns::compile_answer(){
@@ -413,12 +414,12 @@ int pgen_dns::cast_query(const u_char* bpacket, int len){
 		DNS.query[i].type = ntohs(buf->type);
 		DNS.query[i].cls  = ntohs(buf->cls);
 	}
-
+	
 	return p - packet;
 }
 
 
-/*
+/* //[[[
 int pgen_dns::cast_answer(const u_char* bpacket, int len){
 	u_char* packet = (u_char*)malloc(len);
 	memcpy(packet, bpacket, len);
@@ -461,7 +462,7 @@ int pgen_dns::cast_answer(const u_char* bpacket, int len){
 
 	return p - packet;
 }
-*/
+*/ //]]]
 
 int pgen_dns::cast_answer(const u_char* packet, int blen){
 	
@@ -530,8 +531,15 @@ int pgen_dns::cast_auth(const u_char* packet, int blen){
 	const u_char* p = packet;
 	
 	for(int i=0; i<DNS.nscnt; i++){
-		name = (bit16*)p;
-		p += 2;
+		if(*p == 0x00){ // soa record
+			bit16 zero = 0;
+			name = &zero;
+			p += 1;
+		}else{
+			name = (bit16*)p;
+			p += 2;
+		}
+
 		type = (bit16*)p;
 		p += 2;
 		cls  = (bit16*)p;
@@ -540,7 +548,7 @@ int pgen_dns::cast_auth(const u_char* packet, int blen){
 		p += 4;
 		len  = (bit16*)p;
 		p += 2;
-		
+
 		DNS.auth[i].name = ntohs(*name);
 		DNS.auth[i].type = ntohs(*type);
 		DNS.auth[i].cls  = ntohs(*cls);
@@ -652,11 +660,10 @@ void pgen_dns::cast(const u_char* packet, int len){
 	p += query_data_len;
 	answer_data_len = cast_answer(packet, len);
 	p += answer_data_len;
-	
 	auth_data_len = cast_auth(packet, len);
 	p += auth_data_len;
-	addition_data_len = cast_addition(packet, len);
-	p += addition_data_len;
+	//addition_data_len = cast_addition(packet, len);
+	//p += addition_data_len;
 	
 	
 	this->len = p - packet;
@@ -671,8 +678,10 @@ void pgen_dns::summary(){
 	compile();
 	printf("DNS{ ");
 	if(dns.qr == 1){
-  		printf("Query response 0x%04x %s %s }\n", ntohs(dns.id), DNS.query[0].name.c_str(),
-				DNS.answer[0].data);
+  		printf("Query response 0x%04x %s type=%d ", ntohs(dns.id), DNS.query[0].name.c_str(),
+				DNS.answer[0].type);
+		dns_print_record_data(DNS.answer[0].data, DNS.answer[0].len, DNS.answer[0].type);
+		printf(" }\n");
 	}else{
 		printf("Query 0x%04x %s }\n", ntohs(dns.id), DNS.query[0].name.c_str());	
 	}
@@ -763,7 +772,9 @@ void pgen_dns::info(){
 		printf("         - class      : 0x%04x \n", DNS.answer[i].cls);
 		printf("         - ttl        : 0x%08x \n", DNS.answer[i].ttl);
 		printf("         - data len   : 0x%04x \n", DNS.answer[i].len);
-		printf("         - address    : %s \n", DNS.answer[i].data);
+		printf("         - data       : ");
+		dns_print_record_data(DNS.answer[i].data, DNS.answer[i].len, DNS.answer[i].type);
+		printf("\n");
 	}
 
 	for(int i=0; i<DNS.nscnt; i++){
@@ -773,7 +784,10 @@ void pgen_dns::info(){
 		printf("         - class      : 0x%04x \n", DNS.auth[i].cls);
 		printf("         - ttl        : 0x%08x \n", DNS.auth[i].ttl);
 		printf("         - data len   : 0x%04x \n", DNS.auth[i].len);
-		//printf("         - address    : %s \n", DNS.auth[i].data);
+		printf("         - data       : ");
+		dns_print_record_data(DNS.auth[i].data, DNS.auth[i].len, DNS.auth[i].type);
+		printf("\n");
+
 	}
 
 	for(int i=0; i<DNS.arcnt; i++){
@@ -783,10 +797,40 @@ void pgen_dns::info(){
 		printf("         - class      : 0x%04x \n", DNS.addition[i].cls);
 		printf("         - ttl        : 0x%08x \n", DNS.addition[i].ttl);
 		printf("         - data len   : 0x%04x \n", DNS.addition[i].len);
-		//printf("         - address    : %s \n", DNS.addition[i].data);
+		printf("         - data       : ");
+		dns_print_record_data(DNS.addition[i].data, DNS.addition[i].len, DNS.addition[i].type);
+		printf("\n");
 	}
 }
 
+
+
+
+static void dns_print_record_data(const bit8* data, int len, int type){
+	switch(type){
+		case 1: // A record
+			printf("%d.%d.%d.%d", data[0], data[1], data[2], data[3]);
+			break;
+		case 2: // NS record
+		case 5: // CNAME record
+			char name[32];
+			memcpy(name, data+1, sizeof(name));
+			for(int i=0; name[i]!='\0'; i++){
+				if(is_dns_name_charcter(name[i]) == false) name[i]='.';	
+			}
+			printf("%s", name);
+			break;
+		case 28: // AAAA record
+			for(int i=0; i<8; i++){
+				printf("%04x", (bit16)*(data+(i*2)));
+				if(i<7) printf(":");
+			}
+			break;
+		default:
+			fprintf(stderr, "print_data: type not support\n");
+			break;
+	}
+}
 
 
 

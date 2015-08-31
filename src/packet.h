@@ -237,6 +237,7 @@ class pgen_dns :public pgen_udp {
 		bit32 auth_data_len;
 		bit8  addition_data[256];
 		bit32 addition_data_len;
+
 	public:
 		static const int minLen = pgen_udp::minLen+DNS_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN; 
@@ -269,7 +270,7 @@ class pgen_dns :public pgen_udp {
 				bit16  len;
 				
 				//ipaddr addr;
-
+				//std::string url;
 				bit8 data[32];
 			}answer[MAX_ANSWER];
 			struct{
@@ -279,6 +280,8 @@ class pgen_dns :public pgen_udp {
 				bit16 ttl;
 				bit16 len;
 				
+				//ipaddr addr;
+				//std::string url;
 				bit8  data[32];
 			}auth[MAX_AUTH];
 			struct{
@@ -288,6 +291,8 @@ class pgen_dns :public pgen_udp {
 				bit16 ttl;
 				bit16 len;
 				
+				//ipaddr addr;
+				//std::string url;
 				bit8  data[32];
 			}addition[MAX_ADD];
 		}DNS;
@@ -314,6 +319,7 @@ class pgen_dns :public pgen_udp {
 		int  cast_answer(const u_char*, int);
 		int  cast_auth(const u_char* packet, int len);
 		int  cast_addition(const u_char* packet, int len);
+
 };
 
 
