@@ -27,14 +27,14 @@ struct host router = {"192.168.179.1", "a2:12:42:17:d8:8f"};
 //struct host router = {"10.128.4.1", "00:00:0c:07:ac:01"};
 
 /* iphone */
-//struct host target = {"192.168.179.4", "f0:24:75:bf:8d:bf"};
+struct host target = {"192.168.179.2", "f0:24:75:bf:8d:bf"};
 
 /* buffalo usb ethernetl */
 //struct host target = {"192.168.222.103", "cc:e1:d5:02:ea:71"};
 
 /* mac wlan en0 */
 //struct host target = {"192.168.222.106", "10.128.5.85"};
-struct host target = {"192.168.179.5", "80:e6:50:17:18:46"};
+//struct host target = {"192.168.179.5", "80:e6:50:17:18:46"};
 
 
 
