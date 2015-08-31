@@ -335,7 +335,7 @@ void pgen_dns::compile(){
 	compile_auth();
 	compile_addition();
 
-	UDP.dst = 53;
+	//UDP.dst = 53;
 	UDP.len = UDP_HDR_LEN + DNS_HDR_LEN + query_data_len + answer_data_len + auth_data_len + addition_data_len;
 	pgen_udp::compile();
 
@@ -481,8 +481,18 @@ int pgen_dns::cast_answer(const u_char* packet, int blen){
 	const u_char* p = packet;
 	
 	for(int i=0; i<DNS.ancnt; i++){
-		name = (bit16*)p;
-		p += 2;
+		if(*p == 0x00){ // soa record
+			bit16 zero = 0;
+			name = &zero;
+			p += 1;
+		}else if(*p == 0xc0){
+			name = (bit16*)p;
+			p += 2;
+		}else{
+			fprintf(stderr, "pgen_dns::cast_answer: type maybe PTR not support yet\n");
+			return 0;
+		}
+		
 		type = (bit16*)p;
 		p += 2;
 		cls  = (bit16*)p;
@@ -499,13 +509,8 @@ int pgen_dns::cast_answer(const u_char* packet, int blen){
 		DNS.answer[i].len  = ntohs(*len);
 		memcpy(DNS.answer[i].data, p, DNS.answer[i].len);
 		p += DNS.answer[i].len;
-		/*
-		printf("answer[%d].name = 0x%x \n", i, DNS.answer[i].name);
-		printf("answer[%d].type = %d \n", i, DNS.answer[i].type);
-		printf("answer[%d].cls  = %d \n", i, DNS.answer[i].cls );
-		printf("answer[%d].ttl  = %d \n", i, DNS.answer[i].ttl );
-		printf("answer[%d].len  = %d \n", i, DNS.answer[i].len );
-		*/
+		
+		
 	}
 
 	return p - packet;
@@ -535,9 +540,12 @@ int pgen_dns::cast_auth(const u_char* packet, int blen){
 			bit16 zero = 0;
 			name = &zero;
 			p += 1;
-		}else{
+		}else if(*p == 0xc0){
 			name = (bit16*)p;
 			p += 2;
+		}else{
+			fprintf(stderr, "pgen_dns::cast_auth: type maybe PTR not support yet\n");
+			return 0;
 		}
 
 		type = (bit16*)p;
@@ -556,13 +564,7 @@ int pgen_dns::cast_auth(const u_char* packet, int blen){
 		DNS.auth[i].len  = ntohs(*len);
 		memcpy(DNS.auth[i].data, p, DNS.auth[i].len);
 		p += DNS.auth[i].len;
-		/*
-		printf("auth[%d].name = 0x%x \n", i, DNS.auth[i].name);
-		printf("auth[%d].type = %d \n", i, DNS.auth[i].type);
-		printf("auth[%d].cls  = %d \n", i, DNS.auth[i].cls );
-		printf("auth[%d].ttl  = %d \n", i, DNS.auth[i].ttl );
-		printf("auth[%d].len  = %d \n", i, DNS.auth[i].len );
-		*/
+		
 	}
 
 	return p - packet;
@@ -588,8 +590,18 @@ int pgen_dns::cast_addition(const u_char* packet, int blen){
 	const u_char* p = packet;
 	
 	for(int i=0; i<DNS.arcnt; i++){
-		name = (bit16*)p;
-		p += 2;
+		if(*p == 0x00){ // soa record
+			bit16 zero = 0;
+			name = &zero;
+			p += 1;
+		}else if(*p == 0xc0){
+			name = (bit16*)p;
+			p += 2;
+		}else{
+			fprintf(stderr, "pgen_dns::cast_addition: type maybe PTR not support yet\n");
+			return 0;
+		}
+
 		type = (bit16*)p;
 		p += 2;
 		cls  = (bit16*)p;
@@ -616,8 +628,7 @@ int pgen_dns::cast_addition(const u_char* packet, int blen){
 		printf("addition[%d].data = ", i);
 		for(int k=0; k<DNS.addition[i].len; k++){
 			printf("%d.", *(DNS.addition[i].data+k));
-		}
-		printf("\n");
+		}printf("\n");
 		*/
 	}
 
@@ -662,8 +673,8 @@ void pgen_dns::cast(const u_char* packet, int len){
 	p += answer_data_len;
 	auth_data_len = cast_auth(packet, len);
 	p += auth_data_len;
-	//addition_data_len = cast_addition(packet, len);
-	//p += addition_data_len;
+	addition_data_len = cast_addition(packet, len);
+	p += addition_data_len;
 	
 	
 	this->len = p - packet;
@@ -683,7 +694,8 @@ void pgen_dns::summary(){
 		dns_print_record_data(DNS.answer[0].data, DNS.answer[0].len, DNS.answer[0].type);
 		printf(" }\n");
 	}else{
-		printf("Query 0x%04x %s }\n", ntohs(dns.id), DNS.query[0].name.c_str());	
+		printf("Query 0x%04x %s type=%d }\n", ntohs(dns.id), DNS.query[0].name.c_str(),
+				DNS.query[0].type);	
 	}
 }
 

