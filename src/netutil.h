@@ -8,10 +8,10 @@
 
 
 pgen_t* pgen_open(const char* dev, void*);
+pgen_t* pgen_open_offline(const char* );
 void pgen_close(pgen_t* p);
 
 
-void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc);
 void sniff(pgen_t* handle, bool (*callback)(const u_char*, int));
 
 

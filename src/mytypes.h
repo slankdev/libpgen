@@ -5,14 +5,48 @@
 #include <endian.h>		// for BYTE_ORDER
 
 
+
 typedef struct pgen pgen_t;
+typedef unsigned char      bit8;
+typedef unsigned short     bit16;
+typedef unsigned int       bit32;
+typedef unsigned long      bit64;
+typedef unsigned long long bit128;
+
+
+struct pcap_fileheader{
+	bit32 magic;
+	bit16 version_major;
+	bit16 version_minor;
+	bit32 timezone;
+	bit32 sigfigs;
+	bit32 snaplen;
+	bit32 linktype;
+};
+
+struct pcap_pktheader{
+	struct timeval *ts;
+	bit32 caplen;
+	bit32 len;
+};
+
+
+#define PGEN_PCAPFILE_MAXLEN 100000000
 
 struct pgen_opt{
-	int overip;	
+	int offline;
+	char offline_filename[256];
 };
 
 struct pgen{
 	int fd;
+	int offline;
+	struct{
+		FILE* fd;
+		struct pcap_fileheader filehdr;
+	}ol;
+
+
 	struct pgen_opt opt;
 };
 
@@ -20,12 +54,6 @@ struct pgen{
 
 
 
-
-typedef unsigned char      bit8;
-typedef unsigned short     bit16;
-typedef unsigned int       bit32;
-typedef unsigned long      bit64;
-typedef unsigned long long bit128;
 
 #define ETH_HDR_LEN sizeof(struct MYETH)
 #define ARP_HDR_LEN sizeof(struct MYARP)

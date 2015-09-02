@@ -66,7 +66,7 @@
  *						for recv packet
  *		[2015.05.16]	add function nslookup(const)		[]
  *						ipaddr nslookup(url);		 
- *		[2015.09.02]	pgen_open_offline(filename);		[]
+ *		[2015.09.02]	pgen_open_offline(filename);		[2015.09.02]
  *						read pcap file format
  *		[2015.09.02]	ardrone ctrl command 				[]
  *

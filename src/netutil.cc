@@ -22,6 +22,25 @@
 
 
 
+pgen_t* pgen_open_offline(const char* filename){
+	pgen_t* p = (pgen_t*)malloc(sizeof(pgen_t));
+
+	p->offline = 1;
+	p->ol.fd = fopen(filename, "rb");
+	if(p->ol.fd == NULL){
+		perror("pgen_open_offline");
+		pgen_close(p);
+		p = NULL;
+	}
+	int len = sizeof(struct pcap_fileheader);
+	if(fread(&p->ol.filehdr, len, 1, p->ol.fd) < 1){
+		perror("pgen_open_offline");
+		pgen_close(p);
+		p = NULL;
+	}
+	
+	return p;	
+}
 
 
 pgen_t* pgen_open(const char* dev, void* nouseyet){
@@ -29,7 +48,7 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 	
 	p->fd = initRawSocket(dev, 1, 0);
 	if(p->fd < 0){
-		perror("pgen_open()");
+		perror("pgen_open");
 		p =  NULL;
 	}
 
@@ -39,6 +58,12 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 
 
 void pgen_close(pgen_t* p){
+	if(p->offline == 1){
+		fclose(p->ol.fd);
+	}else{
+		close(p->fd);
+	}
+
 	free(p);
 	return ;	
 }
@@ -51,35 +76,30 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 	int len;
 	
 	for(;result;){
-		if((len = read(handle->fd, packet, sizeof(packet))) < 0){
-			perror("sniff_handle");
-			return;
+		if(handle->offline == 1){
+			struct pcap_pktheader hdr;
+			if(fread(&hdr, sizeof(struct pcap_pktheader), 1, handle->ol.fd) < 1){
+				perror("sniff");
+				fprintf(stderr, "sniff: file is fin\n");
+				return;
+			}
+			if(fread(packet, hdr.len, 1, handle->ol.fd) < 0){
+				perror("sniff");
+				return;
+			}
+			len = hdr.len;
+				
+		}else{	
+			if((len = read(handle->fd, packet, sizeof(packet))) < 0){
+				perror("sniff_handle");
+				return;
+			}
 		}
 		result = (*callback)(packet, len);
 	}
 }
 
 
-
-void sniff(const char* dev, bool (*callback)(const u_char*, int), int promisc){
-	u_char packet[20000];
-	bool result = true;
-	int len;
-	int sock;
-	
-	if((sock=initRawSocket(dev, promisc, 0))<0){
-		perror("sniff");
-		return;
-	}
-
-	for(;result;){
-		if((len = read(sock, packet, sizeof(packet))) < 0){
-			perror("sniff");
-			return;
-		}
-		result = (*callback)(packet, len);
-	}
-}
 
 
 
