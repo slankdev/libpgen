@@ -20,10 +20,14 @@ pgen_ardrone::pgen_ardrone(const u_char* packet, int len){
 
 
 
+void pgen_ardrone::clear_ctrl(){
+	this->ARDRONE.ctrl.seq                = 0;
+	this->ARDRONE.ctrl.ctrlmode           = 0;
+	this->ARDRONE.ctrl.fw_update_filesize = 0;
+}
 
-void pgen_ardrone::clear(){
-	pgen_udp::clear();
 
+void pgen_ardrone::clear_pcmd(){
 	this->ARDRONE.pcmd.seq   = 0;
 	this->ARDRONE.pcmd.flag  = 0;
 	this->ARDRONE.pcmd.roll  = 0;
@@ -32,8 +36,37 @@ void pgen_ardrone::clear(){
 	this->ARDRONE.pcmd.yaw.x = 0;
 	this->ARDRONE.pcmd.yaw.y = 0;
 	this->ARDRONE.pcmd.yaw.z = 0;
+}
+
+
+void pgen_ardrone::clear_ref(){
 	this->ARDRONE.ref.seq        = 0;
 	this->ARDRONE.ref.command    = 0;
+}
+
+
+void pgen_ardrone::clear(){
+	pgen_udp::clear();
+	
+	clear_ctrl();
+	clear_pcmd();
+	clear_ref();
+}
+
+
+
+void pgen_ardrone::compile_ctrl(){
+		
+}
+
+
+void pgen_ardrone::compile_pcmd(){
+		
+}
+
+
+void pgen_ardrone::compile_ref(){
+		
 }
 
 
@@ -159,14 +192,11 @@ void pgen_ardrone::DSUMMARY(){
 	compile();
 
 	printf("%s -> %s ", IP.src.c_str(), IP.dst.c_str());
-	printf("(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) \n", 
+	printf("(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
 			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, ARDRONE.pcmd.roll, 
 			ARDRONE.pcmd.pitch, ARDRONE.pcmd.gaz,
 			ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,
 			ARDRONE.pcmd.yaw.z);
-
+	printf("REF(seq=%ld, cmd=%ld)\n", ARDRONE.ref.seq, ARDRONE.ref.command);
 }
-
-
-
 

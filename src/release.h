@@ -66,8 +66,12 @@
  *						for recv packet
  *		[2015.05.16]	add function nslookup(const)		[]
  *						ipaddr nslookup(url);		 
- *		[2015.08.27]	dns packet auth additional			[]
+ *		[2015.09.02]	pgen_open_offline(filename);		[]
+ *						read pcap file format
+ *		[2015.09.02]	ardrone ctrl command 				[]
  *
+ *
+ *							
  *
  *		BUG			[date]  about  [fin-date]
  *		[2015.06.28]	address.h:239 has some warning 		[2015.07.30]
