@@ -362,6 +362,25 @@ class pgen_ardrone : public pgen_udp {
 
 
 
+class pgen_dhcp : public pgen_udp {
+	public:
+		static const int minLen = pgen_udp::minLen+DNS_HDR_LEN;
+		static const int maxLen = PGEN_MAX_PACKET_LEN; 
+		struct{
+			int a;
+		}DHCP;
+		
+		pgen_dhcp();
+		pgen_dhcp(const u_char*, int);
+		void clear();
+		void compile();
+		void cast(const u_char*, const int);
+		void send(const char* ifname){send_L3(ifname);}
+		void summary();
+		void info();
+};
+
+
 
 
 
