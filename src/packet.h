@@ -434,6 +434,7 @@ class pgen_unknown{
 		pgen_unknown();
 		pgen_unknown(const u_char*, int);
 		void clear();
+		void send_handle(pgen_t*);
 		bool cast(const u_char*, int);
 		void summary();
 

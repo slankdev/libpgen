@@ -51,6 +51,10 @@ void pgen_unknown::clear(){
 
 
 
+void pgen_unknown::send_handle(pgen_t* handle){
+	pgen_sendpacket_handle(handle, this->data, this->len);
+}
+
 
 
 
