@@ -51,60 +51,69 @@ void pgen_ardrone::clear(){
 	clear_ctrl();
 	clear_pcmd();
 	clear_ref();
+	memset(ctrl_data, 0, sizeof(ctrl_data));
+	memset(pcmd_data, 0, sizeof(pcmd_data));
+	memset(ref_data , 0, sizeof(ref_data));
 }
 
 
 
-void pgen_ardrone::compile_ctrl(){
-		
+int pgen_ardrone::compile_ctrl(){
+	
+	snprintf(ctrl_data, sizeof(ctrl_data), "AT*CTRL=%ld,%ld,%ld", this->ARDRONE.ctrl.seq, 
+			this->ARDRONE.ctrl.ctrlmode, this->ARDRONE.ctrl.fw_update_filesize);
+	return strlen(ctrl_data);
 }
 
 
-void pgen_ardrone::compile_pcmd(){
-		
+int pgen_ardrone::compile_pcmd(){
+	snprintf(pcmd_data, sizeof(pcmd_data), "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld", 
+			this->ARDRONE.pcmd.seq, this->ARDRONE.pcmd.flag, 
+			this->ARDRONE.pcmd.roll, this->ARDRONE.pcmd.pitch, 
+			this->ARDRONE.pcmd.gaz, this->ARDRONE.pcmd.yaw.x, 
+			this->ARDRONE.pcmd.yaw.y, this->ARDRONE.pcmd.yaw.z);
+	return strlen(pcmd_data);
 }
 
 
-void pgen_ardrone::compile_ref(){
-		
+int pgen_ardrone::compile_ref(){
+	snprintf(ref_data, sizeof(ref_data),"AT*REF=%ld,%ld", 
+			this->ARDRONE.ref.seq, this->ARDRONE.ref.command);
+	return strlen(ref_data);	
 }
 
 
 
 
 void pgen_ardrone::compile(){
+	ctrl_data_len = compile_ctrl();
+	pcmd_data_len = compile_pcmd();
+	ref_data_len  = compile_ref();
+	
 	char ardrone[256];
 	int ardrone_len = 0;
-	char pcmd_cmd[64];
-	char ref_cmd[64];
 	char spliter = 0x0d;
-
-	sprintf(pcmd_cmd, "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld", 
-			this->ARDRONE.pcmd.seq, this->ARDRONE.pcmd.flag, 
-			this->ARDRONE.pcmd.roll, this->ARDRONE.pcmd.pitch, 
-			this->ARDRONE.pcmd.gaz, this->ARDRONE.pcmd.yaw.x, 
-			this->ARDRONE.pcmd.yaw.y, this->ARDRONE.pcmd.yaw.z);
-	sprintf(ref_cmd, "AT*REF=%ld,%ld", 
-			this->ARDRONE.ref.seq, this->ARDRONE.ref.command);
 
 	memset(ardrone, 0, sizeof(ardrone));
 	char* p1 = ardrone;
-	
-	memcpy(p1, pcmd_cmd, strlen(pcmd_cmd));
-	p1 += strlen(pcmd_cmd);
+	memcpy(p1, pcmd_data, pcmd_data_len);
+	p1 += pcmd_data_len;
 	memcpy(p1, &spliter, 1);
 	p1 += 1;
-	memcpy(p1, ref_cmd, strlen(ref_cmd));
-	p1 += strlen(ref_cmd);
+	memcpy(p1, ctrl_data, ctrl_data_len);
+	p1 += ctrl_data_len;
+	memcpy(p1, &spliter, 1);
+	p1 += 1;
+	memcpy(p1, ref_data, ref_data_len);
+	p1 += ref_data_len;
 	memcpy(p1, &spliter, 1);
 	p1 += 1;
 	ardrone_len = p1 - ardrone;
 
-	this->UDP.len = 8 + ardrone_len;
+	this->UDP.len = UDP_HDR_LEN + ardrone_len;
 	pgen_udp::compile();
 
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-
 	u_char* p = this->data;
 	memcpy(p, &eth, sizeof eth);
 	p += sizeof(eth);

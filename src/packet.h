@@ -326,21 +326,16 @@ class pgen_dns :public pgen_udp {
 
 class pgen_ardrone : public pgen_udp {
 	protected:
-		bit8  ctrl_data[256];
+		char  ctrl_data[256];
 		bit32 ctrl_data_len;
-		bit8  pcmd_data[256];
+		char  pcmd_data[256];
 		bit32 pcmd_data_len;
-		bit8  ref_data[256];
+		char  ref_data[256];
 		bit32 ref_data_len;
 	public:
 		static const int minLength = pgen_udp::minLen+39; // minimum ardrone packet
 		static const int macLength = PGEN_MAX_PACKET_LEN;
 		struct{
-			struct{
-				long seq;
-				long ctrlmode;
-				long fw_update_filesize;
-			}ctrl;
 			struct{
 				long seq;
 				long flag;
@@ -357,6 +352,20 @@ class pgen_ardrone : public pgen_udp {
 				long seq;
 				long command;
 			}ref;
+			struct{}config_ids;
+			struct{}anim;
+			struct{}ftrim;
+			struct{}comfig;
+			struct{}led;
+			struct{}comwdg;
+			struct{
+				long seq;
+				long ctrlmode;
+				long fw_update_filesize;
+			}ctrl;
+			
+			int cmdlen;
+			int type[10];
 		}ARDRONE;
 
 		pgen_ardrone();
@@ -368,9 +377,9 @@ class pgen_ardrone : public pgen_udp {
 		void summary();
 		void info();
 	
-		void compile_ctrl();
-		void compile_pcmd();
-		void compile_ref();
+		int compile_ctrl();
+		int compile_pcmd();
+		int compile_ref();
 		void clear_ctrl();
 		void clear_pcmd();
 		void clear_ref();
