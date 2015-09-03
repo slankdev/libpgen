@@ -18,55 +18,56 @@
 
 
 
-pgen_t* pgen_open_writepcap(const char* filename){
+
+
+// mode 0: read , 1: write
+pgen_t* pgen_open_offline(const char* filename, int mode){
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
-
 	handle->is_offline = 1;
-	handle->is_writefile = 1;
-	handle->offline.fd = fopen(filename, "wb");
-	if(handle->offline.fd == NULL){
-		perror("pgen_open_writepcap");
-		pgen_close(handle);
-		handle = NULL;
-	}
-
-	handle->offline.filehdr.magic = htonl(0xd4c3b2a1);
-	handle->offline.filehdr.version_major = htons(0x0200);
-	handle->offline.filehdr.version_minor = htons(0x0400);
-	handle->offline.filehdr.timezone = htonl(0x0);
-	handle->offline.filehdr.sigfigs  = htonl(0x0);
-	handle->offline.filehdr.snaplen  = htonl(0xffff0000);
-	handle->offline.filehdr.linktype = htonl(0x01000000);
-
-
-	if(fwrite(&handle->offline.filehdr, sizeof(struct pcap_fhdr), 1, handle->offline.fd) < 1){
-		perror("pgen_open_writepcap");
-		pgen_close(handle);
-		handle = NULL;
-	}
-
-	return handle;	
-}
-
-
-
-
-pgen_t* pgen_open_offline(const char* filename){
-	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
-
-	handle->is_offline = 1;
-	handle->offline.fd = fopen(filename, "rb");
-	if(handle->offline.fd == NULL){
-		perror("pgen_open_offline");
-		pgen_close(handle);
-		handle = NULL;
-	}
-	if(fread(&handle->offline.filehdr, sizeof(struct pcap_fhdr), 1, handle->offline.fd) < 1){
-		perror("pgen_open_offline");
-		pgen_close(handle);
-		handle = NULL;
-	}
 	
+	switch(mode){
+		case 0: // read mode
+			handle->offline.fd = fopen(filename, "rb");
+			if(handle->offline.fd == NULL){
+				perror("pgen_open_offline");
+				pgen_close(handle);
+				handle = NULL;
+			}
+			if(fread(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
+				perror("pgen_open_offline");
+				pgen_close(handle);
+				handle = NULL;
+			}
+			break;
+		
+		case 1: // write mode 
+			handle->is_writefile = 1;
+			handle->offline.fd = fopen(filename, "wb");
+			if(handle->offline.fd == NULL){
+				perror("pgen_open_offline");
+				pgen_close(handle);
+				handle = NULL;
+			}
+			handle->offline.filehdr.magic = htonl(0xd4c3b2a1);
+			handle->offline.filehdr.version_major = htons(0x0200);
+			handle->offline.filehdr.version_minor = htons(0x0400);
+			handle->offline.filehdr.timezone = htonl(0x0);
+			handle->offline.filehdr.sigfigs  = htonl(0x0);
+			handle->offline.filehdr.snaplen  = htonl(0xffff0000);
+			handle->offline.filehdr.linktype = htonl(0x01000000);
+			if(fwrite(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
+				perror("pgen_open_writepcap");
+				pgen_close(handle);
+				handle = NULL;
+			}
+			break;
+		
+		default: // mode not found
+			fprintf(stderr, "pgen_open_offline: mode not found\n");
+			pgen_close(handle);
+			break;
+	}
+
 	return handle;	
 }
 
