@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/time.h>
 #include <arpa/inet.h>
 #include <netpacket/packet.h>
 #include <netinet/if_ether.h>
@@ -152,8 +153,11 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 
 
 	if(p->is_writefile == 1){
+		struct pcap_timeval ts_now;
+		gettimeofday((struct timeval*)&ts_now, NULL);
+
 		struct pcap_pkthdr pkthdr;
-		pkthdr.ts = 0;
+		pkthdr.ts = ts_now;
 		pkthdr.caplen = len;
 		pkthdr.len    = len;
 

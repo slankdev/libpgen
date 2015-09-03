@@ -13,6 +13,12 @@ typedef unsigned int       bit32;
 typedef unsigned long      bit64;
 typedef unsigned long long bit128;
 
+struct pcap_timeval{
+	bit32 tv_sec;
+	bit32 tv_usec;
+};
+
+
 
 struct pcap_fhdr{
 	bit32 magic;
@@ -27,7 +33,7 @@ struct pcap_fhdr{
 
 
 struct pcap_pkthdr{
-	struct timeval *ts;
+	struct pcap_timeval ts;
 	bit32 caplen;
 	bit32 len;
 };
