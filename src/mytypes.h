@@ -14,7 +14,7 @@ typedef unsigned long      bit64;
 typedef unsigned long long bit128;
 
 
-struct pcap_fileheader{
+struct pcap_fhdr{
 	bit32 magic;
 	bit16 version_major;
 	bit16 version_minor;
@@ -24,29 +24,34 @@ struct pcap_fileheader{
 	bit32 linktype;
 };
 
-struct pcap_pktheader{
+
+
+struct pcap_pkthdr{
 	struct timeval *ts;
 	bit32 caplen;
 	bit32 len;
 };
 
 
+
+
 #define PGEN_PCAPFILE_MAXLEN 100000000
+
 
 struct pgen_opt{
 	int offline;
 	char offline_filename[256];
 };
 
+
 struct pgen{
 	int fd;
-	int offline;
+	int is_offline;
+	int is_writefile;
 	struct{
 		FILE* fd;
-		struct pcap_fileheader filehdr;
-	}ol;
-
-
+		struct pcap_fhdr filehdr;
+	}offline;
 	struct pgen_opt opt;
 };
 

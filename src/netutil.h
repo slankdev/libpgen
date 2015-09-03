@@ -8,7 +8,8 @@
 
 
 pgen_t* pgen_open(const char* dev, void*);
-pgen_t* pgen_open_offline(const char* );
+pgen_t* pgen_open_offline(const char*);
+pgen_t* pgen_open_writepcap(const char*);
 void pgen_close(pgen_t* p);
 
 

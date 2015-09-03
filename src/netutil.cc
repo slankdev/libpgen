@@ -2,19 +2,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <net/ethernet.h>
-#include <netpacket/packet.h>
-#include <netinet/if_ether.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <net/if.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <net/if.h>
-#include <arpa/inet.h>
-#include <unistd.h>
 #include <sys/ioctl.h>
-
-#include <netinet/tcp.h>
-#include <netinet/ip.h>
-#include <netdb.h>
+#include <arpa/inet.h>
+#include <netpacket/packet.h>
+#include <netinet/if_ether.h>
 
 #include "pgen.h"
 #include "netutil.h"
@@ -22,44 +18,51 @@
 
 
 
-pgen_t* pgen_open_offline(const char* filename){
-	pgen_t* p = (pgen_t*)malloc(sizeof(pgen_t));
+pgen_t* pgen_open_writepcap(const char* filename){
+	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
+	return handle;	
+}
 
-	p->offline = 1;
-	p->ol.fd = fopen(filename, "rb");
-	if(p->ol.fd == NULL){
+
+
+pgen_t* pgen_open_offline(const char* filename){
+	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
+
+	handle->is_offline = 1;
+	handle->offline.fd = fopen(filename, "rb");
+	if(handle->offline.fd == NULL){
 		perror("pgen_open_offline");
-		pgen_close(p);
-		p = NULL;
+		pgen_close(handle);
+		handle = NULL;
 	}
-	int len = sizeof(struct pcap_fileheader);
-	if(fread(&p->ol.filehdr, len, 1, p->ol.fd) < 1){
+	int len = sizeof(struct pcap_fhdr);
+	if(fread(&handle->offline.filehdr, len, 1, handle->offline.fd) < 1){
 		perror("pgen_open_offline");
-		pgen_close(p);
-		p = NULL;
+		pgen_close(handle);
+		handle = NULL;
 	}
 	
-	return p;	
+	return handle;	
 }
 
 
 pgen_t* pgen_open(const char* dev, void* nouseyet){
-	pgen_t* p = (pgen_t*)malloc(sizeof(pgen_t));
+	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
 	
-	p->fd = initRawSocket(dev, 1, 0);
-	if(p->fd < 0){
+	handle->fd = initRawSocket(dev, 1, 0);
+	if(handle->fd < 0){
 		perror("pgen_open");
-		p =  NULL;
+		handle =  NULL;
 	}
 
-	return p;
+	return handle;
 }
 
 
 
 void pgen_close(pgen_t* p){
-	if(p->offline == 1){
-		fclose(p->ol.fd);
+	if(p->is_offline == 1){
+		fclose(p->offline.fd);
 	}else{
 		close(p->fd);
 	}
@@ -76,14 +79,14 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 	int len;
 	
 	for(;result;){
-		if(handle->offline == 1){
-			struct pcap_pktheader hdr;
-			if(fread(&hdr, sizeof(struct pcap_pktheader), 1, handle->ol.fd) < 1){
+		if(handle->is_offline == 1){
+			struct pcap_pkthdr hdr;
+			if(fread(&hdr, sizeof(struct pcap_pkthdr), 1, handle->offline.fd) < 1){
 				perror("sniff");
 				fprintf(stderr, "sniff: file is fin\n");
 				return;
 			}
-			if(fread(packet, hdr.len, 1, handle->ol.fd) < 0){
+			if(fread(packet, hdr.len, 1, handle->offline.fd) < 0){
 				perror("sniff");
 				return;
 			}
@@ -103,7 +106,17 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 
 
 
+
+
+
+
+
 int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
+	if(p->is_offline){
+		fprintf(stderr, "pgen_sendpacket_handle: this handle is offline \n");
+		return -1;
+	}
+
 	int sendlen = write(p->fd, packet, len);
 	if(sendlen < 0){
 		perror("pgen_sendpacket_handle");
@@ -205,35 +218,35 @@ unsigned short checksum(unsigned short *data, int len){
 
 
 unsigned short checksumTcp(const u_char *dp, int datalen){
-	struct tcphdr tcp;
-	struct ip ip;
+	struct MYTCP tcp;
+	struct MYIP ip;
 	char data[100];
-	memcpy(&ip, dp, sizeof(struct ip));
-	dp += sizeof(struct ip);
-	memcpy(&tcp, dp, sizeof(struct tcphdr));
-	dp += sizeof(struct tcphdr);
-	memcpy(data, dp, datalen-sizeof(struct tcphdr)-sizeof(struct ip));
-	dp += datalen-sizeof(struct tcphdr)-sizeof(struct ip);
+	memcpy(&ip, dp, IP_HDR_LEN);
+	dp += IP_HDR_LEN;
+	memcpy(&tcp, dp, TCP_HDR_LEN);
+	dp += TCP_HDR_LEN;
+	memcpy(data, dp, datalen-TCP_HDR_LEN-IP_HDR_LEN);
+	dp += datalen-TCP_HDR_LEN-IP_HDR_LEN;
 	
 	struct tpack {
-	  struct ip ip;
-	  struct tcphdr tcp;
+	  struct MYIP ip;
+	  struct MYTCP tcp;
 	  u_char data[100];
 	}p;
 	
-	memcpy(&p.ip, &ip, sizeof(struct ip));
-	memcpy(&p.tcp , &tcp, sizeof(struct tcphdr));
-	memcpy(&p.data, data, datalen-sizeof(struct tcphdr)-sizeof(struct ip));
+	memcpy(&p.ip, &ip, IP_HDR_LEN);
+	memcpy(&p.tcp , &tcp, TCP_HDR_LEN);
+	memcpy(&p.data, data, datalen-TCP_HDR_LEN-IP_HDR_LEN);
 
-	p.ip.ip_ttl = 0;
-	p.ip.ip_p      = IPPROTO_TCP;
-	p.ip.ip_src.s_addr = ip.ip_src.s_addr;
-	p.ip.ip_dst.s_addr = ip.ip_dst.s_addr;
-	p.ip.ip_sum    = htons((sizeof p.tcp) );
+	p.ip.ttl = 0;
+	p.ip.protocol  = IPPROTO_TCP;
+	p.ip.saddr = ip.saddr;
+	p.ip.daddr = ip.daddr;
+	p.ip.check    = htons((sizeof p.tcp) );
 
 #define PHLEN 12
-	p.tcp.th_sum = 0;
-	return checksum((u_int16_t*)&p.ip.ip_ttl, PHLEN+datalen-sizeof(struct ip));
+	p.tcp.check = 0;
+	return checksum((u_int16_t*)&p.ip.ttl, PHLEN+datalen-IP_HDR_LEN);
 }
 
 

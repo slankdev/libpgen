@@ -53,7 +53,7 @@ void test_arp(){
 	p.ARP.srcIp  = ipsrc;
 	p.ARP.dstEth = macdst;
 	p.ARP.dstIp  = ipdst;
-	p.ARP.operation = PGEN_ARPOP_REQEST;
+	p.ARP.operation = 1;
 		
 	p.send(dev);
 }
@@ -71,8 +71,8 @@ void test_icmp(){
 	
 	p.IP.src = ipsrc;
 	p.IP.dst = ipdst;
-	p.ICMP.option = PGEN_ICMPOP_ECHO;
-	p.ICMP.code   = PGEN_ICMPCODE_NET_UNREACH;
+	p.ICMP.option = 8;
+	p.ICMP.code   = 0;
 	
 	p.send(dev);
 }
@@ -109,7 +109,7 @@ void test_dns(){
 	p.DNS.flags.qr = 0;
 	p.DNS.flags.ra = 1;
 	p.DNS.ancnt = 1;
-	p.DNS.query.name  = "slankdev.net";
+	p.DNS.query[0].name  = "slankdev.net";
 
 	p.send(dev);
 }
