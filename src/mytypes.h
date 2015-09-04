@@ -42,8 +42,6 @@ struct pcap_pkthdr{
 
 
 #define PGEN_PCAPFILE_MAXLEN 100000000
-
-
 struct pgen_opt{
 	int offline;
 	char offline_filename[256];
@@ -76,7 +74,6 @@ struct pgen{
 
 
 
- 
 #define	MT_ETHERTYPE_PUP		0x0200		/* Xerox PUP */
 #define MT_ETHERTYPE_SPRITE		0x0500		/* Sprite */
 #define	MT_ETHERTYPE_IP			0x0800		/* IP */
