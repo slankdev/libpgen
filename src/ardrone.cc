@@ -6,6 +6,8 @@
 #include "netutil.h"
 
 
+
+
 pgen_ardrone::pgen_ardrone(){
 	clear();
 }
@@ -128,33 +130,66 @@ void pgen_ardrone::compile(){
 
 
 
+int pgen_ardrone::cast_ctrl(const char* buf){
+	sscanf(buf, "AT*CTRL=%ld,%ld,%ld", &this->ARDRONE.ctrl.seq, 
+			&this->ARDRONE.ctrl.ctrlmode, &this->ARDRONE.ctrl.fw_update_filesize);
+	return strlen((const char*)buf);
+}
+int pgen_ardrone::cast_pcmd(const char* buf){
+	const char spliter = 0x0d;
+	sscanf(buf, "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld",
+			&ARDRONE.pcmd.seq, &ARDRONE.pcmd.flag, &ARDRONE.pcmd.roll,
+			&ARDRONE.pcmd.pitch, &ARDRONE.pcmd.gaz, &ARDRONE.pcmd.yaw.x,
+			&ARDRONE.pcmd.yaw.y, &ARDRONE.pcmd.yaw.z);
+	int len=0;
+	for(int i=0; buf[i+1]!=spliter; i++){
+		len++;	
+	}
+	return len;
+}
+int pgen_ardrone::cast_ref(const char* buf){
+	sscanf(buf, "AT*REF=%ld,%ld",
+			&this->ARDRONE.ref.seq, &this->ARDRONE.ref.command);
+	return strlen((const char*)buf);
+}
+
+
 
 void pgen_ardrone::cast(const u_char* packet, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
-	
+	const char spliter = 0x0d;
 	pgen_udp::cast(packet, len);
 	
-	char buf[256];
-	packet += ETH_HDR_LEN;
-	packet += IP_HDR_LEN;
-	packet += UDP_HDR_LEN;
-	len -= ETH_HDR_LEN;
-	len -= IP_HDR_LEN;
-	len -= UDP_HDR_LEN;
-	
-	for(int i=0; i<len; i++){
-		if(packet[i] == 0x0d)	buf[i] = '.';
-		else					buf[i] = packet[i];
-	}buf[len] = '\0';
+	int cmdlen;
+	const char* p = (const char*)packet;
+	p += ETH_HDR_LEN;
+	p += IP_HDR_LEN;
+	p += UDP_HDR_LEN;
 
-	sscanf(buf, "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld.AT*REF=%ld,%ld.",
-			&ARDRONE.pcmd.seq, &ARDRONE.pcmd.flag, &ARDRONE.pcmd.roll,
-			&ARDRONE.pcmd.pitch, &ARDRONE.pcmd.gaz, &ARDRONE.pcmd.yaw.x,
-			&ARDRONE.pcmd.yaw.y, &ARDRONE.pcmd.yaw.z,
-			&ARDRONE.ref.seq, &ARDRONE.ref.command );
+	while((const u_char*)p-packet <= len){
+		if(strncmp(p, "AT*PCMD", 7) == 0){
+			cmdlen = cast_pcmd(p);	
+			p += cmdlen + 1;
+			printf("cast pcmd\n");
+		}else if(strncmp(p, "AT*REF", 6) == 0){
+			cmdlen = cast_ref(p);
+			p += cmdlen + 1;
+			printf("cast ref\n");
+		}else if(strncmp(p, "AT*CTRL", 7) == 0){
+			cmdlen = cast_ctrl(p);
+			p += cmdlen + 1;
+			printf("cast ctrl\n");
+		}else{
+			fprintf(stderr, "pgen_ardrone::cast: command type not found\n");
+			for(int i=0; p[i+1]!=spliter; i++){
+				p++;
+			}
+		}
+		hexdump((const u_char*)p, cmdlen);
+	}
 }
 
 

@@ -380,6 +380,9 @@ class pgen_ardrone : public pgen_udp {
 		int compile_ctrl();
 		int compile_pcmd();
 		int compile_ref();
+		int cast_ctrl(const char*);
+		int cast_pcmd(const char*);
+		int cast_ref(const  char*);
 		void clear_ctrl();
 		void clear_pcmd();
 		void clear_ref();
