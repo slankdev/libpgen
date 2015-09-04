@@ -364,7 +364,7 @@ class pgen_ardrone : public pgen_udp {
 				long fw_update_filesize;
 			}ctrl;
 			
-			int cmdlen;
+			int cmd_count;
 			int type[10];
 		}ARDRONE;
 

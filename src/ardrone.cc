@@ -6,6 +6,7 @@
 #include "netutil.h"
 
 
+static int get_command_len(const void*);
 
 
 pgen_ardrone::pgen_ardrone(){
@@ -98,22 +99,27 @@ void pgen_ardrone::compile(){
 
 	memset(ardrone, 0, sizeof(ardrone));
 	char* p1 = ardrone;
-	memcpy(p1, pcmd_data, pcmd_data_len);
-	p1 += pcmd_data_len;
-	memcpy(p1, &spliter, 1);
-	p1 += 1;
-	memcpy(p1, ctrl_data, ctrl_data_len);
-	p1 += ctrl_data_len;
-	memcpy(p1, &spliter, 1);
-	p1 += 1;
-	memcpy(p1, ref_data, ref_data_len);
-	p1 += ref_data_len;
-	memcpy(p1, &spliter, 1);
-	p1 += 1;
+	for(int i=0; i<this->ARDRONE.cmd_count; i++){
+		if(this->ARDRONE.type[i] == 0){
+			memcpy(p1, pcmd_data, pcmd_data_len);
+			p1 += pcmd_data_len;
+		}else if(this->ARDRONE.type[i] == 1){
+			memcpy(p1, ref_data, ref_data_len);
+			p1 += ref_data_len;
+		}else if(this->ARDRONE.type[i] == 8){
+			memcpy(p1, ctrl_data, ctrl_data_len);
+			p1 += ctrl_data_len;
+		}
+
+		memcpy(p1, &spliter, 1);
+		p1 += 1;
+	}
 	ardrone_len = p1 - ardrone;
+
 
 	this->UDP.len = UDP_HDR_LEN + ardrone_len;
 	pgen_udp::compile();
+
 
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 	u_char* p = this->data;
@@ -133,24 +139,19 @@ void pgen_ardrone::compile(){
 int pgen_ardrone::cast_ctrl(const char* buf){
 	sscanf(buf, "AT*CTRL=%ld,%ld,%ld", &this->ARDRONE.ctrl.seq, 
 			&this->ARDRONE.ctrl.ctrlmode, &this->ARDRONE.ctrl.fw_update_filesize);
-	return strlen((const char*)buf);
+	return get_command_len(buf);
 }
 int pgen_ardrone::cast_pcmd(const char* buf){
-	const char spliter = 0x0d;
 	sscanf(buf, "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld",
 			&ARDRONE.pcmd.seq, &ARDRONE.pcmd.flag, &ARDRONE.pcmd.roll,
 			&ARDRONE.pcmd.pitch, &ARDRONE.pcmd.gaz, &ARDRONE.pcmd.yaw.x,
 			&ARDRONE.pcmd.yaw.y, &ARDRONE.pcmd.yaw.z);
-	int len=0;
-	for(int i=0; buf[i+1]!=spliter; i++){
-		len++;	
-	}
-	return len;
+	return get_command_len(buf);
 }
 int pgen_ardrone::cast_ref(const char* buf){
 	sscanf(buf, "AT*REF=%ld,%ld",
 			&this->ARDRONE.ref.seq, &this->ARDRONE.ref.command);
-	return strlen((const char*)buf);
+	return get_command_len(buf);
 }
 
 
@@ -160,7 +161,6 @@ void pgen_ardrone::cast(const u_char* packet, int len){
 		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
-	const char spliter = 0x0d;
 	pgen_udp::cast(packet, len);
 	
 	int cmdlen;
@@ -169,26 +169,27 @@ void pgen_ardrone::cast(const u_char* packet, int len){
 	p += IP_HDR_LEN;
 	p += UDP_HDR_LEN;
 
-	while((const u_char*)p-packet <= len){
+	for(this->ARDRONE.cmd_count=0; (const u_char*)p-packet < len; this->ARDRONE.cmd_count++){
 		if(strncmp(p, "AT*PCMD", 7) == 0){
+			this->ARDRONE.type[this->ARDRONE.cmd_count] = 0;
+			//printf("pcmd\n");
 			cmdlen = cast_pcmd(p);	
 			p += cmdlen + 1;
-			printf("cast pcmd\n");
 		}else if(strncmp(p, "AT*REF", 6) == 0){
+			this->ARDRONE.type[this->ARDRONE.cmd_count] = 1;
+			//printf("ref\n");
 			cmdlen = cast_ref(p);
 			p += cmdlen + 1;
-			printf("cast ref\n");
 		}else if(strncmp(p, "AT*CTRL", 7) == 0){
+			this->ARDRONE.type[this->ARDRONE.cmd_count] = 8;
+			//printf("ctrl\n");
 			cmdlen = cast_ctrl(p);
 			p += cmdlen + 1;
-			printf("cast ctrl\n");
 		}else{
+			//printf("other\n");
 			fprintf(stderr, "pgen_ardrone::cast: command type not found\n");
-			for(int i=0; p[i+1]!=spliter; i++){
-				p++;
-			}
+			return ;
 		}
-		hexdump((const u_char*)p, cmdlen);
 	}
 }
 
@@ -197,7 +198,8 @@ void pgen_ardrone::cast(const u_char* packet, int len){
 
 void pgen_ardrone::summary(){
 	compile();
-	printf("AR Drone PCMD(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
+	printf("AR Drone len=%d PCMD(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
+			ARDRONE.cmd_count,
 			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, ARDRONE.pcmd.roll, 
 			ARDRONE.pcmd.pitch, ARDRONE.pcmd.gaz,
 			ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,
@@ -244,3 +246,13 @@ void pgen_ardrone::DSUMMARY(){
 	printf("REF(seq=%ld, cmd=%ld)\n", ARDRONE.ref.seq, ARDRONE.ref.command);
 }
 
+
+
+static int get_command_len(const void* p){
+	const char* c = (const char*)p;
+	const char spliter = 0x0d;
+	int len;
+	for(len=0; c[len]!=spliter; len++) continue;
+	
+	return len;
+}
