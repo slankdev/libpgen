@@ -49,13 +49,13 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				pgen_close(handle);
 				handle = NULL;
 			}
-			handle->offline.filehdr.magic = htonl(0xd4c3b2a1);
-			handle->offline.filehdr.version_major = htons(0x0200);
-			handle->offline.filehdr.version_minor = htons(0x0400);
-			handle->offline.filehdr.timezone = htonl(0x0);
-			handle->offline.filehdr.sigfigs  = htonl(0x0);
-			handle->offline.filehdr.snaplen  = htonl(0xffff0000);
-			handle->offline.filehdr.linktype = htonl(0x01000000);
+			handle->offline.filehdr.magic = 0xa1b2c3d4;
+			handle->offline.filehdr.version_major = 0x0002;
+			handle->offline.filehdr.version_minor = 0x0004;
+			handle->offline.filehdr.timezone = 0x0000;
+			handle->offline.filehdr.sigfigs  = 0x0000;
+			handle->offline.filehdr.snaplen  = 0x0000ffff;
+			handle->offline.filehdr.linktype = 0x00000001;
 			if(fwrite(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
 				perror("pgen_open_writepcap");
 				pgen_close(handle);
