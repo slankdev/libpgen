@@ -28,6 +28,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 	
 	switch(mode){
 		case 0: // read mode
+			handle->is_write = 0;
+			handle->is_read  = 1;
 			handle->offline.fd = fopen(filename, "rb");
 			if(handle->offline.fd == NULL){
 				perror("pgen_open_offline");
@@ -42,7 +44,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			break;
 		
 		case 1: // write mode 
-			handle->is_writefile = 1;
+			handle->is_write = 1;
+			handle->is_read  = 0;
 			handle->offline.fd = fopen(filename, "wb");
 			if(handle->offline.fd == NULL){
 				perror("pgen_open_offline");
@@ -78,6 +81,9 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 pgen_t* pgen_open(const char* dev, void* nouseyet){
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
 	
+	handle->is_write = 1;
+	handle->is_read  = 1;
+
 	handle->fd = initRawSocket(dev, 1, 0);
 	if(handle->fd < 0){
 		perror("pgen_open");
@@ -103,8 +109,8 @@ void pgen_close(pgen_t* p){
 
 
 void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
-	if(handle->is_writefile == 1){
-		fprintf(stderr, "sniff: handle is write pcap mode \n");
+	if(handle->is_read == 0){
+		fprintf(stderr, "sniff: handle is not read mode \n");
 		return;
 	}
 
@@ -145,14 +151,14 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 
 
 int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
-	if(p->is_offline == 1 && p->is_writefile == 0){
-		fprintf(stderr, "pgen_sendpacket_handle: this handle is offline \n");
+	if(p->is_write == 0){
+		fprintf(stderr, "pgen_sendpacket_handle: this handle is not write mode \n");
 		return -1;
 	}
 	int sendlen;
 
 
-	if(p->is_writefile == 1){
+	if(p->is_offline == 1){
 		struct pcap_timeval ts_now;
 		gettimeofday((struct timeval*)&ts_now, NULL);
 

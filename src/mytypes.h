@@ -42,16 +42,14 @@ struct pcap_pkthdr{
 
 
 #define PGEN_PCAPFILE_MAXLEN 100000000
-struct pgen_opt{
-	int offline;
-	char offline_filename[256];
-};
+struct pgen_opt{};
 
 
 struct pgen{
 	int fd;
 	int is_offline;
-	int is_writefile;
+	int is_write;
+	int is_read;
 	struct{
 		FILE* fd;
 		struct pcap_fhdr filehdr;
