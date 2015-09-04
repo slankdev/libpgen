@@ -273,14 +273,6 @@ int pgen_ardrone::cast_configids(const char* buf){
 	strcpy(this->ARDRONE.configids.user, user);
 	strcpy(this->ARDRONE.configids.app, app);
 
-
-	printf("-------info-configids------------\n");
-	printf("seq: %s \n", seq);
-	printf("session: %s \n", session);
-	printf("user: %s \n", user);
-	printf("app: %s \n", app);
-	printf("command len: %d \n", get_command_len(buf));
-	printf("---------------------------------\n");
 	return get_command_len(buf);	
 }
 
@@ -320,14 +312,6 @@ int pgen_ardrone::cast_config(const char* buf){
 	strcpy(this->ARDRONE.config.name, name);
 	strcpy(this->ARDRONE.config.parameter, parameter);
 
-	/*
-	printf("-------info-config---------------\n");
-	printf("seq: %s \n", seq);
-	printf("name: %s \n", name);
-	printf("parameter: %s \n", parameter);
-	printf("command len: %d \n", get_command_len(buf));
-	printf("---------------------------------\n");
-	*/
 	return get_command_len(buf);	
 }
 
@@ -344,8 +328,8 @@ int pgen_ardrone::cast_comwdg(const char* buf){
 int pgen_ardrone::cast_ctrl(const char* buf){
 	int ret = sscanf(buf, "AT*CTRL=%ld,%ld,%ld", &this->ARDRONE.ctrl.seq, 
 			&this->ARDRONE.ctrl.ctrlmode, &this->ARDRONE.ctrl.fw_update_filesize);
-	if(ret != 2){
-		fprintf(stderr, "pgen_ardrone::cast_ctrl: scan miss\n");
+	if(ret != 3){
+		fprintf(stderr, "pgen_ardrone::cast_ctrl: scan miss (%d)\n", ret);
 	}
 	return get_command_len(buf);
 }
@@ -376,12 +360,10 @@ void pgen_ardrone::cast(const u_char* packet, int len){
 			p += cmdlen + 1;
 		}else if(strncmp(p, "AT*CONFIG_IDS", 13) == 0){
 			this->ARDRONE.type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CONFIG_IDS;
-			printf("configids\n");
 			cmdlen = cast_configids(p);
 			p += cmdlen + 1;
 		}else if(strncmp(p, "AT*CONFIG=", 10) == 0){
 			this->ARDRONE.type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CONFIG;
-			printf("config\n");
 			cmdlen = cast_config(p);
 			p += cmdlen + 1;
 		}else if(strncmp(p, "AT*CTRL", 7) == 0){
@@ -462,7 +444,6 @@ static int get_original_string(const char* p, char buf[]){
 	c++;
 	i++;
 	buf[i] = '\0';
-	printf("DEBUG: %s(%d) \n", buf, (int)(c-p));
 	return c - p;	
 }
 
