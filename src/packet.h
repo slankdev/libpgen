@@ -342,7 +342,6 @@ class pgen_ardrone : public pgen_udp {
 		bit32 pcmd_data_len;
 		char  ref_data[256];
 		bit32 ref_data_len;
-		
 		char  configids_data[256];
 		bit32 configids_data_len;
 		char  anim_data[256];
@@ -355,10 +354,8 @@ class pgen_ardrone : public pgen_udp {
 		bit32 led_data_len;
 		char  comwdg_data[256];
 		bit32 comwdg_data_len;
-	
 		char  ctrl_data[256];
 		bit32 ctrl_data_len;
-	
 	public:
 		static const int minLength = pgen_udp::minLen+39; // minimum ardrone packet
 		static const int macLength = PGEN_MAX_PACKET_LEN;
@@ -401,7 +398,7 @@ class pgen_ardrone : public pgen_udp {
 			}ctrl;
 			
 			int cmd_count;
-			int type[10];
+			int cmd_type[10];
 		}ARDRONE;
 
 		pgen_ardrone();
