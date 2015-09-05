@@ -136,6 +136,26 @@ struct icmp_echo_header{
 };
 
 
+struct icmp_destination_unreach{
+	bit8  nouse;
+	bit8  len;
+	bit16 next_mtu;
+};
+
+
+struct icmp_redirect{
+	bit32 gw_addr;
+};
+
+
+struct icmp_time_exceeded{
+	bit8  nouse1;
+	bit8  len;
+	bit16 nouse2;
+};
+
+
+
 
 
 struct MYICMP{

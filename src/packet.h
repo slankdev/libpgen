@@ -146,8 +146,15 @@ class pgen_icmp : public pgen_ip {
 			int type;
 			int code;
 			
-			int id;
-			int seq;
+			struct{
+				int id;
+				int seq;
+			}echo;
+			struct{
+				ipaddr gw_addr;	
+			}redirect;
+			struct{}destination_unreach;
+			struct{}time_exceeded;
 
 
 		}ICMP;
