@@ -473,19 +473,66 @@ void pgen_ardrone::info(){
 	pgen_udp::info();
 	
 	printf(" * AR Drone packet\n");
-	printf("    - PCMD MAG\n");
-	printf("         Sequence Num : %ld \n", ARDRONE.pcmd.seq);
-	printf("         Flag         : %ld \n", ARDRONE.pcmd.flag);
-	printf("         Roll         : %ld \n", ARDRONE.pcmd.roll);
-	printf("         Pitch        : %ld \n", ARDRONE.pcmd.pitch);
-	printf("         Gaz          : %ld \n", ARDRONE.pcmd.gaz);
-	printf("         Yaw(x,y,z)   : (%ld,%ld,%ld)  \n", 
-			ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,
-			ARDRONE.pcmd.yaw.z);
-	printf("    - REF\n");
-	printf("         Sequence Num : %ld \n", ARDRONE.ref.seq);
-	printf("         Command      : %ld \n", ARDRONE.ref.command);
 	
+	
+	for(int i=0; i<this->ARDRONE.cmd_count; i++){
+		switch(this->ARDRONE.cmd_type[i]){
+			case ARDRONE_CMD_PCMD:
+				printf("    - PCMD MAG\n");
+				printf("         Sequence Num : %ld \n", ARDRONE.pcmd.seq);
+				printf("         Flag         : %ld \n", ARDRONE.pcmd.flag);
+				printf("         Roll         : %ld \n", ARDRONE.pcmd.roll);
+				printf("         Pitch        : %ld \n", ARDRONE.pcmd.pitch);
+				printf("         Gaz          : %ld \n", ARDRONE.pcmd.gaz);
+				printf("         Yaw(x,y,z)   : (%ld,%ld,%ld)  \n", 
+						ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,
+						ARDRONE.pcmd.yaw.z);
+				break;
+			case ARDRONE_CMD_REF:
+				printf("    - REF\n");
+				printf("         Sequence Num : %ld \n", ARDRONE.ref.seq);
+				printf("         Command      : %ld \n", ARDRONE.ref.command);
+				break;
+			case ARDRONE_CMD_CONFIG_IDS:
+				printf("    - CONFIG_IDS \n");
+				printf("         Sequence Num : %ld \n", ARDRONE.configids.seq);
+				printf("         Session      : %s \n", ARDRONE.configids.session);
+				printf("         User         : %s \n", ARDRONE.configids.user);
+				printf("         App          : %s \n", ARDRONE.configids.app);
+				break;
+			case ARDRONE_CMD_ANIM:
+				printf("    - ANIM \n");
+				printf("         Not implement yet \n");
+				break;
+			case ARDRONE_CMD_FTRIM:
+				printf("    - FTRIM \n");
+				printf("         Not implement yet \n");
+				break;
+			case ARDRONE_CMD_CONFIG:
+				printf("    - CONFIG \n");
+				printf("         Sequence Num : %ld \n", ARDRONE.config.seq);
+				printf("         Name         : %s \n", ARDRONE.config.name);
+				printf("         Parameter    : %s \n", ARDRONE.config.parameter);
+				break;
+			case ARDRONE_CMD_LED:
+				printf("    - LED \n");
+				printf("         Not implement yet \n");
+				break;
+			case ARDRONE_CMD_COMWDG:
+				printf("    - COMWDG \n");
+				printf("         Not implement yet \n");
+				break;
+			case ARDRONE_CMD_CTRL:
+				printf("    - CTRL \n");
+				printf("         Sequence Num : %ld \n", ARDRONE.ctrl.seq);
+				printf("         Control Mode : %ld \n", ARDRONE.ctrl.ctrlmode);
+				printf("         FW Update    : %ld \n", ARDRONE.ctrl.fw_update_filesize);
+				break;
+			default:
+				fprintf(stderr, "pgen_ardrone::summary: command type not found \n");
+				break;
+		}
+	}
 }
 
 
@@ -495,12 +542,7 @@ void pgen_ardrone::DSUMMARY(){
 	compile();
 
 	printf("%s -> %s ", IP.src.c_str(), IP.dst.c_str());
-	printf("(seq=%ld flag=%ld roll=%ld pitch=%ld gaz=%ld yaw=(%ld,%ld,%ld)) ", 
-			ARDRONE.pcmd.seq, ARDRONE.pcmd.flag, ARDRONE.pcmd.roll, 
-			ARDRONE.pcmd.pitch, ARDRONE.pcmd.gaz,
-			ARDRONE.pcmd.yaw.x, ARDRONE.pcmd.yaw.y,
-			ARDRONE.pcmd.yaw.z);
-	printf("REF(seq=%ld, cmd=%ld)\n", ARDRONE.ref.seq, ARDRONE.ref.command);
+	summary();
 }
 
 
