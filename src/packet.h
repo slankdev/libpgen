@@ -22,7 +22,6 @@
 #define PGEN_MAX_EXT_DATA_LEN 98000
 
 
-
 class pgen_packet{
 	public:
 		int 	len;
@@ -154,8 +153,7 @@ class pgen_icmp : public pgen_ip {
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
-
- };
+};
 
 
 
@@ -237,7 +235,6 @@ class pgen_dns :public pgen_udp {
 		bit32 auth_data_len;
 		bit8  addition_data[256];
 		bit32 addition_data_len;
-
 	public:
 		static const int minLen = pgen_udp::minLen+DNS_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN; 
@@ -323,6 +320,7 @@ class pgen_dns :public pgen_udp {
 };
 
 
+
 typedef enum{
 	ARDRONE_CMD_PCMD,
 	ARDRONE_CMD_REF,
@@ -334,7 +332,6 @@ typedef enum{
 	ARDRONE_CMD_COMWDG,
 	ARDRONE_CMD_CTRL
 } ar_drone_cmdtype;
-
 
 class pgen_ardrone : public pgen_udp {
 	protected:
@@ -456,10 +453,32 @@ class pgen_dhcp : public pgen_udp {
 		pgen_dhcp(const u_char*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int);
+		void cast(const u_char*, int);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
+};
+
+
+
+class pgen_http : public pgen_tcp {
+	protected:
+
+	public:
+	struct{
+		int a;
+	}HTTP;
+
+	pgen_http();
+	pgen_http(const u_char*, int);
+	void clear();
+	void compile();
+	void cast(const u_char*, int);
+	void send(const char* ifname){send_L3(ifname);}
+	void summary();
+	void info();
+
+	
 };
 
 
