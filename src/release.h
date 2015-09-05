@@ -68,7 +68,7 @@
  *						ipaddr nslookup(url);		 
  *		[2015.09.02]	pgen_open_offline(filename);		[2015.09.02]
  *						read pcap file format
- *		[2015.09.02]	ardrone ctrl command 				[]
+ *		[2015.09.02]	ardrone ctrl command 				[2015.09.04]
  *
  *
  *							
@@ -89,4 +89,4 @@
  *						typedef int16 bit16...
  */
 
-#endif
+#endif /* RELEASE_H */
