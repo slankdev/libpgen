@@ -66,7 +66,7 @@ void pgen_udp::compile(){
 
 void pgen_udp::cast(const void* data, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
-		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
+		fprintf(stderr, "pgen_udp::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
 	
