@@ -26,7 +26,7 @@ pgen_arp::pgen_arp(){
 
 
 
-pgen_arp::pgen_arp(const u_char* packet, int len){
+pgen_arp::pgen_arp(const void* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -77,7 +77,7 @@ void pgen_arp::compile(){
 
 
 
-void pgen_arp::cast(const u_char* data, int len){
+void pgen_arp::cast(const void* data, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_arp::cast(): packet len isn`t support (%d)\n", len);
 		return;
@@ -86,7 +86,7 @@ void pgen_arp::cast(const u_char* data, int len){
 	pgen_eth::cast(data, len);
 
 	struct MYARP* buf;
-	const u_char* p = data;
+	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
 
 	buf = (struct MYARP*)p;
@@ -110,8 +110,8 @@ void pgen_arp::cast(const u_char* data, int len){
 	this->ARP.srcIp = slc.l;
 	this->ARP.dstIp = dlc.l;
 	
-	len = p - data;
-	addData(p, len-(p-data));
+	len = p - (u_char*)data;
+	addData(p, len-(p-(u_char*)data));
 }
 
 

@@ -49,7 +49,7 @@ pgen_dns::pgen_dns(){
 
 
 
-pgen_dns::pgen_dns(const u_char* packet, int len){
+pgen_dns::pgen_dns(const void* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -381,9 +381,9 @@ void pgen_dns::compile(){
 
 
 // madamada koko kakinaoshite hoshii
-int pgen_dns::cast_query(const u_char* bpacket, int len){
+int pgen_dns::cast_query(const char* bpacket, int len){
 	u_char* packet = (u_char*)malloc(len);
-	memcpy(packet, bpacket, len);
+	memcpy(packet, (u_char*)bpacket, len);
 	
 	char* name;
 	struct q_data{
@@ -419,52 +419,8 @@ int pgen_dns::cast_query(const u_char* bpacket, int len){
 }
 
 
-/* //[[[
-int pgen_dns::cast_answer(const u_char* bpacket, int len){
-	u_char* packet = (u_char*)malloc(len);
-	memcpy(packet, bpacket, len);
-	struct a_data1{
-		bit16 name;
-		bit16 type;
-		bit16 cls;
-	};
-	//bit32 ttl;
-	struct a_data2{
-		bit16 len;
-		bit8 addr[4];		
-	};
 
-
-	packet += eth_hdr_len;
-	packet += ip_hdr_len;
-	packet += udp_hdr_len;
-	packet += dns_hdr_len;
-	packet += query_data_len;
-	const u_char* p = packet;
-	
-	for(int i=0; i<dns.ancnt; i++){
-		struct a_data1* buf1 = (struct a_data1*)p;
-		p += sizeof(struct a_data1);
-		bit32* buf_ttl = (bit32*)p;
-		p += sizeof(bit32);
-		struct a_data2* buf2 = (struct a_data2*)p;
-		p += sizeof(struct a_data2);
-		
-		dns.answer[i].name = ntohs(buf1->name);
-		dns.answer[i].type = ntohs(buf1->type);
-		dns.answer[i].cls  = ntohs(buf1->cls);
-		dns.answer[i].ttl  = ntohl(*buf_ttl);
-		dns.answer[i].len  = ntohs(buf2->len);
-		for(int j=0; j<4; j++)
-			dns.answer[i].addr.setoctet(j, buf2->addr[j]);
-		
-	}
-
-	return p - packet;
-}
-*/ //]]]
-
-int pgen_dns::cast_answer(const u_char* packet, int blen){
+int pgen_dns::cast_answer(const char* packet, int blen){
 	
 	bit16* name;
 	bit16* type;
@@ -478,7 +434,7 @@ int pgen_dns::cast_answer(const u_char* packet, int blen){
 	packet += UDP_HDR_LEN;
 	packet += DNS_HDR_LEN;
 	packet += query_data_len;
-	const u_char* p = packet;
+	const u_char* p = (u_char*)packet;
 	
 	for(int i=0; i<DNS.ancnt; i++){
 		if(*p == 0x00){ // soa record
@@ -513,12 +469,12 @@ int pgen_dns::cast_answer(const u_char* packet, int blen){
 		
 	}
 
-	return p - packet;
+	return p - (u_char*)packet;
 }
 
 
 
-int pgen_dns::cast_auth(const u_char* packet, int blen){
+int pgen_dns::cast_auth(const char* packet, int blen){
 	
 	bit16* name;
 	bit16* type;
@@ -533,7 +489,7 @@ int pgen_dns::cast_auth(const u_char* packet, int blen){
 	packet += DNS_HDR_LEN;
 	packet += query_data_len;
 	packet += answer_data_len;
-	const u_char* p = packet;
+	const u_char* p = (u_char*)packet;
 	
 	for(int i=0; i<DNS.nscnt; i++){
 		if(*p == 0x00){ // soa record
@@ -567,11 +523,11 @@ int pgen_dns::cast_auth(const u_char* packet, int blen){
 		
 	}
 
-	return p - packet;
+	return p - (u_char*)packet;
 }
 
 
-int pgen_dns::cast_addition(const u_char* packet, int blen){
+int pgen_dns::cast_addition(const char* packet, int blen){
 	
 	bit16* name;
 	bit16* type;
@@ -587,7 +543,7 @@ int pgen_dns::cast_addition(const u_char* packet, int blen){
 	packet += query_data_len;
 	packet += answer_data_len;
 	packet += auth_data_len;
-	const u_char* p = packet;
+	const u_char* p = (u_char*)packet;
 	
 	for(int i=0; i<DNS.arcnt; i++){
 		if(*p == 0x00){ // soa record
@@ -632,19 +588,19 @@ int pgen_dns::cast_addition(const u_char* packet, int blen){
 		*/
 	}
 
-	return p - packet;
+	return p - (u_char*)packet;
 }
 
 
 
-void pgen_dns::cast(const u_char* packet, int len){
+void pgen_dns::cast(const void* packet, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
 
 	pgen_udp::cast(packet, len);	
-	const u_char* p = packet;
+	const u_char* p = (u_char*)packet;
 
 	p += ETH_HDR_LEN;
 	p += IP_HDR_LEN;
@@ -667,17 +623,17 @@ void pgen_dns::cast(const u_char* packet, int len){
 	this->DNS.nscnt = ntohs(buf->nscnt);
 	this->DNS.arcnt = ntohs(buf->arcnt);
 	
-	query_data_len = cast_query(packet, len);	
+	query_data_len = cast_query((char*)packet, len);	
 	p += query_data_len;
-	answer_data_len = cast_answer(packet, len);
+	answer_data_len = cast_answer((char*)packet, len);
 	p += answer_data_len;
-	auth_data_len = cast_auth(packet, len);
+	auth_data_len = cast_auth((char*)packet, len);
 	p += auth_data_len;
-	addition_data_len = cast_addition(packet, len);
+	addition_data_len = cast_addition((char*)packet, len);
 	p += addition_data_len;
 	
 	
-	this->len = p - packet;
+	this->len = p - (u_char*)packet;
 }
 
 

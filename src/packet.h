@@ -32,14 +32,14 @@ class pgen_packet{
 		pgen_packet();
 		virtual void clear()=0;
 		virtual void compile()=0;
-		virtual void cast(const u_char*, const int)=0;
+		virtual void cast(const void*, const int)=0;
 		virtual void send(const char* ifname)=0;
 		virtual void summary()=0;
 		virtual void info()=0;	
 		
 		void hex();
 		int  length();
-		void addData(const u_char* , int );
+		void addData(const void* , int );
 		void compile_addData(); 
 		void send_handle(pgen_t*);
 };
@@ -61,10 +61,10 @@ class pgen_eth : public pgen_packet {
 		}ETH;
 		
 		pgen_eth();
-		pgen_eth(const u_char*, int);
+		pgen_eth(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int len);
+		void cast(const void*, int);
 		void send(const char* ifname){send_L2(ifname);}
 		void send_L2(const char* ifname);
 		void summary();
@@ -89,10 +89,10 @@ class pgen_arp : public pgen_eth {
 		}ARP;
 
 		pgen_arp();
-		pgen_arp(const u_char*, int);
+		pgen_arp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int len);
+		void cast(const void*, const int);
 		void send(const char* ifname){send_L2(ifname);}
 		void summary();
 		void info();
@@ -119,10 +119,10 @@ class pgen_ip : public pgen_eth {
 
 
 		pgen_ip();
-		pgen_ip(const u_char*, int);
+		pgen_ip(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int len);
+		void cast(const void*, int);
 		void send(const char* ifname){send_L3(ifname);}
 		void send_L3(const char* ifname);
 		void summary();
@@ -146,10 +146,10 @@ class pgen_icmp : public pgen_ip {
 		}ICMP;
 		
 		pgen_icmp();
-		pgen_icmp(const u_char*, int);
+		pgen_icmp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int len);
+		void cast(const void*, int);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
@@ -183,10 +183,10 @@ class pgen_tcp : public pgen_ip {
 		}TCP;
 
 		pgen_tcp();
-		pgen_tcp(const u_char*, int);
+		pgen_tcp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int len);
+		void cast(const void*, const int len);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
@@ -208,10 +208,10 @@ class pgen_udp : public pgen_ip {
 		}UDP;
 
 		pgen_udp();
-		pgen_udp(const u_char*, int);
+		pgen_udp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int len);
+		void cast(const void*, const int len);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
@@ -295,10 +295,10 @@ class pgen_dns :public pgen_udp {
 		}DNS;
 
 		pgen_dns();
-		pgen_dns(const u_char*, int);
+		pgen_dns(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, int);
+		void cast(const void*, int);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
@@ -312,10 +312,10 @@ class pgen_dns :public pgen_udp {
 		void compile_answer();
 		void compile_auth();
 		void compile_addition();
-		int  cast_query(const u_char*, int);
-		int  cast_answer(const u_char*, int);
-		int  cast_auth(const u_char* packet, int len);
-		int  cast_addition(const u_char* packet, int len);
+		int  cast_query(const char*, int);
+		int  cast_answer(const char*, int);
+		int  cast_auth(const char* , int);
+		int  cast_addition(const char*, int);
 
 };
 
@@ -399,10 +399,10 @@ class pgen_ardrone : public pgen_udp {
 		}ARDRONE;
 
 		pgen_ardrone();
-		pgen_ardrone(const u_char*, int);
+		pgen_ardrone(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, const int);
+		void cast(const void*, const int);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
@@ -440,7 +440,7 @@ class pgen_ardrone : public pgen_udp {
 
 
 
-
+/*
 class pgen_dhcp : public pgen_udp {
 	public:
 		static const int minLen = pgen_udp::minLen+DNS_HDR_LEN;
@@ -450,30 +450,34 @@ class pgen_dhcp : public pgen_udp {
 		}DHCP;
 		
 		pgen_dhcp();
-		pgen_dhcp(const u_char*, int);
+		pgen_dhcp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const u_char*, int);
+		void cast(const void*, int);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
 };
-
+*/
 
 
 class pgen_http : public pgen_tcp {
 	protected:
-
+		
 	public:
 	struct{
 		int a;
+		struct{
+			int method;
+			char header[2][256]; 
+		}request;
 	}HTTP;
 
 	pgen_http();
-	pgen_http(const u_char*, int);
+	pgen_http(const void*, int);
 	void clear();
 	void compile();
-	void cast(const u_char*, int);
+	void cast(const void*, int);
 	void send(const char* ifname){send_L3(ifname);}
 	void summary();
 	void info();
@@ -514,10 +518,10 @@ class pgen_unknown{
 		}UDP;
 
 		pgen_unknown();
-		pgen_unknown(const u_char*, int);
+		pgen_unknown(const void*, int);
 		void clear();
 		void send_handle(pgen_t*);
-		bool cast(const u_char*, int);
+		bool cast(const void*, int);
 		void summary();
 
 		void hex();

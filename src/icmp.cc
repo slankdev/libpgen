@@ -27,7 +27,7 @@ pgen_icmp::pgen_icmp(){
 
 
 
-pgen_icmp::pgen_icmp(const u_char* packet, int len){
+pgen_icmp::pgen_icmp(const void* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -76,7 +76,7 @@ void pgen_icmp::compile(){
 
 
 
-void pgen_icmp::cast(const u_char* data, int len){
+void pgen_icmp::cast(const void* data, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_icmp::cast(): packet len isn`t support (%d)\n", len);
 		return;
@@ -84,7 +84,7 @@ void pgen_icmp::cast(const u_char* data, int len){
 	
 	pgen_ip::cast(data, len);
 
-	const u_char* p = data;
+	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
 	p += IP_HDR_LEN;
 	
@@ -96,8 +96,8 @@ void pgen_icmp::cast(const u_char* data, int len){
 	this->ICMP.id = ntohs(buf->icmp_hun.ih_idseq.icd_id);
 	this->ICMP.seq = ntohs(buf->icmp_hun.ih_idseq.icd_seq);
 
-	this->len = p - data;
-	addData(p, len-(p-data));
+	this->len = p - (u_char*)data;
+	addData(p, len- this->len);
 } 
 
 

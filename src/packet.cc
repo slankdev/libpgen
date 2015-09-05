@@ -34,7 +34,7 @@ void pgen_packet::compile_addData(){
 
 
 
-void pgen_packet::addData(const u_char* byte, int len){
+void pgen_packet::addData(const void* byte, int len){
 	if(len > PGEN_MAX_EXT_DATA_LEN){
 		fprintf(stderr, "pgen_packet::addData(): Extension Data is too long\n");
 		return;

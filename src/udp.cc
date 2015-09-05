@@ -22,7 +22,7 @@ pgen_udp::pgen_udp(){
 }
 
 
-pgen_udp::pgen_udp(const u_char* packet, int len){
+pgen_udp::pgen_udp(const void* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -64,7 +64,7 @@ void pgen_udp::compile(){
 
 
 
-void pgen_udp::cast(const u_char* data, int len){
+void pgen_udp::cast(const void* data, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
 		return;
@@ -72,7 +72,7 @@ void pgen_udp::cast(const u_char* data, int len){
 	
 	pgen_ip::cast(data, len);
 
-	const u_char* p = data;
+	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
 	p += IP_HDR_LEN;
 
@@ -83,8 +83,8 @@ void pgen_udp::cast(const u_char* data, int len){
 	this->UDP.dst = ntohs(buf->dest);
 	this->UDP.len = ntohs(buf->len);
 	
-	this->len = p - data;
-	addData(p, len-(p-data));
+	this->len = p - (u_char*)data;
+	addData(p, len- this->len);
 }
 
 

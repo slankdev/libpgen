@@ -17,7 +17,7 @@ pgen_ardrone::pgen_ardrone(){
 
 
 
-pgen_ardrone::pgen_ardrone(const u_char* packet, int len){
+pgen_ardrone::pgen_ardrone(const void* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -355,7 +355,7 @@ int pgen_ardrone::cast_ctrl(const char* buf){
 
 
 
-void pgen_ardrone::cast(const u_char* packet, int len){
+void pgen_ardrone::cast(const void* packet, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
 		return;
@@ -368,7 +368,7 @@ void pgen_ardrone::cast(const u_char* packet, int len){
 	p += IP_HDR_LEN;
 	p += UDP_HDR_LEN;
 
-	for(this->ARDRONE.cmd_count=0; (const u_char*)p-packet < len; this->ARDRONE.cmd_count++){
+	for(this->ARDRONE.cmd_count=0; (const u_char*)p-(const u_char*)packet < len; this->ARDRONE.cmd_count++){
 		if(strncmp(p, "AT*PCMD", 7) == 0){
 			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_PCMD;
 			cmdlen = cast_pcmd(p);	

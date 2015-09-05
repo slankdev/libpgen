@@ -34,7 +34,7 @@ struct host router = {"192.168.179.1", "a2:12:42:17:d8:8f"};
 
 /* mac wlan en0 */
 //struct host target = {"192.168.222.106", "10.128.5.85"};
-struct host target = {"192.168.179.4", "80:e6:50:17:18:46"};
+struct host target = {"192.168.179.2", "80:e6:50:17:18:46"};
 
 
 

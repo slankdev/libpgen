@@ -26,7 +26,7 @@ pgen_ip::pgen_ip(){
 
 
 
-pgen_ip::pgen_ip(const u_char* packet, int len){
+pgen_ip::pgen_ip(const void* packet, int len){
 	clear();	
 	cast(packet, len);
 }
@@ -79,7 +79,7 @@ void pgen_ip::compile(){
 
 
 
-void pgen_ip::cast(const bit8* data, int len){
+void pgen_ip::cast(const void* data, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_ip::cast(): packet len isn`t support (%d)\n", len);
 		return;
@@ -87,7 +87,7 @@ void pgen_ip::cast(const bit8* data, int len){
 	
 	pgen_eth::cast(data, len);
 
-	const u_char* p = data;
+	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
 	struct MYIP* buf = (struct MYIP*)p;
 	p += IP_HDR_LEN;
@@ -101,7 +101,7 @@ void pgen_ip::cast(const bit8* data, int len){
 	this->IP.src._addr = buf->saddr;
 	this->IP.dst._addr = buf->daddr;
 	
-	this->len = p - data;
+	this->len = p - (u_char*)data;
 	addData(p, len-(this->len));
 }
 

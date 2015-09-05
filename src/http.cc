@@ -1,5 +1,4 @@
 
-
 #include "pgen.h"
 #include "packet.h"
 #include "address.h"
@@ -19,25 +18,21 @@
 #include <sys/socket.h>
 
 
+pgen_http::pgen_http(){
+	clear();	
+}
 
-pgen_dhcp::pgen_dhcp(){
-		
+pgen_http::pgen_http(const void* packet, int len){
+	clear();
+	cast(packet, len);
 }
-pgen_dhcp::pgen_dhcp(const u_char* packet, int len){
-		
-}
-void pgen_dhcp::clear(){
-		
-}
-void pgen_dhcp::compile(){
-		
-}
-void pgen_dhcp::cast(const u_char* packet, int len){
-		
-}
-void pgen_dhcp::summary(){
-		
-}
-void pgen_dhcp::info(){
-		
-}
+
+
+void pgen_http::clear(){}
+
+void pgen_http::compile(){}
+
+void pgen_http::cast(const void* packet, int len){}
+
+void pgen_http::summary(){}
+void pgen_http::info(){}

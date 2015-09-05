@@ -22,7 +22,7 @@ pgen_unknown::pgen_unknown(){
 
 
 
-pgen_unknown::pgen_unknown(const bit8* packet, int len){
+pgen_unknown::pgen_unknown(const void* packet, int len){
 	clear();
 	cast(packet, len);
 }
@@ -58,7 +58,7 @@ void pgen_unknown::send_handle(pgen_t* handle){
 
 
 
-bool pgen_unknown::cast(const bit8* packet, int len){
+bool pgen_unknown::cast(const void* packet, int len){
 	clear();
 	if(!(14 < len && len < PGEN_MAX_PACKET_LEN)){
 		fprintf(stderr, "recv packet length is not support (len=%d)\n", len);
@@ -72,7 +72,7 @@ bool pgen_unknown::cast(const bit8* packet, int len){
 	struct MYTCP*  tcp;
 	struct MYUDP*  udp;
 		
-	const bit8* p = packet;
+	const bit8* p = (bit8*)packet;
 	isETH = true;
 	eth = (struct MYETH*)p;
 	p += sizeof(struct MYETH);
