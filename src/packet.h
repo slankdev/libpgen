@@ -153,8 +153,13 @@ class pgen_icmp : public pgen_ip {
 			struct{
 				ipaddr gw_addr;	
 			}redirect;
-			struct{}destination_unreach;
-			struct{}time_exceeded;
+			struct{
+				bit8 len;
+				bit16 next_mtu;
+			}destination_unreach;
+			struct{
+				bit8 len;
+			}time_exceeded;
 
 
 		}ICMP;

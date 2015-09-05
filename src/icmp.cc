@@ -69,14 +69,14 @@ void pgen_icmp::compile(){
 	}else if(ICMP.type==3){				// Destination Unreachable
 		struct icmp_destination_unreach idu;
 		idu.nouse = 0;
-		idu.len   = 0;
-		idu.next_mtu = htons(0);
+		idu.len   = this->ICMP.destination_unreach.len;
+		idu.next_mtu = htons(this->ICMP.destination_unreach.next_mtu);
 		memcpy(icmp_data, &idu, sizeof(idu));
 		icmp_data_len = sizeof(idu);
 	}else if(ICMP.type==11){			// Time Exceeded
 		struct icmp_time_exceeded ite;
 		ite.nouse1 = 0;
-		ite.len    = 0;  // kokoyare
+		ite.len    = this->ICMP.time_exceeded.len;  // kokoyare
 		ite.nouse2 = htons(0);
 		memcpy(icmp_data, &ite, sizeof(ite));
 		icmp_data_len = sizeof(ite);
@@ -144,6 +144,37 @@ void pgen_icmp::cast(const void* data, int len){
 	this->ICMP.type = buf->icmp_type;
 	this->ICMP.code = buf->icmp_code;
 
+
+	if(ICMP.type==8 || ICMP.type==0){  // Echo or Echo Relay
+		struct icmp_echo_header* ie = (struct icmp_echo_header*)p;
+		this->ICMP.echo.id = ntohs(ie->id);
+		this->ICMP.echo.seq = ntohs(ie->seq);
+		p += sizeof(struct icmp_echo_header);
+	}else if(ICMP.type==3){				// Destination Unreachable
+		struct icmp_destination_unreach* idu = (struct icmp_destination_unreach*)p;
+		this->ICMP.destination_unreach.len = (idu->len);
+		this->ICMP.destination_unreach.next_mtu = ntohs(idu->next_mtu);
+		p += sizeof(struct icmp_destination_unreach);
+	}else if(ICMP.type==11){			// Time Exceeded
+		struct icmp_time_exceeded* ite = (struct icmp_time_exceeded*)p;
+		this->ICMP.time_exceeded.len = ite->len;  // kokoyare
+		p += sizeof(struct icmp_time_exceeded);
+	}else if(ICMP.type==5){
+		struct icmp_redirect* ir = (struct icmp_redirect*)p;
+		this->ICMP.redirect.gw_addr._addr = ir->gw_addr;
+		p += sizeof(struct icmp_redirect);
+	}else if(ICMP.type==9 && ICMP.code==0){
+		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
+		return;
+	}else if(ICMP.type==10 && ICMP.code==0){
+		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
+		return;
+	}else{
+		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
+		return;
+	}
+
+
 	memcpy(icmp_data, p, len-(p-(u_char*)data));
 	icmp_data_len = len - (p-(u_char*)data);
 	p += icmp_data_len;
@@ -156,13 +187,26 @@ void pgen_icmp::cast(const void* data, int len){
 void pgen_icmp::summary(){
 	compile();
 	printf("ICMP{ ");
-	if(ICMP.type == 8 && ICMP.code == 0){
-		printf("Echo Request ttl=%d }\n",IP.ttl );
-	}else if(ICMP.type == 0 && ICMP.code == 0){
-		printf("Echo Relay ttl=%d }\n", IP.ttl );
+
+	if(ICMP.type==8){
+		printf("Echo Request id=0x%04x seq=%d ttl=%d",ICMP.echo.id, ICMP.echo.seq, IP.ttl );
+	}else if(ICMP.type==0){ 
+		printf("Echo Reply id=0x%04x seq=%d ttl=%d",ICMP.echo.id, ICMP.echo.seq, IP.ttl );
+	}else if(ICMP.type==3){
+		printf("Destination Unreachable code=%d", ICMP.code);
+	}else if(ICMP.type==11){
+		printf("Time Exceeded");
+	}else if(ICMP.type==5){
+		printf("Redirect gw_addr=%s", ICMP.redirect.gw_addr.c_str());
+	}else if(ICMP.type==9 && ICMP.code==0){
+		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
+	}else if(ICMP.type==10 && ICMP.code==0){
+		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
 	}else{
-		printf("other icmp type }\n");	
+		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
 	}
+
+	printf(" }\n");
 }
 
 
@@ -171,10 +215,6 @@ void pgen_icmp::info(){
 	compile();
 	pgen_ip::info();
 
-	std::map<int, const char*>  _icmptype;
-	_icmptype[0] = "Echo Reply";
-	_icmptype[5] = "REdirect"; 
-	_icmptype[8] = "Echo"; 
 	std::map<int, const char*> _icmpcode;
 	_icmpcode[0]  = "Net Unreachable";
 	_icmpcode[1]  = "Host Unreachable";
@@ -183,11 +223,27 @@ void pgen_icmp::info(){
 	_icmpcode[255]  = "Not Set";
 
 	printf(" * Internet Control Message Protocol \n");
-	printf("    - Type          :  %s (%d)\n", 
-			_icmptype[ICMP.type] , ICMP.type);
-	printf("    - Code            :  %s (%d)\n",  
-			_icmpcode[ICMP.code], ICMP.code);
+	printf("    - Type            :  %d \n" , ICMP.type);
+	printf("    - Code            :  %d \n", ICMP.code);
 	printf("    - Header Checksum :  0x%x \n", icmp.icmp_cksum);
+
+
+	if(ICMP.type==8 || ICMP.type==0){
+		printf("    - Identifier      :  0x%04x \n", ICMP.echo.id);
+		printf("    - Sequence Number :  %d \n", ICMP.echo.seq);
+	}else if(ICMP.type==3){
+		printf("    - Dest Unreach    :  %s \n", _icmpcode[ICMP.code]);
+	}else if(ICMP.type==11){
+		printf("    - Time Exceeded   :  This is Time Exceeded \n");
+	}else if(ICMP.type==5){
+		printf("    - Redirect GW     :  %s \n", ICMP.redirect.gw_addr.c_str()); 
+	}else if(ICMP.type==9 && ICMP.code==0){
+		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
+	}else if(ICMP.type==10 && ICMP.code==0){
+		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
+	}else{
+		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
+	}
 }
 
 
