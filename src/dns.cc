@@ -356,14 +356,14 @@ void pgen_dns::compile(){
 	dns.arcnt = htons(DNS.arcnt);
 
 	u_char* p = data;
-	memcpy(p, &eth, sizeof eth);
-	p += sizeof(eth);
-	memcpy(p, &ip, sizeof ip);
-	p += sizeof(struct ip_header);
-	memcpy(p, &udp, sizeof udp);
-	p += sizeof(struct udp_header);
-	memcpy(p, &dns, sizeof dns);
-	p += sizeof(struct dns_header);
+	memcpy(p, &eth, ETH_HDR_LEN);
+	p += ETH_HDR_LEN;
+	memcpy(p, &ip, IP_HDR_LEN);
+	p += IP_HDR_LEN;
+	memcpy(p, &udp, UDP_HDR_LEN);
+	p += UDP_HDR_LEN;
+	memcpy(p, &dns, DNS_HDR_LEN);
+	p += DNS_HDR_LEN;
 	
 	memcpy(p, &query_data, query_data_len);
 	p += query_data_len;
@@ -374,7 +374,7 @@ void pgen_dns::compile(){
 	memcpy(p, &addition_data, addition_data_len);
 	p += addition_data_len;
 	
-	len = p - data;
+	this->len = p - data;
 }
 
 
@@ -595,7 +595,7 @@ int pgen_dns::cast_addition(const char* packet, int blen){
 
 void pgen_dns::cast(const void* packet, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
-		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
+		fprintf(stderr, "pgen_dns::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
 

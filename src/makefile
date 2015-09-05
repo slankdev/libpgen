@@ -28,6 +28,7 @@ PACKET_CLASS_SRC = \
 	  dns.cc \
 	  ardrone.cc \
 	  http.cc \
+	  dhcp.cc \
 	  debug.cc
 
 
