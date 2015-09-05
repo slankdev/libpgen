@@ -165,8 +165,38 @@ void pgen_dhcp::summary(){
 	compile();
 
 	printf("DHCP{ ");
-	printf("not implementation");
-	printf(" }\n");
+	
+	if(this->DHCP.option[0].data[0] == 1){
+		printf("Discover");
+	}else if(this->DHCP.option[0].data[0] == 2){
+		printf("Offer");
+	}else if(this->DHCP.option[0].data[0] == 3){
+		printf("Request");
+	}else if(this->DHCP.option[0].data[0] == 4){
+		printf("Decline");
+	}else if(this->DHCP.option[0].data[0] == 5){
+		printf("ACK");
+	}else if(this->DHCP.option[0].data[0] == 6){
+		printf("NAK");
+	}else if(this->DHCP.option[0].data[0] == 7){
+		printf("Release");
+	}else if(this->DHCP.option[0].data[0] == 8){
+		printf("Inform");
+	}else if(this->DHCP.option[0].data[0] == 9){
+		printf("Forcerenew");
+	}else if(this->DHCP.option[0].data[0] == 10){
+		printf("Lease Query");
+	}else if(this->DHCP.option[0].data[0] == 11){
+		printf("Lease Unassigned");
+	}else if(this->DHCP.option[0].data[0] == 12){
+		printf("Lease Unknown");
+	}else if(this->DHCP.option[0].data[0] == 13){
+		printf("Lease Active");
+	}else{
+		fprintf(stderr, "}\npgen_dhcp::summary: DHCP Message type not found\n");
+	}
+
+	printf(" Transaction ID 0x%04x }\n", DHCP.xid);
 }
 
 

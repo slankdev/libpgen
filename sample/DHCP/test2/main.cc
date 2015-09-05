@@ -8,7 +8,6 @@ bool func(const u_char* packet, int len){
 	pack.compile();
 
 	pack.summary();
-	pack.hex();
 	pack.send_handle(whandle);
 	return true;	
 }
