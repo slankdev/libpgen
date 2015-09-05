@@ -110,7 +110,7 @@ void pgen_tcp::cast(const void* data, int len){
 	p += ETH_HDR_LEN;
 	p += IP_HDR_LEN;
 
-	struct MYTCP* buf = (struct MYTCP*)p;
+	struct tcp_header* buf = (struct tcp_header*)p;
 	p += TCP_HDR_LEN;
 
 	this->TCP.src = ntohs(buf->source);

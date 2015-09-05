@@ -76,7 +76,7 @@ void pgen_udp::cast(const void* data, int len){
 	p += ETH_HDR_LEN;
 	p += IP_HDR_LEN;
 
-	struct MYUDP *buf = (struct MYUDP*)p;
+	struct udp_header *buf = (struct udp_header*)p;
 	p += UDP_HDR_LEN;
 
 	this->UDP.src = ntohs(buf->source);

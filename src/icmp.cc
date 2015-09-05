@@ -138,7 +138,7 @@ void pgen_icmp::cast(const void* data, int len){
 	p += ETH_HDR_LEN;
 	p += IP_HDR_LEN;
 	
-	struct MYICMP *buf = (struct MYICMP*)p;
+	struct icmp_header *buf = (struct icmp_header*)p;
 	p += ICMP_HDR_LEN;
 
 	this->ICMP.type = buf->icmp_type;

@@ -62,18 +62,18 @@ struct pgen{
 
 
 
-#define ETH_HDR_LEN sizeof(struct MYETH)
-#define ARP_HDR_LEN sizeof(struct MYARP)
-#define IP_HDR_LEN  sizeof(struct MYIP)
-#define ICMP_HDR_LEN  sizeof(struct MYICMP)
-#define TCP_HDR_LEN sizeof(struct MYTCP)
-#define UDP_HDR_LEN sizeof(struct MYUDP)
-#define DNS_HDR_LEN sizeof(struct MYDNS)
+#define ETH_HDR_LEN  sizeof(struct ethernet_header)
+#define ARP_HDR_LEN  sizeof(struct arp_packet)
+#define IP_HDR_LEN   sizeof(struct ip_header)
+#define ICMP_HDR_LEN sizeof(struct icmp_header)
+#define TCP_HDR_LEN  sizeof(struct tcp_header)
+#define UDP_HDR_LEN  sizeof(struct udp_header)
+#define DNS_HDR_LEN  sizeof(struct dns_header)
 
 
 
 
-struct MYETH{
+struct ethernet_header{
 	bit8  ether_dhost[6];	/* destination eth addr	*/
 	bit8  ether_shost[6];	/* source ether addr	*/
 	bit16 ether_type;		        /* packet type ID field	*/
@@ -84,7 +84,7 @@ struct MYETH{
 
 
 
-struct myArpHdr{
+struct arp_header{
 	bit16 ar_hrd;		/* Format of hardware address.  */
 	bit16 ar_pro;		/* Format of protocol address.  */
 	bit8  ar_hln;			/* Length of hardware address.  */
@@ -92,8 +92,8 @@ struct myArpHdr{
 	bit16 ar_op;		/* ARP opcode (command).  */
 };
 
-struct	MYARP{
-	struct myArpHdr  ea_hdr;	/* fixed-size header */
+struct	arp_packet{
+	struct arp_header  ea_hdr;	/* fixed-size header */
 	bit8 arp_sha[6];		/* sender hardware address */
 	bit8 arp_spa[4];		/* sender protocol address */
 	bit8 arp_tha[6];		/* target hardware address */
@@ -106,7 +106,7 @@ struct	MYARP{
 
 
 
-struct MYIP{
+struct ip_header{
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 	bit32 ihl:4;
 	bit32 version:4;
@@ -129,12 +129,10 @@ struct MYIP{
 };
 
 
-
 struct icmp_echo_header{
 	bit16 id;
 	bit16 seq;
 };
-
 
 struct icmp_destination_unreach{
 	bit8  nouse;
@@ -142,11 +140,9 @@ struct icmp_destination_unreach{
 	bit16 next_mtu;
 };
 
-
 struct icmp_redirect{
 	bit32 gw_addr;
 };
-
 
 struct icmp_time_exceeded{
 	bit8  nouse1;
@@ -155,10 +151,7 @@ struct icmp_time_exceeded{
 };
 
 
-
-
-
-struct MYICMP{
+struct icmp_header{
 	bit8  icmp_type;
 	bit8  icmp_code;
 	bit16 icmp_cksum;
@@ -166,7 +159,7 @@ struct MYICMP{
 
 
 
-struct MYTCP{
+struct tcp_header{
 	bit16 source;
 	bit16 dest;
 	bit32 seq;
@@ -202,7 +195,7 @@ struct MYTCP{
 
 
 
-struct MYUDP{
+struct udp_header{
 	bit16 source;
 	bit16 dest;
 	bit16 len;
@@ -213,7 +206,7 @@ struct MYUDP{
 
 
 
-struct MYDNS{
+struct dns_header{
 	bit16 id;
 	union{
 		struct{

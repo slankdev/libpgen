@@ -86,11 +86,11 @@ void pgen_arp::cast(const void* data, int len){
 	
 	pgen_eth::cast(data, len);
 
-	struct MYARP* buf;
+	struct arp_packet* buf;
 	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
 
-	buf = (struct MYARP*)p;
+	buf = (struct arp_packet*)p;
 	p += ARP_HDR_LEN;
 	
 	union lc{

@@ -67,40 +67,40 @@ bool pgen_unknown::cast(const void* packet, int len){
 	this->len = len;
 	memcpy(this->data, packet, len);
 
-	struct MYETH*  eth;
-	struct MYIP*   ip;
-	struct MYTCP*  tcp;
-	struct MYUDP*  udp;
+	struct ethernet_header*  eth;
+	struct ip_header*   ip;
+	struct tcp_header*  tcp;
+	struct udp_header*  udp;
 		
 	const bit8* p = (bit8*)packet;
 	isETH = true;
-	eth = (struct MYETH*)p;
-	p += sizeof(struct MYETH);
+	eth = (struct ethernet_header*)p;
+	p += sizeof(struct ethernet_header);
 	this->ETH.src.setmacbyarry(eth->ether_shost);
 	this->ETH.dst.setmacbyarry(eth->ether_dhost);
 
 	if(ntohs(eth->ether_type) == 0x0800){
 		this->isIP = true;
-		ip = (struct MYIP*)p;
-		p += sizeof(struct MYIP);
+		ip = (struct ip_header*)p;
+		p += sizeof(struct ip_header);
 		this->IP.src._addr = ip->saddr;
 		this->IP.dst._addr = ip->daddr;
 
 		if(ip->protocol == 1){
 			this->isICMP = true;
-			p += sizeof(struct MYICMP);
+			p += sizeof(struct icmp_header);
 		}
 		else if(ip->protocol == 6){
 			this->isTCP = true;
-			tcp = (struct MYTCP*)p;
-			p += sizeof(struct MYTCP);
+			tcp = (struct tcp_header*)p;
+			p += sizeof(struct tcp_header);
 			this->TCP.src = ntohs(tcp->source);
 			this->TCP.dst = ntohs(tcp->dest);
 		}
 		else if(ip->protocol == 17){
 			this->isUDP = true;
-			udp = (struct MYUDP*)p;
-			p += sizeof(struct MYUDP);
+			udp = (struct udp_header*)p;
+			p += sizeof(struct udp_header);
 			this->UDP.src = ntohs(udp->source);
 			this->UDP.dst = ntohs(udp->dest);
 		}

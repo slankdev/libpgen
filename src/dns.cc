@@ -359,11 +359,11 @@ void pgen_dns::compile(){
 	memcpy(p, &eth, sizeof eth);
 	p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
-	p += sizeof(struct MYIP);
+	p += sizeof(struct ip_header);
 	memcpy(p, &udp, sizeof udp);
-	p += sizeof(struct MYUDP);
+	p += sizeof(struct udp_header);
 	memcpy(p, &dns, sizeof dns);
-	p += sizeof(struct MYDNS);
+	p += sizeof(struct dns_header);
 	
 	memcpy(p, &query_data, query_data_len);
 	p += query_data_len;
@@ -606,7 +606,7 @@ void pgen_dns::cast(const void* packet, int len){
 	p += IP_HDR_LEN;
 	p += UDP_HDR_LEN;
 	
-	struct MYDNS* buf = (struct MYDNS*)p;
+	struct dns_header* buf = (struct dns_header*)p;
 	p += DNS_HDR_LEN;
 
 	this->DNS.id = ntohs(buf->id);

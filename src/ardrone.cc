@@ -226,9 +226,9 @@ void pgen_ardrone::compile(){
 	memcpy(p, &eth, sizeof eth);
 	p += sizeof(eth);
 	memcpy(p, &ip, sizeof ip);
-	p += sizeof(struct MYIP);
+	p += sizeof(struct ip_header);
 	memcpy(p, &udp, sizeof udp);
-	p += sizeof(struct MYUDP);
+	p += sizeof(struct udp_header);
 	memcpy(p, command, command_len);
 	p += command_len;
 	len = p- this->data;

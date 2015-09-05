@@ -50,9 +50,9 @@ class pgen_packet{
 
 class pgen_eth : public pgen_packet {
 	protected:
-		struct MYETH eth; 
+		struct ethernet_header eth; 
 	public:
-		static const int minLen = sizeof(struct MYETH);
+		static const int minLen = sizeof(struct ethernet_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			macaddr dst;
@@ -76,9 +76,9 @@ class pgen_eth : public pgen_packet {
 
 class pgen_arp : public pgen_eth {
 	protected:
-		struct MYARP arp;
+		struct arp_packet arp;
 	public:
-		static const int minLen = pgen_eth::minLen+sizeof(struct MYARP);
+		static const int minLen = pgen_eth::minLen+sizeof(struct arp_packet);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int operation;
@@ -102,9 +102,9 @@ class pgen_arp : public pgen_eth {
 
 class pgen_ip : public pgen_eth {
 	protected:
-		struct MYIP		ip;
+		struct ip_header		ip;
 	public:
-		static const int minLen = pgen_eth::minLen+sizeof(struct MYIP);
+		static const int minLen = pgen_eth::minLen+sizeof(struct ip_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			bit8  tos;
@@ -134,7 +134,7 @@ class pgen_ip : public pgen_eth {
 
 class pgen_icmp : public pgen_ip {
 	protected:
-		struct MYICMP icmp;
+		struct icmp_header icmp;
 		bit8  icmp_data[256];
 		bit32 icmp_data_len;
 		bit8  icmp_ext_data[256];
@@ -183,9 +183,9 @@ class pgen_icmp : public pgen_ip {
 
 class pgen_tcp : public pgen_ip {
 	protected:
-		struct MYTCP tcp;
+		struct tcp_header tcp;
 	public:
-		static const int minLen = pgen_ip::minLen+sizeof(struct MYTCP);
+		static const int minLen = pgen_ip::minLen+sizeof(struct tcp_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int src;
@@ -218,9 +218,9 @@ class pgen_tcp : public pgen_ip {
 
 class pgen_udp : public pgen_ip {
 	protected:
-		struct MYUDP udp;
+		struct udp_header udp;
 	public:
-		static const int minLen = pgen_ip::minLen+sizeof(struct MYUDP);
+		static const int minLen = pgen_ip::minLen+sizeof(struct udp_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int src;
@@ -247,7 +247,7 @@ class pgen_udp : public pgen_ip {
 #define MAX_ADD    16
 class pgen_dns :public pgen_udp {
 	protected:
-		struct MYDNS dns;
+		struct dns_header dns;
 		bit8  query_data[256];
 		bit32 query_data_len;
 		bit8  answer_data[256];

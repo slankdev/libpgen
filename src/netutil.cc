@@ -280,8 +280,8 @@ unsigned short checksum(unsigned short *data, int len){
 
 
 unsigned short checksumTcp(const u_char *dp, int datalen){
-	struct MYTCP tcp;
-	struct MYIP ip;
+	struct tcp_header tcp;
+	struct ip_header ip;
 	char data[100];
 	memcpy(&ip, dp, IP_HDR_LEN);
 	dp += IP_HDR_LEN;
@@ -291,8 +291,8 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 	dp += datalen-TCP_HDR_LEN-IP_HDR_LEN;
 	
 	struct tpack {
-	  struct MYIP ip;
-	  struct MYTCP tcp;
+	  struct ip_header ip;
+	  struct tcp_header tcp;
 	  u_char data[100];
 	}p;
 	

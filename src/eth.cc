@@ -67,8 +67,8 @@ void pgen_eth::cast(const void* data, int len){
 	}
 
 	const u_char* p = (u_char*)data;
-	struct MYETH* buf;
-	buf = (struct MYETH*)p;
+	struct ethernet_header* buf;
+	buf = (struct ethernet_header*)p;
 	p += ETH_HDR_LEN;
 	
 	for(int i=0; i<6; i++){

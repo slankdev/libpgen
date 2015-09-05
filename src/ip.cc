@@ -89,7 +89,7 @@ void pgen_ip::cast(const void* data, int len){
 
 	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
-	struct MYIP* buf = (struct MYIP*)p;
+	struct ip_header* buf = (struct ip_header*)p;
 	p += IP_HDR_LEN;
 	
 	this->IP.tos = buf->tos;
