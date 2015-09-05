@@ -156,8 +156,7 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 		return -1;
 	}
 	int sendlen;
-
-
+	
 	if(p->is_offline == 1){
 		struct pcap_timeval ts_now;
 		gettimeofday((struct timeval*)&ts_now, NULL);
@@ -183,7 +182,7 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 			perror("pgen_sendpacket_handle");
 		}
 	}
-
+	
 	return sendlen;
 }
 

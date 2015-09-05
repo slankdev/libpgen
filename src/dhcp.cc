@@ -1,0 +1,201 @@
+
+#include "pgen.h"
+#include "packet.h"
+#include "address.h"
+#include "netutil.h"
+
+#include <map>
+#include <string>
+#include <vector>
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <stdint.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+
+
+pgen_dhcp::pgen_dhcp(){
+	clear();
+}
+
+
+
+
+
+pgen_dhcp::pgen_dhcp(const void* packet, int len){
+	clear();
+	cast(packet, len);
+}
+
+
+
+
+
+void pgen_dhcp::clear(){
+	pgen_udp::clear();
+
+	this->DHCP.op     = 1;
+	this->DHCP.htype  = 0x01;
+	this->DHCP.hlen   = 6;
+	this->DHCP.hops   = 0;
+	this->DHCP.xid    = 0;
+	this->DHCP.secs   = 0;
+	this->DHCP.flags  = 0;
+	this->DHCP.ciaddr = 0;
+	this->DHCP.yiaddr = 0;
+	this->DHCP.siaddr = 0;
+	this->DHCP.giaddr = 0;
+	this->DHCP.chaddr = 0;
+	memset(this->DHCP.sname, 0, sizeof(this->DHCP.sname));
+	memset(this->DHCP.file, 0, sizeof(this->DHCP.file));
+	
+	memset(this->dhcp_option, 0, sizeof(this->dhcp_option));
+	dhcp_option_len = 0;
+
+	this->DHCP.option_len = 0;
+	memset(this->DHCP.option, 0, sizeof(struct dhcp_option) * DHCP_MAX_OPT);
+
+}
+
+
+
+
+
+void pgen_dhcp::compile(){
+	
+	memset(&this->dhcp, 0, DHCP_HDR_LEN);
+	this->dhcp.op = this->DHCP.op;
+	this->dhcp.htype  = this->DHCP.htype;
+	this->dhcp.hlen   = this->DHCP.hlen;
+	this->dhcp.hops   = this->DHCP.hops;
+	this->dhcp.xid    = htonl(this->DHCP.xid);
+	this->dhcp.secs   = htons(this->DHCP.secs);
+	this->dhcp.flags  = htons(this->DHCP.flags);
+	this->dhcp.ciaddr = this->DHCP.ciaddr._addr;
+	this->dhcp.yiaddr = this->DHCP.yiaddr._addr;
+	this->dhcp.siaddr = this->DHCP.siaddr._addr;
+	this->dhcp.giaddr = this->DHCP.giaddr._addr;
+	for(int i=0; i<this->DHCP.hlen; i++){
+		this->dhcp.chaddr[i] = this->DHCP.chaddr._addr[i];		
+	}
+	memcpy(this->dhcp.sname, this->DHCP.sname, sizeof(this->dhcp.sname));
+	memcpy(this->dhcp.file, this->DHCP.file, sizeof(this->dhcp.file));
+	this->dhcp.magic[0] = 0x63; 	
+	this->dhcp.magic[1] = 0x82; 	
+	this->dhcp.magic[2] = 0x53; 	
+	this->dhcp.magic[3] = 0x63; 	
+	
+	bit8* p0 = dhcp_option;
+	for(int i=0; i<(int)this->DHCP.option_len; i++){
+		memcpy(p0, &DHCP.option[i], DHCP.option[i].len+2);	
+		p0 += DHCP.option[i].len+2;
+	}
+	dhcp_option_len = p0 - dhcp_option;
+
+	UDP.len = UDP_HDR_LEN + DHCP_HDR_LEN + dhcp_option_len;
+	pgen_udp::compile();
+
+	bit8* p = data;
+	memcpy(p, &eth, ETH_HDR_LEN);
+	p += ETH_HDR_LEN;
+	memcpy(p, &ip, IP_HDR_LEN);
+	p += IP_HDR_LEN;
+	memcpy(p, &udp, UDP_HDR_LEN);
+	p += UDP_HDR_LEN;
+	memcpy(p, &dhcp, DHCP_HDR_LEN);
+	p += DHCP_HDR_LEN;
+	memcpy(p, dhcp_option, dhcp_option_len);
+	p += dhcp_option_len;
+
+	this->len = p - data;
+}
+
+
+
+
+void pgen_dhcp::cast(const void* packet, int len){
+	if(!(this->minLen<=len && len<=this->maxLen)){
+		fprintf(stderr, "pgen_dhcp::cast(): packet len isn`t support (%d)\n", len);
+		return;
+	}
+
+	pgen_udp::cast(packet, len);
+	const u_char* p = (u_char*)packet;
+
+	p += ETH_HDR_LEN;
+	p += IP_HDR_LEN;
+	p += UDP_HDR_LEN;
+
+	struct dhcp_header* buf = (struct dhcp_header*)p;
+	p += DHCP_HDR_LEN;
+
+	this->DHCP.op = buf->op;
+	this->DHCP.htype = buf->htype;
+	this->DHCP.hlen = buf->hlen;
+	this->DHCP.hops = buf->hops;
+	this->DHCP.xid  = ntohl(buf->xid);
+	this->DHCP.secs = ntohs(buf->secs);
+	this->DHCP.flags = ntohs(buf->flags);
+	this->DHCP.ciaddr._addr = buf->ciaddr;
+	this->DHCP.yiaddr._addr = buf->yiaddr;
+	this->DHCP.siaddr._addr = buf->siaddr;
+	this->DHCP.giaddr._addr = buf->giaddr;
+	for(int i=0; i<DHCP.hlen; i++)
+		this->DHCP.chaddr._addr[i] = buf->chaddr[i];
+	memcpy(this->DHCP.sname, buf->sname, 64);
+	memcpy(this->DHCP.file , buf->file , 128);
+
+	for(this->DHCP.option_len=0; p-(u_char*)packet<len; this->DHCP.option_len++){
+		dhcp_get_option(p, &DHCP.option[DHCP.option_len]);
+		p += this->DHCP.option[this->DHCP.option_len].len + 2;
+	}
+}
+
+
+
+
+
+
+void pgen_dhcp::summary(){
+	compile();
+
+	printf("DHCP{ ");
+	printf("not implementation");
+	printf(" }\n");
+}
+
+
+
+
+
+void pgen_dhcp::info(){
+	printf("not implementation \n");
+}
+
+
+
+
+void pgen_dhcp::dhcp_set_option(int index, int type, int len, void* data){
+	this->DHCP.option[index].type = type;
+	this->DHCP.option[index].len  = len;
+	memcpy(this->DHCP.option[index].data, data, len);
+}
+
+
+
+
+void pgen_dhcp::dhcp_get_option(const void* p, struct dhcp_option* buf){
+	struct dhcp_option* b = (struct dhcp_option*)p;
+	buf->type = b->type;
+	buf->len  = b->len;
+	memcpy(buf->data, b->data, buf->len);
+}
+
+
+
+
