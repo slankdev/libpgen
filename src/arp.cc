@@ -45,14 +45,14 @@ void pgen_arp::clear(){
 
 
 void pgen_arp::compile(){
-	this->ETH.type = MT_ETHERTYPE_ARP;
+	this->ETH.type = 0x0806;
 	pgen_eth::compile();
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 
 	memset(&(this->arp), 0, ARP_HDR_LEN);
 	
-	this->arp.arp_hrd = htons(MT_ARPHRD_ETHER);
-	this->arp.arp_pro = htons(MT_ETHERTYPE_IP);
+	this->arp.arp_hrd = htons(1);
+	this->arp.arp_pro = htons(0x0800);
 	this->arp.arp_hln = 6;
 	this->arp.arp_pln = 4;
 	this->arp.arp_op  = htons(this->ARP.operation);

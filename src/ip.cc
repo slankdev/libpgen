@@ -48,7 +48,7 @@ void pgen_ip::clear(){
 
 
 void pgen_ip::compile(){
-	ETH.type = MT_ETHERTYPE_IP;
+	ETH.type = 0x0800;
 	pgen_eth::compile();
 	
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);

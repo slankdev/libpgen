@@ -47,7 +47,7 @@ void pgen_icmp::clear(){
 
 void pgen_icmp::compile(){
 	this->IP.tot_len = IP_HDR_LEN + ICMP_HDR_LEN;
-	this->IP.protocol = MT_IPPROTO_ICMP;
+	this->IP.protocol = 1;
 	pgen_ip::compile();
 
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);

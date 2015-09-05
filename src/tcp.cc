@@ -52,7 +52,7 @@ void pgen_tcp::clear(){
 
 void pgen_tcp::compile(){
 	this->IP.tot_len = IP_HDR_LEN + TCP_HDR_LEN;
-	this->IP.protocol = MT_IPPROTO_TCP;
+	this->IP.protocol = 6;
 	pgen_ip::compile();
 
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);

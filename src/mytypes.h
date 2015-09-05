@@ -72,17 +72,6 @@ struct pgen{
 
 
 
-#define	MT_ETHERTYPE_PUP		0x0200		/* Xerox PUP */
-#define MT_ETHERTYPE_SPRITE		0x0500		/* Sprite */
-#define	MT_ETHERTYPE_IP			0x0800		/* IP */
-#define	MT_ETHERTYPE_ARP		0x0806		/* Address resolution */
-#define	MT_ETHERTYPE_REVARP		0x8035		/* Reverse ARP */
-#define MT_ETHERTYPE_AT			0x809B		/* AppleTalk protocol */
-#define MT_ETHERTYPE_AARP		0x80F3		/* AppleTalk ARP */
-#define	MT_ETHERTYPE_VLAN		0x8100		/* IEEE 802.1Q VLAN tagging */
-#define MT_ETHERTYPE_IPX		0x8137		/* IPX */
-#define	MT_ETHERTYPE_IPV6		0x86dd		/* IP protocol version 6 */
-#define MT_ETHERTYPE_LOOPBACK	0x9000		/* used to test interfaces */
 
 struct MYETH{
 	bit8  ether_dhost[6];	/* destination eth addr	*/
@@ -94,31 +83,6 @@ struct MYETH{
 
 
 
-/* ARP protocol HARDWARE identifiers. */
-#define MT_ARPHRD_NETROM		0		/* From KA9Q: NET/ROM pseudo. */
-#define MT_ARPHRD_ETHER			1		/* Ethernet 10/100Mbps.  */
-#define	MT_ARPHRD_EETHER		2		/* Experimental Ethernet.  */
-#define	MT_ARPHRD_AX25			3		/* AX.25 Level 2.  */
-#define	MT_ARPHRD_PRONET		4		/* PROnet token ring.  */
-#define	MT_ARPHRD_CHAOS			5		/* Chaosnet.  */
-#define	MT_ARPHRD_IEEE802		6		/* IEEE 802.2 Ethernet/TR/TB.  */
-#define	MT_ARPHRD_ARCNET		7		/* ARCnet.  */
-#define	MT_ARPHRD_APPLETLK		8		/* APPLEtalk.  */
-#define	MT_ARPHRD_DLCI			15		/* Frame Relay DLCI.  */
-#define	MT_ARPHRD_ATM			19		/* ATM.  */
-#define	MT_ARPHRD_METRICOM		23		/* Metricom STRIP (new IANA id).  */
-#define MT_ARPHRD_IEEE1394		24		/* IEEE 1394 IPv4 - RFC 2734.  */
-#define MT_ARPHRD_EUI64			27		/* EUI-64.  */
-#define MT_ARPHRD_INFINIBAND	32		/* InfiniBand.  */
-
-
-#define	MT_ARPOP_REQUEST	1		/* ARP request.  */
-#define	MT_ARPOP_REPLY		2		/* ARP reply.  */
-#define	MT_ARPOP_RREQUEST	3		/* RARP request.  */
-#define	MT_ARPOP_RREPLY		4		/* RARP reply.  */
-#define	MT_ARPOP_InREQUEST	8		/* InARP request.  */
-#define	MT_ARPOP_InREPLY	9		/* InARP reply.  */
-#define	MT_ARPOP_NAK		10		/* (ATM)ARP NAK.  */
 
 struct myArpHdr{
 	bit16 ar_hrd;		/* Format of hardware address.  */
@@ -141,31 +105,6 @@ struct	MYARP{
 
 
 
-
-#define MT_IPPROTO_IP		0
-#define MT_IPPROTO_ICMP		1	
-#define MT_IPPROTO_IGMP		2
-#define MT_IPPROTO_IPIP		4
-#define MT_IPPROTO_TCP		6
-#define MT_IPPROTO_EGP		8
-#define MT_IPPROTO_PUP		12
-#define MT_IPPROTO_UDP		17
-#define MT_IPPROTO_IDP		22
-#define MT_IPPROTO_TP		29
-#define MT_IPPROTO_DCCP		33
-#define MT_IPPROTO_IPV6		41
-#define MT_IPPROTO_RSVP		46
-#define MT_IPPROTO_GRE		47
-#define MT_IPPROTO_ESP		50
-#define MT_IPPROTO_AH		51
-#define MT_IPPROTO_MTP		92
-#define MT_IPPROTO_BEETPH	94
-#define MT_IPPROTO_ENCAP	98
-#define MT_IPPROTO_PIM		103
-#define MT_IPPROTO_COMP		108
-#define MT_IPPROTO_SCTP		132
-#define MT_IPPROTO_UDPLITE	136
-#define MT_IPPROTO_RAW		255
 
 struct MYIP{
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -193,50 +132,6 @@ struct MYIP{
 
 
 
-/* Types */
-#define MT_ICMP_ECHOREPLY		0	/* Echo Reply			*/
-#define MT_ICMP_DEST_UNREACH	3	/* Destination Unreachable	*/
-#define MT_ICMP_SOURCE_QUENCH	4	/* Source Quench		*/
-#define MT_ICMP_REDIRECT		5	/* Redirect (change route)	*/
-#define MT_ICMP_ECHO			8	/* Echo Request			*/
-#define MT_ICMP_TIME_EXCEEDED	11	/* Time Exceeded		*/
-#define MT_ICMP_PARAMETERPROB	12	/* Parameter Problem		*/
-#define MT_ICMP_TIMESTAMP		13	/* Timestamp Request		*/
-#define MT_ICMP_TIMESTAMPREPLY	14	/* Timestamp Reply		*/
-#define MT_ICMP_INFO_REQUEST	15	/* Information Request		*/
-#define MT_ICMP_INFO_REPLY		16	/* Information Reply		*/
-#define MT_ICMP_ADDRESS		17	/* Address Mask Request		*/
-#define MT_ICMP_ADDRESSREPLY	18	/* Address Mask Reply		*/
-#define MT_NR_ICMP_TYPES		18
-
-/* Codes for UNREACH. */
-#define MT_ICMP_NET_UNREACH	0	/* Network Unreachable		*/
-#define MT_ICMP_HOST_UNREACH	1	/* Host Unreachable		*/
-#define MT_ICMP_PROT_UNREACH	2	/* Protocol Unreachable		*/
-#define MT_ICMP_PORT_UNREACH	3	/* Port Unreachable		*/
-#define MT_ICMP_FRAG_NEEDED	4	/* Fragmentation Needed/DF set	*/
-#define MT_ICMP_SR_FAILED		5	/* Source Route failed		*/
-#define MT_ICMP_NET_UNKNOWN	6
-#define MT_ICMP_HOST_UNKNOWN	7
-#define MT_ICMP_HOST_ISOLATED	8
-#define MT_ICMP_NET_ANO		9
-#define MT_ICMP_HOST_ANO		10
-#define MT_ICMP_NET_UNR_TOS	11
-#define MT_ICMP_HOST_UNR_TOS	12
-#define MT_ICMP_PKT_FILTERED	13	/* Packet filtered */
-#define MT_ICMP_PREC_VIOLATION	14	/* Precedence violation */
-#define MT_ICMP_PREC_CUTOFF	15	/* Precedence cut off */
-#define MT_NR_ICMP_UNREACH		15	/* instead of hardcoding immediate value */
-       
-/* Codes for REDIRECT. */
-#define MT_ICMP_REDIR_NET		0	/* Redirect Net			*/
-#define MT_ICMP_REDIR_HOST		1	/* Redirect Host		*/
-#define MT_ICMP_REDIR_NETTOS	2	/* Redirect Net for TOS		*/
-#define MT_ICMP_REDIR_HOSTTOS	3	/* Redirect Host for TOS	*/
-
-/* Codes for TIME_EXCEEDED. */
-#define MT_ICMP_EXC_TTL		0	/* TTL count exceeded		*/
-#define MT_ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded	*/
 
 
 struct icmp_ra_addr{
@@ -388,6 +283,85 @@ struct MYDNS{
 };
 
 
+
+
+//#define	MT_ETHERTYPE_IP			0x0800		/* IP */
+//#define	MT_ETHERTYPE_ARP		0x0806		/* Address resolution */
+//#define	MT_ETHERTYPE_REVARP		0x8035		/* Reverse ARP */
+//#define	MT_ETHERTYPE_AARP		0x80F3		/* AppleTalk ARP */
+//#define	MT_ETHERTYPE_VLAN		0x8100		/* IEEE 802.1Q VLAN tagging */
+//#define	MT_ETHERTYPE_IPV6		0x86dd		/* IP protocol version 6 */
+
+//#define	MT_ARPHRD_NETROM		0		/* From KA9Q: NET/ROM pseudo. */
+//#define	MT_ARPHRD_ETHER			1		/* Ethernet 10/100Mbps.  */
+//#define	MT_ARPHRD_EETHER		2		/* Experimental Ethernet.  */
+//#define	MT_ARPHRD_IEEE802		6		/* IEEE 802.2 Ethernet/TR/TB.  */
+
+//#define	MT_ARPOP_REQUEST	1		/* ARP request.  */
+//#define	MT_ARPOP_REPLY		2		/* ARP reply.  */
+//#define	MT_ARPOP_RREQUEST	3		/* RARP request.  */
+//#define	MT_ARPOP_RREPLY		4		/* RARP reply.  */
+//#define	MT_ARPOP_InREQUEST	8		/* InARP request.  */
+//#define	MT_ARPOP_InREPLY	9		/* InARP reply.  */
+//#define	MT_ARPOP_NAK		10		/* (ATM)ARP NAK.  */
+
+//#define MT_IPPROTO_IP			0
+//#define MT_IPPROTO_ICMP		1	
+//#define MT_IPPROTO_IGMP		2
+//#define MT_IPPROTO_IPIP		4
+//#define MT_IPPROTO_TCP		6
+//#define MT_IPPROTO_UDP		17
+//#define MT_IPPROTO_IDP		22
+//#define MT_IPPROTO_TP			29
+//#define MT_IPPROTO_DCCP		33
+//#define MT_IPPROTO_IPV6		41
+//#define MT_IPPROTO_ESP		50
+//#define MT_IPPROTO_MTP		92
+//#define MT_IPPROTO_UDPLITE	136
+//#define MT_IPPROTO_RAW		255
+
+/* Types */
+//#define MT_ICMP_ECHOREPLY		0	/* Echo Reply			*/
+//#define MT_ICMP_DEST_UNREACH	3	/* Destination Unreachable	*/
+//#define MT_ICMP_SOURCE_QUENCH	4	/* Source Quench		*/
+//#define MT_ICMP_REDIRECT		5	/* Redirect (change route)	*/
+//#define MT_ICMP_ECHO			8	/* Echo Request			*/
+//#define MT_ICMP_TIME_EXCEEDED	11	/* Time Exceeded		*/
+//#define MT_ICMP_PARAMETERPROB	12	/* Parameter Problem		*/
+//#define MT_ICMP_TIMESTAMP		13	/* Timestamp Request		*/
+//#define MT_ICMP_TIMESTAMPREPLY	14	/* Timestamp Reply		*/
+//#define MT_ICMP_INFO_REQUEST	15	/* Information Request		*/
+//#define MT_ICMP_INFO_REPLY		16	/* Information Reply		*/
+//#define MT_ICMP_ADDRESS		17	/* Address Mask Request		*/
+//#define MT_ICMP_ADDRESSREPLY	18	/* Address Mask Reply		*/
+//#define MT_NR_ICMP_TYPES		18
+
+/* Codes for UNREACH. */
+//#define MT_ICMP_NET_UNREACH	0	/* Network Unreachable		*/
+//#define MT_ICMP_HOST_UNREACH	1	/* Host Unreachable		*/
+//#define MT_ICMP_PROT_UNREACH	2	/* Protocol Unreachable		*/
+//#define MT_ICMP_PORT_UNREACH	3	/* Port Unreachable		*/
+//#define MT_ICMP_FRAG_NEEDED	4	/* Fragmentation Needed/DF set	*/
+//#define MT_ICMP_SR_FAILED		5	/* Source Route failed		*/
+//#define MT_ICMP_NET_UNKNOWN	6
+//#define MT_ICMP_HOST_UNKNOWN	7
+//#define MT_ICMP_HOST_ISOLATED	8
+//#define MT_ICMP_NET_ANO		9
+//#define MT_ICMP_HOST_ANO		10
+//#define MT_ICMP_NET_UNR_TOS	11
+//#define MT_ICMP_HOST_UNR_TOS	12
+//#define MT_ICMP_PKT_FILTERED	13	/* Packet filtered */
+//#define MT_ICMP_PREC_VIOLATION	14	/* Precedence violation */
+//#define MT_ICMP_PREC_CUTOFF	15	/* Precedence cut off */
+//#define MT_NR_ICMP_UNREACH		15	/* instead of hardcoding immediate value */
+/* Codes for REDIRECT. */
+//#define MT_ICMP_REDIR_NET		0	/* Redirect Net			*/
+//#define MT_ICMP_REDIR_HOST		1	/* Redirect Host		*/
+//#define MT_ICMP_REDIR_NETTOS	2	/* Redirect Net for TOS		*/
+//#define MT_ICMP_REDIR_HOSTTOS	3	/* Redirect Host for TOS	*/
+/* Codes for TIME_EXCEEDED. */
+//#define MT_ICMP_EXC_TTL		0	/* TTL count exceeded		*/
+//#define MT_ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded	*/
 
 
 #endif /* MYTYPES_H */

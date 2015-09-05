@@ -79,25 +79,25 @@ bool pgen_unknown::cast(const bit8* packet, int len){
 	this->ETH.src.setmacbyarry(eth->ether_shost);
 	this->ETH.dst.setmacbyarry(eth->ether_dhost);
 
-	if(ntohs(eth->ether_type) == MT_ETHERTYPE_IP){
+	if(ntohs(eth->ether_type) == 0x0800){
 		this->isIP = true;
 		ip = (struct MYIP*)p;
 		p += sizeof(struct MYIP);
 		this->IP.src._addr = ip->saddr;
 		this->IP.dst._addr = ip->daddr;
 
-		if(ip->protocol == MT_IPPROTO_ICMP){
+		if(ip->protocol == 1){
 			this->isICMP = true;
 			p += sizeof(struct MYICMP);
 		}
-		else if(ip->protocol == MT_IPPROTO_TCP){
+		else if(ip->protocol == 6){
 			this->isTCP = true;
 			tcp = (struct MYTCP*)p;
 			p += sizeof(struct MYTCP);
 			this->TCP.src = ntohs(tcp->source);
 			this->TCP.dst = ntohs(tcp->dest);
 		}
-		else if(ip->protocol == MT_IPPROTO_UDP){
+		else if(ip->protocol == 17){
 			this->isUDP = true;
 			udp = (struct MYUDP*)p;
 			p += sizeof(struct MYUDP);
@@ -110,7 +110,7 @@ bool pgen_unknown::cast(const bit8* packet, int len){
 		}
 	}
 	
-	else if(ntohs(eth->ether_type) == MT_ETHERTYPE_ARP){
+	else if(ntohs(eth->ether_type) == 0x0806){
 		this->isARP = true;
 	}
 	else{
