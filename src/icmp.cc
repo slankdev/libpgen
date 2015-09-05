@@ -19,12 +19,9 @@
 
 
 
-
-
 pgen_icmp::pgen_icmp(){
 	clear();
 }
-
 
 
 pgen_icmp::pgen_icmp(const void* packet, int len){
@@ -33,33 +30,61 @@ pgen_icmp::pgen_icmp(const void* packet, int len){
 }
 
 
-
 void pgen_icmp::clear(){
-	this->ICMP.option = 8;
+	this->ICMP.type = 8;
 	this->ICMP.code = 0;
 	this->ICMP.id = 0;
 	this->ICMP.seq = 0;
+
+	memset(icmp_data, 0, sizeof(icmp_data));
+	icmp_data_len = 0;
+	memset(icmp_ext_data, 0, sizeof(icmp_ext_data));
+	icmp_ext_data_len = 0;
 } 
 
 
 
-
+// support icmp packet
+//  - Echo Request
+//  - Echo Reply
+//
 
 void pgen_icmp::compile(){
-	this->IP.tot_len = IP_HDR_LEN + ICMP_HDR_LEN;
-	this->IP.protocol = 1;
-	pgen_ip::compile();
 
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 
 	memset(&this->icmp, 0, ICMP_HDR_LEN);
-	this->icmp.icmp_type = this->ICMP.option;
+	this->icmp.icmp_type = this->ICMP.type;
 	this->icmp.icmp_code = this->ICMP.code;
 	this->icmp.icmp_cksum = 0;
-	this->icmp.icmp_void = 0;
-	this->icmp.icmp_hun.ih_idseq.icd_id = htons(this->ICMP.id);
-	this->icmp.icmp_hun.ih_idseq.icd_seq = htons(this->ICMP.seq);
-	this->icmp.icmp_cksum = checksum((unsigned short*)&this->icmp, ICMP_HDR_LEN);
+
+	if(ICMP.type==8 || ICMP.type==0){
+		// Echo or Echo Relay
+		struct icmp_echo_header ieh;
+		ieh.id = htons(this->ICMP.id);
+		ieh.seq = htons(this->ICMP.seq);
+		memcpy(icmp_data, &ieh, sizeof(ieh));
+		icmp_data_len = sizeof(ieh);
+	}else{
+		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
+	}
+
+	this->IP.tot_len = IP_HDR_LEN + ICMP_HDR_LEN + icmp_data_len + icmp_ext_data_len;
+	this->IP.protocol = 1;
+	pgen_ip::compile();
+	char buffer[256];
+
+	char* p0 = buffer;
+	memcpy(p0, &this->icmp, ICMP_HDR_LEN);
+	p0 += ICMP_HDR_LEN;
+	memcpy(p0, icmp_data, icmp_data_len);
+	p0 += icmp_data_len;
+	memcpy(p0, icmp_ext_data, icmp_ext_data_len);
+	p0 += icmp_ext_data_len;
+	this->icmp.icmp_cksum = (checksum((unsigned short*)buffer, (unsigned short)(p0-buffer)));
+	printf("DEBUG icmpdatalen: %d \n", icmp_data_len);
+	printf("DEBUG icmpextdatalen: %d \n", icmp_ext_data_len);
+
 
 	u_char* p = this->data;
 	memcpy(p, &this->eth, ETH_HDR_LEN);
@@ -68,9 +93,12 @@ void pgen_icmp::compile(){
 	p += IP_HDR_LEN;
 	memcpy(p, &this->icmp, ICMP_HDR_LEN);
 	p += ICMP_HDR_LEN;
-	len = p-this->data;
+	memcpy(p, icmp_data, icmp_data_len);
+	p += icmp_data_len;
+	memcpy(p, icmp_ext_data, icmp_ext_data_len);
+	p += icmp_ext_data_len;
 
-	compile_addData();
+	len = p-this->data;
 } 
 
 
@@ -91,27 +119,25 @@ void pgen_icmp::cast(const void* data, int len){
 	struct MYICMP *buf = (struct MYICMP*)p;
 	p += ICMP_HDR_LEN;
 
-	this->ICMP.option = buf->icmp_type;
+	this->ICMP.type = buf->icmp_type;
 	this->ICMP.code = buf->icmp_code;
-	this->ICMP.id = ntohs(buf->icmp_hun.ih_idseq.icd_id);
-	this->ICMP.seq = ntohs(buf->icmp_hun.ih_idseq.icd_seq);
+
+	memcpy(icmp_data, p, len-(p-(u_char*)data));
+	icmp_data_len = len - (p-(u_char*)data);
+	p += icmp_data_len;
 
 	this->len = p - (u_char*)data;
-	addData(p, len- this->len);
 } 
-
 
 
 
 void pgen_icmp::summary(){
 	compile();
 	printf("ICMP{ ");
-	if(ICMP.option == 8 && ICMP.code == 0){
-		printf("Echo Request id=%d seq=%d ttl=%d }\n", 
-				ICMP.id, ICMP.seq, IP.ttl );
-	}else if(ICMP.option == 0 && ICMP.code == 0){
-		printf("Echo Relay   id=%d seq=%d ttl=%d }\n", 
-				ICMP.id, ICMP.seq, IP.ttl );
+	if(ICMP.type == 8 && ICMP.code == 0){
+		printf("Echo Request ttl=%d }\n",IP.ttl );
+	}else if(ICMP.type == 0 && ICMP.code == 0){
+		printf("Echo Relay ttl=%d }\n", IP.ttl );
 	}else{
 		printf("other icmp type }\n");	
 	}
@@ -123,10 +149,10 @@ void pgen_icmp::info(){
 	compile();
 	pgen_ip::info();
 
-	std::map<int, const char*>  _icmpoption;
-	_icmpoption[0] = "Echo Reply";
-	_icmpoption[5] = "REdirect"; 
-	_icmpoption[8] = "Echo"; 
+	std::map<int, const char*>  _icmptype;
+	_icmptype[0] = "Echo Reply";
+	_icmptype[5] = "REdirect"; 
+	_icmptype[8] = "Echo"; 
 	std::map<int, const char*> _icmpcode;
 	_icmpcode[0]  = "Net Unreachable";
 	_icmpcode[1]  = "Host Unreachable";
@@ -135,17 +161,17 @@ void pgen_icmp::info(){
 	_icmpcode[255]  = "Not Set";
 
 	printf(" * Internet Control Message Protocol \n");
-	printf("    - Option          :  %s (%d)\n", 
-			_icmpoption[ICMP.option] , ICMP.option);
+	printf("    - Type          :  %s (%d)\n", 
+			_icmptype[ICMP.type] , ICMP.type);
 	printf("    - Code            :  %s (%d)\n",  
 			_icmpcode[ICMP.code], ICMP.code);
-	printf("    - id(BE/LE)       :  %d/%d \n", 
-			htons(icmp.icmp_hun.ih_idseq.icd_id), icmp.icmp_hun.ih_idseq.icd_id);
-	printf("    - seq num(BE/LE)  :  %d/%d \n", 
-			htons(icmp.icmp_hun.ih_idseq.icd_seq), icmp.icmp_hun.ih_idseq.icd_seq);
 	printf("    - Header Checksum :  0x%x \n", icmp.icmp_cksum);
 }
 
 
 
 
+void pgen_icmp::icmp_addData(const void* data, int len){
+	memcpy(icmp_ext_data, data, len);
+	icmp_ext_data_len = len;
+}

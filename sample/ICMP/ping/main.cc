@@ -4,7 +4,6 @@ const char* dev = "wlan1";
 bool func(const u_char* packet, int len){
 	pgen_unknown buf(packet, len);
 	if(!buf.isICMP) return true;
-	
 
 	pgen_icmp pack(packet, len);
 	if(!(pack.ICMP.option == 0 && pack.ICMP.code == 0))
@@ -29,7 +28,6 @@ int main(int argc, char** argv){
 	pack.ETH.dst.setmacbroadcast();
 	pack.IP.src.setipbydev(dev);
 	pack.IP.dst = argv[1];
-	pack.ICMP.seq = 1;
 
 	for(int i=0; i<10; i++){
 		pack.send_handle(handle);

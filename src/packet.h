@@ -135,14 +135,21 @@ class pgen_ip : public pgen_eth {
 class pgen_icmp : public pgen_ip {
 	protected:
 		struct MYICMP icmp;
+		bit8  icmp_data[256];
+		bit32 icmp_data_len;
+		bit8  icmp_ext_data[256];
+		bit32 icmp_ext_data_len;
 	public:
-		static const int minLen = pgen_ip::minLen+sizeof(struct MYICMP);
+		static const int minLen = pgen_ip::minLen+ICMP_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{	
-			int option;
+			int type;
 			int code;
+			
 			int id;
 			int seq;
+
+
 		}ICMP;
 		
 		pgen_icmp();
@@ -153,6 +160,8 @@ class pgen_icmp : public pgen_ip {
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
+
+		void icmp_addData(const void*, int);
 };
 
 
