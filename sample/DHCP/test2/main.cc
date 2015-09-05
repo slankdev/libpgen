@@ -7,7 +7,7 @@ bool func(const u_char* packet, int len){
 	pgen_dhcp pack(packet, len);
 	pack.compile();
 
-	pack.summary();
+	pack.info();
 	pack.send_handle(whandle);
 	return true;	
 }

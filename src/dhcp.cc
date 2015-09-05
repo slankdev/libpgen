@@ -151,8 +151,17 @@ void pgen_dhcp::cast(const void* packet, int len){
 	memcpy(this->DHCP.file , buf->file , 128);
 
 	for(this->DHCP.option_len=0; p-(u_char*)packet<len; this->DHCP.option_len++){
+		if(*p == 255){
+			DHCP.option[DHCP.option_len].type = 255;
+			DHCP.option[DHCP.option_len].len  = 0;
+			memcpy(DHCP.option[DHCP.option_len].data, p+1, len - (p-(u_char*)packet) - 1);
+			DHCP.option_len++;
+			break;	
+		}
+		
 		dhcp_get_option(p, &DHCP.option[DHCP.option_len]);
 		p += this->DHCP.option[this->DHCP.option_len].len + 2;
+
 	}
 }
 
@@ -204,7 +213,25 @@ void pgen_dhcp::summary(){
 
 
 void pgen_dhcp::info(){
-	printf("not implementation \n");
+	printf(" * Dynamic Host Configuration Protocol \n");
+	printf("    - Message Tpye    : %d \n", DHCP.op);
+	printf("    - Hardware Type   : 0x%02x \n", DHCP.htype);
+	printf("    - Hardware Len    : %d \n", DHCP.hlen);
+	printf("    - Hops            : %d \n", DHCP.hops);
+	printf("    - Transaction ID  : 0x%08x \n", DHCP.xid);
+	printf("    - Seconds Elapsed : %d \n", DHCP.secs);
+	printf("    - Flags           : 0x%04x \n", DHCP.flags);
+	printf("    - Client IP       : %s \n", DHCP.ciaddr.c_str());
+	printf("    - Your IP         : %s \n", DHCP.yiaddr.c_str());
+	printf("    - Next Server IP  : %s \n", DHCP.siaddr.c_str());
+	printf("    - Relay Agent IP  : %s \n", DHCP.giaddr.c_str());
+	printf("    - Client Mac Addr : %s \n", DHCP.chaddr.c_str());
+	printf("    - Server Hostname : %s \n", DHCP.sname);
+	printf("    - Boot Filename   : %s \n", DHCP.file);
+
+	for(int i=0; i<(int)DHCP.option_len; i++){
+		printf("    - Option          : (%d) \n", DHCP.option[i].type);
+	}
 }
 
 
