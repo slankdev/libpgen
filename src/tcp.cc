@@ -68,13 +68,22 @@ void pgen_tcp::compile(){
 	this->tcp.doff = 20 >> 2;  // header length
 	this->tcp.window = htons(this->TCP.window);
 	this->tcp.check  = 0;
+	/*
 	if(this->TCP.flags.fin == 1)	this->tcp.fin = 1;
 	if(this->TCP.flags.syn == 1)	this->tcp.syn = 1;
 	if(this->TCP.flags.rst == 1)	this->tcp.rst = 1;
 	if(this->TCP.flags.psh == 1)	this->tcp.psh = 1;
 	if(this->TCP.flags.ack == 1)	this->tcp.ack = 1;
 	if(this->TCP.flags.urg == 1)	this->tcp.urg = 1;
-	
+	*/
+	this->tcp.fin = this->TCP.flags.fin;
+	this->tcp.syn = this->TCP.flags.syn;
+	this->tcp.rst = this->TCP.flags.rst;
+	this->tcp.psh = this->TCP.flags.psh;
+	this->tcp.ack = this->TCP.flags.ack;
+	this->tcp.urg = this->TCP.flags.urg;
+
+
 	bp = buf;
 	memcpy(bp, &this->ip, IP_HDR_LEN);
 	bp += IP_HDR_LEN;
@@ -136,13 +145,12 @@ void pgen_tcp::summary(){
 	printf("TCP{ ");
 	int len = tcp.doff;
 	std::string flag;
-	if(tcp.fin == 1)	flag+= "FIN";
-	if(tcp.syn == 1)	flag+= "SYN";
-	if(tcp.rst == 1)	flag+= "RST";
-	if(tcp.psh == 1)	flag+= "PSH";
-	if(tcp.ack == 1)	flag+= "ACK";
-	if(tcp.urg == 1)	flag+= "URG";
-	
+	if(TCP.flags.fin == 1)	flag+= "FIN";
+	if(TCP.flags.syn == 1)	flag+= "SYN";
+	if(TCP.flags.rst == 1)	flag+= "RST";
+	if(TCP.flags.psh == 1)	flag+= "PSH";
+	if(TCP.flags.ack == 1)	flag+= "ACK";
+	if(TCP.flags.urg == 1)	flag+= "URG";
 	printf("%d > %d [%s] seq=%d win=%d len=%d }\n",
 			TCP.src, TCP.dst, flag.c_str(), TCP.seq, TCP.window, len);
 }

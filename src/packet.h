@@ -191,12 +191,12 @@ class pgen_tcp : public pgen_ip {
 			int src;
 			int dst;
 			struct{
-				char fin:1;
-				char syn:1;
-				char rst:1;
-				char psh:1;
-				char ack:1;
-				char urg:1;
+				u_char fin:1;
+				u_char syn:1;
+				u_char rst:1;
+				u_char psh:1;
+				u_char ack:1;
+				u_char urg:1;
 			}flags;
 			int window;
 			int seq;

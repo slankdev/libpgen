@@ -357,13 +357,14 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			return -1;
 		}
 
+		/*
 		int yes = 1;
 		if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes)) < 0){
 			perror("initRawSocket");
 			close(sock);
 			return -1;
 		}
-
+		*/
 
 		if(promisc){
 			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
