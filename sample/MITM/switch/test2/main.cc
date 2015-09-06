@@ -2,12 +2,6 @@
 #include <pgen.h>
 #include <thread>
 
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <net/ethernet.h>
-#include <netpacket/packet.h>
-
-
 const char* dev = "wlan1";
 const char* myip = "192.168.179.8";
 
@@ -44,8 +38,6 @@ void mitm_attack(const char* ip1, const char* mac1,
 bool other_packet_filter(const u_char* packet, int len);
 
 
-
-
 bool myswitch(const u_char* packet, int len){
 	
 	// slankdev.net 
@@ -72,7 +64,6 @@ bool myswitch(const u_char* packet, int len){
 			if(dns.DNS.flags.qr == 1){
 				memcpy(dns.DNS.answer[0].data, _s_data, 4);
 				dns.summary();
-				
 				dns.send_handle(handle);
 				return true;
 			}
@@ -82,10 +73,6 @@ bool myswitch(const u_char* packet, int len){
 	ip.send_handle(handle);
 	return true;
 }
-
-
-
-
 
 int main(int argc, char** argv){
 	handle = pgen_open(dev, NULL);
@@ -98,7 +85,6 @@ int main(int argc, char** argv){
 }
 
 
-
 bool other_packet_filter(const u_char* packet, int len){
 	ipaddr myip;
 	myip.setipbydev(dev);
@@ -109,8 +95,6 @@ bool other_packet_filter(const u_char* packet, int len){
 
 	return true;	
 }
-
-
 
 void mitm_attack(const char* ip1, const char* mac1, 
 					const char* ip2, const char* mac2){

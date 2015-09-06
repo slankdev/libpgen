@@ -5,8 +5,6 @@
 
 pgen_t* handle;
 const char* dev = "wlan0";
-static int scan_now = 1;
-bool openport[100];
 
 
 void synscan(const char* targetIP){
@@ -23,16 +21,17 @@ void synscan(const char* targetIP){
 		pack.send_handle(handle);
 	}
 	sleep(10);
-	scan_now = 0;
+	exit(1);
 }
 
 bool capture(const u_char* packet, int len){
-	if(scan_now == 0) return false;
 	pgen_unknown buf(packet, len);
 	if(buf.isTCP == false) return true;
 	pgen_tcp pack(packet, len);
 
-	if(pack.TCP.flags.ack==1) openport[pack.TCP.src] = true;	
+	if(pack.TCP.flags.ack==1){
+		printf(" %d open \n", pack.TCP.src);
+	}
 	return true;
 }
 
@@ -44,7 +43,4 @@ int main(int argc, char** argv){
 	std::thread scan(synscan, argv[1]);
 	sniff(handle, capture);
 	scan.join();
-	int c=0;
-	for(int i=0; i<100; i++)
-		if(openport[i]) printf(" %2d open %s \n", i, pgen_port2service(i, 1));
 }
