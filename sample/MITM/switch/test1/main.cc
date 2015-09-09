@@ -9,7 +9,7 @@
 
 
 const char* dev = "wlan1";
-const char* myip = "192.168.1.3";
+const char* myip = "192.168.1.7";
 
 struct host{
 	char ip[32];
@@ -21,11 +21,11 @@ struct host{
 struct host router = {"192.168.1.1", "90:03:b7:90:e1:62"};
 
 /* iphone */
-struct host target = {"192.168.1.4", "f0:24:75:bf:8d:bf"};
+//struct host target = {"192.168.1.4", "f0:24:75:bf:8d:bf"};
 
 /* mac wlan en0 */
 //struct host target = {"192.168.222.106", "10.128.5.85"};
-//struct host target = {"192.168.179.4", "80:e6:50:17:18:46"};
+struct host target = {"192.168.179.4", "80:e6:50:17:18:46"};
 
 
 
@@ -49,7 +49,6 @@ void filter(const u_char* packet, int len){
 bool myswitch(const u_char* packet, int len){
 	
 	// slankdev.net 
-	bit8 _s_data[] = {157, 7, 72, 229};
 
 	if(other_packet_filter(packet, len) == false) return true;
 

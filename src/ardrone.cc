@@ -36,10 +36,14 @@ void pgen_ardrone::clear_pcmd(){
 }
 
 
+
+
 void pgen_ardrone::clear_ref(){
 	this->ARDRONE.ref.seq        = 0;
 	this->ARDRONE.ref.command    = 0;
 }
+
+
 
 
 
@@ -51,11 +55,15 @@ void pgen_ardrone::clear_configids(){
 }
 
 
+
+
 void pgen_ardrone::clear_config(){
 	this->ARDRONE.config.seq     = 0;
 	memset(this->ARDRONE.config.name, 0, sizeof(this->ARDRONE.config.name));
 	memset(this->ARDRONE.config.parameter, 0, sizeof(this->ARDRONE.config.parameter));
 }
+
+
 
 
 void pgen_ardrone::clear_anim(){}
@@ -64,11 +72,15 @@ void pgen_ardrone::clear_led(){}
 void pgen_ardrone::clear_comwdg(){}
 
 
+
+
 void pgen_ardrone::clear_ctrl(){
 	this->ARDRONE.ctrl.seq                = 0;
 	this->ARDRONE.ctrl.ctrlmode           = 0;
 	this->ARDRONE.ctrl.fw_update_filesize = 0;
 }
+
+
 
 
 void pgen_ardrone::clear(){
@@ -108,6 +120,7 @@ void pgen_ardrone::clear(){
 
 
 
+
 int pgen_ardrone::compile_pcmd(){
 	snprintf(pcmd_data, sizeof(pcmd_data), "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld", 
 			this->ARDRONE.pcmd.seq, this->ARDRONE.pcmd.flag, 
@@ -118,11 +131,15 @@ int pgen_ardrone::compile_pcmd(){
 }
 
 
+
+
 int pgen_ardrone::compile_ref(){
 	snprintf(ref_data, sizeof(ref_data),"AT*REF=%ld,%ld", 
 			this->ARDRONE.ref.seq, this->ARDRONE.ref.command);
 	return strlen(ref_data);	
 }
+
+
 
 
 int pgen_ardrone::compile_configids(){
@@ -133,12 +150,15 @@ int pgen_ardrone::compile_configids(){
 }
 
 
+
+
 int pgen_ardrone::compile_config(){
 	snprintf(config_data, sizeof(configids_data), "AT*CONFIG=%ld,\"%s\",\"%s\"", 
 			this->ARDRONE.config.seq, this->ARDRONE.config.name,
 			this->ARDRONE.config.parameter);
 	return strlen(config_data);
 }
+
 
 
 
@@ -156,11 +176,16 @@ int pgen_ardrone::compile_comwdg(){
 }
 
 
+
+
+
 int pgen_ardrone::compile_ctrl(){
 	snprintf(ctrl_data, sizeof(ctrl_data), "AT*CTRL=%ld,%ld,%ld", this->ARDRONE.ctrl.seq, 
 			this->ARDRONE.ctrl.ctrlmode, this->ARDRONE.ctrl.fw_update_filesize);
 	return strlen(ctrl_data);
 }
+
+
 
 
 
@@ -239,6 +264,7 @@ void pgen_ardrone::compile(){
 
 
 
+
 int pgen_ardrone::cast_pcmd(const char* buf){
 	int ret = sscanf(buf, "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld",
 			&ARDRONE.pcmd.seq, &ARDRONE.pcmd.flag, &ARDRONE.pcmd.roll,
@@ -251,6 +277,10 @@ int pgen_ardrone::cast_pcmd(const char* buf){
 }
 
 
+
+
+
+
 int pgen_ardrone::cast_ref(const char* buf){
 	int ret = sscanf(buf, "AT*REF=%ld,%ld",
 			&this->ARDRONE.ref.seq, &this->ARDRONE.ref.command);
@@ -260,6 +290,9 @@ int pgen_ardrone::cast_ref(const char* buf){
 	}
 	return get_command_len(buf);
 }
+
+
+
 
 
 int pgen_ardrone::cast_configids(const char* buf){
@@ -296,12 +329,20 @@ int pgen_ardrone::cast_configids(const char* buf){
 }
 
 
+
+
 int pgen_ardrone::cast_anim(const char* buf){
 	return 0;
 }
+
+
+
+
+
 int pgen_ardrone::cast_ftrim(const char* buf){
 	return 0;
 }
+
 
 
 
@@ -334,6 +375,9 @@ int pgen_ardrone::cast_config(const char* buf){
 	return get_command_len(buf);	
 }
 
+
+
+
 int pgen_ardrone::cast_led(const char* buf){
 	return 0;
 }
@@ -352,6 +396,8 @@ int pgen_ardrone::cast_ctrl(const char* buf){
 	}
 	return get_command_len(buf);
 }
+
+
 
 
 
@@ -548,6 +594,7 @@ void pgen_ardrone::DSUMMARY(){
 
 
 
+
 static int get_original_string(const char* p, char buf[]){
 	const char* c = p;
 	c++;
@@ -563,6 +610,8 @@ static int get_original_string(const char* p, char buf[]){
 
 
 
+
+
 static int get_command_len(const void* p){
 	const char* c = (const char*)p;
 	const char spliter = 0x0d;
@@ -571,3 +620,5 @@ static int get_command_len(const void* p){
 	
 	return len;
 }
+
+
