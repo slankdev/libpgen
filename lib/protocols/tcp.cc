@@ -18,12 +18,11 @@
  */
 
 
-/* include must!!! */
 #include "pgen.h"
 #include "packet.h"
 #include "address.h"
 
-#include "netutil.h"
+#include "netutils.h"
 
 #include <map>
 #include <stdio.h>

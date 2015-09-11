@@ -44,8 +44,8 @@
  *	[*] unknown.cc
  *
  *  [*] mytypes.h
- *	[*] netutil.cc
- *	[*] netutil.h
+ *	[*] netutils.cc
+ *	[*] netutils.h
  *	[*] release.h
  *	[*] debug.h
  *	[*] debug.cc

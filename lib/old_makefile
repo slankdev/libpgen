@@ -1,5 +1,8 @@
 #makefile
 
+BASE = ..
+CFLAGS = -Wall -fPIC -std=c++11 
+
 export CC  := gcc
 export CPP := g++ 
 export CXX := g++ 
@@ -8,53 +11,43 @@ export AR  := ar
 export CP  := cp -rf
 export RM  := rm -rf
 
-
-
 .SUFFIXES: .out .c .cc .o .h 
 
 .cc.o: 
-	$(CPP) -Wall -std=c++11 -c  $<  -o $@  
+	$(CPP) $(CFLAGS) -c  $<  -o $@  
 
 
-PACKET_CLASS_SRC = \
-	  unknown.cc \
-	  packet.cc \
-	  eth.cc \
-	  arp.cc \
-	  ip.cc \
-	  icmp.cc \
-	  tcp.cc \
-	  udp.cc \
-	  dns.cc \
-	  ardrone.cc \
-	  http.cc \
-	  dhcp.cc \
-	  debug.cc
+
+
+PROTOCOLS_DIR := ./protocols
 
 
 NETUTIL_SRC = \
-	  netutil.cc
+	netutil.cc
 
-SRC = $(PACKET_CLASS_SRC) $(SNIFF_SRC) $(NETUTIL_SRC)
+OTHER_SRC = \
+	packet.cc \
+	unknown.cc \
+	debug.cc
 
+SRC = $(PACKET_CLASS_SRC)  $(NETUTIL_SRC) $(OTHER_SRC)
 
 HDR = pgen.h \
-	  address.h \
-	  packet.h \
-	  mytypes.h \
-	  netutil.h \
-	  release.h \
-	  debug.h
-
+	address.h \
+	packet.h \
+	mytypes.h \
+	netutil.h \
+	release.h \
+	debug.h
 
 OBJ = $(SRC:.cc=.o)
 
-CFLAGS = -Wall -fPIC
 
 
 all: libpgen.a
 
 libpgen.a: $(OBJ)
+	$(MAKE) -C $(PROTOCOLS_DIR)
 	$(RM) $@
 	$(AR) rc $@ $(OBJ)
 
@@ -63,10 +56,11 @@ clean:
 	$(RM) *.o *.out *.a *.so
 
 
+
+
 install: copylib copyheader copymaclist
 
 uninstall: deletelib deleteheader detelemaclist
-
 
 copylib:
 	$(CP) libpgen.a     /usr/local/lib/libpgen.a
@@ -95,7 +89,6 @@ deleteheader:
 	$(RM) /usr/local/include/pgen.h
 	$(RM) /usr/local/include/release.h
 	$(RM) /usr/local/include/debug.h
-
 
 detelemaclist:
 	$(RM) /usr/local/etc/mac_code.list
