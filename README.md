@@ -1,74 +1,54 @@
 # libpgen (LIBrary Packet GENerator)
-Packet generator library for C++  
-About this library, please watch http://slankdev.net/libpgen  
+詳しいドキュメントは開発者サイトを参照してください。 http://slankdev.net/libpgen
 
 ## 概要、コンセプト
+libpgenはC++で書かれたパケット解析、送受信などを簡単にできるようにすることを目標としているライブラリです。
 
-!!!使用するときはライセンスを読んでの使用をしてください!!!  
-  
 コンセプトは以下のとうりです。
 * 簡単で高度にパケットを設定して送ることができる
-* 色々とヘッダを調べたり、する必要がない
-* グチャグチャに依存しあった型にとらわれなくていい
 * ネットワークプログラミングのめんどくさいこと（ややこしく絡み合った構造体、
 	バイトオーダ操作、アドレス操作）をしなくていい
-* プログラミング素人でも、ネットワークの最低限の知識があれば使いこなせる
+* プログラミング素人でも、ネットワークの最低限の知識があれば高度なネットワークツールを作成することができる。
   
-  
-ネットワークプログラミング用のC/C++のライブラリです。  
-libpcapのようにOSの型にとらわれず、簡単に高度な処理をできるようなライブラリにしていきたいです。
-libpgenは低レイヤから高レイヤまで様々なパケットを作成して送信することを助ける関数を含んでいます。
-ネットワークプログラミングのめんどくさいところ（アドレス操作、バイトオーダ操作、ややこしく絡み合った構造体）
-を全てライブラリに処理をさせてシンプルなコードだけで細かくパケットをいじりたおせるようにしています。
-scapyを少し参考にしながら作っていますが、C/C++でpython並の超高級処理ができればプログラミングをもっと楽しく
-できると思います。
-現在はlinux専用でコードを書いていますが、いずれはOS X、Windows 向けのコードも追加していけたらいいと思います。
-似たようなものとしては、hpingやpython のscapyなどがありますが、
-hpingやscapyなどより細かくパケットを編集できるようにしていこうと思います。
-  
+現在はlinux専用でコードを書いていますが、いずれはOSXやBSDにも対応させていこうと思います。
 
- 
 
 ## 利用可能環境
-os   : Ubuntu-Gnome 14.04  
-build: make g++11  
+Ubuntu-Gnome14.04LTS, ArchLinuxで動作確認ができています。確認していませんんが、他のlinuxでも動作するはずです。
 
  
 ## 追加予定機能
 * 別のOS対応
-* .pgenファイルでのパケットフォーマットの取り込み
 * 様々なパケットに対応
 
 
 
-## Developer
-
+## 開発者
 Handlename  : Slank  
 Fullname    : Hiroki Shirokura  
 Country     : Japan  
 E-mail      : slank.dev@gmail.com  
 
 
-## Support Protocols
-Ethernet, ARP, IP, ICMP, TCP, UDP, DNS(over UDP), ar_drone
+## 対応プロトコル
+Ethernet, ARP, IP, ICMP, TCP, UDP, DNS, DHCP, ar_drone
 
-## Sample Codes
+## サンプルコード
 - DNS query 		libpgen/sample/DNS/
 - MITM attack		libpgen/sample/MITM/
-- Control Drone		libpgen/sample/DRONE/
 
 more infomation see http://slankdev.net/libpgen  
 
 
-## Install 
+## Install
 	
-	$ cd libpgen/src
+	$ cd libpgen
 	$ make
 	$ sudo make install
 
 ## Uninstall 
 
-	$ cd libpgen/src
+	$ cd libpgen
 	$ sudo make uninstall
 
 
