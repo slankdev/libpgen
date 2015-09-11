@@ -69,13 +69,13 @@ clean:
 install: $(HDR) $(PROGNAME) mac_code.list
 	$(CP) $(PROGNAME) $(INSTALL_LIB_DIR)
 	for i in $(HDR); do \
-	  $(CP) $$i $(INSTALL_LIB_DIR); done
+	  $(CP) $$i $(INSTALL_HDR_DIR); done
 	$(CP) mac_code.list /usr/local/etc/mac_code.list
 
 uninstall: 
 	$(RM) $(INSTALL_LIB_DIR)/$(PROGNAME)
 	for i in $(HDR); do \
-	  $(RM) $(INSTALL_LIB_DIR)/$$i ; done
+	  $(RM) $(INSTALL_HDR_DIR)/$$i ; done
 	$(RM) /usr/local/etc/mac_code.list
 
 
