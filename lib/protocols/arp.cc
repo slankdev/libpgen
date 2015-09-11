@@ -36,7 +36,7 @@
 #include <net/ethernet.h> 
 #include <netinet/if_ether.h>
 
-#include "netutil.h"
+#include "netutils.h"
 
 
 

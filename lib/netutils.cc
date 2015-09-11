@@ -34,7 +34,7 @@
 #include <netinet/if_ether.h>
 
 #include "pgen.h"
-#include "netutil.h"
+#include "netutils.h"
 #include "packet.h"
 
 

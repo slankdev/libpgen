@@ -34,7 +34,7 @@
 #include <sys/socket.h>
 #include <net/ethernet.h> 
 
-#include "netutil.h"
+#include "netutils.h"
 
 
 

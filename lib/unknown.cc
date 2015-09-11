@@ -24,7 +24,7 @@
 #include "address.h"
 #include "packet.h"
 #include "mytypes.h"
-#include "netutil.h"
+#include "netutils.h"
 
 #include "debug.h"
 

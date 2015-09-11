@@ -19,40 +19,14 @@
  */
 
 
-#include "pgen.h"
+#ifndef PGEN_H
+#define PGEN_H
+
 #include "packet.h"
 #include "address.h"
-#include "netutil.h"
-
-#include <map>
-#include <string>
-#include <vector>
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
+#include "netutils.h"
+#include "debug.h"
 
 
-pgen_http::pgen_http(){
-	clear();	
-}
+#endif /* PGEN_H */
 
-pgen_http::pgen_http(const void* packet, int len){
-	clear();
-	cast(packet, len);
-}
-
-
-void pgen_http::clear(){}
-
-void pgen_http::compile(){}
-
-void pgen_http::cast(const void* packet, int len){}
-
-void pgen_http::summary(){}
-void pgen_http::info(){}
