@@ -1,0 +1,595 @@
+<html>
+	<head>
+		<title>Libpgen Document</title>
+		
+		<style type="text/css">
+		<!--
+		h1{
+			color: #f5fffa;
+			background-color: #8b0000;
+			
+			line-height: 40px;
+			padding-left: 10px;
+			padding-bottom: 5px;
+			padding-top: 5px;
+			margin-top: 10px;
+			margin-bottom: 40px;
+		}
+		h2{
+			border-left-width: 6px;
+			border-left-style: solid;
+			border-left-color: #8b0000;
+			
+			border-bottom-width: 2px;
+			border-bottom-style: inset;
+			border-bottom-color: #8b0000;
+			
+			line-height: 25px;
+			padding-left: 10px;
+			padding-bottom: 5px;
+			padding-top: 5px;
+			margin-top: 40px;
+			margin-bottom: 10px;
+		}
+		div{
+			margin-top: 20px;	
+			margin-bottom: 50px;	
+			margin-left: 10px;	
+			margin-right: 10px;	
+		}
+		-->
+		</style>
+	</head>
+
+
+
+		<body>
+
+
+<h1>LIBPGEN Official Document</h1>
+Author: slank (<a href=https://twitter.com/slankdev>@slankdev</a>)<br>
+E-mail: <a href="mailto: slank.dev@gmail.com">slank.dev@gmail.com</a><br>
+Web-site: <a href=http://slankdev.net/libpgen>http://slankdev.net/libpgen</a><br>
+Update: 2015/09/16 <br>
+
+<hr></hr>
+
+<h2 class="title">はじめに</h2>
+
+<div>
+<p>まずはじめに、このドキュメントを読んでくださり、ありがとうございます。
+筆者は2015年の春からこのライブラリを開発しはじめています。はじめはローカルネットワークで
+ARPスキャンをするプログラムの拡張用で適当に書いたんですけど、機能を追加するうちにだんだん
+楽しく感じてきて、いまでは暇つぶし兼ライフワークになっています。
+また、ネットワークのプロトコルの知識を深めるいい環境として捉えています。</p>
+<p>このライブラリは現在、一人で開発しているのですが、セキュリティキャンプ講師の方、2015年度全国大会卒業生の方
+をはじめ、たくさんの方にアイディアや助言をいただいております。誠にありがとうございます。
+今後とも宜しくお願いします。</p>
+
+<h3>開発者について</h3>
+このライブラリはslank(slank.dev@gmail.com)が開発を行っています。libpgenを気に入ってくれた方や、開発に参加したい、
+と感じてくれた方は開発者まで連絡をお願いします。
+まだ未熟な大学生ですが、libpgenを良いライブラリにしていけたら良いと考えています。
+
+<h3>ライセンス</h3>
+このライブラリのライセンスはGNU GPLとしています。いかなる場合でも、このライブラリを使用しておきた不具合等に
+関しての責任は負いかねます。
+様々なパケットを生成し、送信することが可能なので、実験は必ず自己環境で行ってください。
+不用意に作成したパケットを送信してしまうと、ネットワークや別のコンピュータに対しての攻撃になってしまう場合が
+ありますので、最初はpcapファイル書き出してwiresharkなどでデバッグしていくことをお勧めします。
+ 
+<h3>このドキュメントを書く参考にしたサイト</h3>
+Producing Open Source Software (http://producingoss.com) <br>
+TCPDUMP &amp; LIBPCAP (http://www.tcpdump.org/) <br> 
+</div>	
+
+
+
+
+<h2 class="title">概要</h2>
+<div>
+
+<h3>libpgen(library packet generator)とは</h3>
+<p>libpgenはC++で簡単にパケットを作成、送受信、解析することができるライブラリです。
+開発初期はパケット送信機能のみの実装だったためpacket generatorという名前になってしまいました。
+ネットワークプログラミングに精通していなくても、ネットワークの基本的な知識があればこのライブラリを使用して、
+様々なネットワークテストを行うことができます。
+libpgenはネットワークプログラミング入門から高度な（低レイヤ）ネットワークプログラミングのツール作成までを
+補助することを目標としています。</p>
+<p>また新たなプロトコルに簡単に対応できるようにしていて、簡単に開発に参加することようにしています。
+このライブラリは2015年09月10日現在、Ethernet, ARP, IP, ICMP, TCP, UDP, DNS, DHCP, ar_droneに対応しています。
+今後も多数のプロトコルや拡張機能を追加していきます。</p>
+
+
+<h3>必要な最低限度の知識</h3>
+C/C++の基本的な文法（別にポインタがどうとかややこしい話は全く出てきません）
+ネットワーク関連の基本的な知識。ICMPの基本的な部分を理解していれは、このライブラリを仕様して簡単なpingコマンドを
+書くことはすぐにできるでしょう。
+
+
+<h3>実行可能環境</h3>
+Linuxで実行可能です。筆者はUbuntuGnome14.04LTSとArchLinuxで実行確認をしました。
+現在はLinuxのみをサポートしていますが、今後OSX, BSD系のOSにも対応予定です。
+実行マシンでgitがインストールされていればlibpgenのインストール、開発を円滑に進めることができます。
+
+</div>	
+
+
+
+
+
+<h2 class="title">インストール方法</h2>
+<div>
+
+<p>まずはlibpgenをインストールしてみましょう。普通のLinux環境であればインストールは簡単にでき、
+すぐに使い始めることができるはずです。</p>
+
+<h3>1. ビルド、インストールに必要なパッケージをインストール</h3>
+<p>libpgenをビルドするには以下のパッケージが最低でも必要です。使用環境に合わせてインストールしてください。</p>
+<p>
+g++ version 0.0.0 以降<br>
+make version 0.0.0 以降<br>
+ar version 0.0.0 以降<br>
+</p>
+
+ubuntuやdebian系なら<br>
+<pre>	# apt-get install g++ make ar </pre>
+
+Cent OSやFedoraなどのRHEL系なら<br>
+<pre>	# yum install g++ make ar </pre>
+
+
+
+<h3>2. ソースコードをダウンロード</h3>
+<p>libpgenのソースをGitHubの李モードリポジトリで管理しているので、
+git cloneをつかえば簡単にソースを入手することができます。</p>
+<pre>$ git clone https://github.com/slankdev/libpgen.git  </pre>
+
+<p>もしGitを導入していない場合は、
+<a href=http://slankdev.net/libpgen/file.tar.gz>GitHubのlibpgenのページ</a>からパッケージをダウンローして、
+任意のディレクトリに展開します。
+
+
+<h3>3. makeとインストール</h3>
+<p>srcディレクトリに移動してmakeを実行してビルドします。makeが完了したらmake installでlibpgenをインストールします。
+make installは管理者権限を仕様して実行してください。</p>
+
+<pre>
+	$ cd libpgen
+	$ make
+	$ sudo make install
+</pre>
+
+<p>これでlibpgenを使って開発を行う準備が整いました。
+もしlibpgenを完全にアンインストールしたい場合はsrcディレクトリに移動して以下のコマンドを実行します。</p>
+
+<pre>
+	$ cd libpgen
+	$ make uninstall
+</pre>
+
+<p>このコマンドを実行すればlibpgenに関するすべてのファイルを消去して、libpgenをアンインストールすることができます。</p>
+
+
+
+
+</div>
+<h2 class="title">サンプルプログラミング</h2>
+<div>
+
+<p>インストールが完了したら、libpgenを使って簡単なプログラムを書いていきましょう。
+実際にlibpgenを使って開発などを行う前にパケットキャプチャ、pingコマンドの作成は経験しておくことををお勧めします。</p>
+<p>現段階ではこのサンプルコードが何を言っているのかは理解できなくても、何も問題ありません。
+libpcapを使ったことがあったり、ネットワークのプロトコルの知識がすこしあれば察しがつく方もいるかもしれませんが、
+詳細に理解する必要はないので、安心してください。雰囲気でいいのです。</p>
+<p>現在はパケットキャプチャとpingコマンドのみですが、今後もサンプルの追加をしていく予定です。</p>
+
+<strong>[パケットキャプチャ] <a href=./sample/packet-capture.html>サンプルコード</a><br></strong>
+<p>libpgenのパケット受信機能と、パケット解析機能を使って簡単なパケットキャプチャを作成します。
+30行ほどのコードでL4まで簡単に解析をするパケットキャプチャを作成することができます。
+今後に説明する高度なプロトコル解析機能を使えばさらに高度なパケットキャプチャにパワーアップさせたり、
+pcapファイルに保存する機能を追加することもできます。</p>
+
+
+
+<strong>[pingコマンド] <a href=./sample/ping.html>サンプルコード</a><br></strong>
+<p>パケットキャプチャの作成で、パケットの受信機能と簡単な解析を習得することができました。
+次は、パケットの送信ともう少し詳しく解析をするプログラムを作成します。</p>
+<p>pingコマンドは誰も使ったことがあるコマンドだと思います。実際に使われるpingコマンドはホスト名からIPアドレスに
+名前解決を行ったり、失敗時の情報をまとめたり、色々な機能がありますが、ここで作成するpingコマンドは単純にICMP Echo 
+Requestを1秒間隔で送信して、ICMP Echo Replyを受信したら表示する簡単なプログラムなので安心してください。
+（もちろんlibpgenの他の機能を使えば名前解決や他のICMP Typeの解析も行うことができます。）</p>
+
+
+
+
+
+</div>	
+<h2 class="title">libpgenの基本機能</h2>
+<div>
+
+<p>libpgenは以下の図のようにアドレスクラス、パケットクラス、netutilsの三つで構成されています。</p>
+<p>アドレスクラスはネットワークプログラミングでのIPアドレス、MACアドレスの操作に扱いやすいインターフェースを提供します。</p>
+<p>パケットクラスはプロトコルごとにパケットを解析したり、自由にパケットを作成したりする作業を簡単に行えるようにします。</p>
+<p>netutilsはパケットクラスとOSの橋渡し役として、OSのネットワークを扱って、パケットの送信、受信を担います。
+libpgenでは、ネットワークインターフェースに関わる作業を完全に独立させています。リンクレイヤープログラミングの場合、
+ソースコードはOSに強く依存するためです。Linuxでのリンクレイヤープログラミングの場合はsocketシステムコールで
+PF_PACKETアドレスファミリをしていしてネットワークインターフェースを直接触るのに対して、OSXやBSD系
+(厳密にはOSXもBSD系な気がしますが...)のOSではBPF(The Berkeley Packet Filter)をopenシステムコールで開いてネットワーク
+インターフェースを触ります。
+</p> 
+
+<p>以下ではアドレスクラス、パケットクラス、netutilsについての基本的な使い方をレクチャーしていきます。</p>
+
+<h3>アドレスクラス</h3>
+<p>先ほども述べたようにアドレスクラスはIPアドレス、MACアドレスを簡単に表現することができるクラスです。
+実際のネットワークプログラミングでは、IPアドレスは32bit符号なし整数。MACアドレスは8bit符号なし整数の長さ6の配列で
+表現されています。アドレスクラスはこれらのアドレスのビットフィールドをラッピングして、ユーザの使いやすいインタフェースからの
+代入動作などを提供します。
+詳しくはlibpgenのソースコードのaddress.hを参照すればより多くの情報を得られます。</p>
+<p>アドレスクラスの基本的な使用方法をサンプルコードで示します。</p>
+
+<pre>
+	/*
+	 * 1. アドレスのインスタンスを生成
+	 * 2. インスタンスにアドレスをNULLポインタ文字列から代入
+	 *    この時アドレスクラス内部でアドレスのビットフィールドを生成している。
+	 * 3. アドレスクラスのメンバ関数c_str()はアドレスの情報をNULLポインタ文字列を返すので
+	 *    それを使って情報表示
+	 */
+
+	/* IPアドレス */
+	ipaddr my_ipaddr;
+	my_ipaddr = "192.168.0.1";
+	printf("my_ipaddr is %s \n", my_ipaddr.c_str()); 
+
+	/* MACアドレス */ 
+	macaddr my_macaddr;
+	my_macaddr = "00:11:22:33:44:55";
+	printf("my_macaddr is %s \n", my_macaddr.c_str()); 
+	my_macaddr
+</pre>
+
+<p>実行結果は以下のようになります。</p>
+
+<pre>
+	my_ipaddr is 192.168.0.1
+	my_macaddr is 0:11:22:33:44:55
+</pre>
+
+
+<p>基本的な使用方法はこんな感じです。実際のネットワークプログラミングでは幾つか関数を呼び出したりして、操作をしなくては
+いけないのですが、libpgenのアドレスクラスではこのように全てNULLポインタ文字列でアドレス操作をできるようにしています。</p>
+<p>基本的な使い方はこれで以上ですが、便利なメンバ関数とオペレータを幾つか用意しているので、そちらの紹介を行います。</p>
+
+<h4>IPアドレス、MACアドレス共通のメンバ関数</h4>
+<pre>
+	<b>char* c_str(void);</b>
+	アドレスをNULLポインタ文字列で返す
+
+	<b>void clear(void);</b>
+	アドレスを0クリアする。IPアドレスなら0.0.0.0, MACアドレスなら00:00:00:00:00:00に設定;
+
+	<b>void setOctet(int index, int num);</b>
+	アドレスの第indexオクテットの値をnumに設定する。
+	IPアドレスは0-3オクテット。MACアドレスは0-5オクテットを指定可能。それ以外を指定するとエラー終了をする。
+	
+	<b>unsigned char getOctet(int index);</b>
+	アドレスの第indexオクテットを返す。
+	IPアドレスは0-3オクテット。MACアドレスは0-5オクテットを指定可能。それ以外を指定するとエラー終了をする。
+
+</pre>
+
+<h4>IPアドレスのみ対応のメンバ関数</h4>
+<pre>
+	<b>bool setipbydev(const char* interface);</b>
+	interfaceのIPアドレスを取得して設定する。成功時はtrueを返し、インタフェースが存在しないなどの場合は、
+	設定は行われずfalseを返す。
+
+	<b>bool setmaskbydev(const chae* interface);</b>
+	interfaceのネットマスクを取得して設定する。成功時はtrueを返し、インタフェースが存在しないなどの場合は、
+	設定は行われずfalseを返す。
+
+</pre>
+
+
+
+<h4>MACアドレスのみ対応のメンバ関数</h4>
+<pre>
+	<b>bool setmacbydev(const char* interface);</b>
+	interfaceのMACアドレスを取得して設定する。成功時はtrueを返し、インタフェースが存在しないなどの場合は、
+	設定は行われずfalseを返す。
+
+	<b>bool setmacbroadcast(void);</b>
+	MACアドレスをブロードキャストアドレス、すなわちff:ff:ff:ff:ff:ffに設定する。
+	特に失敗などをすることはないが、trueを返す。
+
+	<b>char* bender(void);</b>
+	設定されているMACアドレスの上位3オクテットからアドレスのベンダをNULLポインタ文字列で返す。
+	辞書に登録がされていなかったらnot-found、何かしらのエラーが起きた場合errorを返す。
+
+</pre>
+
+
+
+<h4>IPアドレスの対応オペレータ</h4> 
+<pre>
+	<b>ipaddr& operator=(ipaddr addr);</b>
+	通常の代入演算子
+
+	<b>ipaddr& operator=(const char* address_str);</b>
+	NULLポインタ文字列からIPアドレスを設定する代入演算子
+
+	<b>ipaddr& operator=(std::string address_str);</b>
+	stringクラスのインスタンスからIPアドレスを設定する代入演算子
+	
+	<b>bool operator&lt;(ipaddr addr);</b>
+	大なりの比較演算子。libpgenではIPアドレスでの大小表現を定義しています。
+	例えば192.168.0.1 &gt; 192.168.0.5 &rarr; false
+	192.168.4.1 &gt; 192.168.0.12 &rarr; true
+
+
+	<b>bool operator&lt;=(ipaddr addr);</b>
+	大なりイコールの比較演算子。評価方法は上に等しい。
+
+	<b>bool operator&gt;(ipaddr addr);</b>
+	小なりの比較演算子。評価方法は上に等しい。
+
+	<b>bool operator&gt;=(ipaddr addr);</b>
+	小なりイコールの比較演算子。評価方法は上に等しい。
+	
+	<b>bool operator==(ipaddr addr);</b>
+	等価の比較演算子
+
+	<b>bool operator!=(ipaddr addr);</b>
+	非等価の比較演算子
+
+	<b>ipaddr& operator++(int);</b>
+	IPアドレスのインクリメント用の後置インクリメント演算子。
+	192.168.12.4++ &rarr; 192.168.12.5
+	10.110.255.255++ &rarr; 10.111.0.0 となる
+
+
+
+</pre>
+
+<h4>MACアドレスの対応オペレータ</h4> 
+<pre>
+	<b>macaddr& operator=(macaddr addr);</b>
+	通常の代入演算子
+
+	<b>macaddr& operator=(const char* address_str);</b>
+	NULLポインタ文字列からMACアドレスを設定する代入演算子
+
+	<b>macaddr& operator=(std::string address_str);</b>
+	stringクラスのインスタンスからMACアドレスを設定する代入演算子
+	
+	<b>bool operator&lt;(macaddr addr);</b>
+	大なりの比較演算子。評価方法はIPアドレスと同じだが、MACアドレスの大小比較はほとんど使わないはず。
+
+
+	<b>bool operator&lt;=(macaddr addr);</b>
+	大なりイコールの比較演算子。評価方法は上に等しい。
+
+	<b>bool operator&gt;(macaddr addr);</b>
+	小なりの比較演算子。評価方法は上に等しい。
+
+	<b>bool operator&gt;=(macaddr addr);</b>
+	小なりイコールの比較演算子。評価方法は上に等しい。
+	
+	<b>bool operator==(macaddr addr);</b>
+	等価の比較演算子
+
+	<b>bool operator!=(macaddr addr);</b>
+	非等価の比較演算子
+
+
+</pre>
+
+以上がアドレスクラスの説明です。このクラスはパケットクラスのアドレス操作やネットワークプログラミングでの
+アドレス操作を楽にするだけなので、そこまで複雑ではないので簡単に理解することができるはずです。
+
+
+
+
+<h3>パケットクラス</h3>
+
+パケットクラスがlibpgenでもっとも内容が濃く重要なコンポーネントであると言えるでしょう。
+このクラスは親のpgen_packetクラスをプロトコルごとに継承してプロトコルごとに一つのクラスを用意してあります。
+例えばTCPのパケットを扱いたいならば、対応するパケットクラスはpgen_tcpクラスになるのです。
+プロトコルごとの詳しい説明はさておきまずはパケットクラス共通の構造と使用方法を説明していきます。
+
+<h4>クラスの構造</h4>
+<p>パケットクラスは大きく分けて次の2つで構成されています。</p>
+	<ul>
+		<li> プロトコルごとのヘッダやバイナリを格納する配列とその長さ(ようするにメンバ変数) </li>
+		<li> パケットのバイナリを生成したり、送信、解析などを行うメンバ関数 </li>
+	</ul>
+
+<p>以下ではこれらの2つを説明していく。</p>
+
+<h4>継承関係</h4>
+<p>パケットクラス無数にあり、プロトコル1つに対して1つのパケットクラスを用意しています。
+これらのクラスはプロトコル階層に合わせて規則的な継承関係を築いています。
+2015.09.12現在の継承関係は以下のようになっています。</p>
+
+<pre>
+パケットクラスの継承関係
+
+pgen_packet
+└── pgen_eth
+    ├── pgen_arp
+    └── pgen_ip
+        ├── pgen_icmp
+        ├── pgen_tcp
+        └── pgen_udp
+            ├── pgen_ardrone
+            ├── pgen_dhcp
+            └── pgen_dns
+</pre>
+
+<p>この図を見てわかる通り、プロトコル構造に合わせて継承関係を築いています。
+例えばDHCPのパケットクラスpgen_dhcpならは継承関係は[Ethernet&rarr;IP&rarr;UDP&rarr;DHCP]と継承しているので、
+Ethernet, IP, UDPのパケットクラスのメンバ要素も使うことができます。このようにしてlibpgenはソースの重複を少なく
+しようとしています。</p>
+
+
+<h4>メンバ変数</h4>
+<p>パケットクラスはプロトコル依存のメンバ変数とプロトコルに依存しないメンバ変数の二種類のメンバ変数を持っています。
+ここでは後者のプロトコルに依存しないメンバ変数の紹介を行います。前者のメンバ変数については、
+<a href=プロトコルごとの説明>プロトコルごとのパケットクラスの説明</a>を参照してください。</p>
+
+<p>パケットクラスがプロトコルに依存せずに保持するメンバ変数は次の2つだけです。</p>
+
+<pre>
+	<b>u_char data[PGEN_MAX_PACKET_LEN];</b>
+	compileメンバ関数によって生成されるパケットのバイナリを格納しておく配列。
+	complie後にバイナリ解析を行ったりする時にアクセスする場合があります。
+
+	<b>int    len;</b>
+	complieで生成されたバイナリの長さが格納される変数。
+	dataとセットで使用する。
+</pre>
+
+
+
+<h4>メンバ関数</h4>
+<p>パケットクラスは幾つかのプロトコル共通のメンバ関数を用意しています。
+任意のプロトコル専用のメンバ関数も実装されているパケットクラスも存在するのですが、その説明は、
+<a href=プロトコルごとの説明>プロトコルごとのパケットクラスの説明</a>を読んでください。 </p>
+
+<p>ではパケットクラス共通のメンバ関数を1つ1つ紹介していきます。</p>
+
+<pre>
+	次の6つの関数はプロトコルごとに少し違った動作をしますが、動作目的は同じです
+
+	<b>void clear();</b>
+	パケットの各要素をデフォルト値に設定します。大抵のパケットのデフォルト値はそのプロトコルで一番よく見かける状態に
+	設定しています。
+
+	<b>void complie();</b>
+	パケットクラスの情報から、実際に送信可能なパケットのバイナリを生成します。
+	大抵はユーザが呼び出すことはなく、send関数やsummary関数、info関数でははじめにこの関数が実行される。
+
+	<b>void cast(const u_char* buf, int len);</b>
+	バイナリを解析して、パケットクラスのメンバ変数に反映させる。引数として、バイナリの先頭ポインタと長さしか指定しない
+	ため、実行前に事前にcast関数を実行するパケットクラスのプロトコルであることを確認しておく必要が有る。
+	<a href=test>pgen_unknownクラスで、パケットのプロトコルを解析する</a>を参照
+
+	<b>void send(const char* inferface);</b>
+	complie関数を実行して、パケットのバイナリを生成して、そのパケットを指定したネットワークインターフェースの
+	interfaceから送信する。この関数はプロトコルがEthernet, ARPまでは内部でsend_L2を呼び出して送信をしていて、
+	それ以外のプロトコルのクラスはsend_L3で送信をしている。
+	もしIP以上のプロトコルでEthernetヘッダまで設定したい場合はsend_L2関数かsend_handle関数を利用して送信する。
+
+	<b>void summary();</b>
+	パケットの情報を1行で簡単に出力する。デバッグや手っ取り早く解析したい時に使用する。
+	DHCPのパケットクラスの場合、DHCPの情報のみを出力し、UDPのポート番号やIPアドレスは出力しない。
+
+	<b>void info();</b>
+	パケットの情報完全に出力する。
+	summary関数が最上位プロトコルのみの出力であったのにたいして、この関数はすべてのレイヤの情報を細かく出力をする。
+	 
+	次の2つの関数はどのプロトコルのパケットクラスでも共通の動作を行います
+
+	<b>void hex();</b>
+	complie関数でバイナリを生成して、そのバイナリを表示する。
+	デバッグなどに使用する。
+
+	<b>void send_L2(const char* interface);</b>
+	complie関数でバイナリを生成して、パケットを送信する。
+	Ethernetヘッダまでの情報をネットワークインターフェースinterfaceから送信する。
+	この関数が実行されると、関数内部で送信用のディスクリプタを確保して、送信後に解放します。
+	なので、処理に時間がかかるのでリアルタイムな処理をする場合はsend_handle関数を推奨します。
+
+	<b>void send_L3(const char* interface);</b>
+	complie関数でバイナリを生成して、パケットを送信する。
+	IPヘッダまでの情報をネットワークインターフェースinterfaceから送信する。
+	当たり前だが、EthernetとARPのパケットクラスでは使用できない。
+	send_L2同様に関数内部で送信用のディスクリプタを確保して、送信後に解放します。
+	なので、処理に時間がかかるのでリアルタイムな処理をする場合はsend_handle関数を推奨します。
+	
+	<b>void send_handle(pgen_t* handle);</b>
+	complie関数でバイナリを生成して、パケットを送信する。
+	send_L2やsend_L3と違い、この関数はpgen_open関数などで開いたpgen_t*型の独自のハンドラを指定して
+	パケットを送信します。このpgen_t*型のハンドラは内部にディスクリプタを保持していて、そのディスクリプタを
+	使用して送信しているので、リアルタイムな処理に適しています。
+	
+</pre>
+
+
+
+
+<h3>netutils</h3>
+<p>netutilsはパケットクラスとネットワークインタフェースの橋渡しをする役割を持っています。アドレスクラスと
+パケットクラスがその名の通りクラスであったのに対して、netutilsは関数群です。ネットワークインターフェースから
+パケットを送受信したり、pcapファイルから読み書きしたり(すでにネットワークではなくなってきてるが....)する機能を
+提供しています。</p>
+
+<p>以下ではnetutilsに含まれている関数を紹介します。</p>
+
+<pre>
+	<b>pgen_t* pgen_open(const char* interface, void* nouse);</b>
+	<b>pgen_t* pgen_open_offline(const char* filename, int mode);</b>
+	<b>void pgen_close(pgen_t* handle);</b>
+	<b>void sniff(pgen_t* handle, bool (*callback)(const u_char*, int));</b>
+	<b>int pgen_sendpacket_handle(pgen_t* handle, const u_char* buf, int len);</b>
+	<b>int pgen_sendpacket_L2(const char* handle, const u_char* buf, int len);</b>
+	<b>int pgen_sendpacket_L3(const char* handle, const u_char* buf, int len, struct sockaddr* sa);</b>
+	<b>char* pgen_port2service(int port, int protocol);</b>
+
+</pre>
+
+
+
+
+
+</div>	
+<h2 class="title">プログラミングの流れ</h2>
+<div>
+
+<p>ここでは一般的なlibpgenの使用方法について説明していきます。
+libpgenで行うタスクはパケットの作成、編集、送受信、解析です。ここではそれらの方法の基本を説明していきます。</p>
+
+パケットの受信
+パケットをpcapファイルから読み取る
+パケットの作成,編集,解析
+パケットの送信
+パケットをpcapファイルに書き込む
+
+## パケット受信
+指定したネットワークインターフェースからパケットをバイナリ形式で
+受信します。受信したパケットは簡単なインターフェースで編集したり、
+送信、pcapに書き込みなどを行えます。
+## パケットをpcapファイルから読み込み
+wiresharkなどでキャプチャしたpcap形式のファイルを読み込みます。
+読み込んだパケットは送信したり、編集して新たにpcap形式のファイルに
+書き込むことができます。
+## パケット作成,編集,解析
+既存のパケットのバイナリを解析し、簡単なインターフェースで
+パケットを編集します。
+パケットのバイナリを解析して、プロトコルの要素ごとに簡単に解析できます。
+対応プロトコルクラスへのリンクを貼ることを忘れずに
+## パケット送信
+作成したパケットのバイナリを指定したネットワークインターフェースから
+送信します。
+## パケットをpcapファイルに書き込み
+生成したパケットのバイナリをpcapファイルに書き込みます。
+書き込んだpcapファイルはwiresharkなどで開いたり、解析をすることが
+できます。
+
+
+
+
+
+</div>	
+<h2 class="title">拡張する</h2>
+<div>
+
+
+</div>	
+
+
+
+	</body>
+</html>

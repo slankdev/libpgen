@@ -361,6 +361,10 @@ class macaddr{
 			for(int i=0; i<6; i++)	this->_addr[i] = (u_char)buf[i];
 			return *this;
 		}
+		macaddr& operator=(std::string str){
+			*this = str.c_str();
+			return *this;
+		}
 		bool operator<(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(this->_addr[i] == iaddr._addr[i])	continue;
