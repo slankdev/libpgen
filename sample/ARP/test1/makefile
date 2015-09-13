@@ -1,7 +1,8 @@
 #sample makefile using libpgen
 
 export CP := cp -rf
-export CPP := clang++
+export CPP := g++-4.9
+export CXX := g++
 export RM := rm -rf
 
 program = a.out
@@ -10,7 +11,7 @@ all: program
 
 
 program: main.cc
-	$(CPP) main.cc $(OPTION) -lpgen -o $(program)
+	$(CPP) -g  main.cc $(OPTION) -lpgen -o $(program) -I/usr/local/include -L/usr/local/lib
 
 clean:
 	$(RM) *.o *.out  $(program)

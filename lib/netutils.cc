@@ -34,8 +34,14 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <arpa/inet.h>
-#include <netpacket/packet.h>
 #include <netinet/if_ether.h>
+
+#ifndef __linux
+#else
+#include <netpacket/packet.h>
+#endif
+
+
 
 #ifdef __linux
 
@@ -342,6 +348,10 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 
 
 int initRawSocket(const char* dev, int promisc, int overIp){
+#ifndef __linux
+	fprintf(stderr, "initRawSocket: this function is not implement in BSD yet\n");
+	return -1;
+#else
 	int sock;
 	
 	if(overIp){
@@ -408,6 +418,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 	}
 
 	return sock;
+#endif
 }
 
 

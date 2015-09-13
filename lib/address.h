@@ -22,6 +22,8 @@
 #ifndef ADDRESS_H
 #define ADDRESS_H
 
+#include <string>
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -29,11 +31,18 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <net/if.h>
 #include "mytypes.h"
 
-#include <string>
+
+#ifndef __linux
+#include <ifaddrs.h>
+#include <net/if_dl.h>
+#include <net/if_types.h>
+#endif
+
 
 #define FILEPATH "/usr/local/etc/mac_code.list"
 
@@ -46,9 +55,9 @@ union lc{
 
 class ipaddr{
 	private:
-		char _c_str[32];
 		
 	public:
+		char _c_str[32];
 		bit32 _addr;		
 		
 		ipaddr(){ clear(); }
@@ -70,12 +79,12 @@ class ipaddr{
 			*this = str.c_str();		
 		}
 		char* c_str(){
-			char* _str = (char*)malloc(16);
+		//	char* _str = (char*)malloc(16);
 			union lc lc;
 			lc.l = (unsigned int)this->_addr;
-			snprintf(_str, sizeof(_c_str)-1,"%u.%u.%u.%u",
+			snprintf(_c_str, sizeof(_c_str)-1,"%u.%u.%u.%u",
 							lc.c[0],lc.c[1],lc.c[2],lc.c[3]);
-			return _str;
+			return _c_str;
 		}
 		void clear(){
 			this->_addr = 0;	
@@ -239,8 +248,9 @@ class ipaddr{
 
 class macaddr{
 	private:
-		char _bender[32];
 	public:
+		char _str[256];
+		char _bender[32];
 		bit8 _addr[6];
 	
 		macaddr(){ clear(); }
@@ -264,7 +274,7 @@ class macaddr{
 			}
 		}
 		char* c_str(){
-			char* _str = (char*)malloc(18);
+//			char* _str = (char*)malloc(18);
 			snprintf(_str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
 				this->_addr[0], this->_addr[1], this->_addr[2], 
 				this->_addr[3], this->_addr[4], this->_addr[5]);
@@ -290,9 +300,38 @@ class macaddr{
 			}
 		}
 		bool setmacbydev(const char* ifname){
+#ifndef __linux
+			fprintf(stderr, "macaddr::setmacbydev: sorry this function is not implement in BSD yet\n");
+			*this = "00:11:22:33:44:55";
+			return true;
+
+			/*
+			printf("in func!!!\n");
+			bool ret = false;
+			struct ifaddrs *ifa, *ifa0;
+			struct sockaddr_dl* dl;
+			if((getifaddrs( &ifa0 )) < 0){
+				perror("macaddr::setmacbydev");
+				exit(-1);
+			}
+			for( ifa = ifa0; ifa; ifa=ifa->ifa_next ) {
+				dl = (struct sockaddr_dl*)ifa->ifa_addr;
+				if( strncmp(ifname, dl->sdl_data, dl->sdl_nlen) == 0 ) {
+					memcpy( _addr, dl->sdl_data, dl->sdl_nlen);
+					break;
+					ret = true;
+				}
+			}
+			for(int i=0; i<6; i++) printf("%02x:", this->_addr[i]);
+			printf("\n");
+
+			freeifaddrs(ifa);
+			printf("out func!!!\n");
+			return ret;
+			*/
+#else
 			int sockd;
 			struct ifreq ifr;
-
 			if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
 				perror("macaddr::setmacbydev::socket()");
 				clear();
@@ -309,7 +348,9 @@ class macaddr{
 			close(sockd);
 			for(int i=0; i<6; i++)
 				this->_addr[i] = (unsigned char)ifr.ifr_hwaddr.sa_data[i];
+			
 			return true;		
+#endif
 		}
 		bool setmacbroadcast(){
 			for(int i=0; i<6; i++){
