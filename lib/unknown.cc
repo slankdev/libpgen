@@ -80,8 +80,8 @@ void pgen_unknown::send_handle(pgen_t* handle){
 
 bool pgen_unknown::cast(const void* packet, int len){
 	clear();
-	if(!(14 < len && len < PGEN_MAX_PACKET_LEN)){
-		fprintf(stderr, "recv packet length is not support (len=%d)\n", len);
+	if(!(14 <= len && len <= PGEN_MAX_PACKET_LEN)){
+		fprintf(stderr, "pgen_unknown::cast: recv packet length is not support (len=%d)\n", len);
 		return false;
 	}
 	this->len = len;
