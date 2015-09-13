@@ -239,7 +239,6 @@ class ipaddr{
 
 class macaddr{
 	private:
-		char _c_str[32];
 		char _bender[32];
 	public:
 		bit8 _addr[6];

@@ -147,12 +147,12 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 	for(;result;){
 		if(handle->is_offline == 1){ // offline sniff
 			struct pcap_pkthdr hdr;
-			if(fread(&hdr, sizeof(struct pcap_pkthdr), 1, handle->offline.fd) < 1){
+			if(fread(&hdr, sizeof(struct pcap_pkthdr),1,handle->offline.fd) < 1){
 				perror("sniff");
 				//fprintf(stderr, "sniff: file is finish\n");
 				return;
 			}
-			if(fread(packet, hdr.len, 1, handle->offline.fd) < 0){
+			if(fread(packet, hdr.len, 1, handle->offline.fd) <= 0){
 				perror("sniff");
 				return;
 			}
@@ -199,6 +199,7 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 				sendlen = -1;
 			}
 		}
+		sendlen = len;
 	
 	}else{
 		sendlen = write(p->fd, packet, len);
