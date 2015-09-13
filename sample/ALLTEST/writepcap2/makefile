@@ -8,11 +8,12 @@ export RM := rm -rf
 
 program = a.out
 
+
 all: program
 
 
 program: main.cc
-	$(CPP) main.cc $(OPTION) -lpgen -o $(program)
+	$(CPP) main.cc  -lpgen -o $(program)
 
 clean:
 	$(RM) *.o *.out  $(program)
