@@ -1,0 +1,38 @@
+
+
+h1{
+	color: #f5fffa;
+	background-color: #8b0000;
+	
+	line-height: 40px;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	margin-top: 10px;
+	margin-bottom: 40px;
+}
+h2{
+	border-left-width: 6px;
+	border-left-style: solid;
+	border-left-color: #8b0000;
+	
+	border-bottom-width: 2px;
+	border-bottom-style: inset;
+	border-bottom-color: #8b0000;
+	
+	line-height: 25px;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	margin-top: 40px;
+	margin-bottom: 10px;
+}
+
+div{
+	margin-top: 20px;	
+	margin-bottom: 50px;	
+	margin-left: 10px;	
+	margin-right: 10px;	
+}
+
+
