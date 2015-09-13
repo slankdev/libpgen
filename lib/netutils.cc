@@ -424,6 +424,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 
 
+#ifndef __linux
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -449,3 +450,5 @@ int getmacaddr_test(const char *ifname, char *macaddrstr) {
         return 0;
     }
 }
+
+#endif
