@@ -1,7 +1,7 @@
 BASE = ..
 
 include makefile.protocols
-export CPP := g++ 
+export CPP := clang
 
 .SUFFIXES: .out .c .cc .o .h 
 .cc.o: 
