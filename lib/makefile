@@ -17,7 +17,7 @@
 
 
 
-export CPP := clang
+export CPP := clang++
 export AR  := ar
 export CP  := cp -rf
 export RM  := rm -rf
