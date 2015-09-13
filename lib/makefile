@@ -46,6 +46,7 @@ HDR = pgen.h \
 	address.h \
 	packet.h \
 	mytypes.h \
+	myendian.h \
 	netutils.h \
 	release.h \
 	debug.h

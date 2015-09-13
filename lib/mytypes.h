@@ -23,7 +23,7 @@
 #define MYTYPES_H
 
 
-#include <endian.h>		// for BYTE_ORDER
+#include "myendian.h"		// for BYTE_ORDER
 
 
 
@@ -135,7 +135,7 @@ struct ip_header{
 	bit32 version:4;
 	bit32 ihl:4;
 #else
-# error	"Please fix <bits/endian.h>"
+# error	"Please fix endian.h"
 #endif
 	bit8  tos;
 	bit16 tot_len;
@@ -206,7 +206,7 @@ struct tcp_header{
 	bit16 syn:1;
 	bit16 fin:1;
 # else
-#  error "Adjust your <bits/endian.h> defines"
+#  error "Please fix endian.h"
 # endif
 	bit16 window;
 	bit16 check;
@@ -250,7 +250,7 @@ struct dns_header{
 			bit16 nouse:3;
 			bit16 rcode:4;
 # else 
-# 	error "Adjust your <bits/endian.h> defines"
+# 	error "Please fix endian.h"
 # endif
 		};
 		bit16 flags;
