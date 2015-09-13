@@ -18,11 +18,15 @@
  *
  */
 
+#include "pgen.h"
+#include "netutils.h"
+#include "packet.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #include <netdb.h>
 #include <net/if.h>
 #include <sys/types.h>
@@ -33,9 +37,9 @@
 #include <netpacket/packet.h>
 #include <netinet/if_ether.h>
 
-#include "pgen.h"
-#include "netutils.h"
-#include "packet.h"
+#ifdef __linux
+
+#endif 
 
 
 
