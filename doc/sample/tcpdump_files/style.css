@@ -1,0 +1,300 @@
+/*
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+*/
+
+body {
+	margin: 0;
+	padding: 0;
+	background: #FFFFFF url(images/img01.gif) repeat-x;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #737373;
+}
+
+form {
+	margin: 0;
+	padding: 0;
+}
+
+input, textarea {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #000000;
+}
+
+h1, h2, h3 {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+	font-size: 3em;
+}
+
+h2 {
+	font-size: 2em;
+}
+
+h3 {
+	font-size: 1em;
+}
+
+p, ul, ol {
+	margin-bottom: 1.8em;
+	line-height: 160%;
+}
+
+ul, ol {
+}
+/* Don't have extra leading in paragraphs in table entries. */
+td p {
+	margin-bottom: 0;
+	line-height: normal;
+}
+
+blockquote {
+}
+
+a {
+	color: #414141;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+hr {
+	display: none;
+}
+
+/* Menu */
+
+#menu {
+	width: 960px;
+	height: 45px;
+	margin: 0 auto;
+	padding: 0px 0;
+	background: url(images/img02.jpg) no-repeat center top;
+}
+
+#menu ul {
+	height: 45px;
+	margin: 0;
+	padding: 0;
+	background: url(images/img03.gif) no-repeat;
+	list-style: none;
+}
+
+#menu li {
+	float: left;
+	height: 45px;
+	background: url(images/img03.gif) no-repeat right top;
+}
+
+#menu a {
+	float: left;
+	height: 20px;
+	margin: 0px;
+	padding: 10px 15px;
+	text-decoration: none;
+	text-transform: uppercase;
+	font-size: smaller;
+	font-weight: bold;
+	color: #000000;
+}
+
+#menu a:hover {
+	background: url(images/img02.gif) repeat-x;
+	color: #FFFFFF;
+	height: 45px;
+}
+
+#menu .current_page_item a {
+	height: 45px;
+	color: #FFFFFF;
+}
+
+/* Splash */
+
+#splash {
+	width: 956px;
+	height: 103px;
+	margin: 0 auto;
+}
+
+
+/* Logo */
+
+#logo {
+	width: 960px;
+	height: 15px;
+	margin: 0 auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+	border-bottom: 2px solid #3F3F3F;
+	color: #414141;
+}
+
+#logo h1, #logo h2 {
+	margin: 0;
+	padding: 0 20px;
+}
+
+#logo h1 {
+	float: left;
+	padding-top: 30px;
+	letter-spacing: -3px;
+	text-transform: uppercase;
+	font-size: 3em;
+}
+
+#logo h2 {
+	float: right;
+	padding-top: 49px;
+	letter-spacing: -1px;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+#logo a {
+	text-decoration: none;
+	color: #414141;
+}
+
+/* Page */
+
+#page {
+	width: 960px;
+	margin: 0 auto;
+	padding: 30px;
+}
+
+/* Content */
+
+#content {
+	float: right;
+	width: 680px;
+}
+
+.post {
+	padding-bottom: 20px;
+}
+
+.post .title {
+	margin: 0;
+	padding: 5px 20px;
+	letter-spacing: -2px;
+	border-bottom: 1px dashed #B9B9B9;
+	text-transform: uppercase;
+	font-size: 24px;
+}
+
+.post .title a {
+	text-decoration: none;
+}
+
+.post .entry {
+	padding: 10px 20px;
+}
+
+.post .meta {
+	height: 26px;
+	background: #F5F5F5;
+	border-top: 1px solid #E9E9E9;
+	text-decoration: none;
+	text-transform: uppercase;
+	font-size: smaller;
+}
+
+.post .posted {
+	float: left;
+	height: 16px;
+	padding: 5px 20px;
+}
+
+.post .permalink, .post .comments {
+	float: right;
+	height: 16px;
+	padding: 5px 20px;
+}
+
+.post .permalink {
+}
+
+/* Sidebar */
+
+#sidebar {
+	float: left;
+	width: 250px;
+}
+
+#sidebar ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#sidebar li {
+	margin-bottom: 20px;
+}
+
+#sidebar li ul {
+	padding: 20px;
+}
+
+#sidebar li li {
+	margin: 0;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	background: url(images/img04.gif) no-repeat left 50%;
+}
+
+#sidebar p {
+	padding: 0 20px;
+}
+
+#sidebar h2 {
+	height: 20px;
+	margin: 0;
+	padding: 6px 0 0 20px;
+	background: url(images/img07.jpg) no-repeat;
+	border-bottom: 1px dashed #B9B9B9;
+	text-transform: uppercase;
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+}
+
+/* Search */
+
+#search form {
+	padding: 20px;
+}
+
+#search br {
+	display: none;
+}
+
+#search #s {
+	width: 135px;
+}
+
+/* Footer */
+
+#footer {
+	clear: both;
+	width: 960px;
+	height: 50px;
+	margin: 0 auto;
+	padding: 20px 0;
+	border-top: 6px solid #3F3F3F;
+	font-size: smaller;
+}
+
+#footer p {
+	margin: 0;
+	text-align: center;
+	line-height: normal;
+}
