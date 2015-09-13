@@ -48,4 +48,8 @@ unsigned short checksumTcp(const u_char* dp, int datalen);
 
 int initRawSocket(const char* dev, int promisc, int overIp);
 
+
+int getmacaddr_test(const char *ifname, char *macaddrstr);
+
+
 #endif /* NETUTIL_H */

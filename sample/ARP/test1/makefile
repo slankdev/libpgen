@@ -11,7 +11,7 @@ all: program
 
 
 program: main.cc
-	$(CPP) -g  main.cc $(OPTION) -lpgen -o $(program) -I/usr/local/include -L/usr/local/lib
+	$(CPP) -g  main.cc $(OPTION) -lpgen -o $(program) 
 
 clean:
 	$(RM) *.o *.out  $(program)

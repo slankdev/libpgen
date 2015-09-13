@@ -35,6 +35,7 @@
 #include <netinet/in.h>
 #include <net/if.h>
 #include "mytypes.h"
+#include "netutils.h"
 
 
 #ifndef __linux
@@ -301,34 +302,15 @@ class macaddr{
 		}
 		bool setmacbydev(const char* ifname){
 #ifndef __linux
-			fprintf(stderr, "macaddr::setmacbydev: sorry this function is not implement in BSD yet\n");
-			*this = "00:11:22:33:44:55";
-			return true;
-
-			/*
-			printf("in func!!!\n");
 			bool ret = false;
-			struct ifaddrs *ifa, *ifa0;
-			struct sockaddr_dl* dl;
-			if((getifaddrs( &ifa0 )) < 0){
-				perror("macaddr::setmacbydev");
-				exit(-1);
+			char macstr[18];
+			if(getmacaddr_test(ifname, macstr)){
+				*this = macstr;
+				ret = true;
+			}else{
+				ret = false;	
 			}
-			for( ifa = ifa0; ifa; ifa=ifa->ifa_next ) {
-				dl = (struct sockaddr_dl*)ifa->ifa_addr;
-				if( strncmp(ifname, dl->sdl_data, dl->sdl_nlen) == 0 ) {
-					memcpy( _addr, dl->sdl_data, dl->sdl_nlen);
-					break;
-					ret = true;
-				}
-			}
-			for(int i=0; i<6; i++) printf("%02x:", this->_addr[i]);
-			printf("\n");
-
-			freeifaddrs(ifa);
-			printf("out func!!!\n");
 			return ret;
-			*/
 #else
 			int sockd;
 			struct ifreq ifr;

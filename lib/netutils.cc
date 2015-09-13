@@ -422,3 +422,30 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 }
 
 
+
+
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if_dl.h>
+#include <ifaddrs.h>
+int getmacaddr_test(const char *ifname, char *macaddrstr) {
+    struct ifaddrs *ifap, *ifaptr;
+    unsigned char *ptr;
+
+    if (getifaddrs(&ifap) == 0) {
+        for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
+            if (!strcmp((ifaptr)->ifa_name, ifname) && (((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
+                ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
+                sprintf(macaddrstr, "%02x:%02x:%02x:%02x:%02x:%02x",
+                                    *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5));
+                break;
+            }
+        }
+        freeifaddrs(ifap);
+        return ifaptr != NULL;
+    } else {
+        return 0;
+    }
+}
