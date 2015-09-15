@@ -275,4 +275,7 @@ void pgen_dhcp::dhcp_get_option(const void* p, struct dhcp_option* buf){
 
 
 
+void pgen_dhcp::help(){
+	printf("implementing now... \n");	
+}
 

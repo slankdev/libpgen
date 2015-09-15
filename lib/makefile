@@ -57,11 +57,18 @@ OBJ = $(NETUTILS_SRC:.cc=.o) $(OTHER_SRC:.cc=.o)
 
 all: libpgen.a
 
-libpgen.a: $(OBJ)
-	$(MAKE) -C $(PROTOCOLS_DIR) 
+
+libpgen.a: $(OBJ) makeprotocol
 	@rm -f $@
 	$(AR) rc $@ *.o $(PROTOCOLS_DIR)/*.o
 	$(RANLIB) $@
+
+
+makeprotocol:
+	$(MAKE) -C $(PROTOCOLS_DIR) 
+
+
+
 
 clean:
 	$(MAKE) -C $(PROTOCOLS_DIR) clean

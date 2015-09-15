@@ -178,3 +178,9 @@ void pgen_ip::info(){
 	printf("    - Total Length    :  %d \n", IP.tot_len);
 	printf("    - Identification  :  %d \n", IP.id);
 }
+
+
+
+void pgen_ip::help(){
+	printf("implementing now... \n");	
+}

@@ -175,3 +175,6 @@ void pgen_arp::info(){
 
 
 
+void pgen_arp::help(){
+	printf("implementing now... \n");	
+}

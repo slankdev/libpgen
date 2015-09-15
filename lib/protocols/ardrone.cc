@@ -643,3 +643,6 @@ static int get_command_len(const void* p){
 }
 
 
+void pgen_ardrone::help(){
+	printf("implementing now... \n");	
+}

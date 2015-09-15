@@ -54,5 +54,15 @@ void pgen_http::compile(){}
 
 void pgen_http::cast(const void* packet, int len){}
 
-void pgen_http::summary(){}
+void pgen_http::summary(){
+	printf("HTTP{ ");
+	printf(" }\n");
+}
 void pgen_http::info(){}
+
+
+
+
+void pgen_http::help(){
+	printf("implementing now... \n");	
+}

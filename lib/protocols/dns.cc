@@ -856,3 +856,10 @@ static char* get_dns_name(const char* iurl){
 	return result;
 }
 
+
+
+
+
+void pgen_dns::help(){
+	printf("implementing now... \n");	
+}

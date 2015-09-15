@@ -274,3 +274,8 @@ void pgen_icmp::icmp_addData(const void* data, int len){
 	memcpy(icmp_ext_data, data, len);
 	icmp_ext_data_len = len;
 }
+
+
+void pgen_icmp::help(){
+	printf("implementing now... \n");	
+}
