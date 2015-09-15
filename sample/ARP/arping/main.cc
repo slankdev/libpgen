@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <pgen.h>
 
-const char* dev = "wlan0";
+const char* dev = "en0";
 
 bool func(const u_char* packet, int len){
 	pgen_unknown buf(packet, len);
 	if(buf.isARP == false) return true;
 
 	pgen_arp pack(packet, len);
+	if(pack.ARP.operation != 2) return true;
 	pack.summary();
 	return false;
 }
@@ -19,7 +20,7 @@ int main(int argc, char** argv){
 		return -1;
 	}
 
-	pgen_t* handle = pgen_open(dev, 1, NULL);
+	pgen_t* handle = pgen_open(dev, NULL);
 	if(handle == NULL){
 		return -1;	
 	}

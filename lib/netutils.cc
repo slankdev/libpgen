@@ -143,8 +143,9 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 		return;
 	}
 
-
-	u_char packet[20000];
+	
+	u_char* p;
+	u_char  packet[4096];
 	bool result = true;
 	int len;
 	
@@ -164,12 +165,22 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 			len = hdr.len;
 				
 		}else{ // online sniff	
-			if((len = read(handle->fd, packet, sizeof(packet))) < 0){
-				perror("sniff_handle");
+			len = read(handle->fd, packet, sizeof(packet));
+			if(len < 0){
+				perror("sniff");
 				return;
 			}
+#ifndef __linux
+			struct bpf_hdr *bpfhdr;
+
+			bpfhdr = (struct bpf_hdr*)packet;
+			p = packet + bpfhdr->bh_hdrlen;
+			len = bpfhdr->bh_caplen;
+#else
+			p = packet;
+#endif
 		}
-		result = (*callback)(packet, len);
+		result = (*callback)(p, len);
 	}
 }
 
@@ -352,6 +363,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 	int sock = -1;
 	
 	if(overIp){	
+		fprintf(stderr, "initRawSocket: overIp is not support in BSD\n");
 		/*
 		sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
 		if(sock < 0){
@@ -380,6 +392,13 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			return -1;
 		}
 
+		// set buffer size
+		int bufsize = 4096;
+		if (ioctl(sock, BIOCSBLEN, &bufsize) < 0) {
+			perror("initRawSocket::set bufsize");
+			close(sock);
+			return -1;
+		}
 
 
 		// bind to device
@@ -403,13 +422,14 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 
 
-		// no complite src macaddr
-		if (ioctl(sock, BIOCSHDRCMPLT, &one) < 0) {
-			perror("initRawSocket::nocolect macaddr");
+		//if recv packet then call read fast
+		if (ioctl(sock, BIOCIMMEDIATE, &one) < 0) {
+			perror("initRawSocket::call read fast");
 			close(sock);
 			return -1;
 		}
-		
+
+
 		// set recv sendPacket 
 		if (ioctl(sock, BIOCSSEESENT, &one) < 0) {
 			perror("initRawSocket::recv sendpacket");
@@ -418,24 +438,22 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		}
 
 
-
-
-		//if recv packet then call read fast
-		if (ioctl(sock, BIOCIMMEDIATE, &one) < 0) {
-			perror("initRawSocket::call read fast");
+		// flush recv buffer
+		if (ioctl(sock, BIOCFLUSH, NULL) < 0) {
+			perror("initRawSocket::flush recv buffer");
 			close(sock);
 			return -1;
 		}
 
-		/*
-		// set buffer size
-		int bufsize = 8192;
-		if (ioctl(sock, BIOCSBLEN, &bufsize) < 0) {
-			perror("initRawSocket::set bufsize");
+
+
+		// no complite src macaddr
+		if (ioctl(sock, BIOCSHDRCMPLT, &one) < 0) {
+			perror("initRawSocket::nocolect macaddr");
 			close(sock);
 			return -1;
 		}
-		*/
+		
 
 
 	}
