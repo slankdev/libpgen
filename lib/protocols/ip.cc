@@ -57,7 +57,7 @@ pgen_ip::pgen_ip(const void* packet, int len){
 void pgen_ip::clear(){
 	pgen_eth::clear();
 	this->IP.tos = 0;
-	this->IP.tot_len = 0;
+	this->IP.tot_len = 20;
 	this->IP.id = 1;
 	this->IP.frag_off = 0;
 	this->IP.ttl = 64;
@@ -78,9 +78,14 @@ void pgen_ip::compile(){
 	this->ip.ihl = IP_HDR_LEN / 4;
 	this->ip.version = 4;
 	this->ip.tos = this->IP.tos; //no useing world now
+#ifdef __linux
 	this->ip.tot_len = htons(this->IP.tot_len);
-	this->ip.id = htons(this->IP.id);
 	this->ip.frag_off = htons(this->IP.frag_off); // ?????
+#else
+	this->ip.tot_len  = this->IP.tot_len;
+	this->ip.frag_off = this->IP.frag_off; // ?????
+#endif
+	this->ip.id = htons(this->IP.id);
 	this->ip.ttl = this->IP.ttl;
 	this->ip.protocol = this->IP.protocol;
 	this->ip.saddr = this->IP.src._addr;

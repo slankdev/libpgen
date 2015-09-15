@@ -234,13 +234,15 @@ int pgen_sendpacket_L3(const char* dev, const u_char* packet, int len, struct so
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 1)) < 0){
-		fprintf(stderr, "sendPacketL3\n");
+		fprintf(stderr, "pgen_sendpacket_L3\n");
 		return -1;
 	}
+
 	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
 	if(sendlen < 0){
 		perror("pgen_sendpacket_L3");
 	}
+
 
 	close(sock);
 	return sendlen;
@@ -361,21 +363,24 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 #ifndef __linux
 
 	int sock = -1;
-	
+	const unsigned int one = 1;
+
 	if(overIp){	
-		fprintf(stderr, "initRawSocket: overIp is not support in BSD\n");
-		/*
-		sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+		//fprintf(stderr, "initRawSocket: overIp is not support in BSD\n");
+		sock=socket(AF_INET, SOCK_RAW, IPPROTO_IP);
 		if(sock < 0){
-			perror("initRawSocket: ");
+			perror("initRawSocket::socket");
 			return -1;
 		}
-		// bind to device
-		*/	
+
+		if(setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &one, sizeof(one)) < 0){
+			perror("initRawSocket::ioctl");
+			close(sock);
+			return -1;
+		}
 
 	}else{
 		struct ifreq ifr;
-		unsigned int one = 1;
 
 		/* BPFデバイスファイルのオープン */
 		int i;

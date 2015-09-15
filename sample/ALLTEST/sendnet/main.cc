@@ -26,9 +26,9 @@ int main(int argc, char** argv){
     //test_arp();
     //test_ip();
     //test_icmp();
-    test_tcp();
+    //test_tcp();
     //test_udp();
-    //test_dns();
+    test_dns();
     //test_ardrone();
 }
 
@@ -63,10 +63,14 @@ void test_arp(){
 void test_ip(){
 	pgen_ip p;
 	
+	p.IP.tot_len = 20;
+	p.IP.frag_off = 0;
 	p.IP.src = ipsrc;
 	p.IP.dst = ipdst;
 	
 	p.send(dev);
+	p.info();
+	p.hex();
 }
 void test_icmp(){
 	pgen_icmp p;
@@ -85,10 +89,12 @@ void test_tcp(){
 	p.IP.dst = ipdst;
 	p.TCP.src = portsrc;
 	p.TCP.dst = portdst;
-	p.TCP.flags.syn = 1;
+	p.TCP.dst = 80;
+	p.TCP.flags.syn = 1;	
 
-	p.send(dev);
 	p.info();
+	p.hex();
+	p.send(dev);
 }
 void test_udp(){
 	pgen_udp p;
@@ -110,9 +116,9 @@ void test_dns(){
 	
 	p.DNS.flags.qr = 0;
 	p.DNS.flags.ra = 1;
-	p.DNS.ancnt = 1;
 	p.DNS.query[0].name  = "slankdev.net";
-
+	
+	p.info();
 	p.send(dev);
 }
 void test_ardrone(){
