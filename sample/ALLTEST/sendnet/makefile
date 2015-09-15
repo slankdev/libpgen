@@ -6,7 +6,6 @@ export CPP := g++
 export CXX := g++
 export RM := rm -rf
 
-OPTION=-L/home/slank/git/libpgen/src/ -I/home/slank/git/libpgen/src/ 
 program = a.out
 
 
@@ -14,7 +13,7 @@ all: program
 
 
 program: main.cc
-	$(CPP) main.cc $(OPTION) -lpgen -o $(program)
+	$(CPP) main.cc  -lpgen -o $(program)
 
 clean:
 	$(RM) *.o *.out  $(program)

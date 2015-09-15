@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <pgen.h>
 
-const char* dev = "wlan0";
+const char* dev = "en0";
 macaddr macsrc;
 macaddr macdst = "ff:ff:ff:ff:ff:ff";
 ipaddr ipsrc;
@@ -22,11 +22,11 @@ int main(int argc, char** argv){
 	macsrc.setmacbydev(dev);
 	ipsrc.setipbydev(dev);
 
-	//test_eth();
+	test_eth();
     //test_arp();
     //test_ip();
     //test_icmp();
-    test_tcp();
+    //test_tcp();
     //test_udp();
     //test_dns();
     //test_ardrone();
@@ -35,12 +35,13 @@ int main(int argc, char** argv){
 
 
 void test_eth(){
-	pgen_arp p;
+	pgen_eth p;
 
 	p.ETH.src = macsrc;
 	p.ETH.dst = macdst;
 	p.ETH.type = 0;
 		
+	p.info();
 	p.send(dev);
 }
 
@@ -55,6 +56,7 @@ void test_arp(){
 	p.ARP.dstIp  = ipdst;
 	p.ARP.operation = 1;
 		
+	p.info();
 	p.send(dev);
 }
 
@@ -71,7 +73,7 @@ void test_icmp(){
 	
 	p.IP.src = ipsrc;
 	p.IP.dst = ipdst;
-	p.ICMP.option = 8;
+	p.ICMP.type = 8;
 	p.ICMP.code   = 0;
 	
 	p.send(dev);

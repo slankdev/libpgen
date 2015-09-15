@@ -37,15 +37,14 @@
 #include <netinet/if_ether.h>
 
 #ifndef __linux
+#include <net/bpf.h>
+#include <fcntl.h>
 #else
 #include <netpacket/packet.h>
 #endif
 
 
 
-#ifdef __linux
-
-#endif 
 
 
 
@@ -244,7 +243,7 @@ int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 0)) < 0){
-		fprintf(stderr, "sendPacketL2\n");
+		fprintf(stderr, "sendPacketL2: initRawSocket returned -1\n");
 		return -1;
 	}
 	sendlen = write(sock, packet, len);
@@ -349,8 +348,92 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 
 int initRawSocket(const char* dev, int promisc, int overIp){
 #ifndef __linux
-	fprintf(stderr, "initRawSocket: this function is not implement in BSD yet\n");
-	return -1;
+
+	int sock = -1;
+	
+	if(overIp){
+		fprintf(stderr, "initRawSocket: this function is not implement in BSD yet\n");
+		return -1;
+	}else{
+		struct ifreq ifr;
+		unsigned int one = 1;
+
+		/* BPFデバイスファイルのオープン */
+		int i;
+		char buf[256];
+		for (i = 0; i < 4; i++) { 
+			snprintf(buf, 255, "/dev/bpf%d", i);
+			if ((sock = open(buf, O_RDWR)) > 0)
+				break;
+		}
+
+		if (i >= 5) {
+			fprintf(stderr, "cannot open BPF\n");
+			perror("initRawSocket::bpf open error");	
+			return -1;
+		}
+
+
+
+		// bind to device
+		memset(&ifr, 0, sizeof(ifr));
+		strncpy(ifr.ifr_name, dev, IFNAMSIZ);
+		if(ioctl(sock, BIOCSETIF, &ifr) < 0){
+			perror("initRawSocket::bind to device");	
+			close(sock);
+			return -1;
+		}
+
+
+		// set promisc
+		if(promisc){
+			if (ioctl(sock, BIOCPROMISC, NULL) < 0) {
+				perror("initRawSocket::set promisc");
+				close(sock);
+				return -1;
+			}
+		}
+
+
+
+		// no complite src macaddr
+		if (ioctl(sock, BIOCSHDRCMPLT, &one) < 0) {
+			perror("initRawSocket::nocolect macaddr");
+			close(sock);
+			return -1;
+		}
+		
+		// set recv sendPacket 
+		if (ioctl(sock, BIOCSSEESENT, &one) < 0) {
+			perror("initRawSocket::recv sendpacket");
+			close(sock);
+			return -1;
+		}
+
+
+
+
+		//if recv packet then call read fast
+		if (ioctl(sock, BIOCIMMEDIATE, &one) < 0) {
+			perror("initRawSocket::call read fast");
+			close(sock);
+			return -1;
+		}
+
+		/*
+		// set buffer size
+		int bufsize = 8192;
+		if (ioctl(sock, BIOCSBLEN, &bufsize) < 0) {
+			perror("initRawSocket::set bufsize");
+			close(sock);
+			return -1;
+		}
+		*/
+
+
+	}
+
+	return sock;
 #else
 	int sock;
 	
@@ -376,6 +459,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			return -1;
 		}
 
+
+		// get interface index number
 		memset(&ifreq, 0, sizeof(struct ifreq));
 		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
 		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
@@ -383,6 +468,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			close(sock);
 			return -1;
 		}
+
+		// bind to device
 		sa.sll_family = PF_PACKET;
 		sa.sll_protocol = htons(ETH_P_ALL);
 		sa.sll_ifindex  = ifreq.ifr_ifindex;
@@ -392,14 +479,6 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			return -1;
 		}
 
-		/*
-		int yes = 1;
-		if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes)) < 0){
-			perror("initRawSocket");
-			close(sock);
-			return -1;
-		}
-		*/
 
 		if(promisc){
 			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
