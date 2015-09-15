@@ -22,11 +22,11 @@ int main(int argc, char** argv){
 	macsrc.setmacbydev(dev);
 	ipsrc.setipbydev(dev);
 
-	test_eth();
+	//test_eth();
     //test_arp();
     //test_ip();
     //test_icmp();
-    //test_tcp();
+    test_tcp();
     //test_udp();
     //test_dns();
     //test_ardrone();

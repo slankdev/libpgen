@@ -228,7 +228,7 @@ int pgen_sendpacket_L3(const char* dev, const u_char* packet, int len, struct so
 	}
 	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
 	if(sendlen < 0){
-		perror("pgen_sendpacket_L2");
+		perror("pgen_sendpacket_L3");
 	}
 
 	close(sock);
@@ -351,9 +351,16 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 	int sock = -1;
 	
-	if(overIp){
-		fprintf(stderr, "initRawSocket: this function is not implement in BSD yet\n");
-		return -1;
+	if(overIp){	
+		/*
+		sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+		if(sock < 0){
+			perror("initRawSocket: ");
+			return -1;
+		}
+		// bind to device
+		*/	
+
 	}else{
 		struct ifreq ifr;
 		unsigned int one = 1;
@@ -447,6 +454,13 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
 				close(sock);
 				return -1;	
+			}
+
+			int yes = 1;
+			if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes)) < 0){
+				perror("initRawSocket");
+				close(sock);
+				return -1;
 			}
 	}else{
 		
