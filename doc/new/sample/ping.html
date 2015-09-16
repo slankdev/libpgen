@@ -1,15 +1,32 @@
 
+
+
+<html >
+	<head>
+	<title>Packet Class - Libpgen Document</title>	
+
+	<link rel="stylesheet" type="text/css" href="../style.css">
+	</head>
+
+		<body>
+
+<h1>Ping Program - sample comde </h1>
+
+<p>
 パケットキャプチャの作成ではlibpgenを使って簡単にパケットの受信、解析を行うことができました。
 では次にネットワーク関連のプログラムで誰もが一度は使うpingコマンドをlibpgenを使って作ってみましょう。
 ここではlibpgenのパケット作成、送受信、解析を体験するだけなのでpingコマンドはシンプルに実装します。
-ただICMP Echo Requestパケットを送信して、ICMP Echo Replyパケットを受信待機して受信したら表示するだけです。
+ただICMP Echo Requestパケットを送信して、ICMP Echo Replyパケットを受信待機して受信したら表示するだけです。</p>
 
+<h2>サンプルコード</h2>
+
+<pre><code>
 	/* easyping.cc */
-	#include <pgen.h>
+	#include &lt;pgen.h&gt;
 	bool callback(const u_char*,int);
 
 	int main(int argc, char** argv){
-		if(argc < 3){
+		if(argc &lt; 3){
 			printf("Usage: %s interface ipaddr \n", argv[0]);
 			return -1;
 		}
@@ -25,7 +42,7 @@
 		pack.IP.dst = argv[2];
 		pack.ICMP.echo.id = 0x1234;
 
-		for(int i=0; i<10; i++){
+		for(int i=0; i &lt; 10; i++){
 			pack.send_handle(handle);
 			sniff(handle, callback);
 			sleep(1);
@@ -38,31 +55,35 @@
 		if(!buf.isICMP) return true;
 
 		pgen_icmp pack(packet, len);
-		if(!(pack.ICMP.type == 0 && pack.ICMP.code == 0))
+		if(!(pack.ICMP.type == 0 &amp;&amp; pack.ICMP.code == 0))
 			return true;
 		pack.summary();
 		return false;
 	}
 
+</pre></code>
 
 コンパイル、実行は先ほどと同じように行います。
+<pre>
 	$ g++ -o easyping easyping.cc -lpgen
 	$ sudo ./easyping wlan0 192.168.0.1
+</pre>
 
 
-パケットキャプチャ作成と説明がかぶる部分は説明を省略します。
+<p>パケットキャプチャ作成と説明がかぶる部分は説明を省略します。</p>
 
-main関数内
-pgen_icmp pack;から６行ではicmpパケットを作成しています。
+<h3>main関数内</h3>
+<p>pgen_icmp pack;から６行ではicmpパケットを作成しています。
 詳しい説明は(リンク0−0−0)で説明しているのでそちらを参照してください。
 forループの中では、パケットを送信、パケットを受信待機、1秒まってからicmpのシーケンス番号を増やして次のループへ、
-といったことをしています。
+といったことをしています。</p>
 
-callback関数内
-unknown型のパケットを使って、ICMPか調べて、ICMPパケットならICMPのパケットクラスで解析して、ICMP Echo Replyなら
-summaryメンバ関数で情報表示をします。この関数は前項のパケットキャプチャと近い形になっていますね。
+<h3>callback関数内</h3>
+<p>unknown型のパケットを使って、ICMPか調べて、ICMPパケットならICMPのパケットクラスで解析して、ICMP Echo Replyなら
+summaryメンバ関数で情報表示をします。この関数は前項のパケットキャプチャと近い形になっていますね。</p>
 
-以上でlibpgenの基本的な機能は使えるよう2なったはずです。
-以下ではlibpgenの様々な機能を詳しく説明していきます。
+<p>以上でlibpgenの基本的な機能は使えるよう2なったはずです。
+以下ではlibpgenの様々な機能を詳しく説明していきます。</p>
 
 
+</body></html>
