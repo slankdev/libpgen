@@ -190,6 +190,7 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 
 
 
+// send packet in handle
 int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	if(p->is_write == 0){
 		fprintf(stderr, "pgen_sendpacket_handle: this handle is not write mode \n");
