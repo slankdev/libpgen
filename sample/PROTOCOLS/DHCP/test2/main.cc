@@ -10,8 +10,8 @@ bool func(const u_char* packet, int len){
 	pack.compile();
 	printf("test(%d)\n", c);
 
-	//pack.info();
-	//pack.send_handle(whandle);
+	pack.info();
+	pack.send_handle(whandle);
 	return true;	
 }
 
