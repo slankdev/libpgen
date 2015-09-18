@@ -139,6 +139,9 @@ void pgen_eth::info(){
 
 
 void pgen_eth::help(){
-	printf("implementing now... \n");	
+	printf("help ethernet\n");
+	printf("dst : Destination Hardware Address : 48 bit field \n");
+	printf("src : source      Hardware Address : 48 bit field \n");
+	printf("type : ethernet type  : 16 bit field \n");
 }
 

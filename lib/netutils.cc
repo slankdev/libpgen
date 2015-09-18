@@ -397,7 +397,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			perror("initRawSocket::bpf open error");	
 			return -1;
 		}
-
+		
 		// set buffer size
 		int bufsize = 4096;
 		if (ioctl(sock, BIOCSBLEN, &bufsize) < 0) {
