@@ -162,7 +162,9 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 				perror("sniff");
 				return;
 			}
+			p = packet;
 			len = hdr.len;
+
 				
 		}else{ // online sniff	
 			len = read(handle->fd, packet, sizeof(packet));
