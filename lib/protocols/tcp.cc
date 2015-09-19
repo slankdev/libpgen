@@ -206,5 +206,17 @@ void pgen_tcp::info(){
 
 
 void pgen_tcp::help(){
-	printf("implementing now... \n");	
+	printf("TCP Packet CLass---------------------------------------- \n");
+	printf("src \n");
+	printf("dst \n");
+	printf("flags.fin \n");
+	printf("flags.syn \n");
+	printf("flags.rst \n");
+	printf("flags.psh \n");
+	printf("flags.ack \n");
+	printf("flags.urg \n");
+	printf("window \n");
+	printf("seq \n");
+	printf("ack \n");
+	printf("-------------------------------------------------------- \n");
 }

@@ -861,5 +861,40 @@ static char* get_dns_name(const char* iurl){
 
 
 void pgen_dns::help(){
-	printf("implementing now... \n");	
+	printf("DNS Packet CLass------------------------------------------\n");
+	printf("id \n");
+	printf("flags.qr \n");
+	printf("flags.opcode \n");
+	printf("flags.aa \n");
+	printf("flags.tc \n");
+	printf("flags.rd \n");
+	printf("flags.ra \n");
+	printf("flags.nouse \n");
+	printf("flags.rcode \n");
+	printf("qdcnt \n");
+	printf("ancnt \n");
+	printf("nscnt \n");
+	printf("arcnt \n");
+	printf("query[0-10].name \n");
+	printf("query[0-10].type \n");
+	printf("query[0-10].cls  \n");
+	printf("answer[0-10].name \n");
+	printf("answer[0-10].type \n");
+	printf("answer[0-10].cls \n");
+	printf("answer[0-10].ttl \n");
+	printf("answer[0-10].len \n");
+	printf("answer[0-10].data \n");
+	printf("auth[0-10].name \n");
+	printf("auth[0-10].type \n");
+	printf("auth[0-10].cls  \n");
+	printf("auth[0-10].ttl \n");
+	printf("auth[0-10].len \n");
+	printf("auth[0-10].data \n");
+	printf("addition[0-10].name\n");
+	printf("addition[0-10].type\n");
+	printf("addition[0-10].cls \n");
+	printf("addition[0-10].ttl \n");
+	printf("addition[0-10].len \n");
+	printf("addition[0-10].data\n");
+	printf("----------------------------------------------------------\n");
 }

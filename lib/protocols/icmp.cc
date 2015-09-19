@@ -277,5 +277,15 @@ void pgen_icmp::icmp_addData(const void* data, int len){
 
 
 void pgen_icmp::help(){
-	printf("implementing now... \n");	
+	printf("ICMP Packet CLass--------------------------------------------------\n");
+	printf("type \n");
+	printf("code \n");
+	printf("echo.id \n");
+	printf("echo.seq \n");
+	printf("redirect.gw_addr \n");
+	printf("destination_unreach.len \n");
+	printf("destination_unreach.next_mtu \n");
+	printf("time_exceeded.len \n");
+	printf("type \n");
+	printf("-------------------------------------------------------------------\n");
 }

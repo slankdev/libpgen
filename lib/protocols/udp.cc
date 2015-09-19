@@ -130,5 +130,9 @@ void pgen_udp::info(){
 
 
 void pgen_udp::help(){
-	printf("implementing now... \n");	
+	printf("UDP Packet CLass---------------------------------------\n");
+	printf("src \n");
+	printf("dst \n");
+	printf("len \n");
+	printf("-------------------------------------------------------\n");
 }

@@ -276,6 +276,23 @@ void pgen_dhcp::dhcp_get_option(const void* p, struct dhcp_option* buf){
 
 
 void pgen_dhcp::help(){
-	printf("implementing now... \n");	
+	printf("DHCP Packet CLass-----------------------------------\n");
+	printf("op\n");
+	printf("htype\n");
+	printf("hlen\n");
+	printf("hops\n");
+	printf("xid\n");
+	printf("secs\n");
+	printf("flags\n");
+	printf("ciaddr\n");
+	printf("yiaddr\n");
+	printf("siaddr\n");
+	printf("giaddr\n");
+	printf("chaddr\n");
+	printf("sname[64]\n");
+	printf("file[128]\n");
+	printf("option_len \n");
+	printf("option[DHCPMAX_OPT] \n");
+	printf("----------------------------------------------------\n");
 }
 

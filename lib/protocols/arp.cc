@@ -176,5 +176,11 @@ void pgen_arp::info(){
 
 
 void pgen_arp::help(){
-	printf("implementing now... \n");	
+	printf("ARP Packet CLass----------------------------------------------------\n");
+	printf("operation \n");
+	printf("srcEth \n");
+	printf("srcIp \n");
+	printf("dstEth \n");
+	printf("dstIp \n");
+	printf("--------------------------------------------------------------------\n");
 }

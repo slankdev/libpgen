@@ -139,9 +139,10 @@ void pgen_eth::info(){
 
 
 void pgen_eth::help(){
-	printf("help ethernet\n");
-	printf("dst : Destination Hardware Address : 48 bit field \n");
-	printf("src : source      Hardware Address : 48 bit field \n");
-	printf("type : ethernet type  : 16 bit field \n");
+	printf("Ethernet Packet Class-------------------------------------------------\n");
+	printf("dst   : Destination Hardware Address : 48 bit field \n");
+	printf("src   : source      Hardware Address : 48 bit field \n");
+	printf("type  : ethernet type                : 16 bit field \n");
+	printf("----------------------------------------------------------------------\n");
 }
 

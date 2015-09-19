@@ -4,13 +4,12 @@ const char* wfile = "write.pcap";
 pgen_t* whandle;
 
 bool func(const u_char* packet, int len){
-	static int c = 0;
-	c++;
 	pgen_dhcp pack(packet, len);
-	pack.compile();
-	printf("test(%d)\n", c);
-
 	pack.info();
+	pack.hex();
+	pack.compile();
+	
+
 	pack.send_handle(whandle);
 	return true;	
 }

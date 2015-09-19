@@ -644,5 +644,28 @@ static int get_command_len(const void* p){
 
 
 void pgen_ardrone::help(){
-	printf("implementing now... \n");	
+	printf("ar_drone Packet CLass------------------------------------------\n");
+	printf("pcmd.seq \n");
+	printf("pcmd.flag \n");
+	printf("pcmd.roll \n");
+	printf("pcmd.pitch \n");
+	printf("pcmd.gaz \n");
+	printf("pcmd.yaw.x\n");
+	printf("pcmd.yaw.y\n");
+	printf("pcmd.yaw.z\n");
+	printf("ref.seq \n");
+	printf("ref.command \n");
+	printf("configids.seq; \n");
+	printf("configids.session[256] \n");
+	printf("configids.user[256] \n");
+	printf("configids.app[256] \n");
+	printf("config.seq  \n");
+	printf("config.name  \n");
+	printf("config.parameter  \n");
+	printf("ctrl.seq \n");
+	printf("ctrl.ctrlmode \n");
+	printf("ctrl.fw_update_filesize \n");
+	printf("cmd_count \n");
+	printf("cmd_type[10] \n");
+	printf("----------------------------------------------------------------\n");
 }

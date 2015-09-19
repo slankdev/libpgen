@@ -182,5 +182,14 @@ void pgen_ip::info(){
 
 
 void pgen_ip::help(){
-	printf("implementing now... \n");	
+	printf("IP Packet CLass------------------------------------------------\n");
+	printf("tos \n");
+	printf("tot_len \n");
+	printf("id; \n");
+	printf("frag_off \n");
+	printf("ttl \n");
+	printf("protocol\n");
+	printf("src\n");
+	printf("dst\n");
+	printf("----------------------------------------------------------------\n");
 }
