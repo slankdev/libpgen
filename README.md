@@ -1,5 +1,5 @@
 # libpgen (LIBrary Packet GENerator)
-詳しいドキュメントは開発者サイトを参照してください。 http://slankdev.net/libpgen
+詳しいドキュメントは開発者サイトを参照してください。 http://libpgen.org
 
 ## 概要、コンセプト
 li　bpgenはC++で書かれたパケット解析、送受信などを簡単にできるようにすることを目標としているライブラリです。
@@ -35,7 +35,7 @@ Ethernet, ARP, IP, ICMP, TCP, UDP, DNS, DHCP, ar_drone
 - 　DNS query 		libpgen/sample/DNS/
 - MITM attack		libpgen/sample/MITM/
 
-more infomation see http://slankdev.net/libpgen  
+more infomation see http://libpgen.org
 
 
 ## Install
