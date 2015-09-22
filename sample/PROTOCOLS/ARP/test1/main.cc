@@ -7,13 +7,14 @@ int main(int argc, char** argv){
 	pgen_arp pack;
 	
 	pack.ETH.src.setmacbydev(dev);
-	pack.ETH.dst.setmacbroadcast();
+	pack.ETH.dst = "a2:12:42:22:17:d8";
+	printf("test\n");
 	pack.ARP.srcEth.setmacbydev(dev);
 	pack.ARP.srcIp.setipbydev(dev);
-	pack.ARP.dstEth = 0;
-	pack.ARP.dstIp = "192.168.1.123";
-	/*
-	*/
+	pack.ARP.dstEth = "a2:12:42:22:17:d8";
+	pack.ARP.dstIp = "255.254.1.123";
+	pack.ARP.operation = 2;
+
 
 	pack.summary();
 	pack.info();
