@@ -201,20 +201,21 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	int sendlen;
 	
 	if(p->is_offline == 1){
-		struct pcap_timeval ts_now;
-		gettimeofday((struct timeval*)&ts_now, NULL);
+		struct timeval ts_now;
+		gettimeofday(&ts_now, NULL);
 
 		struct pcap_pkthdr pkthdr;
-		pkthdr.ts = ts_now;
+		pkthdr.ts.tv_sec = (unsigned int)(ts_now.tv_sec);
+		pkthdr.ts.tv_usec = (unsigned int)(ts_now.tv_usec);
 		pkthdr.caplen = len;
 		pkthdr.len    = len;
 
-		if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, p->offline.fd) < 1){
-			perror("pgen_sendpacket_handle");
+		if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, p->offline.fd) != 1){
+			perror("pgen_sendpacket_handle::write pkthdr");
 			sendlen = -1;
 		}else{
 			if(fwrite(packet, len, 1, p->offline.fd) < 1){
-				perror("pgen_sendpacket_handle");
+				perror("pgen_sendpacket_handle::write pkt");
 				sendlen = -1;
 			}
 		}
