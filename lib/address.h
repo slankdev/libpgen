@@ -34,7 +34,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <net/if.h>
-#include "mytypes.h"
+#include "pgen-types.h"
 #include "netutils.h"
 
 

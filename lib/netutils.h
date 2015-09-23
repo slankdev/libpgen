@@ -23,7 +23,7 @@
 #define NETUTIL_H
 
 #include "pgen.h"
-#include "mytypes.h"
+#include "pgen-types.h"
 #include "address.h"
 
 

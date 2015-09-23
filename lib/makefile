@@ -45,8 +45,8 @@ OTHER_SRC = \
 HDR = pgen.h \
 	address.h \
 	packet.h \
-	mytypes.h \
-	myendian.h \
+	pgen-types.h \
+	pgen-endian.h \
 	netutils.h \
 	release.h \
 	debug.h

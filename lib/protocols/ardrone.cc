@@ -23,7 +23,7 @@
 #include "pgen.h"
 #include "address.h"
 #include "packet.h"
-#include "mytypes.h"
+#include "pgen-types.h"
 #include "netutils.h"
 
 

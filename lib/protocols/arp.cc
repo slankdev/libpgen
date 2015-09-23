@@ -21,7 +21,7 @@
 
 #include "packet.h"
 #include "address.h"
-#include "mytypes.h"
+#include "pgen-types.h"
 
 #include <map>
 #include <stdio.h>

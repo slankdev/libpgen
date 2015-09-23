@@ -23,7 +23,7 @@
 #define MYTYPES_H
 
 
-#include "myendian.h"		// for BYTE_ORDER
+#include "pgen-endian.h"		// for BYTE_ORDER
 
 
 
