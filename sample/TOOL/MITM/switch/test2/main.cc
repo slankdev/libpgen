@@ -2,8 +2,8 @@
 #include <pgen.h>
 #include <thread>
 
-const char* dev = "wlan0";
-const char* myip = "192.168.179.5";
+const char* dev = "wlan1";
+const char* myip = "192.168.179.7";
 
 struct host{
 	char ip[32];

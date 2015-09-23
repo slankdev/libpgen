@@ -4,8 +4,8 @@
 
 
 
-const char* dev = "en0";
-const char* myip = "192.168.179.4";
+const char* dev = "wlan1";
+const char* myip = "192.168.179.7";
 
 struct host{
 	char ip[32];
@@ -29,10 +29,10 @@ struct host router = {"192.168.179.1", "a2:12:42:17:d8:8f"};
 
 /* mac wlan en0 */
 //struct host target = {"192.168.222.106", "10.128.5.85"};
-//struct host target = {"192.168.179.4", "80:e6:50:17:18:46"};
+struct host target = {"192.168.179.4", "80:e6:50:17:18:46"};
 
 /* think wlan0 */
-struct host target = {"192.168.179.5", "60:57:18:e4:d3:e7"};
+//struct host target = {"192.168.179.5", "60:57:18:e4:d3:e7"};
 
 pgen_t* handle;
 void mitm_attack(const char* ip1, const char* mac1, 
