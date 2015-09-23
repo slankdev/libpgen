@@ -57,6 +57,7 @@ class pgen_packet{
 		virtual void send(const char* ifname)=0;
 		virtual void summary()=0;
 		virtual void info()=0;	
+		virtual void help()=0;
 		
 		void hex();
 		int  length();
@@ -75,7 +76,6 @@ class pgen_eth : public pgen_packet {
 	public:
 		static const int minLen = sizeof(struct ethernet_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		static void help();
 		struct{
 			macaddr dst;
 			macaddr src;
@@ -91,6 +91,7 @@ class pgen_eth : public pgen_packet {
 		void send_L2(const char* ifname);
 		void summary();
 		void info();
+		void help();
 };
 
 
@@ -102,7 +103,6 @@ class pgen_arp : public pgen_eth {
 	public:
 		static const int minLen = pgen_eth::minLen+sizeof(struct arp_packet);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		static void help();
 		struct{
 			int operation;
 			macaddr	srcEth;
@@ -119,6 +119,7 @@ class pgen_arp : public pgen_eth {
 		void send(const char* ifname){send_L2(ifname);}
 		void summary();
 		void info();
+		void help();
 };
 
 
@@ -129,7 +130,6 @@ class pgen_ip : public pgen_eth {
 	public:
 		static const int minLen = pgen_eth::minLen+sizeof(struct ip_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		static void help();
 		struct{
 			bit8  tos;
 			bit16 tot_len;
@@ -151,6 +151,7 @@ class pgen_ip : public pgen_eth {
 		void send_L3(const char* ifname);
 		void summary();
 		void info();
+		void help();
 };
 
 
@@ -166,7 +167,6 @@ class pgen_icmp : public pgen_ip {
 	public:
 		static const int minLen = pgen_ip::minLen+ICMP_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		static void help();
 		struct{	
 			int type;
 			int code;
@@ -197,6 +197,7 @@ class pgen_icmp : public pgen_ip {
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
+		void help();
 
 		void icmp_addData(const void*, int);
 };
@@ -212,7 +213,6 @@ class pgen_tcp : public pgen_ip {
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct tcp_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		static void help();
 		struct{
 			int src;
 			int dst;
@@ -237,6 +237,7 @@ class pgen_tcp : public pgen_ip {
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
+		void help();
 };
 
 
@@ -248,7 +249,6 @@ class pgen_udp : public pgen_ip {
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct udp_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		static void help();
 		struct{
 			int src;
 			int dst;
@@ -263,6 +263,7 @@ class pgen_udp : public pgen_ip {
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
+		void help();
 };
 
 
@@ -286,7 +287,6 @@ class pgen_dns :public pgen_udp {
 	public:
 		static const int minLen = pgen_udp::minLen+DNS_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN; 
-		static void help();
 		struct{
 			u_int16_t id;
 			struct{
@@ -352,6 +352,7 @@ class pgen_dns :public pgen_udp {
 		void summary();
 		void info();
 		void debug();
+		void help();
 		
 		void clear_query();
 		void clear_answer();
@@ -405,7 +406,6 @@ class pgen_ardrone : public pgen_udp {
 	public:
 		static const int minLength = pgen_udp::minLen+39; // minimum ardrone packet
 		static const int macLength = PGEN_MAX_PACKET_LEN;
-		static void help();
 		struct{
 			struct{
 				long seq;
@@ -456,6 +456,7 @@ class pgen_ardrone : public pgen_udp {
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
+		void help();
 	
 		int compile_pcmd();
 		int compile_ref();
@@ -498,7 +499,6 @@ class pgen_dhcp : public pgen_udp {
 	public:
 		static const int minLen = pgen_udp::minLen+DNS_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN; 
-		static void help();
 		struct{
 			bit8   op;
 			bit8   htype;
@@ -527,6 +527,7 @@ class pgen_dhcp : public pgen_udp {
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
+		void help();
 
 		void dhcp_set_option(int,int,int,void*);
 		void dhcp_get_option(const void*, struct dhcp_option*);
@@ -539,7 +540,6 @@ class pgen_http : public pgen_tcp {
 	public:
 		static const int minLen = pgen_tcp::minLen;
 		static const int macLen = PGEN_MAX_PACKET_LEN;
-		static void help();
 	struct{
 		int a;
 		struct{
@@ -556,7 +556,7 @@ class pgen_http : public pgen_tcp {
 	void send(const char* ifname){send_L3(ifname);}
 	void summary();
 	void info();
-
+	void help();
 	
 };
 
