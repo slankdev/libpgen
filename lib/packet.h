@@ -27,7 +27,7 @@
 
 #include "pgen.h"
 #include "address.h"
-#include "mytypes.h"
+#include "pgen-types.h"
 
 #include <stdio.h>
 #include <string.h>

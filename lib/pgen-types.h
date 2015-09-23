@@ -19,11 +19,11 @@
  */
 
 
-#ifndef MYTYPES_H
-#define MYTYPES_H
+#ifndef PGEN_TYPES_H
+#define PGEN_TYPES_H
 
 
-#include "myendian.h"		// for BYTE_ORDER
+#include "pgen-endian.h"		// for BYTE_ORDER
 
 
 
@@ -294,4 +294,4 @@ struct dhcp_header{
 
 
 
-#endif /* MYTYPES_H */
+#endif /* PGEN_TYPES_H */

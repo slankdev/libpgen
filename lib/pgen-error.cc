@@ -1,4 +1,5 @@
 
+
 /*
  * copyright (C) <2015>  <Slank Hiroki Shirokura>
  * 
@@ -18,14 +19,19 @@
  */
 
 
-
-#ifndef MYENDIAN_H
-#define MYENDIAN_H
-
-#define __LITTLE_ENDIAN 1234
-#define __BIG_ENDIAN    4321
-#define __BYTE_ORDER  __LITTLE_ENDIAN
+#include "pgen-error.h"
+#include <stdio.h>
 
 
+int pgen_errno=0;
 
-#endif /* MYENDIAN_H */
+
+char* pgen_strerror(int errno){
+	printf("pgen-errno = %d \n", pgen_errno);
+	return nullptr;	
+}
+
+
+void pgen_perror(const char* str){
+	fprintf(stderr, "%s: %s", str, pgen_strerror(pgen_errno));	
+}

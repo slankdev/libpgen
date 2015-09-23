@@ -40,16 +40,18 @@ NETUTILS_SRC = \
 OTHER_SRC = \
 	packet.cc \
 	unknown.cc \
+	pgen-error.cc \
 	debug.cc
 
 HDR = pgen.h \
 	address.h \
 	packet.h \
-	mytypes.h \
-	myendian.h \
+	pgen-types.h \
+	pgen-endian.h \
+	pgen-error.h \
 	netutils.h \
 	release.h \
-	debug.h
+	debug.h 
 
 OBJ = $(NETUTILS_SRC:.cc=.o) $(OTHER_SRC:.cc=.o) 
 
