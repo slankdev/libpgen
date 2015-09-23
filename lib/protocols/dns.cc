@@ -859,42 +859,42 @@ static char* get_dns_name(const char* iurl){
 
 
 
-
+// fix soon
 void pgen_dns::help(){
-	printf("DNS Packet CLass------------------------------------------\n");
-	printf("id \n");
-	printf("flags.qr \n");
-	printf("flags.opcode \n");
-	printf("flags.aa \n");
-	printf("flags.tc \n");
-	printf("flags.rd \n");
-	printf("flags.ra \n");
-	printf("flags.nouse \n");
-	printf("flags.rcode \n");
-	printf("qdcnt \n");
-	printf("ancnt \n");
-	printf("nscnt \n");
-	printf("arcnt \n");
-	printf("query[0-10].name \n");
-	printf("query[0-10].type \n");
-	printf("query[0-10].cls  \n");
-	printf("answer[0-10].name \n");
-	printf("answer[0-10].type \n");
-	printf("answer[0-10].cls \n");
-	printf("answer[0-10].ttl \n");
-	printf("answer[0-10].len \n");
-	printf("answer[0-10].data \n");
-	printf("auth[0-10].name \n");
-	printf("auth[0-10].type \n");
-	printf("auth[0-10].cls  \n");
-	printf("auth[0-10].ttl \n");
-	printf("auth[0-10].len \n");
-	printf("auth[0-10].data \n");
-	printf("addition[0-10].name\n");
-	printf("addition[0-10].type\n");
-	printf("addition[0-10].cls \n");
-	printf("addition[0-10].ttl \n");
-	printf("addition[0-10].len \n");
-	printf("addition[0-10].data\n");
-	printf("----------------------------------------------------------\n");
+	printf("DNS Packet CLass----------------------------------------------------------------\n");
+	printf("id                  : identifier                           : 16 bit field \n");
+	printf("flags.qr            : query response flag                  :  1 bit field \n");
+	printf("flags.opcode        : operation code                       :  4 bit field \n");
+	printf("flags.aa            : authoritative answer                 :  1 bit field \n");
+	printf("flags.tc            : truncation flag                      :  1 bit field \n");
+	printf("flags.rd            : recursion desired flag               :  1 bit field \n");
+	printf("flags.ra            : recursion available flag             :  1 bit field \n");
+	printf("flags.nouse         : not use this field                   :  3 bit field \n");
+	printf("flags.rcode         : response code                        :  4 bit field \n");
+	printf("qdcnt               : question count                       : 16 bit field \n");
+	printf("ancnt               : answer record count                  : 16 bit field \n");
+	printf("nscnt               : name server (authority record) count : 16 bit field \n");
+	printf("arcnt               : additional record count              : 16 bit field \n");
+	printf("query[0-10].name    : query name                           : character string \n");
+	printf("query[0-10].type    : query type                           : 16 bit field \n");
+	printf("query[0-10].cls     : query class                          : 16 bit field \n");
+	printf("answer[0-10].name   : answer record name                   : 16 bit field \n");
+	printf("answer[0-10].type   : answer record type                   : 16 bit field \n");
+	printf("answer[0-10].cls    : answer record class                  : 16 bit field \n");
+	printf("answer[0-10].ttl    : answer record time to leave          : 32 bit field \n");
+	printf("answer[0-10].len    : answer record length                 : 16 bit field \n");
+	printf("answer[0-10].data   : answer record data                   : 16 bit field \n");
+	printf("auth[0-10].name     : authority record name                : 16 bit field \n");
+	printf("auth[0-10].type     : authority record type                : 16 bit field \n");
+	printf("auth[0-10].cls      : authority record class               : 16 bit field \n");
+	printf("auth[0-10].ttl      : authority record time                : 32 bit field \n");
+	printf("auth[0-10].len      : authority record lengt               : 16 bit field \n");
+	printf("auth[0-10].data     : authority record data                : 16 bit field \n");
+	printf("addition[0-10].name : additional record name               : 16 bit field \n");
+	printf("addition[0-10].type : additional record type               : 16 bit field \n");
+	printf("addition[0-10].cls  : additional record class              : 16 bit field \n");
+	printf("addition[0-10].ttl  : additional record time               : 32 bit field \n");
+	printf("addition[0-10].len  : additional record lengt              : 16 bit field \n");
+	printf("addition[0-10].data : additional record data               : 16 bit field \n");
+	printf("--------------------------------------------------------------------------------\n");
 }

@@ -131,8 +131,8 @@ void pgen_udp::info(){
 
 void pgen_udp::help(){
 	printf("UDP Packet CLass---------------------------------------\n");
-	printf("src \n");
-	printf("dst \n");
-	printf("len \n");
+	printf("src : source port : 16 bit field \n");
+	printf("dst : dest port   : 16 bit field \n");
+	printf("len : length      : 16 bit field \n");
 	printf("-------------------------------------------------------\n");
 }

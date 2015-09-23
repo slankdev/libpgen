@@ -277,22 +277,24 @@ void pgen_dhcp::dhcp_get_option(const void* p, struct dhcp_option* buf){
 
 void pgen_dhcp::help(){
 	printf("DHCP Packet CLass-----------------------------------\n");
-	printf("op\n");
-	printf("htype\n");
-	printf("hlen\n");
-	printf("hops\n");
-	printf("xid\n");
-	printf("secs\n");
-	printf("flags\n");
-	printf("ciaddr\n");
-	printf("yiaddr\n");
-	printf("siaddr\n");
-	printf("giaddr\n");
-	printf("chaddr\n");
-	printf("sname[64]\n");
-	printf("file[128]\n");
-	printf("option_len \n");
-	printf("option[DHCPMAX_OPT] \n");
+	printf("op                  : message type            :   8 bit field \n");
+	printf("htype               : hardware type           :   8 bit field \n");
+	printf("hlen                : hardware address lengt  :   8 bit field \n");
+	printf("hops                : hop                     :   8 bit field \n");
+	printf("xid                 : transaction id          :  32 bit field \n");
+	printf("secs                : seconds elapsed         :  16 bit field \n");
+	printf("flags               : flags                   :  16 bit field \n");
+	printf("ciaddr              : client ip address       :  32 bit field \n");
+	printf("yiaddr              : your(client) ip address :  32 bit field \n");
+	printf("siaddr              : next server ip address  :  32 bit field \n");
+	printf("giaddr              : relay agent ip address  :  32 bit field \n");
+	printf("chaddr              : client hardware address :  48 bit field \n");
+	printf("sname[64]           : server hostname         :  64 bit field \n");
+	printf("file[128]           : boot filename           : 128 bit field \n");
+	printf("\n");  
+	printf("option_len          : option length           :  int value \n");
+	printf("option[DHCPMAX_OPT] : option type array       :  struct dhcp_option\n");
+	printf("  dhcp_option {bit8 type, bit8 len, bit8 data[128]} \n");
 	printf("----------------------------------------------------\n");
 }
 

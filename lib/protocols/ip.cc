@@ -183,13 +183,13 @@ void pgen_ip::info(){
 
 void pgen_ip::help(){
 	printf("IP Packet CLass------------------------------------------------\n");
-	printf("tos      : type of service   : \n");
-	printf("tot_len  : total length      : \n");
-	printf("id       : identification    : \n");
-	printf("frag_off : fragment offset   : \n");
-	printf("ttl      : time to leave     : \n");
-	printf("protocol : L4 protocol       : \n");
-	printf("src      : source ip address : \n");
-	printf("dst      : dest ip address   : \n");
+	printf("tos      : type of service   :  8 bit field \n");
+	printf("tot_len  : total length      : 16 bit field \n");
+	printf("id       : identification    : 16 bit field \n");
+	printf("frag_off : fragment offset   : 16 bit field \n"); // fix soon
+	printf("ttl      : time to leave     :  8 bit field \n");
+	printf("protocol : L4 protocol       :  8 bit field \n");
+	printf("src      : source ip address : 32 bit field \n");
+	printf("dst      : dest ip address   : 32 bit field \n");
 	printf("----------------------------------------------------------------\n");
 }

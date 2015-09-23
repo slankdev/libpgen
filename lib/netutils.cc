@@ -572,3 +572,6 @@ int getmacaddr_test(const char *ifname, char *macaddrstr) {
 }
 
 #endif
+
+
+

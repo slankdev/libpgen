@@ -207,16 +207,16 @@ void pgen_tcp::info(){
 
 void pgen_tcp::help(){
 	printf("TCP Packet CLass---------------------------------------- \n");
-	printf("src \n");
-	printf("dst \n");
-	printf("flags.fin \n");
-	printf("flags.syn \n");
-	printf("flags.rst \n");
-	printf("flags.psh \n");
-	printf("flags.ack \n");
-	printf("flags.urg \n");
-	printf("window \n");
-	printf("seq \n");
-	printf("ack \n");
+	printf("src       : source port        : 16 bit field \n");
+	printf("dst       : dest port          : 16 bit field \n");
+	printf("seq       : sequence number    : 32 bit field \n");
+	printf("ack       : acknowledge number : 32 bit field \n");
+	printf("flags.fin : fin flag           :  1 bit field \n");
+	printf("flags.syn : syn flag           :  1 bit field \n");
+	printf("flags.rst : rst flag           :  1 bit field \n");
+	printf("flags.psh : psh flag           :  1 bit field \n");
+	printf("flags.ack : ack flag           :  1 bit field \n");
+	printf("flags.urg : urg flag           :  1 bit field \n");
+	printf("window    : window size        : 16 bit field \n");
 	printf("-------------------------------------------------------- \n");
 }

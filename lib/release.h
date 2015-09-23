@@ -24,33 +24,6 @@
 
 
 
-/*	rifactering codes 2015/08/19
- *	[ ] return char* function (ipaddr.c_str()  etc...) check
- *
- *	[*] pgen.h
- *
- *	[*] address.h
- *
- *	[*] packet.h
- *	[*] packet.cc
- *  [*] eth.cc
- *	[*] arp.cc
- *	[*] ip.cc
- *	[*] icmp.cc
- *	[*] tcp.cc
- *	[*] udp.cc
- *	[*] dns.cc
- *	[*] ardrone.cc
- *	[*] unknown.cc
- *
- *  [*] mytypes.h
- *	[*] netutils.cc
- *	[*] netutils.h
- *	[*] release.h
- *	[*] debug.h
- *	[*] debug.cc
- * */
-
 
 /*		TODO		[date]  about  [fin-date]
  *
@@ -85,29 +58,14 @@
  *						print packet info inline
  *		[2015.07.29]	add packet type	unknown				[2015.07.30]
  *						for recv packet
- *		[2015.05.16]	add function nslookup(const)		[]
- *						ipaddr nslookup(url);		 
  *		[2015.09.02]	pgen_open_offline(filename);		[2015.09.02]
  *						read pcap file format
  *		[2015.09.02]	ardrone ctrl command 				[2015.09.04]
+ *		[2015.05.16]	add function nslookup(const)		[]
+ *						ipaddr nslookup(url);		 
  *
  *
- *							
- *
- *		BUG			[date]  about  [fin-date]
- *		[2015.06.28]	address.h:239 has some warning 		[2015.07.30]
- *						near malloc() and memset() 
- *						in string size is not true
- *		[2015.06.28]	address.h:23 has some warning 		[2015.07.30]
- *						near malloc() and memset() 
- *						in string size is not true
- *		[2015.06.28]	dns.cc:60 has memory error			[2015.08.27]
- *		[2015.07.30]	CAST has big memory error			[2015.08.27]
- *						
  *		
- *		CHANGES
- *		[2015.06.12]	typedef int32 bit32
- *						typedef int16 bit16...
  */
 
 #endif /* RELEASE_H */
