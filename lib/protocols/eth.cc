@@ -146,3 +146,11 @@ void pgen_eth::help(){
 	printf("----------------------------------------------------------------------\n");
 }
 
+
+bool pgen_eth::check(const char* file){
+	pgen_t* handle = pgen_open_offline(file, 0);
+	if(handle == NULL){
+		printf("test \n");
+	}
+	return true;
+}

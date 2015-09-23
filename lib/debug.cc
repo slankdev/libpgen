@@ -24,6 +24,8 @@
 #include "pgen.h"
 
 
+
+
 void debugprint(int flag, const char* str){
 	if(flag)
 		printf("%s", str);
@@ -70,6 +72,7 @@ void hexdump(const u_char* data, int len){
 	}
 	printf("\n");
 }
+
 
 
 

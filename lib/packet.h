@@ -19,8 +19,10 @@
  */
 
 
+
 #ifndef PACKET_H
 #define PACKET_H
+
 
 
 #include "pgen.h"
@@ -58,7 +60,8 @@ class pgen_packet{
 		virtual void summary()=0;
 		virtual void info()=0;	
 		virtual void help()=0;
-		
+		virtual bool check(const char* pcapfile)=0;
+
 		void hex();
 		int  length();
 		void addData(const void* , int );
@@ -92,6 +95,7 @@ class pgen_eth : public pgen_packet {
 		void summary();
 		void info();
 		void help();
+		bool check(const char* pcapfile);
 };
 
 
