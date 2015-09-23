@@ -177,10 +177,10 @@ void pgen_arp::info(){
 
 void pgen_arp::help(){
 	printf("ARP Packet CLass----------------------------------------------------\n");
-	printf("operation \n");
-	printf("srcEth \n");
-	printf("srcIp \n");
-	printf("dstEth \n");
-	printf("dstIp \n");
+	printf("operation : ARP operation code      : 16 bit field \n");
+	printf("srcEth    : sender hardware address : 48 bit field \n");
+	printf("srcIp     : sender protocol address : 32 bit field \n");
+	printf("dstEth    : target hardware address : 48 bit field \n");
+	printf("dstIp     : Target protocol address : 32 bit field \n");
 	printf("--------------------------------------------------------------------\n");
 }
