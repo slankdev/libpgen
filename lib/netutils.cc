@@ -18,9 +18,12 @@
  *
  */
 
+
+
 #include "pgen.h"
 #include "netutils.h"
 #include "packet.h"
+#include "pgen-error.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,14 +40,13 @@
 #include <netinet/if_ether.h>
 
 #ifndef __linux
+#include <net/if_dl.h>
 #include <net/bpf.h>
 #include <fcntl.h>
+#include <ifaddrs.h>
 #else
 #include <netpacket/packet.h>
 #endif
-
-
-
 
 
 
@@ -222,13 +224,11 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 		pkthdr.len    = len;
 
 		if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, p->offline.fd) != 1){
-			//perror("pgen_sendpacket_handle");
 			pgen_errno = errno;
 			pgen_errno2 = PG_ERRNO_FWRITE;
 			sendlen = -1;
 		}else{
 			if(fwrite(packet, len, 1, p->offline.fd) < 1){
-				//perror("pgen_sendpacket_handle");
 				pgen_errno = errno;
 				pgen_errno2 = PG_ERRNO_FWRITE;
 				sendlen = -1;
@@ -239,7 +239,6 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	}else{
 		sendlen = write(p->fd, packet, len);
 		if(sendlen < 0){
-			//perror("pgen_sendpacket_handle");
 			pgen_errno = errno;
 			pgen_errno2 = PG_ERRNO_WRITE;
 		}
@@ -255,7 +254,6 @@ int pgen_sendpacket_L3(const char* dev,const u_char* packet,int len,struct socka
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 1)) < 0){
-		//perror("pgen_sendpacket_L3");
 		pgen_errno = errno;
 		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
@@ -263,7 +261,6 @@ int pgen_sendpacket_L3(const char* dev,const u_char* packet,int len,struct socka
 
 	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
 	if(sendlen < 0){
-		//perror("pgen_sendpacket_L3");
 		pgen_errno = errno;
 		pgen_errno2 = PG_ERRNO_SENDTO;
 	}
@@ -585,13 +582,15 @@ int pgen_getipbydev(const char* dev, char* ip){
 	struct sockaddr_in *sa;
 
 	if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-		perror("pgen_getipbydev");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
 	if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
-		perror("pgen_getipbydev");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_IOCTL;
 		close(sockd);
 		return -1;
 	}
@@ -608,13 +607,15 @@ int pgen_getmaskbydev(const char* dev, char* ip){
 	struct sockaddr_in *sa;
 
 	if((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-		perror("pgen_getmaskbydev");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
 	if(ioctl(sockd, SIOCGIFNETMASK, &ifr) < 0){
-		perror("pgen_getmaskbydev");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_IOCTL;
 		close(sockd);
 		return -1;
 	}
@@ -625,18 +626,23 @@ int pgen_getmaskbydev(const char* dev, char* ip){
 	return 1;
 }
 
+
+
 int pgen_getmacbydev(const char* dev, char* mac){
 #ifdef __linux
+
 	int sockd;
 	struct ifreq ifr;
 	if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
-		perror("pgen_getmacbydev");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
 	if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
-		perror("pgen_getmacbydev");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_IOCTL;
 		close(sockd);
 		return -1;
 	}
@@ -648,40 +654,11 @@ int pgen_getmacbydev(const char* dev, char* mac){
 	 	(unsigned char)ifr.ifr_hwaddr.sa_data[3], 
 	 	(unsigned char)ifr.ifr_hwaddr.sa_data[4], 
 	 	(unsigned char)ifr.ifr_hwaddr.sa_data[5] );
-
 	return 1;
+
 #else // for bsd
-    struct ifaddrs *ifap, *ifaptr;
-    unsigned char *ptr;
-	if(getifaddrs(&ifap) != 0){
-		return -1;	
-	}
-	for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
-		if (!strcmp((ifaptr)->ifa_name, dev) && 
-				(((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
-			ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
-			sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x",
-								*ptr, *(ptr+1), *(ptr+2), 
-								*(ptr+3), *(ptr+4), *(ptr+5));
-			freeifaddrs(ifap);
-			return 1;
-		}
-	}
-	return -1;
-#endif
-}
-
-
-#ifndef __linux
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <net/if_dl.h>
-#include <ifaddrs.h>
-
-int getmacaddr_test(const char *dev, char *mac) {
-    struct ifaddrs *ifap, *ifaptr;
+    
+	struct ifaddrs *ifap, *ifaptr;
     unsigned char *ptr;
 	if(getifaddrs(&ifap) != 0){
 		return -1;	
@@ -699,25 +676,7 @@ int getmacaddr_test(const char *dev, char *mac) {
 	}
 	return -1;
 
-
-	/*
-    if (getifaddrs(&ifap) == 0) {
-        for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
-            if (!strcmp((ifaptr)->ifa_name, dev) && 
-					(((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
-                ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
-                sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x",
-                                    *ptr, *(ptr+1), *(ptr+2), 
-									*(ptr+3), *(ptr+4), *(ptr+5));
-                break;
-            }
-        }
-        freeifaddrs(ifap);
-        return ifaptr != NULL;
-    } else {
-        return 1;
-    }
-	*/
+#endif
 }
 
-#endif
+

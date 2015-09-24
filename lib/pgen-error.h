@@ -28,7 +28,7 @@
 extern int pgen_errno;
 extern int pgen_errno2;
 
-#define PG_ERRNO_SOCKET  0
+#define PG_ERRNO_SUCSS   0
 #define PG_ERRNO_BIND    1
 #define PG_ERRNO_HDRINC  2
 #define PG_ERRNO_PROMISC 3
@@ -42,7 +42,8 @@ extern int pgen_errno2;
 #define PG_ERRNO_SENDTO 10
 
 #define PG_ERRNO_FOPEN  11
-
+#define PG_ERRNO_IOCTL  12
+#define PG_ERRNO_SOCKET 13
 
 #ifndef __linux
 #define PG_ERRNOBSD_OPENBPF -1

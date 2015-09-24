@@ -22,6 +22,7 @@
 #include "pgen.h"
 #include "packet.h"
 #include "address.h"
+#include "pgen-error.h"
 
 #include <map>
 #include <stdio.h>
@@ -105,8 +106,9 @@ void pgen_eth::cast(const void* data, int len){
 
 void pgen_eth::send_L2(const char* ifname){
 	compile();		
-	if(pgen_sendpacket_L2(ifname, this->data, this->len) < 0)
-		exit(-1);	
+	if(pgen_sendpacket_L2(ifname, this->data, this->len) < 0){
+		pgen_perror("send_L2");		
+	}
 }
 
 

@@ -36,6 +36,7 @@
 #include <net/if.h>
 #include "pgen-types.h"
 #include "netutils.h"
+#include "pgen-error.h"
 
 
 #ifndef __linux
@@ -75,7 +76,6 @@ class ipaddr{
 		ipaddr(const ipaddr &i){
 			this->_addr = i._addr;
 		}
-		// no test
 		ipaddr(std::string str){
 			*this = str.c_str();		
 		}
@@ -90,17 +90,18 @@ class ipaddr{
 		void clear(){
 			this->_addr = 0;	
 		}
-		void setOctet(int n, int num){
+		int setOctet(int n, int num){
 			union lc lc;
 			if(n>=4){
 				fprintf(stderr, "ipaddr::setOctet(): index is not support\n");
-				exit(-1);
+				return -1;
 			}else{
 				lc.c[n] = num;
 				this->_addr = lc.l;
 			}
+			return 1;
 		}
-		bit8 getOctet(int n){
+		unsigned char getOctet(int n){
 			union lc lc;
 			lc.l = this->_addr;
 			if(n>=4){
@@ -110,23 +111,23 @@ class ipaddr{
 				return lc.c[n];		
 			}
 		}
-		bool setipbydev(const char* ifname){
+		int setipbydev(const char* ifname){
 			char buf[256];
 			if(pgen_getipbydev(ifname, buf) < 0){
-				printf("error \n");
-				return false;
+				pgen_perror("ipaddr::setipbydev");
+				return -1;
 			}
 			*this = buf;
-			return true;
+			return 1;
 		}
-		bool setmaskbydev(const char* ifname){
+		int setmaskbydev(const char* ifname){
 			char buf[256];
 			if(pgen_getmaskbydev(ifname, buf) < 0){
-				printf("error \n");
-				return false;
+				pgen_perror("ipaddr::setmaskbydev");
+				return -1;
 			}
 			*this = buf;
-			return true;
+			return 1;
 		}
 		ipaddr& operator=(ipaddr i){
 			this->_addr = i._addr;
@@ -148,7 +149,6 @@ class ipaddr{
 			this->_addr = num;
 			return *this;
 		}
-		// no test
 		ipaddr& operator=(std::string str){
 			*this = str.c_str();
 			return *this;
@@ -256,15 +256,16 @@ class macaddr{
 		void clear(){
 			memset(this->_addr, 0, sizeof(char[6]));	
 		}
-		void setOctet(int n, int num){
+		int setOctet(int n, int num){
 			if(n>=6){
 				fprintf(stderr, "macaddr::setOctet(): index is not support\n");
-				exit(-1);
+				return -1;
 			}else{
 				this->_addr[n] = num;
 			}
+			return 1;
 		}
-		bit8 getOctet(int n){
+		unsigned char getOctet(int n){
 			if(n>=6){
 				fprintf(stderr, "ipaddr::operator[]: index is not support\n");
 				exit(-1);
@@ -280,28 +281,6 @@ class macaddr{
 			}
 			*this = buf;
 			return true;
-/*
-#ifndef __linux
-			bool ret = false;
-			char macstr[18];
-			if(getmacaddr_test(ifname, macstr)){
-				*this = macstr;
-				ret = true;
-			}else{
-				ret = false;	
-			}
-			return ret;
-#else
-			char buf[256];
-			if(pgen_getmacbydev(ifname, buf) < 0){
-				printf("error \n");
-				return false;
-			}
-			*this = buf;
-			return true;
-
-#endif
-*/
 		}
 		bool setmacbroadcast(){
 			for(int i=0; i<6; i++){
@@ -320,7 +299,9 @@ class macaddr{
 			}
 			while(fgets(buf, sizeof(buf), fp) != NULL){
 				sscanf(buf, "%2x%2x%2x\t%s", &mac[0],&mac[1],&mac[2],buf);
-				if(mac[0]==this->_addr[0]&&mac[1]==this->_addr[1]&&mac[2]==this->_addr[2]){
+				if( mac[0]==this->_addr[0] &&
+				    			mac[1]==this->_addr[1] && 
+				    			mac[2]==this->_addr[2]){
 					snprintf(_bender, sizeof(_bender), "%s", buf);
 					fclose(fp);
 					return _bender;
@@ -359,28 +340,28 @@ class macaddr{
 		bool operator<(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(this->_addr[i] == iaddr._addr[i])	continue;
-				else							return this->_addr[i] < iaddr._addr[i];
+				else return this->_addr[i] < iaddr._addr[i];
 			}
 			return false;
 		}
 		bool operator>(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(this->_addr[i] == iaddr._addr[i])	continue;
-				else							return this->_addr[i] > iaddr._addr[i];
+				else return this->_addr[i] > iaddr._addr[i];
 			}
 			return false;
 		}
 		bool operator<=(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(this->_addr[i] == iaddr._addr[i])	continue;
-				else							return this->_addr[i] <= iaddr._addr[i];
+				else return this->_addr[i] <= iaddr._addr[i];
 			}
 			return false;
 		}
 		bool operator>=(const macaddr iaddr){
 			for(int i=0; i<6; i++){
 				if(this->_addr[i] == iaddr._addr[i])	continue;
-				else							return this->_addr[i] >= iaddr._addr[i];
+				else	return this->_addr[i] >= iaddr._addr[i];
 			}
 			return false;
 		}

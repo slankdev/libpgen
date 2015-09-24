@@ -47,8 +47,8 @@ void pgen_perror(const char* msg){
 	char str[256];
 
 	switch(pgen_errno2){
-		case PG_ERRNO_SOCKET:
-			strncpy(str, "socket", 255);
+		case PG_ERRNO_SUCSS:
+			strncpy(str, "success", 255);
 			break;
 		case PG_ERRNO_BIND:
 			strncpy(str, "bind", 255);
@@ -79,6 +79,15 @@ void pgen_perror(const char* msg){
 			break;
 		case PG_ERRNO_SENDTO:
 			strncpy(str, "sendto", 255);
+			break;
+		case PG_ERRNO_FOPEN:
+			strncpy(str, "fopen", 255);
+			break;
+		case PG_ERRNO_IOCTL:
+			strncpy(str, "ioctl", 255);
+			break;
+		case PG_ERRNO_SOCKET:
+			strncpy(str, "socket", 255);
 			break;
 
 #ifndef __linux // for bsd

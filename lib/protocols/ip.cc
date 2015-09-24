@@ -22,6 +22,7 @@
 #include "packet.h"
 #include "pgen.h"
 #include "address.h"
+#include "pgen-error.h"
 
 #include <map>
 #include <stdio.h>
@@ -142,8 +143,9 @@ void pgen_ip::send_L3(const char* ifname){
 	addr.sin_addr.s_addr = this->IP.dst._addr;
 	
 	if(pgen_sendpacket_L3(ifname, this->data+ETH_HDR_LEN, this->len-ETH_HDR_LEN,
-				(struct sockaddr*)&addr) < 0)
-		exit(-1);
+				(struct sockaddr*)&addr) < 0){
+		pgen_perror("send_L3");
+	}
 }
 
 
