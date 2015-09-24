@@ -61,14 +61,15 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			handle->is_read  = 1;
 			handle->offline.fd = fopen(filename, "rb");
 			if(handle->offline.fd == NULL){
-				perror("pgen_open_offline");
 				pgen_errno = errno;
-				pgen_close(handle);
+				pgen_errno2 = PG_ERRNO_FWRITE;
+				free(handle);
 				handle = NULL;
+				return NULL;
 			}
 			if(fread(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
-				perror("pgen_open_offline");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_FREAD;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -79,8 +80,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			handle->is_read  = 0;
 			handle->offline.fd = fopen(filename, "wb");
 			if(handle->offline.fd == NULL){
-				perror("pgen_open_offline");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_FOPEN;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -92,8 +93,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			handle->offline.filehdr.snaplen  = 0x0000ffff;
 			handle->offline.filehdr.linktype = 0x00000001;
 			if(fwrite(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
-				perror("pgen_open_offline");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_FWRITE;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -119,7 +120,6 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 
 	handle->fd = initRawSocket(dev, 1, 0);
 	if(handle->fd < 0){
-		perror("pgen_open");
 		handle =  NULL;
 	}
 
@@ -158,14 +158,16 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 		if(handle->is_offline == 1){ // offline sniff
 			struct pcap_pkthdr hdr;
 			if(fread(&hdr, sizeof(struct pcap_pkthdr),1,handle->offline.fd) < 1){
-				perror("sniff");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_FREAD;
+				pgen_perror("sniff");
 				//fprintf(stderr, "sniff: file is finish\n");
 				return;
 			}
 			if(fread(packet, hdr.len, 1, handle->offline.fd) != 1){
-				perror("sniff");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_FREAD;
+				pgen_perror("sniff");
 				return;
 			}
 			p = packet;
@@ -175,7 +177,9 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 		}else{ // online sniff	
 			len = read(handle->fd, packet, sizeof(packet));
 			if(len < 0){
-				perror("sniff");
+				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_READ;
+				pgen_perror("sniff");
 				pgen_errno = errno;
 				return;
 			}
@@ -202,7 +206,7 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 // send packet in handle
 int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	if(p->is_write == 0){
-		fprintf(stderr, "pgen_sendpacket_handle: this handle is not write mode \n");
+		pgen_errno2 = PG_ERRNO_RONLY;
 		return -1;
 	}
 	int sendlen;
@@ -218,13 +222,15 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 		pkthdr.len    = len;
 
 		if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, p->offline.fd) != 1){
-			perror("pgen_sendpacket_handle");
+			//perror("pgen_sendpacket_handle");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_FWRITE;
 			sendlen = -1;
 		}else{
 			if(fwrite(packet, len, 1, p->offline.fd) < 1){
-				perror("pgen_sendpacket_handle");
+				//perror("pgen_sendpacket_handle");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_FWRITE;
 				sendlen = -1;
 			}
 		}
@@ -233,8 +239,9 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	}else{
 		sendlen = write(p->fd, packet, len);
 		if(sendlen < 0){
-			perror("pgen_sendpacket_handle");
+			//perror("pgen_sendpacket_handle");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_WRITE;
 		}
 	}
 	
@@ -243,22 +250,23 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 
 
 
-int pgen_sendpacket_L3(const char* dev, const u_char* packet, int len, struct sockaddr* sa){
+int pgen_sendpacket_L3(const char* dev,const u_char* packet,int len,struct sockaddr* sa){
 	int sock;
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 1)) < 0){
-		perror("pgen_sendpacket_L3");
+		//perror("pgen_sendpacket_L3");
 		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 
 	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
 	if(sendlen < 0){
-		perror("pgen_sendpacket_L3");
+		//perror("pgen_sendpacket_L3");
 		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SENDTO;
 	}
-
 
 	close(sock);
 	return sendlen;
@@ -272,13 +280,14 @@ int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 0)) < 0){
-		perror("pgen_snedpack_l2");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 	sendlen = write(sock, packet, len);
 	if(sendlen < 0){
-		perror("pgen_sendpacket_L2");
 		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_WRITE;
 	}
 
 	close(sock);

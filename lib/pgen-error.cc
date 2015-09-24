@@ -59,8 +59,29 @@ void pgen_perror(const char* msg){
 		case PG_ERRNO_PROMISC:
 			strncpy(str, "set promisc", 255);
 			break;
+		case PG_ERRNO_WONLY:
+			strncpy(str, "handle is write only", 255);
+			break;
+		case PG_ERRNO_RONLY: 
+			strncpy(str, "handle is read only", 255);
+			break;
+		case PG_ERRNO_FWRITE:
+			strncpy(str, "fwrite", 255);
+			break;
+		case PG_ERRNO_FREAD:
+			strncpy(str, "fread", 255);
+			break;
+		case PG_ERRNO_WRITE:
+			strncpy(str, "write", 255);
+			break;
+		case PG_ERRNO_READ:
+			strncpy(str, "read", 255);
+			break;
+		case PG_ERRNO_SENDTO:
+			strncpy(str, "sendto", 255);
+			break;
 
-#ifndef __linux
+#ifndef __linux // for bsd
 		case PG_ERRNOBSD_OPENBPF:
 			strncpy(str, "open bpf", 255);
 			break;
