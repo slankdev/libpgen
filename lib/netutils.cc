@@ -377,20 +377,22 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 
 
 int initRawSocket(const char* dev, int promisc, int overIp){
-#ifndef __linux
+	int sock;
+	const unsigned int one  = 1;
+	
 
-	int sock = -1;
-	const unsigned int one = 1;
-
-	if(overIp){	
-		//fprintf(stderr, "initRawSocket: overIp is not support in BSD\n");
+	if(overIp){
+#ifdef __linux
+		sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+#else
 		sock=socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+#endif
 		if(sock < 0){
 			perror("initRawSocket");
 			pgen_errno = errno;
 			return -1;
 		}
-
+	
 		if(setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &one, sizeof(one)) < 0){
 			perror("initRawSocket");
 			pgen_errno = errno;
@@ -398,7 +400,74 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			return -1;
 		}
 
-	}else{
+#ifdef __linux
+		if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
+			perror("initRawSocket");
+			pgen_errno = errno;
+			close(sock);
+			return -1;	
+		}
+#endif
+
+	}else{  // over ethernet
+
+#ifdef __linux
+		struct ifreq ifreq;
+		struct sockaddr_ll sa;
+
+		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+		if(sock < 0){
+			perror("initRawSocket");
+			pgen_errno = errno;
+			return -1;
+		}
+
+
+		// get interface index number
+		memset(&ifreq, 0, sizeof(struct ifreq));
+		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
+		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
+			perror("initRawSocket");
+			pgen_errno = errno;
+			close(sock);
+			return -1;
+		}
+
+		// bind to device
+		sa.sll_family = PF_PACKET;
+		sa.sll_protocol = htons(ETH_P_ALL);
+		sa.sll_ifindex  = ifreq.ifr_ifindex;
+		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
+			perror("initRawSocket");
+			pgen_errno = errno;
+			close(sock);
+			return -1;
+		}
+
+
+		if(promisc){
+			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
+				perror("initRawSocket");
+				pgen_errno = errno;
+				close(sock);
+				return -1;
+			}
+			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
+			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
+				perror("initRawSocket");
+				pgen_errno = errno;
+				close(sock);
+				return -1;
+			}
+		}
+	
+	}
+
+	return sock;
+
+
+#else	// for bsd
+
 		struct ifreq ifr;
 
 		/* BPFデバイスファイルのオープン */
@@ -498,85 +567,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 	}
 
 	return sock;
-#else // for linux
-	int sock;
-	
-	if(overIp){
-			sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
-			if(sock < 0){
-				perror("initRawSocket");
-				pgen_errno = errno;
-				return -1;
-			}
-
-			if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
-				perror("initRawSocket");
-				pgen_errno = errno;
-				close(sock);
-				return -1;	
-			}
-
-			int yes = 1;
-			if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes)) < 0){
-				perror("initRawSocket");
-				pgen_errno = errno;
-				close(sock);
-				return -1;
-			}
-	}else{
-		
-		struct ifreq ifreq;
-		struct sockaddr_ll sa;
-
-		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-		if(sock < 0){
-			perror("initRawSocket");
-			pgen_errno = errno;
-			return -1;
-		}
 
 
-		// get interface index number
-		memset(&ifreq, 0, sizeof(struct ifreq));
-		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
-		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
-			perror("initRawSocket");
-			pgen_errno = errno;
-			close(sock);
-			return -1;
-		}
-
-		// bind to device
-		sa.sll_family = PF_PACKET;
-		sa.sll_protocol = htons(ETH_P_ALL);
-		sa.sll_ifindex  = ifreq.ifr_ifindex;
-		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
-			perror("initRawSocket");
-			pgen_errno = errno;
-			close(sock);
-			return -1;
-		}
-
-
-		if(promisc){
-			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
-				perror("initRawSocket");
-				pgen_errno = errno;
-				close(sock);
-				return -1;
-			}
-			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
-			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
-				perror("initRawSocket");
-				pgen_errno = errno;
-				close(sock);
-				return -1;
-			}
-		}
-	
-	}
-
-	return sock;
 #endif
 }
 

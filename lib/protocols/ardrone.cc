@@ -21,8 +21,8 @@
 
 #include <stdio.h>
 #include "pgen.h"
-#include "address.h"
 #include "packet.h"
+#include "address.h"
 #include "pgen-types.h"
 #include "netutils.h"
 
