@@ -241,10 +241,11 @@ class macaddr{
 			}
 			for(int i=0; i<6; i++)	this->_addr[i] = (u_char)buf[i];
 		}
-		void setmacbyarry(const u_char* array){
+		int setmacbyarry(const u_char* array){
 			for(int i=0; i<6; i++){
 				this->_addr[i] = array[i];
 			}
+			return 1;
 		}
 		char* c_str(){
 //			char* _str = (char*)malloc(18);
@@ -273,20 +274,20 @@ class macaddr{
 				return this->_addr[n];		
 			}
 		}
-		bool setmacbydev(const char* ifname){
+		int setmacbydev(const char* ifname){
 			char buf[256];
 			if(pgen_getmacbydev(ifname, buf) < 0){
 				printf("error \n");
-				return false;
+				return -1;
 			}
 			*this = buf;
-			return true;
+			return 1;
 		}
-		bool setmacbroadcast(){
+		int setmacbroadcast(){
 			for(int i=0; i<6; i++){
 				_addr[i] = 0xff;
 			}
-			return true;
+			return 1;
 		}
 		char* bender(){
 			unsigned int mac[3];
