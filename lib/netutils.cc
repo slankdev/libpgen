@@ -62,11 +62,13 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			handle->offline.fd = fopen(filename, "rb");
 			if(handle->offline.fd == NULL){
 				perror("pgen_open_offline");
+				pgen_errno = errno;
 				pgen_close(handle);
 				handle = NULL;
 			}
 			if(fread(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
 				perror("pgen_open_offline");
+				pgen_errno = errno;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -78,6 +80,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			handle->offline.fd = fopen(filename, "wb");
 			if(handle->offline.fd == NULL){
 				perror("pgen_open_offline");
+				pgen_errno = errno;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -89,7 +92,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			handle->offline.filehdr.snaplen  = 0x0000ffff;
 			handle->offline.filehdr.linktype = 0x00000001;
 			if(fwrite(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
-				perror("pgen_open_writepcap");
+				perror("pgen_open_offline");
+				pgen_errno = errno;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -155,11 +159,13 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 			struct pcap_pkthdr hdr;
 			if(fread(&hdr, sizeof(struct pcap_pkthdr),1,handle->offline.fd) < 1){
 				perror("sniff");
+				pgen_errno = errno;
 				//fprintf(stderr, "sniff: file is finish\n");
 				return;
 			}
 			if(fread(packet, hdr.len, 1, handle->offline.fd) != 1){
 				perror("sniff");
+				pgen_errno = errno;
 				return;
 			}
 			p = packet;
@@ -170,6 +176,7 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 			len = read(handle->fd, packet, sizeof(packet));
 			if(len < 0){
 				perror("sniff");
+				pgen_errno = errno;
 				return;
 			}
 #ifndef __linux
@@ -211,11 +218,13 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 		pkthdr.len    = len;
 
 		if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, p->offline.fd) != 1){
-			perror("pgen_sendpacket_handle::write pkthdr");
+			perror("pgen_sendpacket_handle");
+			pgen_errno = errno;
 			sendlen = -1;
 		}else{
 			if(fwrite(packet, len, 1, p->offline.fd) < 1){
-				perror("pgen_sendpacket_handle::write pkt");
+				perror("pgen_sendpacket_handle");
+				pgen_errno = errno;
 				sendlen = -1;
 			}
 		}
@@ -225,6 +234,7 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 		sendlen = write(p->fd, packet, len);
 		if(sendlen < 0){
 			perror("pgen_sendpacket_handle");
+			pgen_errno = errno;
 		}
 	}
 	
@@ -238,13 +248,15 @@ int pgen_sendpacket_L3(const char* dev, const u_char* packet, int len, struct so
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 1)) < 0){
-		fprintf(stderr, "pgen_sendpacket_L3\n");
+		perror("pgen_sendpacket_L3");
+		pgen_errno = errno;
 		return -1;
 	}
 
 	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
 	if(sendlen < 0){
 		perror("pgen_sendpacket_L3");
+		pgen_errno = errno;
 	}
 
 
@@ -260,12 +272,13 @@ int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 0)) < 0){
-		fprintf(stderr, "sendPacketL2: initRawSocket returned -1\n");
+		perror("pgen_snedpack_l2");
 		return -1;
 	}
 	sendlen = write(sock, packet, len);
 	if(sendlen < 0){
 		perror("pgen_sendpacket_L2");
+		pgen_errno = errno;
 	}
 
 	close(sock);
@@ -373,12 +386,14 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		//fprintf(stderr, "initRawSocket: overIp is not support in BSD\n");
 		sock=socket(AF_INET, SOCK_RAW, IPPROTO_IP);
 		if(sock < 0){
-			perror("initRawSocket::socket");
+			perror("initRawSocket");
+			pgen_errno = errno;
 			return -1;
 		}
 
 		if(setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &one, sizeof(one)) < 0){
-			perror("initRawSocket::ioctl");
+			perror("initRawSocket");
+			pgen_errno = errno;
 			close(sock);
 			return -1;
 		}
@@ -397,14 +412,17 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		if (i >= 5) {
 			fprintf(stderr, "cannot open BPF\n");
-			perror("initRawSocket::bpf open error");	
+			perror("initRawSocket");
+			pgen_errno = errno;
 			return -1;
 		}
 		
 		// set buffer size
 		int bufsize = 4096;
 		if (ioctl(sock, BIOCSBLEN, &bufsize) < 0) {
-			perror("initRawSocket::set bufsize");
+			perror("initRawSocket");
+			pgen_errno = errno;
+			printf("init SOCK_RAW set bufsize\n");
 			close(sock);
 			return -1;
 		}
@@ -414,7 +432,9 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		memset(&ifr, 0, sizeof(ifr));
 		strncpy(ifr.ifr_name, dev, IFNAMSIZ);
 		if(ioctl(sock, BIOCSETIF, &ifr) < 0){
-			perror("initRawSocket::bind to device");	
+			perror("initRawSocket");
+			pgen_errno = errno;
+			printf("initRawSocket::bind to device \n");	
 			close(sock);
 			return -1;
 		}
@@ -423,7 +443,9 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		// set promisc
 		if(promisc){
 			if (ioctl(sock, BIOCPROMISC, NULL) < 0) {
-				perror("initRawSocket::set promisc");
+				perror("initRawSocket");
+				pgen_errno = errno;
+				printf("initRawSocket::set promisc \n");
 				close(sock);
 				return -1;
 			}
@@ -433,7 +455,9 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		//if recv packet then call read fast
 		if (ioctl(sock, BIOCIMMEDIATE, &one) < 0) {
-			perror("initRawSocket::call read fast");
+			perror("initRawSocket");
+			pgen_errno = errno;
+			printf("initRawSocket::call read fast \n");
 			close(sock);
 			return -1;
 		}
@@ -441,7 +465,9 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		// set recv sendPacket 
 		if (ioctl(sock, BIOCSSEESENT, &one) < 0) {
-			perror("initRawSocket::recv sendpacket");
+			perror("initRawSocket");
+			pgen_errno = errno;
+			printf("initRawSocket::recv sendpacket \n");
 			close(sock);
 			return -1;
 		}
@@ -449,7 +475,9 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		// flush recv buffer
 		if (ioctl(sock, BIOCFLUSH, NULL) < 0) {
-			perror("initRawSocket::flush recv buffer");
+			perror("initRawSocket");
+			pgen_errno = errno;
+			printf("initRawSocket::flush recv buffer \n");
 			close(sock);
 			return -1;
 		}
@@ -458,7 +486,9 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		// no complite src macaddr
 		if (ioctl(sock, BIOCSHDRCMPLT, &one) < 0) {
-			perror("initRawSocket::nocolect macaddr");
+			perror("initRawSocket");
+			pgen_errno = errno;
+			printf("initRawSocket::nocolect macaddr \n");
 			close(sock);
 			return -1;
 		}
@@ -468,17 +498,20 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 	}
 
 	return sock;
-#else
+#else // for linux
 	int sock;
 	
 	if(overIp){
 			sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
 			if(sock < 0){
-				perror("initRawSocket: ");
+				perror("initRawSocket");
+				pgen_errno = errno;
 				return -1;
 			}
 
 			if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
+				perror("initRawSocket");
+				pgen_errno = errno;
 				close(sock);
 				return -1;	
 			}
@@ -486,6 +519,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			int yes = 1;
 			if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &yes, sizeof(yes)) < 0){
 				perror("initRawSocket");
+				pgen_errno = errno;
 				close(sock);
 				return -1;
 			}
@@ -497,6 +531,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 		if(sock < 0){
 			perror("initRawSocket");
+			pgen_errno = errno;
 			return -1;
 		}
 
@@ -506,6 +541,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
 		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
 			perror("initRawSocket");
+			pgen_errno = errno;
 			close(sock);
 			return -1;
 		}
@@ -516,6 +552,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		sa.sll_ifindex  = ifreq.ifr_ifindex;
 		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
 			perror("initRawSocket");
+			pgen_errno = errno;
 			close(sock);
 			return -1;
 		}
@@ -524,12 +561,14 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		if(promisc){
 			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
 				perror("initRawSocket");
+				pgen_errno = errno;
 				close(sock);
 				return -1;
 			}
 			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
 			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
 				perror("initRawSocket");
+				pgen_errno = errno;
 				close(sock);
 				return -1;
 			}

@@ -28,7 +28,7 @@
 #include "address.h"
 #include "netutils.h"
 #include "debug.h"
-
+#include "pgen-error.h"
 
 
 #endif /* PGEN_H */

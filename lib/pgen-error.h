@@ -23,12 +23,14 @@
 #ifndef PGEN_ERROR_H
 #define PGEN_ERROR_H
 
+
+
 extern int pgen_errno;
+
+
 
 char* pgen_strerror(int errno);
 void pgen_perror(const char* str);
-
-#define PGEN_ERRNO_SUCCESS 0
 
 
 #endif

@@ -123,5 +123,9 @@ int pgen_packet::length(){
 
 void pgen_packet::send_handle(pgen_t* handle){
 	compile();
-	pgen_sendpacket_handle(handle, this->data, this->len);
+	int r = pgen_sendpacket_handle(handle, this->data, this->len);
+	if(r < 0){
+		pgen_perror("send_handle");	
+		pgen_errno = errno;
+	}
 }

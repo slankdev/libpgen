@@ -21,17 +21,25 @@
 
 #include "pgen-error.h"
 #include <stdio.h>
+#include <string.h>
 
+
+#define PGEN_ERRSTR_LEN 256
 
 int pgen_errno=0;
+char pgen_errstr[PGEN_ERRSTR_LEN]={0};
+
+
+
 
 
 char* pgen_strerror(int errno){
-	printf("pgen-errno = %d \n", pgen_errno);
-	return nullptr;	
+	strncpy(pgen_errstr, strerror(errno), PGEN_ERRSTR_LEN);
+
+	return pgen_errstr;	
 }
 
 
 void pgen_perror(const char* str){
-	fprintf(stderr, "%s: %s", str, pgen_strerror(pgen_errno));	
+	fprintf(stderr, "%s: %s \n", str, pgen_strerror(pgen_errno));	
 }
