@@ -33,6 +33,14 @@ extern int pgen_errno2;
 #define PG_ERRNO_HDRINC  2
 #define PG_ERRNO_PROMISC 3
 
+#define PG_ERRNO_WONLY   4
+#define PG_ERRNO_RONLY   5
+#define PG_ERRNO_FWRITE  6
+#define PG_ERRNO_FREAD   7
+#define PG_ERRNO_WRITE   8
+#define PG_ERRNO_READ    9
+#define PG_ERRNO_SENDTO 10
+
 #ifndef __linux
 #define PG_ERRNOBSD_OPENBPF -1
 #define PG_ERRNOBSD_SETBUF  -2
@@ -42,6 +50,7 @@ extern int pgen_errno2;
 #define PG_ERRNOBSD_RCVALL  -6
 #define PG_ERRNOBSD_FLUSH   -7
 #define PG_ERRNOBSD_NCMPMAC -8
+
 
 #endif
 #define PG_ERRNO_SOCKET 0

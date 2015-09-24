@@ -202,7 +202,7 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 // send packet in handle
 int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	if(p->is_write == 0){
-		fprintf(stderr, "pgen_sendpacket_handle: this handle is not write mode \n");
+		pgen_errno2 = PG_ERRNO_RONLY;
 		return -1;
 	}
 	int sendlen;
@@ -218,13 +218,15 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 		pkthdr.len    = len;
 
 		if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, p->offline.fd) != 1){
-			perror("pgen_sendpacket_handle");
+			//perror("pgen_sendpacket_handle");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_FWRITE;
 			sendlen = -1;
 		}else{
 			if(fwrite(packet, len, 1, p->offline.fd) < 1){
-				perror("pgen_sendpacket_handle");
+				//perror("pgen_sendpacket_handle");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_FWRITE;
 				sendlen = -1;
 			}
 		}
@@ -233,8 +235,9 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	}else{
 		sendlen = write(p->fd, packet, len);
 		if(sendlen < 0){
-			perror("pgen_sendpacket_handle");
+			//perror("pgen_sendpacket_handle");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_WRITE;
 		}
 	}
 	
@@ -243,22 +246,23 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 
 
 
-int pgen_sendpacket_L3(const char* dev, const u_char* packet, int len, struct sockaddr* sa){
+int pgen_sendpacket_L3(const char* dev,const u_char* packet,int len,struct sockaddr* sa){
 	int sock;
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 1)) < 0){
-		perror("pgen_sendpacket_L3");
+		//perror("pgen_sendpacket_L3");
 		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 
 	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
 	if(sendlen < 0){
-		perror("pgen_sendpacket_L3");
+		//perror("pgen_sendpacket_L3");
 		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SENDTO;
 	}
-
 
 	close(sock);
 	return sendlen;
@@ -272,13 +276,14 @@ int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 0)) < 0){
-		perror("pgen_snedpack_l2");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 	sendlen = write(sock, packet, len);
 	if(sendlen < 0){
-		perror("pgen_sendpacket_L2");
 		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_WRITE;
 	}
 
 	close(sock);
