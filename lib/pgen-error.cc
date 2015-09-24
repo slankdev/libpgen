@@ -43,6 +43,7 @@ char* pgen_strerror(int errno){
 
 
 
+
 void pgen_perror(const char* msg){
 	char str[256];
 
@@ -122,7 +123,6 @@ void pgen_perror(const char* msg){
 			break;
 			
 	}
-
 
 
 	fprintf(stderr, "%s(%s): %s \n", msg, str, pgen_strerror(pgen_errno));	

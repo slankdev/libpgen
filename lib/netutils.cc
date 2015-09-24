@@ -381,6 +381,13 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 
 
 
+unsigned short checksumUdp(const u_char *dp, int datalen){
+	return 0;
+}
+
+
+
+
 
 int initRawSocket(const char* dev, int promisc, int overIp){
 	int sock;
@@ -601,6 +608,10 @@ int pgen_getipbydev(const char* dev, char* ip){
 	return 1;
 }
 
+
+
+
+
 int pgen_getmaskbydev(const char* dev, char* ip){
 	int sockd;
 	struct ifreq ifr;
@@ -625,6 +636,10 @@ int pgen_getmaskbydev(const char* dev, char* ip){
 
 	return 1;
 }
+
+
+
+
 
 
 
@@ -678,5 +693,10 @@ int pgen_getmacbydev(const char* dev, char* mac){
 
 #endif
 }
+
+
+
+
+
 
 

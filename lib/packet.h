@@ -63,10 +63,12 @@ class pgen_packet{
 		virtual int  check(const char* pcapfile)=0;
 
 		void hex();
-		int  length();
 		void addData(const void* , int );
 		void compile_addData(); 
 		void send_handle(pgen_t*);
+		
+		int  length();
+		u_char* byte();
 };
 
 

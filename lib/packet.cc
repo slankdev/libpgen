@@ -121,6 +121,18 @@ int pgen_packet::length(){
 
 
 
+
+u_char* pgen_packet::byte(){
+	compile();
+	return this->data;
+}
+
+
+
+
+
+
+
 void pgen_packet::send_handle(pgen_t* handle){
 	compile();
 	int r = pgen_sendpacket_handle(handle, this->data, this->len);
@@ -129,3 +141,6 @@ void pgen_packet::send_handle(pgen_t* handle){
 		pgen_errno = errno;
 	}
 }
+
+
+
