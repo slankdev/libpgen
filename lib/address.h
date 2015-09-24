@@ -280,28 +280,6 @@ class macaddr{
 			}
 			*this = buf;
 			return true;
-/*
-#ifndef __linux
-			bool ret = false;
-			char macstr[18];
-			if(getmacaddr_test(ifname, macstr)){
-				*this = macstr;
-				ret = true;
-			}else{
-				ret = false;	
-			}
-			return ret;
-#else
-			char buf[256];
-			if(pgen_getmacbydev(ifname, buf) < 0){
-				printf("error \n");
-				return false;
-			}
-			*this = buf;
-			return true;
-
-#endif
-*/
 		}
 		bool setmacbroadcast(){
 			for(int i=0; i<6; i++){
