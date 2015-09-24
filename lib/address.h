@@ -273,6 +273,14 @@ class macaddr{
 			}
 		}
 		bool setmacbydev(const char* ifname){
+			char buf[256];
+			if(pgen_getmacbydev(ifname, buf) < 0){
+				printf("error \n");
+				return false;
+			}
+			*this = buf;
+			return true;
+/*
 #ifndef __linux
 			bool ret = false;
 			char macstr[18];
@@ -293,6 +301,7 @@ class macaddr{
 			return true;
 
 #endif
+*/
 		}
 		bool setmacbroadcast(){
 			for(int i=0; i<6; i++){

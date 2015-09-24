@@ -651,8 +651,23 @@ int pgen_getmacbydev(const char* dev, char* mac){
 
 	return 1;
 #else // for bsd
-	
-	return 1;
+    struct ifaddrs *ifap, *ifaptr;
+    unsigned char *ptr;
+	if(getifaddrs(&ifap) != 0){
+		return -1;	
+	}
+	for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
+		if (!strcmp((ifaptr)->ifa_name, dev) && 
+				(((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
+			ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
+			sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x",
+								*ptr, *(ptr+1), *(ptr+2), 
+								*(ptr+3), *(ptr+4), *(ptr+5));
+			freeifaddrs(ifap);
+			return 1;
+		}
+	}
+	return -1;
 #endif
 }
 
@@ -668,7 +683,24 @@ int pgen_getmacbydev(const char* dev, char* mac){
 int getmacaddr_test(const char *dev, char *mac) {
     struct ifaddrs *ifap, *ifaptr;
     unsigned char *ptr;
+	if(getifaddrs(&ifap) != 0){
+		return -1;	
+	}
+	for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
+		if (!strcmp((ifaptr)->ifa_name, dev) && 
+				(((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
+			ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
+			sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x",
+								*ptr, *(ptr+1), *(ptr+2), 
+								*(ptr+3), *(ptr+4), *(ptr+5));
+			freeifaddrs(ifap);
+			return 1;
+		}
+	}
+	return -1;
 
+
+	/*
     if (getifaddrs(&ifap) == 0) {
         for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
             if (!strcmp((ifaptr)->ifa_name, dev) && 
@@ -685,6 +717,7 @@ int getmacaddr_test(const char *dev, char *mac) {
     } else {
         return 1;
     }
+	*/
 }
 
 #endif
