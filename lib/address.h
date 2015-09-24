@@ -111,49 +111,21 @@ class ipaddr{
 			}
 		}
 		bool setipbydev(const char* ifname){
-			int sockd;
-			struct ifreq ifr;
-			struct sockaddr_in *sa;
-
-			if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-				perror("ipaddr::setipbydev::socket()");
-				clear();
+			char buf[256];
+			if(pgen_getipbydev(ifname, buf) < 0){
+				printf("error \n");
 				return false;
 			}
-			ifr.ifr_addr.sa_family = AF_INET;
-			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
-			if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
-				perror("ipaddr::setipbydev::ioctl()");
-				close(sockd);
-				clear();
-				return false;
-			}
-			close(sockd);
-			sa = (struct sockaddr_in*)&ifr.ifr_addr;
-			this->_addr = sa->sin_addr.s_addr;
+			*this = buf;
 			return true;
 		}
 		bool setmaskbydev(const char* ifname){
-			int sockd;
-			struct ifreq ifr;
-			struct sockaddr_in *sa;
-
-			if((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-				perror("ipaddr::setmacbydev::socket()");
-				clear();
+			char buf[256];
+			if(pgen_getmaskbydev(ifname, buf) < 0){
+				printf("error \n");
 				return false;
 			}
-			ifr.ifr_addr.sa_family = AF_INET;
-			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
-			if(ioctl(sockd, SIOCGIFNETMASK, &ifr) < 0){
-				perror("ipaddr::setmacbydev::ioctl()");
-				close(sockd);
-				clear();
-				return false;
-			}
-			close(sockd);
-			sa = (struct sockaddr_in*)&ifr.ifr_addr;
-			this->_addr = sa->sin_addr.s_addr;
+			*this = buf;
 			return true;
 		}
 		ipaddr& operator=(ipaddr i){
@@ -312,26 +284,14 @@ class macaddr{
 			}
 			return ret;
 #else
-			int sockd;
-			struct ifreq ifr;
-			if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
-				perror("macaddr::setmacbydev::socket()");
-				clear();
+			char buf[256];
+			if(pgen_getmacbydev(ifname, buf) < 0){
+				printf("error \n");
 				return false;
 			}
-			ifr.ifr_addr.sa_family = AF_INET;
-			strncpy(ifr.ifr_name, ifname, IFNAMSIZ-1);
-			if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
-				perror("macaddr::setmacbydev::ioctl()");
-				close(sockd);
-				clear();
-				return false;
-			}
-			close(sockd);
-			for(int i=0; i<6; i++)
-				this->_addr[i] = (unsigned char)ifr.ifr_hwaddr.sa_data[i];
-			
-			return true;		
+			*this = buf;
+			return true;
+
 #endif
 		}
 		bool setmacbroadcast(){

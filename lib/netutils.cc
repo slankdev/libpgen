@@ -575,6 +575,88 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 
 
+
+
+
+
+int pgen_getipbydev(const char* dev, char* ip){
+	int sockd;
+	struct ifreq ifr;
+	struct sockaddr_in *sa;
+
+	if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+		perror("pgen_getipbydev");
+		return -1;
+	}
+	ifr.ifr_addr.sa_family = AF_INET;
+	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
+	if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
+		perror("pgen_getipbydev");
+		close(sockd);
+		return -1;
+	}
+	close(sockd);
+	sa = (struct sockaddr_in*)&ifr.ifr_addr;
+	strcpy(ip, inet_ntoa(sa->sin_addr));
+	
+	return 1;
+}
+
+int pgen_getmaskbydev(const char* dev, char* ip){
+	int sockd;
+	struct ifreq ifr;
+	struct sockaddr_in *sa;
+
+	if((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+		perror("pgen_getmaskbydev");
+		return -1;
+	}
+	ifr.ifr_addr.sa_family = AF_INET;
+	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
+	if(ioctl(sockd, SIOCGIFNETMASK, &ifr) < 0){
+		perror("pgen_getmaskbydev");
+		close(sockd);
+		return -1;
+	}
+	close(sockd);
+	sa = (struct sockaddr_in*)&ifr.ifr_addr;
+	strcpy(ip, inet_ntoa(sa->sin_addr));
+
+	return 1;
+}
+
+int pgen_getmacbydev(const char* dev, char* mac){
+#ifdef __linux
+	int sockd;
+	struct ifreq ifr;
+	if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
+		perror("pgen_getmacbydev");
+		return -1;
+	}
+	ifr.ifr_addr.sa_family = AF_INET;
+	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
+	if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
+		perror("pgen_getmacbydev");
+		close(sockd);
+		return -1;
+	}
+	close(sockd);
+	sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x", 
+	 	(unsigned char)ifr.ifr_hwaddr.sa_data[0], 
+	 	(unsigned char)ifr.ifr_hwaddr.sa_data[1], 
+	 	(unsigned char)ifr.ifr_hwaddr.sa_data[2], 
+	 	(unsigned char)ifr.ifr_hwaddr.sa_data[3], 
+	 	(unsigned char)ifr.ifr_hwaddr.sa_data[4], 
+	 	(unsigned char)ifr.ifr_hwaddr.sa_data[5] );
+
+	return 1;
+#else // for bsd
+	
+	return 1;
+#endif
+}
+
+
 #ifndef __linux
 #include <stdio.h>
 #include <string.h>
@@ -582,27 +664,27 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 #include <sys/socket.h>
 #include <net/if_dl.h>
 #include <ifaddrs.h>
-int getmacaddr_test(const char *ifname, char *macaddrstr) {
+
+int getmacaddr_test(const char *dev, char *mac) {
     struct ifaddrs *ifap, *ifaptr;
     unsigned char *ptr;
 
     if (getifaddrs(&ifap) == 0) {
         for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
-            if (!strcmp((ifaptr)->ifa_name, ifname) && (((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
+            if (!strcmp((ifaptr)->ifa_name, dev) && 
+					(((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
                 ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
-                sprintf(macaddrstr, "%02x:%02x:%02x:%02x:%02x:%02x",
-                                    *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5));
+                sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x",
+                                    *ptr, *(ptr+1), *(ptr+2), 
+									*(ptr+3), *(ptr+4), *(ptr+5));
                 break;
             }
         }
         freeifaddrs(ifap);
         return ifaptr != NULL;
     } else {
-        return 0;
+        return 1;
     }
 }
 
 #endif
-
-
-

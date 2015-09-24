@@ -52,4 +52,9 @@ int initRawSocket(const char* dev, int promisc, int overIp);
 int getmacaddr_test(const char *ifname, char *macaddrstr);
 
 
+
+int pgen_getipbydev(const char* dev, char* ip);
+int pgen_getmaskbydev(const char* dev, char* ip);
+int pgen_getmacbydev(const char* dev, char* mac);
+
 #endif /* NETUTIL_H */
