@@ -383,27 +383,27 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 	if(overIp){
 #ifdef __linux
-		sock=socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+		sock = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
 #else
-		sock=socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+		sock = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
 #endif
 		if(sock < 0){
-			perror("initRawSocket");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_SOCKET;
 			return -1;
 		}
 	
 		if(setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &one, sizeof(one)) < 0){
-			perror("initRawSocket");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_HDRINC;
 			close(sock);
 			return -1;
 		}
 
 #ifdef __linux
 		if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
-			perror("initRawSocket");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_BIND;
 			close(sock);
 			return -1;	
 		}
@@ -417,8 +417,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 		if(sock < 0){
-			perror("initRawSocket");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_SOCKET;
 			return -1;
 		}
 
@@ -427,8 +427,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		memset(&ifreq, 0, sizeof(struct ifreq));
 		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
 		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
-			perror("initRawSocket");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_BIND;
 			close(sock);
 			return -1;
 		}
@@ -438,8 +438,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		sa.sll_protocol = htons(ETH_P_ALL);
 		sa.sll_ifindex  = ifreq.ifr_ifindex;
 		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
-			perror("initRawSocket");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_BIND;
 			close(sock);
 			return -1;
 		}
@@ -447,15 +447,15 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		if(promisc){
 			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
-				perror("initRawSocket");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_PROMISC;
 				close(sock);
 				return -1;
 			}
 			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
 			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
-				perror("initRawSocket");
 				pgen_errno = errno;
+				pgen_errno2 = PG_ERRNO_PROMISC;
 				close(sock);
 				return -1;
 			}
@@ -463,7 +463,6 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 	
 	}
 
-	return sock;
 
 
 #else	// for bsd
@@ -481,17 +480,16 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		if (i >= 5) {
 			fprintf(stderr, "cannot open BPF\n");
-			perror("initRawSocket");
 			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNOBSD_OPENBPF;
 			return -1;
 		}
 		
 		// set buffer size
 		int bufsize = 4096;
 		if (ioctl(sock, BIOCSBLEN, &bufsize) < 0) {
-			perror("initRawSocket");
 			pgen_errno = errno;
-			printf("init SOCK_RAW set bufsize\n");
+			pgen_errno2 = PG_ERRNOBSD_SETBUF;
 			close(sock);
 			return -1;
 		}
@@ -501,9 +499,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		memset(&ifr, 0, sizeof(ifr));
 		strncpy(ifr.ifr_name, dev, IFNAMSIZ);
 		if(ioctl(sock, BIOCSETIF, &ifr) < 0){
-			perror("initRawSocket");
 			pgen_errno = errno;
-			printf("initRawSocket::bind to device \n");	
+			pgen_errno2 = PG_ERRNOBSD_BIND;
 			close(sock);
 			return -1;
 		}
@@ -512,9 +509,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		// set promisc
 		if(promisc){
 			if (ioctl(sock, BIOCPROMISC, NULL) < 0) {
-				perror("initRawSocket");
 				pgen_errno = errno;
-				printf("initRawSocket::set promisc \n");
+				pgen_errno2 = PG_ERRNOBSD_PROMISC;
 				close(sock);
 				return -1;
 			}
@@ -524,9 +520,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		//if recv packet then call read fast
 		if (ioctl(sock, BIOCIMMEDIATE, &one) < 0) {
-			perror("initRawSocket");
 			pgen_errno = errno;
-			printf("initRawSocket::call read fast \n");
+			pgen_errno2 = PG_ERRNOBSD_IMDAT;
 			close(sock);
 			return -1;
 		}
@@ -534,9 +529,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		// set recv sendPacket 
 		if (ioctl(sock, BIOCSSEESENT, &one) < 0) {
-			perror("initRawSocket");
 			pgen_errno = errno;
-			printf("initRawSocket::recv sendpacket \n");
+			pgen_errno2 = PG_ERRNOBSD_RCVALL;
 			close(sock);
 			return -1;
 		}
@@ -544,9 +538,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		// flush recv buffer
 		if (ioctl(sock, BIOCFLUSH, NULL) < 0) {
-			perror("initRawSocket");
 			pgen_errno = errno;
-			printf("initRawSocket::flush recv buffer \n");
+			pgen_errno2 = PG_ERRNOBSD_FLUSH;
 			close(sock);
 			return -1;
 		}
@@ -555,9 +548,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		// no complite src macaddr
 		if (ioctl(sock, BIOCSHDRCMPLT, &one) < 0) {
-			perror("initRawSocket");
 			pgen_errno = errno;
-			printf("initRawSocket::nocolect macaddr \n");
+			pgen_errno2 = PG_ERRNOBSD_NCMPMAC;
 			close(sock);
 			return -1;
 		}
@@ -566,10 +558,9 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 	}
 
-	return sock;
-
-
 #endif
+	
+	return sock;
 }
 
 

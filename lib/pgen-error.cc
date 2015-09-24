@@ -27,6 +27,7 @@
 #define PGEN_ERRSTR_LEN 256
 
 int pgen_errno=0;
+int pgen_errno2=0;
 char pgen_errstr[PGEN_ERRSTR_LEN]={0};
 
 
@@ -40,6 +41,59 @@ char* pgen_strerror(int errno){
 }
 
 
-void pgen_perror(const char* str){
-	fprintf(stderr, "%s: %s \n", str, pgen_strerror(pgen_errno));	
+
+
+void pgen_perror(const char* msg){
+	char str[256];
+
+	switch(pgen_errno2){
+		case PG_ERRNO_SOCKET:
+			strncpy(str, "socket", 255);
+			break;
+		case PG_ERRNO_BIND:
+			strncpy(str, "bind", 255);
+			break;
+		case PG_ERRNO_HDRINC: 
+			strncpy(str, "setsockopt hdrinc", 255);
+			break;
+		case PG_ERRNO_PROMISC:
+			strncpy(str, "set promisc", 255);
+			break;
+
+#ifndef __linux
+		case PG_ERRNOBSD_OPENBPF:
+			strncpy(str, "open bpf", 255);
+			break;
+		case PG_ERRNOBSD_SETBUF:
+			strncpy(str, "set buf", 255);
+			break;
+		case PG_ERRNOBSD_BIND:
+			strncpy(str, "bind", 255);
+			break;
+		case PG_ERRNOBSD_PROMISC:
+			strncpy(str, "set promisc", 255);
+			break;
+		case PG_ERRNOBSD_IMDAT:
+			strncpy(str, "set immediate", 255);
+			break;
+		case PG_ERRNOBSD_RCVALL: 
+			strncpy(str, "set rcv all", 255);
+			break;
+		case PG_ERRNOBSD_FLUSH:
+			strncpy(str, "buf flush", 255);
+			break;
+		case PG_ERRNOBSD_NCMPMAC:
+			strncpy(str, "no cmpl mac", 255);
+			break;
+#endif
+
+		default:
+			strncpy(str, "unknown error!", 255);
+			break;
+			
+	}
+
+
+
+	fprintf(stderr, "%s(%s): %s \n", msg, str, pgen_strerror(pgen_errno));	
 }
