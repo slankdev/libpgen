@@ -35,7 +35,7 @@
 #include <netinet/in.h>
 #include <net/if.h>
 #include "pgen-types.h"
-#include "netutils.h"
+#include "pgen-io.h"
 #include "pgen-error.h"
 
 

@@ -58,4 +58,7 @@ int pgen_getipbydev(const char* dev, char* ip);
 int pgen_getmaskbydev(const char* dev, char* ip);
 int pgen_getmacbydev(const char* dev, char* mac);
 
+
+int pgen_writepcap(FILE* fp, const u_char* packet, int len);
+
 #endif /* NETUTIL_H */

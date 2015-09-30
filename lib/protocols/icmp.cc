@@ -25,7 +25,7 @@
 
 #include "packet.h"
 #include "address.h"
-#include "netutils.h"
+#include "pgen-io.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

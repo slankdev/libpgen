@@ -24,7 +24,7 @@
 #include "packet.h"
 #include "address.h"
 #include "pgen-types.h"
-#include "netutils.h"
+#include "pgen-io.h"
 
 
 static int get_original_string(const char* p, char buf[]);

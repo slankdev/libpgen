@@ -24,7 +24,7 @@
 #include "address.h"
 #include "packet.h"
 #include "pgen-types.h"
-#include "netutils.h"
+#include "pgen-io.h"
 
 #include "debug.h"
 

@@ -21,7 +21,7 @@
 
 
 #include "pgen.h"
-#include "netutils.h"
+#include "pgen-io.h"
 #include "packet.h"
 #include "pgen-error.h"
 
@@ -696,6 +696,9 @@ int pgen_getmacbydev(const char* dev, char* mac){
 
 
 
+int pgen_writepcap(FILE* fp, const u_char* packet, int len){
+	return -1;	
+}
 
 
 
