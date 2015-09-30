@@ -214,28 +214,7 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 	int sendlen;
 	
 	if(p->is_offline == 1){
-		struct timeval ts_now;
-		gettimeofday(&ts_now, NULL);
-
-		struct pcap_pkthdr pkthdr;
-		pkthdr.ts.tv_sec = (unsigned int)(ts_now.tv_sec);
-		pkthdr.ts.tv_usec = (unsigned int)(ts_now.tv_usec);
-		pkthdr.caplen = len;
-		pkthdr.len    = len;
-
-		if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, p->offline.fd) != 1){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_FWRITE;
-			sendlen = -1;
-		}else{
-			if(fwrite(packet, len, 1, p->offline.fd) < 1){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_FWRITE;
-				sendlen = -1;
-			}
-		}
-		sendlen = len;
-	
+		sendlen = pgen_writepcap(p->offline.fd, packet, len);
 	}else{
 		sendlen = write(p->fd, packet, len);
 		if(sendlen < 0){
@@ -697,7 +676,30 @@ int pgen_getmacbydev(const char* dev, char* mac){
 
 
 int pgen_writepcap(FILE* fp, const u_char* packet, int len){
-	return -1;	
+	int sendlen = 0;
+	struct timeval ts_now;
+	struct pcap_pkthdr pkthdr;
+	gettimeofday(&ts_now, NULL);
+	
+	pkthdr.ts.tv_sec = (unsigned int)(ts_now.tv_sec);
+	pkthdr.ts.tv_usec = (unsigned int)(ts_now.tv_usec);
+	pkthdr.caplen = len;
+	pkthdr.len    = len;
+
+	if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, fp) != 1){
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_FWRITE;
+		sendlen = -1;
+	}else{
+		if(fwrite(packet, len, 1, fp) < 1){
+			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_FWRITE;
+			sendlen = -1;
+		}
+		sendlen = len;
+	}
+	
+	return sendlen;	
 }
 
 

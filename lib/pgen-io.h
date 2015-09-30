@@ -28,37 +28,34 @@
 
 
 
+
 pgen_t* pgen_open(const char* dev, void*);
 pgen_t* pgen_open_offline(const char*, int mode);
 void pgen_close(pgen_t* p);
 
 
-void sniff(pgen_t* handle, bool (*callback)(const u_char*, int));
-
-
-int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len);
 int pgen_sendpacket_L2(const char*, const u_char*, int);
 int pgen_sendpacket_L3(const char*, const u_char*, int, struct sockaddr*);
 
+int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len);
+int pgen_writepcap(FILE* fp, const u_char* packet, int len);
 
-char* pgen_port2service(int port, int protocol);
+
+
 unsigned short checksum(unsigned short *data, int len);
 unsigned short checksumTcp(const u_char* dp, int datalen);
 unsigned short checksumUdp(const u_char* dp, int datalen);
 
 
+int   pgen_getipbydev(const char* dev, char* ip);
+int   pgen_getmaskbydev(const char* dev, char* ip);
+int   pgen_getmacbydev(const char* dev, char* mac);
+char* pgen_port2service(int port, int protocol);
+
+
+
+void sniff(pgen_t* handle, bool (*callback)(const u_char*, int));
 int initRawSocket(const char* dev, int promisc, int overIp);
 
-
-int getmacaddr_test(const char *ifname, char *macaddrstr);
-
-
-
-int pgen_getipbydev(const char* dev, char* ip);
-int pgen_getmaskbydev(const char* dev, char* ip);
-int pgen_getmacbydev(const char* dev, char* mac);
-
-
-int pgen_writepcap(FILE* fp, const u_char* packet, int len);
 
 #endif /* NETUTIL_H */
