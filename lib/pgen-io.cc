@@ -675,6 +675,7 @@ int pgen_getmacbydev(const char* dev, char* mac){
 
 
 
+// this is test function yet
 int pgen_writepcap(FILE* fp, const u_char* packet, int len){
 	int sendlen = 0;
 	struct timeval ts_now;
