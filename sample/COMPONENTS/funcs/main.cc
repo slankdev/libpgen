@@ -9,14 +9,14 @@ int main(){
 		pgen_perror("Oops");
 		return -1;
 	}
-	pgen_t* w = pgen_open_offline(fil, 1);
+	pgen_t* w = pgen_open_offline(fil, 0);
 	if(w == NULL){
 		pgen_perror("Oops");
 		return -1;
 	}
 
 	u_char buf[10000];
-	int res = pgen_recv_from_netif(h->fd, buf, sizeof(buf));
+	int res = pgen_recv_from_pcap(w->offline.fd, buf, sizeof(buf));
 	if(res < 0){
 		printf("error\n");
 		return -1;

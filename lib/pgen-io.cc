@@ -152,7 +152,6 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 	}
 
 	
-	u_char* p;
 	u_char  packet[4096];
 	bool result = true;
 	int len;
@@ -160,43 +159,21 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 
 	for(;result;){
 		if(handle->is_offline == 1){ // offline sniff
-			struct pcap_pkthdr hdr;
-			if(fread(&hdr, sizeof(struct pcap_pkthdr),1,handle->offline.fd) < 1){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_FREAD;
-				pgen_perror("sniff");
-				//fprintf(stderr, "sniff: file is finish\n");
-				return;
-			}
-			if(fread(packet, hdr.len, 1, handle->offline.fd) != 1){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_FREAD;
-				pgen_perror("sniff");
-				return;
-			}
-			p = packet;
-			len = hdr.len;
-
-				
-		}else{ // online sniff	
-			len = read(handle->fd, packet, sizeof(packet));
+			len = pgen_recv_from_pcap(handle->offline.fd, packet, sizeof(packet));
 			if(len < 0){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_READ;
 				pgen_perror("sniff");
 				return;
 			}
-#ifndef __linux
-			struct bpf_hdr *bpfhdr;
 
-			bpfhdr = (struct bpf_hdr*)packet;
-			p = packet + bpfhdr->bh_hdrlen;
-			len = bpfhdr->bh_caplen;
-#else
-			p = packet;
-#endif
+		}else{ // online sniff	
+			len = pgen_recv_from_netif(handle->fd, packet, sizeof(packet));
+			if(len < 0){
+				pgen_perror("sniff");
+				return;
+			}
+
 		}
-		result = (*callback)(p, len);
+		result = (*callback)(packet, len);
 	}
 }
 
@@ -262,11 +239,7 @@ int pgen_sendpacket_L2(const char* dev, const void* packet, int len){
 		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
-	sendlen = write(sock, packet, len);
-	if(sendlen < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_WRITE;
-	}
+	sendlen = pgen_send_to_netif(sock, packet, len);
 
 	close(sock);
 	return sendlen;
