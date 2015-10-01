@@ -35,7 +35,8 @@ PROTOCOLS_DIR = protocols
 
 
 NETUTILS_SRC = \
-	pgen-io.cc
+	pgen-io.cc \
+	pgen-netutil.cc
 
 OTHER_SRC = \
 	packet.cc \
@@ -50,6 +51,7 @@ HDR = pgen.h \
 	pgen-endian.h \
 	pgen-error.h \
 	pgen-io.h \
+	pgen-netutil.h \
 	release.h \
 	debug.h 
 

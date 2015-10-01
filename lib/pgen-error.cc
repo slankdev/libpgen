@@ -45,7 +45,7 @@ char* pgen_strerror(int errno){
 
 
 void pgen_perror(const char* msg){
-	int errstrlen;
+	int errstrlen = 255;
 	char str[errstrlen];
 
 

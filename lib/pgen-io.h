@@ -26,6 +26,7 @@
 #include "pgen-types.h"
 #include "address.h"
 
+#include "pgen-netutil.h"
 
 
 
@@ -47,15 +48,10 @@ unsigned short checksumTcp(const u_char* dp, int datalen);
 unsigned short checksumUdp(const u_char* dp, int datalen);
 
 
-int   pgen_getipbydev(const char* dev, char* ip);
-int   pgen_getmaskbydev(const char* dev, char* ip);
-int   pgen_getmacbydev(const char* dev, char* mac);
-char* pgen_port2service(int port, int protocol);
 
 
 
 void sniff(pgen_t* handle, bool (*callback)(const u_char*, int));
-int initRawSocket(const char* dev, int promisc, int overIp);
 
 
 #endif /* NETUTIL_H */
