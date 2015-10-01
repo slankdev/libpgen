@@ -28,6 +28,8 @@
 extern int pgen_errno;
 extern int pgen_errno2;
 
+#define PG_ERRNO_NOSUPPORT 255
+
 #define PG_ERRNO_SUCSS   0
 #define PG_ERRNO_BIND    1
 #define PG_ERRNO_HDRINC  2

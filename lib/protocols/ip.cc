@@ -79,13 +79,16 @@ void pgen_ip::compile(){
 	this->ip.ihl = IP_HDR_LEN / 4;
 	this->ip.version = 4;
 	this->ip.tos = this->IP.tos; //no useing world now
-#ifdef __linux
+	
 	this->ip.tot_len = htons(this->IP.tot_len);
 	this->ip.frag_off = htons(this->IP.frag_off); // ?????
-#else
+
+/*
+#ifndef __linux	
 	this->ip.tot_len  = this->IP.tot_len;
 	this->ip.frag_off = this->IP.frag_off; // ?????
 #endif
+*/
 	this->ip.id = htons(this->IP.id);
 	this->ip.ttl = this->IP.ttl;
 	this->ip.protocol = this->IP.protocol;

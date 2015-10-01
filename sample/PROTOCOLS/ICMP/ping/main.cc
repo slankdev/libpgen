@@ -1,5 +1,5 @@
 #include <pgen.h>
-const char* dev = "wlan0";
+const char* dev = "en0";
 
 bool func(const u_char* packet, int len){
 	pgen_unknown buf(packet, len);
@@ -20,15 +20,19 @@ int main(int argc, char** argv){
 
 	pgen_t* handle = pgen_open(dev, NULL);
 	if(handle == NULL){
+		pgen_perror("test");
 		return -1;	
 	}
+
 
 	pgen_icmp pack;
 	pack.ETH.src.setmacbydev(dev);
 	pack.ETH.dst.setmacbroadcast();
+	pack.ETH.dst ="a2:12:42:17:d8:8f";
 	pack.IP.src.setipbydev(dev);
 	pack.IP.dst = argv[1];
 	pack.ICMP.echo.id = 0x1234;
+	
 
 	for(int i=0; i<10; i++){
 		pack.send_handle(handle);

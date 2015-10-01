@@ -45,81 +45,86 @@ char* pgen_strerror(int errno){
 
 
 void pgen_perror(const char* msg){
-	char str[256];
+	int errstrlen;
+	char str[errstrlen];
+
 
 	switch(pgen_errno2){
 		case PG_ERRNO_SUCSS:
-			strncpy(str, "success", 255);
+			strncpy(str, "success", errstrlen);
 			break;
 		case PG_ERRNO_BIND:
-			strncpy(str, "bind", 255);
+			strncpy(str, "bind", errstrlen);
 			break;
 		case PG_ERRNO_HDRINC: 
-			strncpy(str, "setsockopt hdrinc", 255);
+			strncpy(str, "setsockopt hdrinc", errstrlen);
 			break;
 		case PG_ERRNO_PROMISC:
-			strncpy(str, "set promisc", 255);
+			strncpy(str, "set promisc", errstrlen);
 			break;
 		case PG_ERRNO_WONLY:
-			strncpy(str, "handle is write only", 255);
+			strncpy(str, "handle is write only", errstrlen);
 			break;
 		case PG_ERRNO_RONLY: 
-			strncpy(str, "handle is read only", 255);
+			strncpy(str, "handle is read only", errstrlen);
 			break;
 		case PG_ERRNO_FWRITE:
-			strncpy(str, "fwrite", 255);
+			strncpy(str, "fwrite", errstrlen);
 			break;
 		case PG_ERRNO_FREAD:
-			strncpy(str, "fread", 255);
+			strncpy(str, "fread", errstrlen);
 			break;
 		case PG_ERRNO_WRITE:
-			strncpy(str, "write", 255);
+			strncpy(str, "write", errstrlen);
 			break;
 		case PG_ERRNO_READ:
-			strncpy(str, "read", 255);
+			strncpy(str, "read", errstrlen);
 			break;
 		case PG_ERRNO_SENDTO:
-			strncpy(str, "sendto", 255);
+			strncpy(str, "sendto", errstrlen);
 			break;
 		case PG_ERRNO_FOPEN:
-			strncpy(str, "fopen", 255);
+			strncpy(str, "fopen", errstrlen);
 			break;
 		case PG_ERRNO_IOCTL:
-			strncpy(str, "ioctl", 255);
+			strncpy(str, "ioctl", errstrlen);
 			break;
 		case PG_ERRNO_SOCKET:
-			strncpy(str, "socket", 255);
+			strncpy(str, "socket", errstrlen);
+			break;
+		case PG_ERRNO_NOSUPPORT:
+			strncpy(str, "not support", errstrlen);
 			break;
 
 #ifndef __linux // for bsd
 		case PG_ERRNOBSD_OPENBPF:
-			strncpy(str, "open bpf", 255);
+			strncpy(str, "open bpf", errstrlen);
 			break;
 		case PG_ERRNOBSD_SETBUF:
-			strncpy(str, "set buf", 255);
+			strncpy(str, "set buf", errstrlen);
 			break;
 		case PG_ERRNOBSD_BIND:
-			strncpy(str, "bind", 255);
+			strncpy(str, "bind", errstrlen);
 			break;
 		case PG_ERRNOBSD_PROMISC:
-			strncpy(str, "set promisc", 255);
+			strncpy(str, "set promisc", errstrlen);
 			break;
 		case PG_ERRNOBSD_IMDAT:
-			strncpy(str, "set immediate", 255);
+			strncpy(str, "set immediate", errstrlen);
 			break;
 		case PG_ERRNOBSD_RCVALL: 
-			strncpy(str, "set rcv all", 255);
+			strncpy(str, "set rcv all", errstrlen);
 			break;
 		case PG_ERRNOBSD_FLUSH:
-			strncpy(str, "buf flush", 255);
+			strncpy(str, "buf flush", errstrlen);
 			break;
 		case PG_ERRNOBSD_NCMPMAC:
-			strncpy(str, "no cmpl mac", 255);
+			strncpy(str, "no cmpl mac", errstrlen);
 			break;
 #endif
 
 		default:
-			strncpy(str, "unknown error!", 255);
+			strncpy(str, "unknown error!", errstrlen);
 			break;
 			
 	}

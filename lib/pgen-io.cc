@@ -206,7 +206,7 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 
 
 // send packet in handle
-int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
+int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 	if(p->is_write == 0){
 		pgen_errno2 = PG_ERRNO_RONLY;
 		return -1;
@@ -228,7 +228,12 @@ int pgen_sendpacket_handle(pgen_t* p, const u_char* packet, int len){
 
 
 
-int pgen_sendpacket_L3(const char* dev,const u_char* packet,int len,struct sockaddr* sa){
+int pgen_sendpacket_L3(const char* dev,const void* packet,int len,struct sockaddr* sa){
+#ifndef __linux
+	pgen_errno2 = PG_ERRNO_NOSUPPORT;
+	return -1;
+#endif
+
 	int sock;
 	int sendlen;
 
@@ -251,7 +256,7 @@ int pgen_sendpacket_L3(const char* dev,const u_char* packet,int len,struct socka
 
 
 
-int pgen_sendpacket_L2(const char* dev, const u_char* packet, int len){
+int pgen_sendpacket_L2(const char* dev, const void* packet, int len){
 	int sock;
 	int sendlen;
 
@@ -676,7 +681,7 @@ int pgen_getmacbydev(const char* dev, char* mac){
 
 
 // this is test function yet
-int pgen_writepcap(FILE* fp, const u_char* packet, int len){
+int pgen_writepcap(FILE* fp, const void* packet, int len){
 	int sendlen = 0;
 	struct timeval ts_now;
 	struct pcap_pkthdr pkthdr;
