@@ -231,106 +231,15 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 				return -1;
 			}
 		}
-	
-	}
-
-
 
 #else	// for bsd
 
-		struct ifreq ifr;
-
-		/* BPFデバイスファイルのオープン */
-		int i;
-		char buf[256];
-		for (i = 0; i < 4; i++) { 
-			snprintf(buf, 255, "/dev/bpf%d", i);
-			if ((sock = open(buf, O_RDWR)) > 0)
-				break;
-		}
-
-		if (i >= 5) {
-			fprintf(stderr, "cannot open BPF\n");
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNOBSD_OPENBPF;
-			return -1;
-		}
-		
-		// set buffer size
-		int bufsize = 4096;
-		if (ioctl(sock, BIOCSBLEN, &bufsize) < 0) {
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNOBSD_SETBUF;
-			close(sock);
-			return -1;
-		}
-
-
-		// bind to device
-		memset(&ifr, 0, sizeof(ifr));
-		strncpy(ifr.ifr_name, dev, IFNAMSIZ);
-		if(ioctl(sock, BIOCSETIF, &ifr) < 0){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNOBSD_BIND;
-			close(sock);
-			return -1;
-		}
-
-
-		// set promisc
-		if(promisc){
-			if (ioctl(sock, BIOCPROMISC, NULL) < 0) {
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNOBSD_PROMISC;
-				close(sock);
-				return -1;
-			}
-		}
-
-
-
-		//if recv packet then call read fast
-		if (ioctl(sock, BIOCIMMEDIATE, &one) < 0) {
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNOBSD_IMDAT;
-			close(sock);
-			return -1;
-		}
-
-
-		// set recv sendPacket 
-		if (ioctl(sock, BIOCSSEESENT, &one) < 0) {
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNOBSD_RCVALL;
-			close(sock);
-			return -1;
-		}
-
-
-		// flush recv buffer
-		if (ioctl(sock, BIOCFLUSH, NULL) < 0) {
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNOBSD_FLUSH;
-			close(sock);
-			return -1;
-		}
-
-
-
-		// no complite src macaddr
-		if (ioctl(sock, BIOCSHDRCMPLT, &one) < 0) {
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNOBSD_NCMPMAC;
-			close(sock);
-			return -1;
-		}
-		
-
-
-	}
+		sock = open_bpf(dev, promisc);
 
 #endif
 	
+	}
+
 	return sock;
 }
 
