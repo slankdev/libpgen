@@ -51,6 +51,40 @@
 
 
 
+
+
+int pgen_recv_from_netif(int fd, void* buf, int len){
+	int recv_len;
+	u_char  buf0[4096];
+	u_char* p = buf0;
+
+	recv_len = read(fd, p, 4096);
+	if(recv_len < 0){
+		perror("pgen_recv");
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_READ;
+		return recv_len;
+	}
+
+#ifndef __linux
+
+	struct bpf_hdr *bpfhdr;
+	bpfhdr = (struct bpf_hdr*)p;
+	p += bpfhdr->bh_hdrlen;
+	recv_len = bpfhdr->bh_caplen;
+
+#endif /* __linux */
+
+	memcpy(buf, p, recv_len);
+	return recv_len;	
+}
+
+
+
+
+
+
+
 int open_bpf(const char* dev, int promisc) {
 	int sock;	
 	struct ifreq ifr;
@@ -81,7 +115,6 @@ int open_bpf(const char* dev, int promisc) {
 		return -1;
 	}
 
-
 	// bind to device
 	memset(&ifr, 0, sizeof(ifr));
 	strncpy(ifr.ifr_name, dev, IFNAMSIZ);
@@ -91,7 +124,6 @@ int open_bpf(const char* dev, int promisc) {
 		close(sock);
 		return -1;
 	}
-
 
 	// set promisc
 	if(promisc){
@@ -103,8 +135,6 @@ int open_bpf(const char* dev, int promisc) {
 		}
 	}
 
-
-
 	//if recv packet then call read fast
 	if (ioctl(sock, BIOCIMMEDIATE, &one) < 0) {
 		pgen_errno = errno;
@@ -112,7 +142,6 @@ int open_bpf(const char* dev, int promisc) {
 		close(sock);
 		return -1;
 	}
-
 
 	// set recv sendPacket 
 	if (ioctl(sock, BIOCSSEESENT, &one) < 0) {
@@ -122,7 +151,6 @@ int open_bpf(const char* dev, int promisc) {
 			return -1;
 	}
 
-
 	// flush recv buffer
 	if (ioctl(sock, BIOCFLUSH, NULL) < 0) {
 		pgen_errno = errno;
@@ -130,8 +158,6 @@ int open_bpf(const char* dev, int promisc) {
 		close(sock);
 		return -1;
 	}
-
-
 
 	// no complite src macaddr
 	if (ioctl(sock, BIOCSHDRCMPLT, &one) < 0) {
@@ -143,6 +169,8 @@ int open_bpf(const char* dev, int promisc) {
 
 	return sock;
 }
+
+
 
 
 
@@ -193,7 +221,6 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 			return -1;
 		}
 
-
 		// get interface index number
 		memset(&ifreq, 0, sizeof(struct ifreq));
 		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
@@ -239,7 +266,6 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 #endif
 	
 	}
-
 	return sock;
 }
 

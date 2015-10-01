@@ -23,6 +23,7 @@
 #include "pgen.h"
 #include "pgen-io.h"
 #include "pgen-netutil.h"
+#include "pgen-util.h"
 #include "packet.h"
 #include "pgen-error.h"
 
@@ -183,7 +184,6 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 				pgen_errno = errno;
 				pgen_errno2 = PG_ERRNO_READ;
 				pgen_perror("sniff");
-				pgen_errno = errno;
 				return;
 			}
 #ifndef __linux

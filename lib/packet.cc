@@ -144,3 +144,7 @@ void pgen_packet::send_handle(pgen_t* handle){
 
 
 
+
+int check(const char* pcapfile){
+	return -1;
+}

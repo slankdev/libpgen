@@ -1,5 +1,4 @@
 
-
 /*
  * copyright (C) <2015>  <Slank Hiroki Shirokura>
  * 
@@ -21,18 +20,26 @@
 
 
 
-#ifndef PGEN_NETUTIL_H
-#define PGEN_NETUTIL_H
+#include "pgen.h"
+#include "pgen-util.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-int pgen_recv_from_netif(int fd, void* buf, int len);
-
-int open_bpf(const char* dev, int promisc);
-
-int initRawSocket(const char* dev, int promisc, int overIp);
-int   pgen_getipbydev(const char* dev, char* ip);
-int   pgen_getmaskbydev(const char* dev, char* ip);
-int   pgen_getmacbydev(const char* dev, char* mac);
-char* pgen_port2service(int port, int protocol);
+#ifndef __linux
+#include <net/bpf.h>
+#endif
 
 
-#endif /* PGEN_NETUTIL_H */
+
+
+
+
+
+
+
+
+int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
+	return -1;	
+}
+

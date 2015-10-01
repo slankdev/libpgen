@@ -60,7 +60,6 @@ class pgen_packet{
 		virtual void summary()=0;
 		virtual void info()=0;	
 		virtual void help()=0;
-		virtual int  check(const char* pcapfile)=0;
 
 		void hex();
 		void addData(const void* , int );
@@ -69,6 +68,8 @@ class pgen_packet{
 		
 		int  length();
 		u_char* byte();
+
+		int  check(const char* pcapfile);
 };
 
 
@@ -97,7 +98,6 @@ class pgen_eth : public pgen_packet {
 		void summary();
 		void info();
 		void help();
-		int  check(const char* pcapfile);
 };
 
 
