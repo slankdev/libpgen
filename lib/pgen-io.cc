@@ -215,13 +215,9 @@ int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 	int sendlen;
 	
 	if(p->is_offline == 1){
-		sendlen = pgen_writepcap(p->offline.fd, packet, len);
+		sendlen = pgen_send_to_pcap(p->offline.fd, packet, len);
 	}else{
-		sendlen = write(p->fd, packet, len);
-		if(sendlen < 0){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_WRITE;
-		}
+		sendlen = pgen_send_to_netif(p->fd, packet, len);
 	}
 	
 	return sendlen;
@@ -347,40 +343,6 @@ unsigned short checksumUdp(const u_char *dp, int datalen){
 }
 
 
-
-
-
-
-
-
-
-
-int pgen_writepcap(FILE* fp, const void* packet, int len){
-	int sendlen = 0;
-	struct timeval ts_now;
-	struct pcap_pkthdr pkthdr;
-	gettimeofday(&ts_now, NULL);
-	
-	pkthdr.ts.tv_sec = (unsigned int)(ts_now.tv_sec);
-	pkthdr.ts.tv_usec = (unsigned int)(ts_now.tv_usec);
-	pkthdr.caplen = len;
-	pkthdr.len    = len;
-
-	if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, fp) != 1){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_FWRITE;
-		sendlen = -1;
-	}else{
-		if(fwrite(packet, len, 1, fp) < 1){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_FWRITE;
-			sendlen = -1;
-		}
-		sendlen = len;
-	}
-	
-	return sendlen;	
-}
 
 
 

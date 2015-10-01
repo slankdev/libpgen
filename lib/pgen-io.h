@@ -40,7 +40,6 @@ int pgen_sendpacket_L2(const char*, const void*, int);
 int pgen_sendpacket_L3(const char*, const void*, int, struct sockaddr*);
 
 int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len);
-int pgen_writepcap(FILE* fp, const void* packet, int len);
 
 
 
