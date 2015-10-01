@@ -52,6 +52,13 @@
 
 
 
+int pgen_send_to_netif(int fd, const void* buf, int len){
+	return -2;	
+}
+
+
+
+
 
 int pgen_recv_from_netif(int fd, void* buf, int len){
 	int recv_len;
@@ -78,7 +85,6 @@ int pgen_recv_from_netif(int fd, void* buf, int len){
 	memcpy(buf, p, recv_len);
 	return recv_len;	
 }
-
 
 
 

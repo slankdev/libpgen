@@ -355,7 +355,6 @@ unsigned short checksumUdp(const u_char *dp, int datalen){
 
 
 
-// this is test function yet
 int pgen_writepcap(FILE* fp, const void* packet, int len){
 	int sendlen = 0;
 	struct timeval ts_now;

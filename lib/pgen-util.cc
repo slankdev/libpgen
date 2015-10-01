@@ -36,10 +36,41 @@
 
 
 
+int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
+	int sendlen = 0;
+	struct timeval ts_now;
+	struct pcap_pkthdr pkthdr;
+	gettimeofday(&ts_now, NULL);
+	
+	pkthdr.ts.tv_sec = (unsigned int)(ts_now.tv_sec);
+	pkthdr.ts.tv_usec = (unsigned int)(ts_now.tv_usec);
+	pkthdr.caplen = len;
+	pkthdr.len    = len;
+
+	if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, fp) != 1){
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_FWRITE;
+		sendlen = -1;
+	}else{
+		if(fwrite(buf, len, 1, fp) < 1){
+			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_FWRITE;
+			sendlen = -1;
+		}
+		sendlen = len;
+	}
+	
+	return sendlen;	
+}
+
+
 
 
 
 int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
 	return -1;	
 }
+
+
+
 

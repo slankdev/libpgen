@@ -24,11 +24,13 @@
 #ifndef PGEN_NETUTIL_H
 #define PGEN_NETUTIL_H
 
-int pgen_recv_from_netif(int fd, void* buf, int len);
+int pgen_send_to_netif(int, const void*, int);
+int pgen_recv_from_netif(int, void*, int);
 
 int open_bpf(const char* dev, int promisc);
-
 int initRawSocket(const char* dev, int promisc, int overIp);
+
+
 int   pgen_getipbydev(const char* dev, char* ip);
 int   pgen_getmaskbydev(const char* dev, char* ip);
 int   pgen_getmacbydev(const char* dev, char* mac);
