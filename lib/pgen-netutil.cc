@@ -86,6 +86,12 @@ int pgen_recv_from_netif(int fd, void* buf, int len){
 
 
 int open_bpf(const char* dev, int promisc) {
+#ifdef __linux
+	
+	pgen_errno2 = PG_ERRNO_NOSUPPORT;
+	return -1;
+
+#else /* __linux */
 	int sock;	
 	struct ifreq ifr;
 	const unsigned int one  = 1;
@@ -168,6 +174,8 @@ int open_bpf(const char* dev, int promisc) {
 	}
 
 	return sock;
+
+#endif /* __linux */
 }
 
 
