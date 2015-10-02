@@ -34,7 +34,9 @@ int initRawSocket(const char* dev, int promisc, int overIp);
 int   pgen_getipbydev(const char* dev, char* ip);
 int   pgen_getmaskbydev(const char* dev, char* ip);
 int   pgen_getmacbydev(const char* dev, char* mac);
-char* pgen_port2service(int port, int protocol);
+//char* pgen_port2service(int port, int protocol);
+
+char* pgen_port2service(int port, const char* protocol, char* buf);
 
 
 #endif /* PGEN_NETUTIL_H */

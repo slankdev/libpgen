@@ -118,12 +118,13 @@ void pgen_udp::summary(){
 void pgen_udp::info(){
 	compile();
 	pgen_ip::info();
+	char buf[32];
 
 	printf(" * User Datagram Protocol \n");
 	printf("    - Source Port     :  %d (%s)\n", 
-			UDP.src, pgen_port2service(UDP.src, 2));
+			UDP.src, pgen_port2service(UDP.src, "tcp", buf));
 	printf("    - Destination Port:  %d (%s)\n", 
-			UDP.dst, pgen_port2service(UDP.dst, 2));
+			UDP.dst, pgen_port2service(UDP.dst, "buf", buf));
 	printf("    - Length          :  %d \n", UDP.len);
 }
 

@@ -409,7 +409,7 @@ int pgen_getmacbydev(const char* dev, char* mac){
 
 
 
-
+/*
 char* pgen_port2service(int port, int protocol){
 	static char str[16];
 	struct servent* serv;
@@ -431,6 +431,20 @@ char* pgen_port2service(int port, int protocol){
 		return str;
 	}
 }
+*/
 
+
+char* pgen_port2service(int port, const char* protocol, char* buf){
+	struct servent* serv;
+	
+	serv = getservbyport(htons(port), protocol);
+	if(serv == NULL){
+		strncpy(buf, "not-found", 15);
+		return buf;
+	}else{
+		strncpy(buf, serv->s_name, 15);
+		return buf;
+	}
+}
 
 

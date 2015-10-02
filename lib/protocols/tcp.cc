@@ -181,12 +181,13 @@ void pgen_tcp::summary(){
 void pgen_tcp::info(){
 	compile();
 	pgen_ip::info();
+	char buf[32];
 
 	printf(" * Transmission Control Protocol \n");
 	printf("    - Source Port     :  %d (%s) \n",
-			TCP.src, pgen_port2service(TCP.src, 1));
+			TCP.src, pgen_port2service(TCP.src, "tcp", buf));
 	printf("    - Dest Port       :  %d (%s) \n", 
-			TCP.dst, pgen_port2service(TCP.dst, 1));
+			TCP.dst, pgen_port2service(TCP.dst, "tcp", buf));
 	printf("    - Frags           :  ");
 	if(tcp.fin == 1)	printf("F");
 	if(tcp.syn == 1)	printf("S");
