@@ -12,7 +12,7 @@ libpgenはC++で書かれたパケット解析、送受信などを簡単にで�
 
 
 ## 利用可能環境
-Ubuntu-Gnome14.04LTS, ArchLinuxで動作確認ができています。確認していませんんが、他のlinuxでも動作するはずです。
+Ubuntu-Gnome14.04LTS, ArchLinux, Linux Mint 17.1で動作確認ができています。確認していませんんが、他のlinuxでも動作するはずです。
 (2015/09/16) BSDをサポートしました。OSXでも動きます。
  
 ## 追加予定機能
