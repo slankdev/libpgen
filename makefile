@@ -1,4 +1,5 @@
 
+# this makefile is in top
 
 all:
 	$(MAKE) -C lib/
