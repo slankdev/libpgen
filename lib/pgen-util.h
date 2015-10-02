@@ -27,7 +27,7 @@
 #include <unistd.h>
 
 
-int pgen_recv_from_pcap(FILE* fp, void* buf, int len);
+int pgen_recv_from_pcap(FILE*, void*, int);
 int pgen_send_to_pcap(FILE*, const void*, int);
 
 

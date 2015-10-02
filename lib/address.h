@@ -80,7 +80,6 @@ class ipaddr{
 			*this = str.c_str();		
 		}
 		char* c_str(){
-		//	char* _str = (char*)malloc(16);
 			union lc lc;
 			lc.l = (unsigned int)this->_addr;
 			snprintf(_c_str, sizeof(_c_str)-1,"%u.%u.%u.%u",
@@ -248,7 +247,6 @@ class macaddr{
 			return 1;
 		}
 		char* c_str(){
-//			char* _str = (char*)malloc(18);
 			snprintf(_str,sizeof(char[18]),"%02x:%02x:%02x:%02x:%02x:%02x",
 				this->_addr[0], this->_addr[1], this->_addr[2], 
 				this->_addr[3], this->_addr[4], this->_addr[5]);

@@ -1,4 +1,3 @@
-
 /*
  * copyright (C) <2015>  <Slank Hiroki Shirokura>
  * 

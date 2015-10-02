@@ -38,17 +38,12 @@ void pgen_close(pgen_t* p);
 
 int pgen_sendpacket_L2(const char*, const void*, int);
 int pgen_sendpacket_L3(const char*, const void*, int, struct sockaddr*);
-
 int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len);
-
 
 
 unsigned short checksum(unsigned short *data, int len);
 unsigned short checksumTcp(const u_char* dp, int datalen);
 unsigned short checksumUdp(const u_char* dp, int datalen);
-
-
-
 
 
 void sniff(pgen_t* handle, bool (*callback)(const u_char*, int));

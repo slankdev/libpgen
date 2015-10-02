@@ -2,7 +2,7 @@
 詳しいドキュメントは開発者サイトを参照してください。 http://libpgen.org
 
 ## 概要、コンセプト
-li　bpgenはC++で書かれたパケット解析、送受信などを簡単にできるようにすることを目標としているライブラリです。
+libpgenはC++で書かれたパケット解析、送受信などを簡単にできるようにすることを目標としているライブラリです。
 
 コンセプトは以下のとうりです。
 * 簡単で高度にパケットを設定して送ることができる
@@ -39,7 +39,7 @@ more infomation see http://libpgen.org
 
 
 ## Install
-	　
+
 	$ cd libpgen
 	$ make
 	$ sudo make install

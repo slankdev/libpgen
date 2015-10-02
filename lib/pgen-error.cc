@@ -36,7 +36,6 @@ char pgen_errstr[PGEN_ERRSTR_LEN]={0};
 
 char* pgen_strerror(int errno){
 	strncpy(pgen_errstr, strerror(errno), PGEN_ERRSTR_LEN);
-
 	return pgen_errstr;	
 }
 

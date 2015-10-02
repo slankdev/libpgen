@@ -85,7 +85,7 @@ class pgen_eth : public pgen_packet {
 		struct{
 			macaddr dst;
 			macaddr src;
-			int type;
+			bit16 type;
 		}ETH;
 		
 		pgen_eth();
