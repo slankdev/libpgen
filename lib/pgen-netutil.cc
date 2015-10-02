@@ -58,7 +58,7 @@ int pgen_send_to_netif(int fd, const void* buf, int len){
 		pgen_errno2 = PG_ERRNO_WRITE;
 	}
 
-	return -2;	
+	return sendlen;	
 }
 
 
