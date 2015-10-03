@@ -103,6 +103,7 @@ int open_bpf(const char* dev, int promisc) {
 	return -1;
 
 #else /* __linux */
+
 	int sock;	
 	struct ifreq ifr;
 	const unsigned int one  = 1;
@@ -407,31 +408,6 @@ int pgen_getmacbydev(const char* dev, char* mac){
 }
 
 
-
-
-/*
-char* pgen_port2service(int port, int protocol){
-	static char str[16];
-	struct servent* serv;
-	if(protocol == 1){
-		serv = getservbyport(htons(port), "tcp");
-	}else if(protocol == 2){
-		serv = getservbyport(htons(port), "udp");
-	}else{
-		fprintf(stderr, "pgen_port2service: second argument is not support\n");
-		strncpy(str, "error", sizeof(str)-1);
-		return str;
-	}
-
-	if(serv == NULL){
-		strncpy(str, "not-found", sizeof(str)-1);
-		return str;
-	}else{
-		strncpy(str, serv->s_name, sizeof(str)-1);
-		return str;
-	}
-}
-*/
 
 
 char* pgen_port2service(int port, const char* protocol, char* buf){

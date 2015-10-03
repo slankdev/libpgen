@@ -212,8 +212,6 @@ int pgen_sendpacket_L3(const char* dev,const void* packet,int len,struct sockadd
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 1)) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 
@@ -235,8 +233,6 @@ int pgen_sendpacket_L2(const char* dev, const void* packet, int len){
 	int sendlen;
 
 	if((sock=initRawSocket(dev, 0, 0)) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_SOCKET;
 		return -1;
 	}
 	sendlen = pgen_send_to_netif(sock, packet, len);

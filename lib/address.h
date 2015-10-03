@@ -141,7 +141,6 @@ class ipaddr{
 				perror("ipaddr(const char*)");
 				exit(-1);
 			}
-
 			return *this;
 		}
 		ipaddr& operator=(int num){	// FUGUAI ARUKAMO
