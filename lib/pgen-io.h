@@ -29,6 +29,7 @@
 #include "pgen-netutil.h"
 #include "pgen-util.h"
 
+#include <sys/types.h>
 
 
 pgen_t* pgen_open(const char* dev, void*);

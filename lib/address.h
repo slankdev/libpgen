@@ -26,22 +26,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <net/if.h>
+#include <arpa/inet.h>
 
 #include "pgen-types.h"
 #include "pgen-io.h"
 #include "pgen-error.h"
 
 #ifndef __linux
-#include <ifaddrs.h>
-#include <net/if_dl.h>
-#include <net/if_types.h>
+//#include <ifaddrs.h>
+//#include <net/if_dl.h>
+//#include <net/if_types.h>
 #endif
 
 

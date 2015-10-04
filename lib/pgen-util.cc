@@ -20,8 +20,10 @@
 
 
 
-#include "pgen.h"
+//#include "pgen.h"
 #include "pgen-util.h"
+#include "pgen-types.h"
+#include "pgen-error.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
