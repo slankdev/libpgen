@@ -22,14 +22,13 @@
 #ifndef NETUTIL_H
 #define NETUTIL_H
 
-//#include "pgen.h"
-//#include "address.h"
-#include "pgen-types.h"
 
+
+#include <sys/types.h>
+#include "pgen-types.h"
 #include "pgen-netutil.h"
 #include "pgen-util.h"
 
-#include <sys/types.h>
 
 
 pgen_t* pgen_open(const char* dev, void*);

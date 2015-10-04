@@ -25,19 +25,12 @@
 
 
 
-//#include "pgen.h"
 #include "pgen-types.h"
 
-//#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
-//#include <stdint.h>
-//#include <arpa/inet.h>
-//#include <sys/socket.h>
-//#include <string>
-//#include <iostream>
 
 
 #define PGEN_MAX_PACKET_LEN 10000
