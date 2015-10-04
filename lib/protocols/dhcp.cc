@@ -222,7 +222,7 @@ void pgen_dhcp::summary(){
 	}else if(this->DHCP.option[0].data[0] == 13){
 		printf("Lease Active");
 	}else{
-		fprintf(stderr, "}\npgen_dhcp::summary: DHCP Message type not found\n");
+		fprintf(stderr, "pgen_dhcp::summary: DHCP Message type not found\n");
 	}
 
 	printf(" Transaction ID 0x%04x }\n", DHCP.xid);
