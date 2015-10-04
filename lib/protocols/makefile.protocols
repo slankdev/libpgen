@@ -11,3 +11,16 @@ PROTOCOL_SRC = \
 	ardrone.cc \
 	http.cc \
 	dhcp.cc 
+
+PROTOCOL_HDR = \
+	eth.h \
+	arp.h \
+	ip.h \
+	icmp.h \
+	tcp.h \
+	udp.h \
+	dns.h \
+	ardrone.h \
+	http.h \
+	dhcp.h 
+

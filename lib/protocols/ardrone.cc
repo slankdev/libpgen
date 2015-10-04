@@ -25,7 +25,7 @@
 #include "address.h"
 #include "pgen-types.h"
 #include "pgen-io.h"
-
+#include "ardrone.h"
 
 static int get_original_string(const char* p, char buf[]);
 static int get_command_len(const void*);

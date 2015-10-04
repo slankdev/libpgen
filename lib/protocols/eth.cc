@@ -23,6 +23,7 @@
 #include "packet.h"
 #include "address.h"
 #include "pgen-error.h"
+#include "eth.h"
 
 #include <map>
 #include <stdio.h>

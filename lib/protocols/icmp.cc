@@ -22,6 +22,7 @@
 #include <map>
 #include <string>
 #include <iostream>
+#include "icmp.h"
 
 #include "packet.h"
 #include "address.h"

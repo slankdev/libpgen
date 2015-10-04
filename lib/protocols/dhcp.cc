@@ -23,6 +23,7 @@
 #include "packet.h"
 #include "address.h"
 #include "pgen-io.h"
+#include "dhcp.h"
 
 #include <map>
 #include <string>

@@ -24,6 +24,7 @@
 #include "packet.h"
 #include "address.h"
 #include "pgen-io.h"
+#include "dns.h"
 
 #include <map>
 #include <string>

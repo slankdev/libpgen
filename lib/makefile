@@ -81,12 +81,14 @@ clean:
 	$(RM) *.o *.out *.a *.so
 
 install: $(HDR) $(PROGNAME) mac_code.list
+	$(MAKE) -C $(PROTOCOLS_DIR) install
 	$(CP) $(PROGNAME) $(INSTALL_LIB_DIR)
 	for i in $(HDR); do \
 	  $(CP) $$i $(INSTALL_HDR_DIR); done
 	$(CP) mac_code.list /usr/local/etc/mac_code.list
 
 uninstall: 
+	$(MAKE) -C $(PROTOCOLS_DIR) uninstall
 	$(RM) $(INSTALL_LIB_DIR)/$(PROGNAME)
 	for i in $(HDR); do \
 	  $(RM) $(INSTALL_HDR_DIR)/$$i ; done
