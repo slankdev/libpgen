@@ -28,7 +28,7 @@
 //#include "pgen-error.h"
 
 #include "packet.h"
-#include "protocols/protocols.h"
+#include "protocols.h"
 
 #include "address.h"
 
