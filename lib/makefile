@@ -80,7 +80,7 @@ clean:
 	$(MAKE) -C $(PROTOCOLS_DIR) clean
 	$(RM) *.o *.out *.a *.so
 
-install: $(HDR) $(PROGNAME) mac_code.list
+install: 
 	$(MAKE) -C $(PROTOCOLS_DIR) install
 	$(CP) $(PROGNAME) $(INSTALL_LIB_DIR)
 	for i in $(HDR); do \
