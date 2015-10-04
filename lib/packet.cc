@@ -22,7 +22,8 @@
 
 
 #include "packet.h"
-#include "pgen.h"
+#include "pgen-io.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

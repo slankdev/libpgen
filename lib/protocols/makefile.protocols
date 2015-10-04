@@ -12,7 +12,7 @@ PROTOCOL_SRC = \
 	http.cc \
 	dhcp.cc 
 
-PROTOCOL_HDR = \
+PROTOCOL_HDR = protocols.h \
 	eth.h \
 	arp.h \
 	ip.h \

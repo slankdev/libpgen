@@ -24,11 +24,14 @@
 
 
 
-#include "packet.h"
-#include "address.h"
-#include "pgen-io.h"
-#include "debug.h"
-#include "pgen-error.h"
+//#include "debug.h"
+//#include "pgen-error.h"
 
+#include "packet.h"
+#include "protocols/protocols.h"
+
+#include "address.h"
+
+#include "pgen-io.h"
 
 #endif /* PGEN_H */

@@ -22,7 +22,8 @@
 #ifndef PGEN_TYPES_H
 #define PGEN_TYPES_H
 
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "pgen-endian.h"		// for BYTE_ORDER
 
 

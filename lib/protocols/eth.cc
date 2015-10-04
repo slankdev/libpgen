@@ -19,10 +19,12 @@
  */
 
 
+#include "eth.h"
 #include "pgen.h"
 #include "packet.h"
 #include "address.h"
 #include "pgen-error.h"
+#include "pgen-io.h"
 #include "eth.h"
 
 #include <map>
@@ -35,9 +37,6 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <net/ethernet.h> 
-
-#include "pgen-io.h"
-
 
 
 

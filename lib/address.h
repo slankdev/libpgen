@@ -23,7 +23,6 @@
 #define ADDRESS_H
 
 #include <string>
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -34,10 +33,10 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <net/if.h>
+
 #include "pgen-types.h"
 #include "pgen-io.h"
 #include "pgen-error.h"
-
 
 #ifndef __linux
 #include <ifaddrs.h>

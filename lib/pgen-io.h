@@ -22,9 +22,9 @@
 #ifndef NETUTIL_H
 #define NETUTIL_H
 
-#include "pgen.h"
+//#include "pgen.h"
+//#include "address.h"
 #include "pgen-types.h"
-#include "address.h"
 
 #include "pgen-netutil.h"
 #include "pgen-util.h"
