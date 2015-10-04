@@ -2,7 +2,7 @@
 #define ARP_H
 
 
-#include <eth.h>
+#include "eth.h"
 
 
 class pgen_arp : public pgen_eth {

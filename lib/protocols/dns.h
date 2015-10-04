@@ -2,7 +2,7 @@
 #define DNS_H
 
 
-#include <udp.h>
+#include "udp.h"
 
 
 #define MAX_QUERY  16
