@@ -28,6 +28,7 @@
 
 int pgen_send_to_netif(int, const void*, int);
 int pgen_recv_from_netif(int, void*, int);
+int pgen_recv_from_netif_to(int, void*, int, struct timeval);
 
 int open_bpf(const char* dev, int promisc);
 int initRawSocket(const char* dev, int promisc, int overIp);
