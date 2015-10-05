@@ -60,6 +60,14 @@ macaddr arptable::find(ipaddr ip){
 		if(ip == entry[i].ip)
 			return entry[i].mac;
 	}
+	
+	this->get(ip);
+
+	for(int i=0; i<entry.size(); i++){
+		if(ip == entry[i].ip)
+			return entry[i].mac;
+	}
+
 	return NULL;
 }
 
@@ -92,6 +100,10 @@ int arptable::get(ipaddr ip){
 	u_char data[1000];
 	pgen_arp pack;
 	pgen_unknown unknown;
+	struct timeval tv;
+	
+	tv.tv_sec  = 1;
+	tv.tv_usec = 0;
 
 	pack.ETH.src.setmacbydev(ifname);
 	pack.ETH.dst.setmacbroadcast();
@@ -102,9 +114,12 @@ int arptable::get(ipaddr ip){
 	pack.ARP.dstIp = ip;
 	pack.send_handle(handle);
 	
+	
 	for(int i=0; i<3; i++){
-		len = pgen_recv_from_netif(handle->fd, data, sizeof(data));
-		if(len < 0){
+		len = pgen_recv_from_netif_to(handle->fd, data, sizeof(data), tv);
+		if(len == 0){
+			continue;
+		}else if(len < 0){
 			pgen_perror("pgen_recv_from_netif");
 			pgen_close(handle);
 			return -1;
