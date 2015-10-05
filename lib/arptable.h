@@ -22,12 +22,15 @@ class arptable{
 		std::vector<arpent_t> entry;
 		pgen_t* handle;
 	public:
-		arptable(pgen_t* handle);
+		arptable();
+		arptable(pgen_t*);
+		void sethandle(pgen_t*);
 		int  add(ipaddr, macaddr);
 		int  del(ipaddr);
 		int  get(ipaddr);
-		macaddr find(ipaddr);
+		int  learn(const void*, int len);
 		void show();
+		macaddr find(ipaddr);
 };
 
 

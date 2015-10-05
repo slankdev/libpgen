@@ -16,11 +16,24 @@ static void remove(std::vector<T>& vector, unsigned int index) {
 
 
 
+arptable::arptable(){
+	return;	
+}
+
+
 
 arptable::arptable(pgen_t* h){
+	sethandle(h);
+	return;
+}
+
+
+
+void arptable::sethandle(pgen_t* h){
 	handle = h;
 	return;	
 }
+
 
 
 
@@ -42,6 +55,7 @@ int arptable::add(ipaddr ip, macaddr mac){
 
 
 
+
 int arptable::del(ipaddr ip){
 	for(int i=0; i<entry.size(); i++){
 		if(ip == entry[i].ip){
@@ -54,22 +68,19 @@ int arptable::del(ipaddr ip){
 
 
 
-macaddr arptable::find(ipaddr ip){
-	for(int i=0; i<entry.size(); i++){
-		if(ip == entry[i].ip)
-			return entry[i].mac;
-	}
+
+int arptable::learn(const void* p, int len){
+	pgen_unknown buf;
+	pgen_arp     pack;
 	
-	this->get(ip);
-
-	for(int i=0; i<entry.size(); i++){
-		if(ip == entry[i].ip)
-			return entry[i].mac;
+	buf.cast(p, len);
+	if(buf.isARP){
+		pack.cast(p, len);	
+		this->add(pack.ARP.srcIp, pack.ARP.srcEth);
+		return 1;
 	}
-
-	return NULL;
+	return 0;	
 }
-
 
 
 
@@ -125,8 +136,24 @@ int arptable::get(ipaddr ip){
 			}
 		}
 	}
-
 	return -1;
+}
+
+
+
+
+
+macaddr arptable::find(ipaddr ip){
+	for(int i=0; i<entry.size(); i++){
+		if(ip == entry[i].ip)
+			return entry[i].mac;
+	}
+	this->get(ip);
+	for(int i=0; i<entry.size(); i++){
+		if(ip == entry[i].ip)
+			return entry[i].mac;
+	}
+	return NULL;
 }
 
 
