@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 const char *dev = "en0";
+//const char* dnsserver = "133.25.243.11";
 const char* dnsserver = "192.168.179.1";
 
 bool func(const u_char* p, int len){
@@ -30,9 +31,11 @@ int main(int argc, char** argv){
 		return -1;
 	}
 
+	arptable at(dev);
+
 	pgen_dns pack;
 	pack.ETH.src.setmacbydev(dev);
-	pack.ETH.dst.setmacbroadcast();
+	pack.ETH.dst = at.find(dnsserver);
 	pack.IP.src.setipbydev(dev);
 	pack.IP.dst = dnsserver;
 	pack.UDP.src = 53;

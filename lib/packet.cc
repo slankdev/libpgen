@@ -44,6 +44,8 @@ pgen_packet::pgen_packet(){
 
 
 
+
+
 void pgen_packet::compile_addData(){
 	if(ext_data_len == 0) return;
 	if(ext_data_len+len >= PGEN_MAX_PACKET_LEN){
