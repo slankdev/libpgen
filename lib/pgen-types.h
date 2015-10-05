@@ -76,6 +76,9 @@ struct pgen{
 	int is_write;
 	int is_read;
 	struct{
+		char ifname[64];
+	}online;
+	struct{
 		FILE* fd;
 		struct pcap_fhdr filehdr;
 	}offline;

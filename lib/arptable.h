@@ -20,9 +20,9 @@ struct arpent{
 class arptable{
 	private:
 		std::vector<arpent_t> entry;
-		char ifname[64];
+		pgen_t* handle;
 	public:
-		arptable(const char*);
+		arptable(pgen_t* handle);
 		int  add(ipaddr, macaddr);
 		int  del(ipaddr);
 		int  get(ipaddr);

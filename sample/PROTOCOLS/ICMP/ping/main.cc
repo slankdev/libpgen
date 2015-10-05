@@ -18,13 +18,12 @@ int main(int argc, char** argv){
 		return -1;
 	}
 
-	arptable at(dev);
-
 	pgen_t* handle = pgen_open(dev, NULL);
 	if(handle == NULL){
 		pgen_perror("test");
 		return -1;	
 	}
+	arptable at(handle);
 
 	pgen_icmp pack;
 	pack.ETH.src.setmacbydev(dev);

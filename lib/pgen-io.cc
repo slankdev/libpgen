@@ -109,10 +109,6 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			break;
 	}
 
-	handle->opt.is_timeout = 0;
-	handle->opt.timeout.tv_sec = 0;
-	handle->opt.timeout.tv_usec = 0;
-
 	return handle;	
 }
 
@@ -121,6 +117,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 
 pgen_t* pgen_open(const char* dev, void* nouseyet){
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
+	strncpy(handle->online.ifname, dev, sizeof(handle->online.ifname)-1);
 	
 	handle->is_write = 1;
 	handle->is_read  = 1;
@@ -130,10 +127,6 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 		handle =  NULL;
 	}
 	
-	handle->opt.is_timeout = 0;
-	handle->opt.timeout.tv_sec = 0;
-	handle->opt.timeout.tv_usec = 0;
-
 	return handle;
 }
 
