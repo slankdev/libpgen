@@ -32,6 +32,7 @@
 #include "protocols.h"
 
 #include "address.h"
+#include "arptable.h"
 
 #include "pgen-io.h"
 
