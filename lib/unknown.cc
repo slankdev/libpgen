@@ -19,6 +19,7 @@
  */
 
 
+#include "packet.h"
 #include "unknown.h"
 #include "address.h"
 #include "pgen-types.h"
