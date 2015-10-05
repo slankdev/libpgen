@@ -91,6 +91,12 @@ void pgen_perror(const char* msg){
 		case PG_ERRNO_SOCKET:
 			strncpy(str, "socket", errstrlen);
 			break;
+		case PG_ERRNO_SELECT:
+			strncpy(str, "select", errstrlen);
+			break;
+		case PG_ERRNO_TIMEOUT:
+			strncpy(str, "timeout", errstrlen);
+			break;
 		case PG_ERRNO_NOSUPPORT:
 			strncpy(str, "not support", errstrlen);
 			break;
