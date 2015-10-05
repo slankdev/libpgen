@@ -35,5 +35,5 @@ class arptable{
 
 
 
-#endif
+#endif /* PGEN_ARPTBL */
 

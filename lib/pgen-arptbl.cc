@@ -1,6 +1,6 @@
 
 
-#include "arptable.h"
+#include "pgen-arptbl.h"
 #include "protocols.h"
 #include "unknown.h"
 
