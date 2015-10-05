@@ -43,7 +43,7 @@ OTHER_SRC = \
 	packet.cc \
 	unknown.cc \
 	pgen-error.cc \
-	arptable.cc \
+	pgen-arptbl.cc \
 	debug.cc
 
 HDR = pgen.h \
@@ -55,9 +55,9 @@ HDR = pgen.h \
 	pgen-io.h \
 	pgen-netutil.h \
 	pgen-util.h \
+	pgen-arptbl.h \
 	release.h \
 	unknown.h \
-	arptable.h \
 	debug.h 
 
 OBJ = $(NETUTILS_SRC:.cc=.o) $(OTHER_SRC:.cc=.o) 

@@ -30,8 +30,7 @@ int main(int argc, char** argv){
 		pgen_perror("Oops");
 		return -1;
 	}
-
-	arptable at(dev);
+	arptable at(h);
 
 	pgen_dns pack;
 	pack.ETH.src.setmacbydev(dev);

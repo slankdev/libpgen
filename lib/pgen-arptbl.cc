@@ -1,6 +1,6 @@
 
 
-#include "arptable.h"
+#include "pgen-arptbl.h"
 #include "protocols.h"
 #include "unknown.h"
 
@@ -16,9 +16,21 @@ static void remove(std::vector<T>& vector, unsigned int index) {
 
 
 
+arptable::arptable(){
+	return;	
+}
 
-arptable::arptable(const char* dev){
-	strncpy(ifname, dev, sizeof(ifname)-1);
+
+
+arptable::arptable(pgen_t* h){
+	sethandle(h);
+	return;
+}
+
+
+
+void arptable::sethandle(pgen_t* h){
+	handle = h;
 	return;	
 }
 
@@ -43,6 +55,7 @@ int arptable::add(ipaddr ip, macaddr mac){
 
 
 
+
 int arptable::del(ipaddr ip){
 	for(int i=0; i<entry.size(); i++){
 		if(ip == entry[i].ip){
@@ -55,23 +68,19 @@ int arptable::del(ipaddr ip){
 
 
 
-macaddr arptable::find(ipaddr ip){
-	for(int i=0; i<entry.size(); i++){
-		if(ip == entry[i].ip)
-			return entry[i].mac;
-	}
+
+int arptable::learn(const void* p, int len){
+	pgen_unknown buf;
+	pgen_arp     pack;
 	
-	this->get(ip);
-
-	for(int i=0; i<entry.size(); i++){
-		if(ip == entry[i].ip)
-			return entry[i].mac;
+	buf.cast(p, len);
+	if(buf.isARP){
+		pack.cast(p, len);	
+		this->add(pack.ARP.srcIp, pack.ARP.srcEth);
+		return 1;
 	}
-
-	return NULL;
+	return 0;	
 }
-
-
 
 
 
@@ -90,12 +99,6 @@ void arptable::show(){
 
 
 int arptable::get(ipaddr ip){
-	int sock = initRawSocket(this->ifname, 0, 0);
-	if(sock < 0){
-		perror("socket");
-		return -1;
-	}
-
 	int len = 0;
 	u_char data[1000];
 	pgen_arp pack;
@@ -105,24 +108,23 @@ int arptable::get(ipaddr ip){
 	tv.tv_sec  = 1;
 	tv.tv_usec = 0;
 
-	pack.ETH.src.setmacbydev(ifname);
+	pack.ETH.src.setmacbydev(handle->online.ifname);
 	pack.ETH.dst.setmacbroadcast();
 	pack.ARP.operation = 1;
-	pack.ARP.srcEth.setmacbydev(ifname);
-	pack.ARP.srcIp.setipbydev(ifname);
+	pack.ARP.srcEth.setmacbydev(handle->online.ifname);
+	pack.ARP.srcIp.setipbydev(handle->online.ifname);
 	pack.ARP.dstEth.setmacbroadcast();
 	pack.ARP.dstIp = ip;
 	pack.compile();
 
-	pgen_send_to_netif(sock, pack.data, pack.len);
+	pgen_send_to_netif(handle->fd, pack.data, pack.len);
 	
 	for(int i=0; i<3; i++){
-		len = pgen_recv_from_netif_to(sock, data, sizeof(data), tv);
+		len = pgen_recv_from_netif_to(handle->fd, data, sizeof(data), tv);
 		if(len == 0){
 			continue;
 		}else if(len < 0){
 			pgen_perror("pgen_recv_from_netif");
-			close(sock);
 			return -1;
 		}
 		unknown.cast(data, len);
@@ -130,14 +132,28 @@ int arptable::get(ipaddr ip){
 			pack.cast(data, len);
 			if(pack.ARP.operation==2 && pack.ARP.srcIp==ip){
 				this->add(ip, pack.ARP.srcEth);
-				close(sock);
 				return 1;
 			}
 		}
 	}
-
-	close(sock);
 	return -1;
+}
+
+
+
+
+
+macaddr arptable::find(ipaddr ip){
+	for(int i=0; i<entry.size(); i++){
+		if(ip == entry[i].ip)
+			return entry[i].mac;
+	}
+	this->get(ip);
+	for(int i=0; i<entry.size(); i++){
+		if(ip == entry[i].ip)
+			return entry[i].mac;
+	}
+	return NULL;
 }
 
 
