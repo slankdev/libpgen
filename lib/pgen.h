@@ -28,6 +28,7 @@
 //#include "pgen-error.h"
 
 #include "packet.h"
+#include "unknown.h"
 #include "protocols.h"
 
 #include "address.h"

@@ -55,6 +55,7 @@ HDR = pgen.h \
 	pgen-netutil.h \
 	pgen-util.h \
 	release.h \
+	unknown.h \
 	debug.h 
 
 OBJ = $(NETUTILS_SRC:.cc=.o) $(OTHER_SRC:.cc=.o) 
