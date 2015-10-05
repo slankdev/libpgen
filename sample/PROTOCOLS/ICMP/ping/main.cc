@@ -18,17 +18,17 @@ int main(int argc, char** argv){
 		return -1;
 	}
 
+	arptable at(dev);
+
 	pgen_t* handle = pgen_open(dev, NULL);
 	if(handle == NULL){
 		pgen_perror("test");
 		return -1;	
 	}
 
-
 	pgen_icmp pack;
 	pack.ETH.src.setmacbydev(dev);
-	pack.ETH.dst.setmacbroadcast();
-	pack.ETH.dst ="a2:12:42:17:d8:8f";
+	pack.ETH.dst = at.find(argv[1]);
 	pack.IP.src.setipbydev(dev);
 	pack.IP.dst = argv[1];
 	pack.ICMP.echo.id = 0x1234;

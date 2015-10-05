@@ -148,6 +148,9 @@ void pgen_icmp::compile(){
 
 
 
+
+
+
 void pgen_icmp::cast(const void* data, int len){
 	if(!(this->minLen<=len && len<=this->maxLen)){
 		fprintf(stderr, "pgen_icmp::cast(): packet len isn`t support (%d)\n", len);

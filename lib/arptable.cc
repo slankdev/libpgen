@@ -90,9 +90,9 @@ void arptable::show(){
 
 
 int arptable::get(ipaddr ip){
-	pgen_t* handle = pgen_open(ifname, NULL);
-	if(handle == NULL){
-		pgen_perror("pgen_open");
+	int sock = initRawSocket(this->ifname, 0, 0);
+	if(sock < 0){
+		perror("socket");
 		return -1;
 	}
 
@@ -112,16 +112,17 @@ int arptable::get(ipaddr ip){
 	pack.ARP.srcIp.setipbydev(ifname);
 	pack.ARP.dstEth.setmacbroadcast();
 	pack.ARP.dstIp = ip;
-	pack.send_handle(handle);
-	
+	pack.compile();
+
+	pgen_send_to_netif(sock, pack.data, pack.len);
 	
 	for(int i=0; i<3; i++){
-		len = pgen_recv_from_netif_to(handle->fd, data, sizeof(data), tv);
+		len = pgen_recv_from_netif_to(sock, data, sizeof(data), tv);
 		if(len == 0){
 			continue;
 		}else if(len < 0){
 			pgen_perror("pgen_recv_from_netif");
-			pgen_close(handle);
+			close(sock);
 			return -1;
 		}
 		unknown.cast(data, len);
@@ -129,13 +130,13 @@ int arptable::get(ipaddr ip){
 			pack.cast(data, len);
 			if(pack.ARP.operation==2 && pack.ARP.srcIp==ip){
 				this->add(ip, pack.ARP.srcEth);
-				pgen_close(handle);
+				close(sock);
 				return 1;
 			}
 		}
 	}
 
-	pgen_close(handle);
+	close(sock);
 	return -1;
 }
 

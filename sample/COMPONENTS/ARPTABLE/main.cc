@@ -7,6 +7,6 @@ int main(int argc, char** argv){
 	}
 
 	arptable at(argv[1]);
-	at.find("192.168.179.1");
+	ht.find("192.168.179.1");
 	at.show();
 }

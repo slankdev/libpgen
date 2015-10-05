@@ -26,6 +26,7 @@
 
 
 #include "pgen-types.h"
+#include "arptable.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
