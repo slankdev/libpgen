@@ -62,12 +62,59 @@ int pgen_send_to_netif(int fd, const void* buf, int len){
 
 
 
+int pgen_recv_from_netif_to(int fd, void* buf, int len, struct timeval to){
+	int recv_len;
+	u_char  buf0[4096];
+	u_char* p = buf0;
+	
+	fd_set fds;
+	FD_ZERO(&fds);
+	FD_SET(fd, &fds);
+
+	recv_len = select(fd+1, &fds, NULL, NULL, &to);
+	if(recv_len < 0){
+		pgen_errno = errno;
+		pgen_errno2 = PG_ERRNO_SELECT;
+		return recv_len;
+	}else if(recv_len == 0){
+		pgen_errno  = errno;
+		pgen_errno2 = PG_ERRNO_TIMEOUT;
+		return recv_len;
+	}
+
+	if(FD_ISSET(fd, &fds)){
+		recv_len = read(fd, p, 4096);
+		if(recv_len < 0){
+			perror("pgen_recv");
+			pgen_errno = errno;
+			pgen_errno2 = PG_ERRNO_READ;
+			return recv_len;
+		}
+	}
+
+
+
+#ifndef __linux
+
+	struct bpf_hdr *bpfhdr;
+	bpfhdr = (struct bpf_hdr*)p;
+	p += bpfhdr->bh_hdrlen;
+	recv_len = bpfhdr->bh_caplen;
+
+#endif /* __linux */
+
+	memcpy(buf, p, recv_len);
+	return recv_len;	
+		
+}
+
+
 
 int pgen_recv_from_netif(int fd, void* buf, int len){
 	int recv_len;
 	u_char  buf0[4096];
 	u_char* p = buf0;
-
+	
 	recv_len = read(fd, p, 4096);
 	if(recv_len < 0){
 		perror("pgen_recv");
@@ -75,6 +122,7 @@ int pgen_recv_from_netif(int fd, void* buf, int len){
 		pgen_errno2 = PG_ERRNO_READ;
 		return recv_len;
 	}
+
 
 #ifndef __linux
 

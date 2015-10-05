@@ -64,7 +64,10 @@ struct pcap_pkthdr{
 
 
 #define PGEN_PCAPFILE_MAXLEN 100000000
-struct pgen_opt{};
+struct pgen_opt{
+	int is_timeout;
+	struct timeval timeout;
+};
 
 
 struct pgen{

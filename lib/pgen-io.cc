@@ -109,6 +109,10 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			break;
 	}
 
+	handle->opt.is_timeout = 0;
+	handle->opt.timeout.tv_sec = 0;
+	handle->opt.timeout.tv_usec = 0;
+
 	return handle;	
 }
 
@@ -125,6 +129,10 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 	if(handle->fd < 0){
 		handle =  NULL;
 	}
+	
+	handle->opt.is_timeout = 0;
+	handle->opt.timeout.tv_sec = 0;
+	handle->opt.timeout.tv_usec = 0;
 
 	return handle;
 }
