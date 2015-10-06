@@ -34,17 +34,25 @@ INSTALL_HDR_DIR = /usr/local/include
 PROTOCOLS_DIR = protocols
 
 
-NETUTILS_SRC = \
-	pgen-io.cc \
+LOWLAYER_SRC = \
 	pgen-netutil.cc \
-	pgen-util.cc
+	pgen-util.cc 
 
 OTHER_SRC = \
-	packet.cc \
-	unknown.cc \
 	pgen-error.cc \
-	pgen-arptbl.cc \
 	debug.cc
+
+PGEN_IO_SRC = \
+	$(LOWLAYER_SRC) \
+	pgen-io.cc 
+
+PGEN_PACKET_SRC = \
+	packet.cc \
+	unknown.cc 
+
+PGEN_ARPTBL_SRC = \
+	pgen-arptbl.cc 
+
 
 HDR = pgen.h \
 	address.h \
@@ -60,8 +68,14 @@ HDR = pgen.h \
 	unknown.h \
 	debug.h 
 
-OBJ = $(NETUTILS_SRC:.cc=.o) $(OTHER_SRC:.cc=.o) 
+OTHER_OBJ       = $(OTHER_SRC:.cc=.o)
+PGEN_IO_OBJ     = $(PGEN_IO_SRC:.cc=.o)
+PGEN_PACKET_OBJ = $(PGEN_PACKET_SRC:.cc=.o)
+PGEN_ARPTBL_OBJ = $(PGEN_ARPTBL_SRC:.cc=.o)
 
+
+OBJ = $(LOWLAYER_OBJ) $(OTHER_OBJ) \
+	$(PGEN_IO_OBJ) $(PGEN_PACKET_OBJ) $(PGEN_ARPTBL_OBJ)
 
 
 all: libpgen.a
