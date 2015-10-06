@@ -122,6 +122,20 @@ class ipaddr{
 			*this = buf;
 			return 1;
 		}
+		int setnetbydev(const char* ifname){
+			ipaddr ip, mask;
+			ip.setipbydev(ifname);
+			mask.setmaskbydev(ifname);
+			this->_addr = ip._addr & mask._addr;
+			return 1;
+		}
+		int setnetbyaddr(ipaddr ip, ipaddr mask){
+			this->_addr = ip._addr & mask._addr;
+			return 1;
+		}
+		bool isSameSegment(ipaddr addr, ipaddr mask){
+			return ((_addr&mask._addr) == (addr._addr&mask._addr));
+		}
 		ipaddr& operator=(ipaddr i){
 			this->_addr = i._addr;
 			return *this;

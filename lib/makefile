@@ -27,9 +27,9 @@ export RANLIB := ranlib
 
 .SUFFIXES: .out .c .cc .o .h 
 .cc.o: 
-	$(CPP) $(CPPFLAGS) -c  $<  -o $@  $(INCLUDE)
+	$(CPP) $(CPPFLAGS) -c $< -o $@  $(INCLUDE)
 
-INCLUDE =  -I./protocols
+INCLUDE = -I./protocols
 
 PROGNAME = libpgen.a
 CPPFLAGS = -Wall -fPIC -std=c++11 
