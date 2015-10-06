@@ -21,11 +21,7 @@
 
 
 #include "pgen-arptbl.h"
-//#include "arp.h"
-//#include "unknown.h"
 
-#include <thread>
-#include <iostream>
 
 
 
@@ -86,22 +82,6 @@ int arptable::del(ipaddr ip){
 	return -1;	
 }
 
-
-
-/*
-int arptable::learn(const void* p, int len){
-	pgen_unknown buf;
-	pgen_arp     pack;
-	
-	buf.cast(p, len);
-	if(buf.isARP){
-		pack.cast(p, len);	
-		this->add(pack.ARP.srcIp, pack.ARP.srcEth);
-		return 1;
-	}
-	return 0;	
-}
-*/
 
 
 
