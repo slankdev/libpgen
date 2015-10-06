@@ -206,6 +206,8 @@ class ipaddr{
 			this->_addr = lc.l;
 			return newaddr;
 		}
+
+		
 };
 
 
