@@ -26,7 +26,6 @@
 
 #include "address.h"
 #include <vector>
-#include <thread>
 
 typedef struct arpent arpent_t;
 

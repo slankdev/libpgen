@@ -36,4 +36,6 @@
 
 #include "pgen-io.h"
 
+#include "debug.h"
+
 #endif /* PGEN_H */

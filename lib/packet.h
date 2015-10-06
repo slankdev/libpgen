@@ -60,8 +60,6 @@ class pgen_packet{
 		
 		int  length();
 		u_char* byte();
-
-		int  check(const char* pcapfile);
 };
 
 

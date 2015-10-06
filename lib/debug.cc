@@ -32,7 +32,7 @@ void debugprint(int flag, const char* str){
 
 
 
-void hexdump(const u_char* data, int len){
+void pgen_hex(const u_char* data, int len){
 	printf("hexdump len: %d \n", len);
 
 	int row=0;
