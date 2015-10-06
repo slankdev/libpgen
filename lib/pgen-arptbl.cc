@@ -21,8 +21,8 @@
 
 
 #include "pgen-arptbl.h"
-#include "protocols.h"
-#include "unknown.h"
+//#include "arp.h"
+//#include "unknown.h"
 
 #include <thread>
 #include <iostream>
@@ -88,7 +88,7 @@ int arptable::del(ipaddr ip){
 
 
 
-
+/*
 int arptable::learn(const void* p, int len){
 	pgen_unknown buf;
 	pgen_arp     pack;
@@ -101,7 +101,7 @@ int arptable::learn(const void* p, int len){
 	}
 	return 0;	
 }
-
+*/
 
 
 
@@ -115,10 +115,83 @@ void arptable::show(){
 
 
 
-
-
+#include "debug.h"
 
 int arptable::get(ipaddr ip){
+	struct _packet{
+		ethernet_header eth;
+		arp_packet      arp;
+	};
+	struct _packet  send_pack;
+	struct _packet* packet;
+	ipaddr myip;
+	macaddr mymac;
+	macaddr results_mac;
+
+	int len = 0;
+	u_char data[1000];
+	struct timeval tv;
+	
+	tv.tv_sec  = 1;
+	tv.tv_usec = 0;
+
+	myip.setipbydev(handle->online.ifname);
+	mymac.setmacbydev(handle->online.ifname);
+	
+	for(int i=0; i<6; i++){
+		send_pack.eth.ether_shost[i] = mymac.getOctet(i);
+		send_pack.eth.ether_dhost[i] = 0xff;
+	}
+	send_pack.eth.ether_type = htons(0x0806);
+	send_pack.arp.ea_hdr.ar_hrd = htons(0x0001);
+	send_pack.arp.ea_hdr.ar_pro = htons(0x0800);
+	send_pack.arp.ea_hdr.ar_hln = 6;
+	send_pack.arp.ea_hdr.ar_pln = 4;
+	send_pack.arp.ea_hdr.ar_op = htons(0x001);
+	for(int i=0; i<6; i++){
+		send_pack.arp.arp_sha[i] = mymac.getOctet(i);
+		send_pack.arp.arp_tha[i] = 0xff;
+	}
+	for(int i=0; i<4; i++){
+		send_pack.arp.arp_spa[i] = myip.getOctet(i);
+		send_pack.arp.arp_tpa[i] = ip.getOctet(i);
+	}
+	
+	pgen_send_to_netif(handle->fd, &send_pack, sizeof(send_pack));
+	
+	for(int i=0; i<3; i++){
+		len = pgen_recv_from_netif_to(handle->fd, data, sizeof(data), tv);
+		if(len == 0){
+			continue;
+		}else if(len < 0){
+			pgen_perror("pgen_recv_from_netif");
+			return -1;
+		}
+		if(len < 14)
+			continue;
+
+		packet = (struct _packet*)data;
+		if(htons(packet->eth.ether_type) == 0x0806){
+			if(packet->arp.ea_hdr.ar_op == htons(0x002)){
+				results_mac.setmacbyarry(packet->arp.arp_sha);		
+				this->add(ip, results_mac);
+			}
+		}
+	}
+	return -1;
+}
+
+
+
+
+
+/*
+int arptable::get(ipaddr ip){
+	struct{
+		ethernet_header eth;
+		arp_packet      arp;
+	}packet;
+	
 	int len = 0;
 	u_char data[1000];
 	pgen_arp pack;
@@ -158,7 +231,7 @@ int arptable::get(ipaddr ip){
 	}
 	return -1;
 }
-
+*/
 
 
 

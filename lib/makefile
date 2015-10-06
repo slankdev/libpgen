@@ -17,6 +17,8 @@
 
 
 
+
+
 export CPP := clang++
 export AR  := ar
 export CP  := cp -rf
@@ -25,7 +27,9 @@ export RANLIB := ranlib
 
 .SUFFIXES: .out .c .cc .o .h 
 .cc.o: 
-	$(CPP) $(CPPFLAGS) -c  $<  -o $@  -I./protocols
+	$(CPP) $(CPPFLAGS) -c  $<  -o $@  $(INCLUDE)
+
+INCLUDE =  -I./protocols
 
 PROGNAME = libpgen.a
 CPPFLAGS = -Wall -fPIC -std=c++11 
@@ -48,11 +52,10 @@ PGEN_IO_SRC = \
 
 PGEN_PACKET_SRC = \
 	packet.cc \
-	unknown.cc 
+	unknown.cc \
 
 PGEN_ARPTBL_SRC = \
 	pgen-arptbl.cc 
-
 
 HDR = pgen.h \
 	address.h \
@@ -68,6 +71,7 @@ HDR = pgen.h \
 	unknown.h \
 	debug.h 
 
+
 OTHER_OBJ       = $(OTHER_SRC:.cc=.o)
 PGEN_IO_OBJ     = $(PGEN_IO_SRC:.cc=.o)
 PGEN_PACKET_OBJ = $(PGEN_PACKET_SRC:.cc=.o)
@@ -76,6 +80,8 @@ PGEN_ARPTBL_OBJ = $(PGEN_ARPTBL_SRC:.cc=.o)
 
 OBJ = $(LOWLAYER_OBJ) $(OTHER_OBJ) \
 	$(PGEN_IO_OBJ) $(PGEN_PACKET_OBJ) $(PGEN_ARPTBL_OBJ)
+
+
 
 
 all: libpgen.a
@@ -87,7 +93,7 @@ libpgen.a: $(OBJ) makeprotocol
 	$(RANLIB) $@
 
 
-makeprotocol:
+makeprotocol: 
 	$(MAKE) -C $(PROTOCOLS_DIR) 
 
 
