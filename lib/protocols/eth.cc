@@ -60,6 +60,14 @@ void pgen_eth::clear(){
 
 
 
+void pgen_eth::eth_add_data(const void* buf, int len){
+	memcpy(_eth_additional_data, buf, len);
+	_eth_additional_len = len;
+}
+
+
+
+
 void pgen_eth::compile(){
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 
@@ -72,32 +80,42 @@ void pgen_eth::compile(){
 	u_char* p = this->data;
 	memcpy(p, &(this->eth), ETH_HDR_LEN);
 	p += ETH_HDR_LEN;
+
+	memcpy(p, _eth_additional_data, _eth_additional_len);
+	p += _eth_additional_len;
+
 	len = p - this->data;
+
 	
-	compile_addData();
 }
 
 
 
-void pgen_eth::cast(const void* data, int len){
-	if(!(this->minLen<=len && len<=this->maxLen)){
+void pgen_eth::cast(const void* data, int l){
+	if(!(this->minLen<=l && l<=this->maxLen)){
 		fprintf(stderr, "pgen_eth::cast(): packet len isn`t support (len=%d)\n", this->len);
 		return;
 	}
+
+	this->len = l;
 
 	const u_char* p = (u_char*)data;
 	struct ethernet_header* buf;
 	buf = (struct ethernet_header*)p;
 	p += ETH_HDR_LEN;
+	l -= ETH_HDR_LEN;
 	
+
 	for(int i=0; i<6; i++){
 		this->ETH.dst._addr[i] = buf->ether_dhost[i];
 		this->ETH.src._addr[i] = buf->ether_shost[i];
 	}
 	this->ETH.type = ntohs(buf->ether_type);
 	
-	this->len = p - (u_char*)data;
-	addData(p, len-(this->len));
+	eth_add_data(p, l);
+
+	//this->len = p - (u_char*)data;
+
 }
 
 

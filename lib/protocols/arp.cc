@@ -93,8 +93,6 @@ void pgen_arp::compile(){
 	memcpy(p, &this->arp, ARP_HDR_LEN);
 	p += ARP_HDR_LEN;
 	len = p - this->data;
-
-	compile_addData();
 }
 
 
@@ -133,7 +131,6 @@ void pgen_arp::cast(const void* data, int len){
 	this->ARP.dstIp = dlc.l;
 	
 	len = p - (u_char*)data;
-	addData(p, len-(p-(u_char*)data));
 }
 
 

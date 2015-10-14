@@ -118,7 +118,6 @@ void pgen_tcp::compile(){
 	p += TCP_HDR_LEN;
 	len = p - this->data;
 	
-	compile_addData();
 }
 
 
@@ -153,7 +152,6 @@ void pgen_tcp::cast(const void* data, int len){
 	this->TCP.flags.urg = buf->urg;
 	
 	this->len = p - (u_char*)data;
-	addData(p, len- this->len);
 }
 
 

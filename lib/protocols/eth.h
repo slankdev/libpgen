@@ -30,6 +30,8 @@
 class pgen_eth : public pgen_packet {
 	protected:
 		struct ethernet_header eth; 
+		u_char _eth_additional_data[10000];
+		int    _eth_additional_len;
 	public:
 		static const int minLen = sizeof(struct ethernet_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
@@ -49,6 +51,8 @@ class pgen_eth : public pgen_packet {
 		void summary();
 		void info();
 		void help();
+
+		void eth_add_data(const void*, int);
 };
 
 

@@ -40,9 +40,7 @@
 class pgen_packet{
 	public:
 		int 	len;
-		int 	ext_data_len;
 		u_char 	data[PGEN_MAX_PACKET_LEN];
-		u_char  ext_data[PGEN_MAX_EXT_DATA_LEN];
 		
 		pgen_packet();
 		virtual void clear()=0;
@@ -53,9 +51,9 @@ class pgen_packet{
 		virtual void info()=0;	
 		virtual void help()=0;
 
+
+
 		void hex();
-		void addData(const void* , int );
-		void compile_addData(); 
 		void send_handle(pgen_t*);
 		
 		int  length();
