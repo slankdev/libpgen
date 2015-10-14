@@ -60,12 +60,6 @@ void pgen_eth::clear(){
 
 
 
-void pgen_eth::eth_add_data(const void* buf, int len){
-	memcpy(_eth_additional_data, buf, len);
-	_eth_additional_len = len;
-}
-
-
 
 
 void pgen_eth::compile(){
@@ -81,11 +75,10 @@ void pgen_eth::compile(){
 	memcpy(p, &(this->eth), ETH_HDR_LEN);
 	p += ETH_HDR_LEN;
 
-	memcpy(p, _eth_additional_data, _eth_additional_len);
-	p += _eth_additional_len;
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
 
 	len = p - this->data;
-
 	
 }
 
@@ -111,11 +104,8 @@ void pgen_eth::cast(const void* data, int l){
 		this->ETH.src._addr[i] = buf->ether_shost[i];
 	}
 	this->ETH.type = ntohs(buf->ether_type);
-	
-	eth_add_data(p, l);
 
-	//this->len = p - (u_char*)data;
-
+	add_data(p, l);
 }
 
 

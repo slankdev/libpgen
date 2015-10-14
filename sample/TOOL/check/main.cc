@@ -1,9 +1,23 @@
 
 
-
 #include <pgen.h>
 
 int c = 0;
+int check(const char* file, pgen_packet* pack);
+
+
+
+int main(int argc, char** argv){
+	if(argc != 2){
+		printf("Usage: %s filename \n", argv[0]);
+		return -1;
+	}
+	pgen_eth pack;
+	check(argv[1], &pack);
+}
+
+
+
 
 
 int check(const char* file, pgen_packet* pack){
@@ -45,11 +59,3 @@ int check(const char* file, pgen_packet* pack){
 
 
 
-int main(int argc, char** argv){
-	if(argc != 2){
-		printf("Usage: %s filename \n", argv[0]);
-		return -1;
-	}
-	pgen_arp pack;
-	check(argv[1], &pack);
-}

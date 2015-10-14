@@ -46,6 +46,14 @@ pgen_packet::pgen_packet(){
 
 
 
+void pgen_packet::add_data(const void* buf, int l) {
+	memcpy(_additional_data, buf, l);
+	_additional_len = l;
+
+	return ;	
+}
+
+
 
 
 void pgen_packet::hex(){
