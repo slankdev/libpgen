@@ -12,7 +12,7 @@ int main(int argc, char** argv){
 		printf("Usage: %s filename \n", argv[0]);
 		return -1;
 	}
-	pgen_eth pack;
+	pgen_arp pack;
 	check(argv[1], &pack);
 }
 
@@ -37,7 +37,7 @@ int check(const char* file, pgen_packet* pack){
 		pack->compile();
 
 		if(len != pack->len){
-			printf("length isn't same \n");	
+			printf("length isn't same %d->%d \n", len, pack->len);	
 			result++;
 		}else if((memcmp(pack->data, buf, len)!=0)){
 			printf("binary isn't same \n");
