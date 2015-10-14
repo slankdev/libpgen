@@ -92,9 +92,11 @@ void pgen_arp::compile(){
 	p += ETH_HDR_LEN;
 	memcpy(p, &this->arp, ARP_HDR_LEN);
 	p += ARP_HDR_LEN;
-	len = p - this->data;
 
-	compile_addData();
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
+
+	len = p - this->data;
 }
 
 
@@ -109,11 +111,12 @@ void pgen_arp::cast(const void* data, int len){
 
 	struct arp_packet* buf;
 	const u_char* p = (u_char*)data;
-	p += ETH_HDR_LEN;
+	p   += ETH_HDR_LEN;
+	len -= ETH_HDR_LEN;
 
 	buf = (struct arp_packet*)p;
-	p += ARP_HDR_LEN;
-	
+	p   += ARP_HDR_LEN;
+	len -= ARP_HDR_LEN;
 	union lc{
 		bit32 l;
 		bit8 c[4];
@@ -132,8 +135,9 @@ void pgen_arp::cast(const void* data, int len){
 	this->ARP.srcIp = slc.l;
 	this->ARP.dstIp = dlc.l;
 	
+	add_data(p, len);
+
 	len = p - (u_char*)data;
-	addData(p, len-(p-(u_char*)data));
 }
 
 

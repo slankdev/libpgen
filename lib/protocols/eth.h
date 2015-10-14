@@ -49,6 +49,7 @@ class pgen_eth : public pgen_packet {
 		void summary();
 		void info();
 		void help();
+
 };
 
 

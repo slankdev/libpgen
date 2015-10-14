@@ -77,7 +77,6 @@ void pgen_udp::compile(){
 	p += UDP_HDR_LEN;
 	len = p - this->data;
 	
-	compile_addData();
 }
 
 
@@ -102,7 +101,6 @@ void pgen_udp::cast(const void* data, int len){
 	this->UDP.len = ntohs(buf->len);
 	
 	this->len = p - (u_char*)data;
-	addData(p, len- this->len);
 }
 
 

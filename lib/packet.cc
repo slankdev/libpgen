@@ -38,44 +38,19 @@
 
 
 
-
-
 pgen_packet::pgen_packet(){
 	len = 0;
-	ext_data_len =0;
 	memset(data, 0, sizeof(data));
-	memset(ext_data, 0, sizeof(ext_data));
 }
 
 
 
 
+void pgen_packet::add_data(const void* buf, int l) {
+	memcpy(_additional_data, buf, l);
+	_additional_len = l;
 
-
-void pgen_packet::compile_addData(){
-	if(ext_data_len == 0) return;
-	if(ext_data_len+len >= PGEN_MAX_PACKET_LEN){
-		fprintf(stderr, "pgen_packet::compile_addData(): packet length is too large\n");
-	}
-
-	u_char* p = this->data + this->len;
-	memcpy(p, ext_data, ext_data_len);
-	this->len += ext_data_len;
-}
-
-
-
-
-void pgen_packet::addData(const void* byte, int len){
-	if(len > PGEN_MAX_EXT_DATA_LEN){
-		fprintf(stderr, "pgen_packet::addData(): Extension Data is too long\n");
-		return;
-	}
-	
-	memcpy(ext_data, byte, len);
-	ext_data_len = len;
-	
-	return;	
+	return ;	
 }
 
 

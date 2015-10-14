@@ -83,12 +83,6 @@ void pgen_ip::compile(){
 	this->ip.tot_len = htons(this->IP.tot_len);
 	this->ip.frag_off = htons(this->IP.frag_off); // ?????
 
-/*
-#ifndef __linux	
-	this->ip.tot_len  = this->IP.tot_len;
-	this->ip.frag_off = this->IP.frag_off; // ?????
-#endif
-*/
 	this->ip.id = htons(this->IP.id);
 	this->ip.ttl = this->IP.ttl;
 	this->ip.protocol = this->IP.protocol;
@@ -104,7 +98,6 @@ void pgen_ip::compile(){
 	p += IP_HDR_LEN;
 	this->len = p - this->data;
 
-	compile_addData();
 }
 
 
@@ -135,7 +128,6 @@ void pgen_ip::cast(const void* data, int len){
 	this->IP.dst._addr = buf->daddr;
 	
 	this->len = p - (u_char*)data;
-	addData(p, len-(this->len));
 }
 
 
