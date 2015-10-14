@@ -23,12 +23,13 @@ int check(const char* file, pgen_packet* pack){
 		pack->compile();
 
 		if(len != pack->len){
-			printf("length not same \n");	
-
+			printf("length isn't same \n");	
+			result++;
 		}else if((memcmp(pack->data, buf, len)!=0)){
+			printf("binary isn't same \n");
 			pack->hex();
 			pgen_hex(buf, len);
-
+			result++;
 		}else{
 			printf("OK \n");
 

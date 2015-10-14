@@ -1,5 +1,5 @@
 #include <pgen.h>
-const char* dev = "wlan0";
+const char* dev = "en0";
 
 bool func(const u_char* packet, int len){
 	pgen_unknown buf(packet, len);
