@@ -50,6 +50,6 @@ int main(int argc, char** argv){
 		printf("Usage: %s filename \n", argv[0]);
 		return -1;
 	}
-	pgen_arp pack;
+	pgen_eth pack;
 	check(argv[1], &pack);
 }
