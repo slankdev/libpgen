@@ -57,6 +57,7 @@ pgen_ip::pgen_ip(const void* packet, int len){
 
 void pgen_ip::clear(){
 	pgen_eth::clear();
+	this->IP.hlen = 5;
 	this->IP.tos = 0;
 	this->IP.tot_len = 20;
 	this->IP.id = 1;
@@ -76,7 +77,7 @@ void pgen_ip::compile(){
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 
 	memset(&this->ip, 0, IP_HDR_LEN);
-	this->ip.ihl = IP_HDR_LEN / 4;
+	this->ip.ihl = this->IP.hlen;
 	this->ip.version = 4;
 	this->ip.tos = this->IP.tos; //no useing world now
 	
@@ -118,6 +119,7 @@ void pgen_ip::cast(const void* data, int len){
 	struct ip_header* buf = (struct ip_header*)p;
 	p += IP_HDR_LEN;
 	
+	this->IP.hlen = buf->ihl;
 	this->IP.tos = buf->tos;
 	this->IP.tot_len = ntohs(buf->tot_len);
 	this->IP.id = ntohs(buf->id);
@@ -183,6 +185,7 @@ void pgen_ip::info(){
 
 void pgen_ip::help(){
 	printf("IP Packet CLass------------------------------------------------\n");
+	printf("hlen     : header length     :  8 bit field \n");
 	printf("tos      : type of service   :  8 bit field \n");
 	printf("tot_len  : total length      : 16 bit field \n");
 	printf("id       : identification    : 16 bit field \n");
