@@ -31,6 +31,7 @@ class pgen_ip : public pgen_eth {
 		static const int minLen = pgen_eth::minLen+sizeof(struct ip_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
+			bit8  hlen:4;
 			bit8  tos;
 			bit16 tot_len;
 			bit16 id;
