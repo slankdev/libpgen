@@ -26,6 +26,8 @@
 
 
 int pgen_check(pgen_packet* pack, struct pgen_checkopt* str){
+	str->count=0;
+	str->failed_count=0;
 	int len;
 	u_char buf[10000];
 
