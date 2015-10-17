@@ -35,6 +35,20 @@ typedef unsigned int       bit32;
 typedef unsigned long      bit64;
 typedef unsigned long long bit128;
 
+
+
+
+struct pgen_checkopt{
+	int count;
+	int failed_count;
+	char readfile[256];
+	char writefile[256];
+};
+
+
+
+
+
 struct pcap_timeval{
 	bit32 tv_sec;
 	bit32 tv_usec;
@@ -92,7 +106,7 @@ struct pgen{
 
 #define ETH_HDR_LEN  sizeof(struct ethernet_header)
 #define ARP_HDR_LEN  sizeof(struct arp_packet)
-#define IP_HDR_LEN   sizeof(struct ip_header)
+//#define IP_HDR_LEN   sizeof(struct ip_header)
 #define ICMP_HDR_LEN sizeof(struct icmp_header)
 #define TCP_HDR_LEN  sizeof(struct tcp_header)
 #define UDP_HDR_LEN  sizeof(struct udp_header)
@@ -154,6 +168,8 @@ struct ip_header{
 	bit32 saddr;
 	bit32 daddr;
 	/*The options start here. */
+
+	bit8 option[256];
 };
 
 

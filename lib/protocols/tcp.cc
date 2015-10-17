@@ -69,7 +69,7 @@ void pgen_tcp::clear(){
 
 
 void pgen_tcp::compile(){
-	this->IP.tot_len = IP_HDR_LEN + TCP_HDR_LEN;
+	this->IP.tot_len = IP.hlen*4 + TCP_HDR_LEN;
 	this->IP.protocol = 6;
 	pgen_ip::compile();
 
@@ -103,8 +103,8 @@ void pgen_tcp::compile(){
 
 
 	bp = buf;
-	memcpy(bp, &this->ip, IP_HDR_LEN);
-	bp += IP_HDR_LEN;
+	memcpy(bp, &this->ip, 20);
+	bp += 20;
 	memcpy(bp, &this->tcp, TCP_HDR_LEN);
 	bp += TCP_HDR_LEN;
 	this->tcp.check = checksumTcp(buf, bp-buf);
@@ -112,8 +112,8 @@ void pgen_tcp::compile(){
 	u_char* p = this->data;
 	memcpy(p, &this->eth, ETH_HDR_LEN);
 	p += ETH_HDR_LEN;
-	memcpy(p, &this->ip, IP_HDR_LEN);
-	p += IP_HDR_LEN;
+	memcpy(p, &this->ip, IP.hlen*4);
+	p += IP.hlen*4;
 	memcpy(p, &this->tcp, TCP_HDR_LEN);
 	p += TCP_HDR_LEN;
 	len = p - this->data;
@@ -134,7 +134,7 @@ void pgen_tcp::cast(const void* data, int len){
 
 	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
-	p += IP_HDR_LEN;
+	p += IP.hlen*4;
 
 	struct tcp_header* buf = (struct tcp_header*)p;
 	p += TCP_HDR_LEN;

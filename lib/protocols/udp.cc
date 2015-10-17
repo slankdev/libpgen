@@ -59,7 +59,7 @@ void pgen_udp::clear(){
 
 void pgen_udp::compile(){
 	this->IP.protocol = 17;
-	this->IP.tot_len = IP_HDR_LEN + this->UDP.len;
+	this->IP.tot_len = IP.hlen*4 + this->UDP.len;
 	pgen_ip::compile();
 
 	memset(&this->udp, 0, UDP_HDR_LEN);
@@ -71,8 +71,8 @@ void pgen_udp::compile(){
 	u_char* p = this->data;
 	memcpy(p, &this->eth, ETH_HDR_LEN);
 	p += ETH_HDR_LEN;
-	memcpy(p, &this->ip, IP_HDR_LEN);
-	p += IP_HDR_LEN;
+	memcpy(p, &this->ip, IP.hlen*4);
+	p += IP.hlen*4;
 	memcpy(p, &this->udp, UDP_HDR_LEN);
 	p += UDP_HDR_LEN;
 	len = p - this->data;
@@ -91,7 +91,7 @@ void pgen_udp::cast(const void* data, int len){
 
 	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
-	p += IP_HDR_LEN;
+	p += IP.hlen*4;
 
 	struct udp_header *buf = (struct udp_header*)p;
 	p += UDP_HDR_LEN;

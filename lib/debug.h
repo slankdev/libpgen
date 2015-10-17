@@ -25,8 +25,11 @@
 
 
 #include <sys/types.h>
+#include "pgen.h"
+#include "pgen-types.h"
 
 void debugprint(int flag, const char* str);
 void pgen_hex(const u_char* data, int len);
+int pgen_check(pgen_packet*, struct pgen_checkopt*);
 
 #endif /* DEBUG_H */

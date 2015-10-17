@@ -2,60 +2,74 @@
 
 #include <pgen.h>
 
-int c = 0;
-int check(const char* file, pgen_packet* pack);
 
+/*
+struct pgen_checkopt{
+	int count;
+	int failed_count;
+	char readfile[256];
+	char writefile[256];
+};
+*/
 
+//int pgen_check(pgen_packet* pack, struct pgen_checkopt* str);
 
 int main(int argc, char** argv){
-	if(argc != 2){
-		printf("Usage: %s filename \n", argv[0]);
+	if(argc != 3){
+		printf("Usage: %s filename missfile\n", argv[0]);
 		return -1;
 	}
-	pgen_eth pack;
-	check(argv[1], &pack);
+	struct pgen_checkopt pc;
+	pgen_arp pack;
+
+	strncpy(pc.readfile, argv[1], sizeof(pc.readfile));
+	strncpy(pc.writefile, argv[2], sizeof(pc.writefile));
+
+	pgen_check(&pack, &pc);
+	printf("read : %s \n", pc.readfile);
+	printf("write: %s \n", pc.writefile);
+	printf("%d/%d failed \n", pc.failed_count, pc.count);
 }
 
 
 
-
-
-int check(const char* file, pgen_packet* pack){
-	int count  = 0;
-	int result = 0;
+/*
+int pgen_check(pgen_packet* pack, struct pgen_checkopt* str){
 	int len;
 	u_char buf[10000];
 
-	pgen_t* h = pgen_open_offline(file, 0);
-	if(h == NULL){
+	pgen_t* read_handle  = pgen_open_offline(str->readfile, 0);
+	pgen_t* write_handle = pgen_open_offline(str->writefile, 1);
+	if(read_handle == NULL || write_handle == NULL){
 		pgen_perror("pgen_open_offline");
 		return -1;
 	}
 	
-	while((len = pgen_recv_from_pcap(h->offline.fd, buf, sizeof(buf))) >= 0){
+	for(int i=0; (len = pgen_recv_from_pcap(read_handle->offline.fd, buf, sizeof(buf))) >= 0; i++){
 		pack->cast(buf, len);
 		pack->compile();
 
 		if(len != pack->len){
-			printf("length isn't same %d->%d \n", len, pack->len);	
-			result++;
+			printf("%d: length isn't same %d->%d \n", i, len, pack->len);	
+			pgen_send_to_pcap(write_handle->offline.fd, buf, len);
+			str->failed_count++;
 		}else if((memcmp(pack->data, buf, len)!=0)){
-			printf("binary isn't same \n");
+			printf("%d: binary isn't same \n", i);
 			pack->hex();
 			pgen_hex(buf, len);
-			result++;
-		}else{
-			printf("OK \n");
-
+			pgen_send_to_pcap(write_handle->offline.fd, buf, len);
+			str->failed_count++;
 		}
-		count++;
+		str->count++;
 	}
 
-	printf("%d/%d is false \n", result, count);
-	pgen_close(h);
-	return result;
+	pgen_close(read_handle);
+	pgen_close(write_handle);
+
+	if(str->failed_count == 0)	return 1;
+	else 						return -1;
 }
 
 
 
-
+*/

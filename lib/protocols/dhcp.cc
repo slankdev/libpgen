@@ -123,8 +123,8 @@ void pgen_dhcp::compile(){
 	bit8* p = data;
 	memcpy(p, &eth, ETH_HDR_LEN);
 	p += ETH_HDR_LEN;
-	memcpy(p, &ip, IP_HDR_LEN);
-	p += IP_HDR_LEN;
+	memcpy(p, &ip, IP.hlen*4);
+	p += IP.hlen*4;
 	memcpy(p, &udp, UDP_HDR_LEN);
 	p += UDP_HDR_LEN;
 	memcpy(p, &dhcp, DHCP_HDR_LEN);
@@ -148,7 +148,7 @@ void pgen_dhcp::cast(const void* packet, int len){
 	const u_char* p = (u_char*)packet;
 
 	p += ETH_HDR_LEN;
-	p += IP_HDR_LEN;
+	p += IP.hlen*4;
 	p += UDP_HDR_LEN;
 
 	struct dhcp_header* buf = (struct dhcp_header*)p;

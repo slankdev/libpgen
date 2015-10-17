@@ -71,16 +71,18 @@ void pgen_ip::clear(){
 
 
 void pgen_ip::compile(){
+
+
 	ETH.type = 0x0800;
 	pgen_eth::compile();
-	
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 
-	memset(&this->ip, 0, IP_HDR_LEN);
+	memset(&this->ip, 0, sizeof this->ip);
 	this->ip.ihl = this->IP.hlen;
 	this->ip.version = 4;
 	this->ip.tos = this->IP.tos; //no useing world now
 	
+
 	this->ip.tot_len = htons(this->IP.tot_len);
 	this->ip.frag_off = htons(this->IP.frag_off); // ?????
 
@@ -90,15 +92,19 @@ void pgen_ip::compile(){
 	this->ip.saddr = this->IP.src._addr;
 	this->ip.daddr = this->IP.dst._addr;
 	this->ip.check = 0;
-	this->ip.check = checksum((unsigned short*)&this->ip, IP_HDR_LEN);
+	this->ip.check = checksum((unsigned short*)&this->ip, IP.hlen*4);
+	memcpy(this->ip.option, IP.option, IP.hlen*4-20);
+	
+	
 
 	u_char* p = this->data;
 	memcpy(p, &this->eth, ETH_HDR_LEN);
 	p += ETH_HDR_LEN;
-	memcpy(p, &this->ip, IP_HDR_LEN);
-	p += IP_HDR_LEN;
-	this->len = p - this->data;
+	memcpy(p, &this->ip, IP.hlen*4);
+	p += IP.hlen*4;
 
+
+	this->len = p - this->data;
 }
 
 
@@ -114,10 +120,11 @@ void pgen_ip::cast(const void* data, int len){
 	
 	pgen_eth::cast(data, len);
 
+
 	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
 	struct ip_header* buf = (struct ip_header*)p;
-	p += IP_HDR_LEN;
+	p += 20;
 	
 	this->IP.hlen = buf->ihl;
 	this->IP.tos = buf->tos;
@@ -128,10 +135,21 @@ void pgen_ip::cast(const void* data, int len){
 	this->IP.protocol = buf->protocol;
 	this->IP.src._addr = buf->saddr;
 	this->IP.dst._addr = buf->daddr;
+
+	ip_add_exthdr(p, (IP.hlen<<2) - 20);
 	
 	this->len = p - (u_char*)data;
+	
+
 }
 
+
+
+void pgen_ip::ip_add_exthdr(const void* buf, int l){
+	memcpy(IP.option, buf, l);
+	IP.hlen = (20>>2) + (l>>2);
+	IP.tot_len = IP.tot_len + l;
+}
 
 
 void pgen_ip::send_L3(const char* ifname){

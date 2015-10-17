@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 const char *dev = "en0";
-//const char* dnsserver = "133.25.243.11";
-const char* dnsserver = "192.168.179.1";
+const char* dnsserver = "133.25.243.11";
+//const char* dnsserver = "192.168.179.1";
 
 bool func(const u_char* p, int len){
 	pgen_unknown buf(p, len);
@@ -35,6 +35,7 @@ int main(int argc, char** argv){
 	pgen_dns pack;
 	pack.ETH.src.setmacbydev(dev);
 	pack.ETH.dst = at.find(dnsserver);
+	pack.ETH.dst = at.find(dnsserver);
 	pack.IP.src.setipbydev(dev);
 	pack.IP.dst = dnsserver;
 	pack.UDP.src = 53;
@@ -42,7 +43,10 @@ int main(int argc, char** argv){
 	pack.DNS.id = 0x95de;
 	pack.DNS.query[0].name = argv[1];
 	
+
 	pack.summary();
 	pack.send_handle(h);
 	sniff(h, func);
+
+	
 }

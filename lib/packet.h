@@ -57,7 +57,6 @@ class pgen_packet{
 
 		void hex();
 		void send_handle(pgen_t*);
-
 		void add_data(const void*, int);
 		
 		int  length();

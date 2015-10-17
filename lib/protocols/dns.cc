@@ -378,8 +378,8 @@ void pgen_dns::compile(){
 	u_char* p = data;
 	memcpy(p, &eth, ETH_HDR_LEN);
 	p += ETH_HDR_LEN;
-	memcpy(p, &ip, IP_HDR_LEN);
-	p += IP_HDR_LEN;
+	memcpy(p, &ip, IP.hlen*4);
+	p += IP.hlen*4;
 	memcpy(p, &udp, UDP_HDR_LEN);
 	p += UDP_HDR_LEN;
 	memcpy(p, &dns, DNS_HDR_LEN);
@@ -413,7 +413,7 @@ int pgen_dns::cast_query(const char* bpacket, int len){
 	const struct q_data* buf;
 
 	packet += ETH_HDR_LEN;
-	packet += IP_HDR_LEN;
+	packet += IP.hlen*4;
 	packet += UDP_HDR_LEN;
 	packet += DNS_HDR_LEN;
 	const u_char* p = packet;
@@ -450,7 +450,7 @@ int pgen_dns::cast_answer(const char* packet, int blen){
 	
 
 	packet += ETH_HDR_LEN;
-	packet += IP_HDR_LEN;
+	packet += IP.hlen*4;
 	packet += UDP_HDR_LEN;
 	packet += DNS_HDR_LEN;
 	packet += query_data_len;
@@ -504,7 +504,7 @@ int pgen_dns::cast_auth(const char* packet, int blen){
 	
 
 	packet += ETH_HDR_LEN;
-	packet += IP_HDR_LEN;
+	packet += IP.hlen*4;
 	packet += UDP_HDR_LEN;
 	packet += DNS_HDR_LEN;
 	packet += query_data_len;
@@ -557,7 +557,7 @@ int pgen_dns::cast_addition(const char* packet, int blen){
 	
 
 	packet += ETH_HDR_LEN;
-	packet += IP_HDR_LEN;
+	packet += IP.hlen*4;
 	packet += UDP_HDR_LEN;
 	packet += DNS_HDR_LEN;
 	packet += query_data_len;
@@ -623,7 +623,7 @@ void pgen_dns::cast(const void* packet, int len){
 	const u_char* p = (u_char*)packet;
 
 	p += ETH_HDR_LEN;
-	p += IP_HDR_LEN;
+	p += IP.hlen*4;
 	p += UDP_HDR_LEN;
 	
 	struct dns_header* buf = (struct dns_header*)p;

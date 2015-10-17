@@ -55,6 +55,7 @@
 
 // mode 0: read , 1: write
 pgen_t* pgen_open_offline(const char* filename, int mode){
+
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
 	handle->is_offline = 1;
 	
@@ -274,12 +275,12 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 	struct tcp_header tcp;
 	struct ip_header ip;
 	char data[100];
-	memcpy(&ip, dp, IP_HDR_LEN);
-	dp += IP_HDR_LEN;
+	memcpy(&ip, dp, 20);  // this is bug
+	dp += 20;
 	memcpy(&tcp, dp, TCP_HDR_LEN);
 	dp += TCP_HDR_LEN;
-	memcpy(data, dp, datalen-TCP_HDR_LEN-IP_HDR_LEN);
-	dp += datalen-TCP_HDR_LEN-IP_HDR_LEN;
+	memcpy(data, dp, datalen-TCP_HDR_LEN-20);
+	dp += datalen-TCP_HDR_LEN-20;
 	
 	struct tpack {
 	  struct ip_header ip;
@@ -287,9 +288,9 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 	  u_char data[100];
 	}p;
 	
-	memcpy(&p.ip, &ip, IP_HDR_LEN);
+	memcpy(&p.ip, &ip, 20);
 	memcpy(&p.tcp , &tcp, TCP_HDR_LEN);
-	memcpy(&p.data, data, datalen-TCP_HDR_LEN-IP_HDR_LEN);
+	memcpy(&p.data, data, datalen-TCP_HDR_LEN-20);
 
 	p.ip.ttl = 0;
 	p.ip.protocol  = IPPROTO_TCP;
@@ -299,7 +300,7 @@ unsigned short checksumTcp(const u_char *dp, int datalen){
 
 #define PHLEN 12
 	p.tcp.check = 0;
-	return checksum((u_int16_t*)&p.ip.ttl, PHLEN+datalen-IP_HDR_LEN);
+	return checksum((u_int16_t*)&p.ip.ttl, PHLEN+datalen-20);
 }
 
 

@@ -115,7 +115,7 @@ void pgen_icmp::compile(){
 		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
 	}
 
-	this->IP.tot_len = IP_HDR_LEN + ICMP_HDR_LEN + icmp_data_len + icmp_ext_data_len;
+	this->IP.tot_len = IP.hlen*4 + ICMP_HDR_LEN + icmp_data_len + icmp_ext_data_len;
 	this->IP.protocol = 1;
 	pgen_ip::compile();
 	char buffer[256];
@@ -133,8 +133,8 @@ void pgen_icmp::compile(){
 	u_char* p = this->data;
 	memcpy(p, &this->eth, ETH_HDR_LEN);
 	p += ETH_HDR_LEN;
-	memcpy(p, &this->ip, IP_HDR_LEN);
-	p += IP_HDR_LEN;
+	memcpy(p, &this->ip, IP.hlen*4);
+	p += IP.hlen*4;
 	memcpy(p, &this->icmp, ICMP_HDR_LEN);
 	p += ICMP_HDR_LEN;
 	memcpy(p, icmp_data, icmp_data_len);
@@ -161,7 +161,7 @@ void pgen_icmp::cast(const void* data, int len){
 
 	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
-	p += IP_HDR_LEN;
+	p += IP.hlen*4;
 	
 	struct icmp_header *buf = (struct icmp_header*)p;
 	p += ICMP_HDR_LEN;

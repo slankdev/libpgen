@@ -270,8 +270,8 @@ void pgen_ardrone::compile(){
 	u_char* p = this->data;
 	memcpy(p, &eth, sizeof eth);
 	p += sizeof(eth);
-	memcpy(p, &ip, sizeof ip);
-	p += sizeof(struct ip_header);
+	memcpy(p, &ip, IP.hlen*4);
+	p += IP.hlen*4;
 	memcpy(p, &udp, sizeof udp);
 	p += sizeof(struct udp_header);
 	memcpy(p, command, command_len);
@@ -431,7 +431,7 @@ void pgen_ardrone::cast(const void* packet, int len){
 	int cmdlen;
 	const char* p = (const char*)packet;
 	p += ETH_HDR_LEN;
-	p += IP_HDR_LEN;
+	p += IP.hlen*4;
 	p += UDP_HDR_LEN;
 
 	for(this->ARDRONE.cmd_count=0; (const u_char*)p-(const u_char*)packet < len; this->ARDRONE.cmd_count++){
