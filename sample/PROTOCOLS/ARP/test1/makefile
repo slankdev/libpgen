@@ -1,7 +1,7 @@
 #sample makefile using libpgen
 
 export CP := cp -rf
-export CPP := g++-4.9
+export CPP := g++
 export CXX := g++
 export RM := rm -rf
 

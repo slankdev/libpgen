@@ -39,7 +39,7 @@ typedef unsigned long long bit128;
 
 
 struct pgen_checkopt{
-	int count;
+	int all_count;
 	int failed_count;
 	char readfile[256];
 	char writefile[256];

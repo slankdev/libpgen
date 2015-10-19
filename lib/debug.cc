@@ -26,7 +26,7 @@
 
 
 int pgen_check(pgen_packet* pack, struct pgen_checkopt* str){
-	str->count=0;
+	str->all_count=0;
 	str->failed_count=0;
 	int len;
 	u_char buf[10000];
@@ -53,7 +53,7 @@ int pgen_check(pgen_packet* pack, struct pgen_checkopt* str){
 			pgen_send_to_pcap(write_handle->offline.fd, buf, len);
 			str->failed_count++;
 		}
-		str->count++;
+		str->all_count++;
 	}
 
 	pgen_close(read_handle);
