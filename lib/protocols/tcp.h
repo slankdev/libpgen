@@ -27,7 +27,7 @@ class pgen_tcp : public pgen_ip {
 	protected:
 		struct tcp_header tcp;
 	public:
-		static const int minLen = pgen_ip::minLen+sizeof(struct tcp_header);
+		static const int minLen = pgen_ip::minLen+20;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int src;
@@ -44,6 +44,8 @@ class pgen_tcp : public pgen_ip {
 				u_char urg:1;
 			}flags;
 			int window;
+
+			bit8 option[1000];
 		}TCP;
 
 		pgen_tcp();

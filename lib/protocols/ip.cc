@@ -66,6 +66,7 @@ void pgen_ip::clear(){
 	this->IP.protocol = IPPROTO_IP;
 	this->IP.src = 0;
 	this->IP.dst = "127.0.0.1";
+	memset(&IP.option, 0, sizeof IP.option);
 }
 
 
@@ -119,7 +120,6 @@ void pgen_ip::cast(const void* data, int l){
 		fprintf(stderr, "pgen_ip::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
-	int ext_hdr_len;
 	pgen_eth::cast(data, l);
 	memset(_additional_data, 0, sizeof _additional_data);
 	_additional_len = 0;
@@ -131,7 +131,6 @@ void pgen_ip::cast(const void* data, int l){
 	struct ip_header* buf = (struct ip_header*)p;
 	p += buf->ihl*4;
 	l -= buf->ihl*4;
-	ext_hdr_len = buf->ihl*4 - 20;
 	
 	this->IP.hlen = buf->ihl;
 	this->IP.tos = buf->tos;
@@ -142,12 +141,9 @@ void pgen_ip::cast(const void* data, int l){
 	this->IP.protocol = buf->protocol;
 	this->IP.src._addr = buf->saddr;
 	this->IP.dst._addr = buf->daddr;
-
-	ip_add_exthdr(p-ext_hdr_len, ext_hdr_len);
-	
+	memcpy(IP.option, buf->option, buf->ihl*4-20);
 
 	add_data(p, l);
-
 }
 
 

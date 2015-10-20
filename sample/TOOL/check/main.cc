@@ -8,7 +8,7 @@ pgen_t* w;
 
 
 bool func(const u_char* p, int l){
-	pgen_ip pack;
+	pgen_tcp pack;
 	int res = pgen_checkpack(&pack, p, l);
 
 	pack.cast(p,l);

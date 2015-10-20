@@ -63,6 +63,7 @@ void pgen_tcp::clear(){
 	this->TCP.flags.ack = 0;
 	this->TCP.flags.urg = 0;
 	this->TCP.window = 8192;
+	memset(&TCP.option, 0, sizeof TCP.option);
 }
 
 
@@ -70,14 +71,11 @@ void pgen_tcp::clear(){
 
 
 void pgen_tcp::compile(){
-	this->IP.tot_len = IP.hlen*4 + 20 + _additional_len;
+	//this->IP.tot_len = IP.hlen*4 + 20 + _additional_len;
 	this->IP.protocol = 6;
 	pgen_ip::compile();
-
+	
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-	u_char buf[1000];
-	u_char *bp;
-	memset(buf, 0, sizeof buf);
 
 	memset(&this->tcp, 0, sizeof this->tcp);
 	this->tcp.source = htons(this->TCP.src);
@@ -87,21 +85,14 @@ void pgen_tcp::compile(){
 	this->tcp.doff = this->TCP.doff;  // header length
 	this->tcp.window = htons(this->TCP.window);
 	this->tcp.check  = 0;
-
 	this->tcp.fin = this->TCP.flags.fin;
 	this->tcp.syn = this->TCP.flags.syn;
 	this->tcp.rst = this->TCP.flags.rst;
 	this->tcp.psh = this->TCP.flags.psh;
 	this->tcp.ack = this->TCP.flags.ack;
 	this->tcp.urg = this->TCP.flags.urg;
-
-
-	bp = buf;
-	memcpy(bp, &this->ip, 20);
-	bp += 20;
-	memcpy(bp, &this->tcp, tcp.doff*4);
-	bp += tcp.doff*4;
-	this->tcp.check = checksumTcp(buf, bp-buf);
+	memcpy(this->tcp.option, TCP.option, TCP.doff*4-20);
+	this->tcp.check = checksumTcp(ip, tcp, _additional_data,IP.tot_len-IP.hlen*4);
 
 	u_char* p = this->data;
 	memcpy(p, &this->eth, ETH_HDR_LEN);
@@ -115,7 +106,6 @@ void pgen_tcp::compile(){
 	p += _additional_len;
 
 	len = p - this->data;
-	
 }
 
 
@@ -124,11 +114,13 @@ void pgen_tcp::compile(){
 
 void pgen_tcp::cast(const void* data, int l){
 	if(!(this->minLen<=l && l<=this->maxLen)){
-		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
+		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", l);
 		return;
 	}
 	
 	pgen_ip::cast(data, l);
+	memset(_additional_data, 0, sizeof _additional_data);
+	_additional_len = 0;
 
 	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
@@ -137,8 +129,8 @@ void pgen_tcp::cast(const void* data, int l){
 	l -= IP.hlen*4;
 
 	struct tcp_header* buf = (struct tcp_header*)p;
-	p += tcp.doff*4;
-	l -= tcp.doff*4;
+	p += buf->doff*4;
+	l -= buf->doff*4;
 
 	this->TCP.src = ntohs(buf->source);
 	this->TCP.dst = ntohs(buf->dest);
@@ -152,7 +144,8 @@ void pgen_tcp::cast(const void* data, int l){
     this->TCP.flags.psh = buf->psh;
     this->TCP.flags.ack = buf->ack;
 	this->TCP.flags.urg = buf->urg;
-
+	memcpy(TCP.option, buf->option, buf->doff*4-20);
+	
 	add_data(p, l);
 }
 

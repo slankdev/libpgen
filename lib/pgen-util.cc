@@ -118,10 +118,10 @@ unsigned short checksum(unsigned short *data, int len){
 
 
 // not test
-unsigned short checksumTcp_new(struct ip_header ip, 
-			struct tcp_header tcp, const void* buf, int total_len){
+unsigned short checksumTcp(struct ip_header ip, 
+			struct tcp_header tcp, const void* data, int total_len){
 	
-	int ih_len = 12;
+	
 	struct{
 		bit32 ip_src;	
 		bit32 ip_dst;
@@ -129,51 +129,25 @@ unsigned short checksumTcp_new(struct ip_header ip,
 		bit8  ip_protocol;
 		bit16 ip_length;
 		struct tcp_header tcp;
-	}buffer;
+	}headers;
+	u_char buffer0[10000];
+	u_char* p = buffer0;
 
-	memset(&buffer, 0, sizeof buffer);
-	buffer.ip_src = ip.saddr;
-	buffer.ip_dst = ip.daddr;
-	buffer.ip_protocol = 0x06;
-	buffer.ip_length = htons(total_len);
-	memcpy(&buffer.tcp, &tcp, tcp.doff*4);
 
-	return checksum((u_int16_t*)&buffer, ih_len+total_len);
+	memset(&headers, 0, sizeof headers);
+	memset(&buffer0, 0, sizeof buffer0);
+	headers.ip_src = ip.saddr;
+	headers.ip_dst = ip.daddr;
+	headers.ip_protocol = 0x06;
+	headers.ip_length = htons(total_len);
+	memcpy(&headers.tcp, &tcp, tcp.doff*4);
+
+	memcpy(p, &headers, 12+tcp.doff*4);
+	p += 12+tcp.doff*4;
+	memcpy(p, data, total_len-tcp.doff*4);
+
+	return checksum((u_int16_t*)buffer0, 12+total_len);
 }
-
-
-unsigned short checksumTcp(const u_char *dp, int datalen){
-	struct tcp_header tcp;
-	struct ip_header ip;
-	char data[100];
-	memcpy(&ip, dp, 20);  // this is bug
-	dp += 20;
-	memcpy(&tcp, dp, sizeof tcp);
-	dp += 20;
-	memcpy(data, dp, datalen-20-20); // this is bug
-	dp += datalen-20-20;
-	
-	struct tpack {
-	  struct ip_header ip;
-	  struct tcp_header tcp;
-	  u_char data[100];
-	}p;
-	
-	memcpy(&p.ip, &ip, 20);
-	memcpy(&p.tcp , &tcp, 20);
-	memcpy(&p.data, data, datalen-20-20);
-
-	p.ip.ttl = 0;
-	p.ip.protocol  = 0x06;
-	p.ip.saddr = ip.saddr;
-	p.ip.daddr = ip.daddr;
-	p.ip.check    = htons((sizeof p.tcp) );
-
-#define PHLEN 12
-	p.tcp.check = 0;
-	return checksum((u_int16_t*)&p.ip.ttl, PHLEN+datalen-20);
-}
-
 
 
 

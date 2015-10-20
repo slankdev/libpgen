@@ -231,6 +231,8 @@ struct tcp_header{
 	bit16 window;
 	bit16 check;
 	bit16 urg_ptr;
+
+	bit8 option[10000];
 };
 
 
