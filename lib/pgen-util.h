@@ -25,10 +25,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 
 int pgen_recv_from_pcap(FILE*, void*, int);
 int pgen_send_to_pcap(FILE*, const void*, int);
+
+unsigned short checksum(unsigned short *data, int len);
+unsigned short checksumTcp(const u_char* dp, int datalen);
+unsigned short checksumUdp(const u_char* dp, int datalen);
+
 
 
 

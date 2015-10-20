@@ -102,7 +102,7 @@ int pgen_unknown::cast(const void* packet, int len){
 	if(ntohs(eth->ether_type) == 0x0800){
 		this->isIP = true;
 		ip = (struct ip_header*)p;
-		p += sizeof(struct ip_header);
+		p += ip->ihl*4;
 		this->IP.src._addr = ip->saddr;
 		this->IP.dst._addr = ip->daddr;
 

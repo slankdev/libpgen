@@ -32,6 +32,9 @@ class pgen_tcp : public pgen_ip {
 		struct{
 			int src;
 			int dst;
+			int seq;
+			int ack;
+			u_char doff:4;
 			struct{
 				u_char fin:1;
 				u_char syn:1;
@@ -41,8 +44,6 @@ class pgen_tcp : public pgen_ip {
 				u_char urg:1;
 			}flags;
 			int window;
-			int seq;
-			int ack;
 		}TCP;
 
 		pgen_tcp();

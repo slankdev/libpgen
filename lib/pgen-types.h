@@ -37,10 +37,12 @@ typedef unsigned long long bit128;
 
 
 
-
+/* 0:succes, 1:len, 2:bin */
 struct pgen_checkopt{
 	int all_count;
-	int failed_count;
+	int len_failed_count;
+	int bin_failed_count;
+	int result[10000]; 
 	char readfile[256];
 	char writefile[256];
 };
@@ -106,9 +108,7 @@ struct pgen{
 
 #define ETH_HDR_LEN  sizeof(struct ethernet_header)
 #define ARP_HDR_LEN  sizeof(struct arp_packet)
-//#define IP_HDR_LEN   sizeof(struct ip_header)
 #define ICMP_HDR_LEN sizeof(struct icmp_header)
-#define TCP_HDR_LEN  sizeof(struct tcp_header)
 #define UDP_HDR_LEN  sizeof(struct udp_header)
 #define DNS_HDR_LEN  sizeof(struct dns_header)
 #define DHCP_HDR_LEN sizeof(struct dhcp_header)
@@ -120,9 +120,6 @@ struct ethernet_header{
 	bit8  ether_shost[6];	/* source ether addr	*/
 	bit16 ether_type;		        /* packet type ID field	*/
 };
-
-
-
 
 
 

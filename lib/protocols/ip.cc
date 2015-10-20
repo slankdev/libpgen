@@ -103,6 +103,8 @@ void pgen_ip::compile(){
 	memcpy(p, &this->ip, IP.hlen*4);
 	p += IP.hlen*4;
 
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
 
 	this->len = p - this->data;
 }
@@ -112,19 +114,24 @@ void pgen_ip::compile(){
 
 
 
-void pgen_ip::cast(const void* data, int len){
-	if(!(this->minLen<=len && len<=this->maxLen)){
+void pgen_ip::cast(const void* data, int l){
+	if(!(this->minLen<=l && l<=this->maxLen)){
 		fprintf(stderr, "pgen_ip::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
+	int ext_hdr_len;
+	pgen_eth::cast(data, l);
+	memset(_additional_data, 0, sizeof _additional_data);
+	_additional_len = 0;
 	
-	pgen_eth::cast(data, len);
-
 
 	const u_char* p = (u_char*)data;
 	p += ETH_HDR_LEN;
+	l -= ETH_HDR_LEN;
 	struct ip_header* buf = (struct ip_header*)p;
-	p += 20;
+	p += buf->ihl*4;
+	l -= buf->ihl*4;
+	ext_hdr_len = buf->ihl*4 - 20;
 	
 	this->IP.hlen = buf->ihl;
 	this->IP.tos = buf->tos;
@@ -136,10 +143,10 @@ void pgen_ip::cast(const void* data, int len){
 	this->IP.src._addr = buf->saddr;
 	this->IP.dst._addr = buf->daddr;
 
-	ip_add_exthdr(p, (IP.hlen<<2) - 20);
+	ip_add_exthdr(p-ext_hdr_len, ext_hdr_len);
 	
-	this->len = p - (u_char*)data;
-	
+
+	add_data(p, l);
 
 }
 
