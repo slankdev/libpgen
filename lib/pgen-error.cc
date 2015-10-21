@@ -97,6 +97,9 @@ void pgen_perror(const char* msg){
 		case PG_ERRNO_TIMEOUT:
 			strncpy(str, "timeout", errstrlen);
 			break;
+		case PG_ERRNO_ARPERR:
+			strncpy(str, "arp table error", errstrlen);
+			break;
 		case PG_ERRNO_NOSUPPORT:
 			strncpy(str, "not support", errstrlen);
 			break;

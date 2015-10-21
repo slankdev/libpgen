@@ -162,7 +162,7 @@ void pgen_tcp::summary(){
 	if(TCP.flags.psh == 1)	flag+= "PSH";
 	if(TCP.flags.ack == 1)	flag+= "ACK";
 	if(TCP.flags.urg == 1)	flag+= "URG";
-	printf("%d > %d [%s] seq=%d win=%d len=%d }\n",
+	printf("%u > %u [%s] seq=%u win=%u len=%u }\n",
 			TCP.src, TCP.dst, flag.c_str(), TCP.seq, TCP.window, len);
 }
 
@@ -176,9 +176,9 @@ void pgen_tcp::info(){
 	char buf[32];
 
 	printf(" * Transmission Control Protocol \n");
-	printf("    - Source Port     :  %d (%s) \n",
+	printf("    - Source Port     :  %u (%s) \n",
 			TCP.src, pgen_port2service(TCP.src, "tcp", buf));
-	printf("    - Dest Port       :  %d (%s) \n", 
+	printf("    - Dest Port       :  %u (%s) \n", 
 			TCP.dst, pgen_port2service(TCP.dst, "tcp", buf));
 	printf("    - Frags           :  ");
 	if(tcp.fin == 1)	printf("F");
@@ -188,7 +188,7 @@ void pgen_tcp::info(){
 	if(tcp.ack == 1)	printf("A");
 	if(tcp.urg == 1)	printf("U");
 	printf("\n");
-	printf("    - Window size     :  %d \n", TCP.window);
+	printf("    - Window size     :  %u \n", TCP.window);
 	printf("    - Checksum        :  0x%04x \n", ntohs(tcp.check));
 	printf("    - sequence        :  %u \n", TCP.seq);
 	printf("    - acknowledge     :  %u \n", TCP.ack);

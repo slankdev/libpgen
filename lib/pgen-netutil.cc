@@ -73,7 +73,7 @@ int pgen_recv_from_netif_to(int fd, void* buf, int len, struct timeval to){
 
 	recv_len = select(fd+1, &fds, NULL, NULL, &to);
 	if(recv_len < 0){
-		pgen_errno = errno;
+		pgen_errno  = errno;
 		pgen_errno2 = PG_ERRNO_SELECT;
 		return recv_len;
 	}else if(recv_len == 0){

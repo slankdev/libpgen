@@ -110,8 +110,8 @@ int arptable::get(ipaddr ip){
 
 	int len = 0;
 	u_char data[1000];
+	memset(data, 0, sizeof data);
 	struct timeval tv;
-	
 	tv.tv_sec  = 1;
 	tv.tv_usec = 0;
 
@@ -139,94 +139,62 @@ int arptable::get(ipaddr ip){
 	
 	pgen_send_to_netif(handle->fd, &send_pack, sizeof(send_pack));
 	
+	int timeout_flag = 1;
 	for(int i=0; i<3; i++){
 		len = pgen_recv_from_netif_to(handle->fd, data, sizeof(data), tv);
 		if(len == 0){
+			timeout_flag = 1;
 			continue;
 		}else if(len < 0){
+			timeout_flag = 0;
 			pgen_perror("pgen_recv_from_netif");
 			return -1;
 		}
-		if(len < 14)
+		if(len < 14){
+			timeout_flag = 0;
 			continue;
+		}
 
+		timeout_flag = 0;
 		packet = (struct _packet*)data;
 		if(htons(packet->eth.ether_type) == 0x0806){
 			if(packet->arp.ea_hdr.ar_op == htons(0x002)){
 				results_mac.setmacbyarry(packet->arp.arp_sha);		
 				this->add(ip, results_mac);
-			}
-		}
-	}
-	return -1;
-}
-
-
-
-
-
-/*
-int arptable::get(ipaddr ip){
-	struct{
-		ethernet_header eth;
-		arp_packet      arp;
-	}packet;
-	
-	int len = 0;
-	u_char data[1000];
-	pgen_arp pack;
-	pgen_unknown unknown;
-	struct timeval tv;
-	
-	tv.tv_sec  = 1;
-	tv.tv_usec = 0;
-
-	pack.ETH.src.setmacbydev(handle->online.ifname);
-	pack.ETH.dst.setmacbroadcast();
-	pack.ARP.operation = 1;
-	pack.ARP.srcEth.setmacbydev(handle->online.ifname);
-	pack.ARP.srcIp.setipbydev(handle->online.ifname);
-	pack.ARP.dstEth.setmacbroadcast();
-	pack.ARP.dstIp = ip;
-	pack.compile();
-
-	pgen_send_to_netif(handle->fd, pack.data, pack.len);
-	
-	for(int i=0; i<3; i++){
-		len = pgen_recv_from_netif_to(handle->fd, data, sizeof(data), tv);
-		if(len == 0){
-			continue;
-		}else if(len < 0){
-			pgen_perror("pgen_recv_from_netif");
-			return -1;
-		}
-		unknown.cast(data, len);
-		if(unknown.isARP){
-			pack.cast(data, len);
-			if(pack.ARP.operation==2 && pack.ARP.srcIp==ip){
-				this->add(ip, pack.ARP.srcEth);
 				return 1;
 			}
 		}
 	}
+	if(timeout_flag == 1){
+		pgen_errno2 = PG_ERRNO_ARPERR;		
+	}
+
 	return -1;
 }
-*/
+
 
 
 
 
 macaddr arptable::find(ipaddr ip){
+	macaddr zero;
+	zero = "00:00:00:00:00:00";
+
 	for(int i=0; i<entry.size(); i++){
 		if(ip == entry[i].ip)
 			return entry[i].mac;
 	}
-	this->get(ip);
+	if(this->get(ip) < 0){
+		pgen_perror("arptable::find");
+		return zero;
+	}
+
 	for(int i=0; i<entry.size(); i++){
 		if(ip == entry[i].ip)
 			return entry[i].mac;
 	}
-	return NULL;
+
+	return zero;
 }
 
 

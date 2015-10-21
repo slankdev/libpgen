@@ -49,6 +49,7 @@ extern int pgen_errno2;
 #define PG_ERRNO_SELECT 14
 
 #define PG_ERRNO_TIMEOUT 15
+#define PG_ERRNO_ARPERR 16
 
 #ifndef __linux
 #define PG_ERRNOBSD_OPENBPF -1
