@@ -14,7 +14,7 @@ void synscan(){
 	pack.TCP.src = 12345;
 	pack.TCP.dst = 80;  pack.send_handle(handle); pack.hex();
 	pack.TCP.dst = 443; pack.send_handle(handle); pack.hex();
-	printf("\n"); sleep(2); run = -1;
+	printf("\n"); sleep(5); run = -1;
 }
 bool capture(const u_char* packet, int len){
 	pgen_unknown buf(packet, len);
@@ -26,10 +26,14 @@ bool capture(const u_char* packet, int len){
 	else 		return true;
 }
 int main(int argc, char** argv){
-	target_ip  = "173.194.126.144"; target_mac = "0:0:c:7:ac:1";
+	target_ip  = "124.35.85.85"; target_mac = "0:10:38:23:ad:60";
+	target_ip  = "192.168.179.1"; target_mac = "a2:12:42:17:d8:8f";
 	if((handle = pgen_open("en0", NULL)) == NULL)	return -1;
 	
 	std::thread scan(synscan);
 	run = 1; sniff(handle, capture);
 	scan.join(); pgen_close(handle);
 }
+
+
+

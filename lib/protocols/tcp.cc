@@ -101,7 +101,7 @@ void pgen_tcp::compile(){
 	p += IP.hlen*4;
 	memcpy(p, &this->tcp, tcp.doff*4);
 	p += tcp.doff*4;
-
+	
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
 
