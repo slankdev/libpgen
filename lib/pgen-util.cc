@@ -44,7 +44,7 @@
 int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 	int sendlen = 0;
 	struct timeval ts_now;
-	struct pcap_pkthdr pkthdr;
+	struct pgen_pcap_pkthdr pkthdr;
 	gettimeofday(&ts_now, NULL);
 	
 	pkthdr.ts.tv_sec = (unsigned int)(ts_now.tv_sec);
@@ -52,7 +52,7 @@ int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 	pkthdr.caplen = len;
 	pkthdr.len    = len;
 
-	if(fwrite(&pkthdr, sizeof(struct pcap_pkthdr), 1, fp) != 1){
+	if(fwrite(&pkthdr, sizeof(struct pgen_pcap_pkthdr), 1, fp) != 1){
 		pgen_errno = errno;
 		pgen_errno2 = PG_ERRNO_FWRITE;
 		sendlen = -1;
@@ -74,8 +74,8 @@ int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 
 
 int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
-	struct pcap_pkthdr hdr;
-	if(fread(&hdr, sizeof(struct pcap_pkthdr), 1, fp) < 1){
+	struct pgen_pcap_pkthdr hdr;
+	if(fread(&hdr, sizeof(struct pgen_pcap_pkthdr), 1, fp) < 1){
 		pgen_errno = errno;
 		pgen_errno2 = PG_ERRNO_FREAD;
 		return -1;

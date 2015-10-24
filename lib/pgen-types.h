@@ -70,7 +70,7 @@ struct pcap_fhdr{
 
 
 
-struct pcap_pkthdr{
+struct pgen_pcap_pkthdr{
 	struct pcap_timeval ts;
 	bit32 caplen;
 	bit32 len;
