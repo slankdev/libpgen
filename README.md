@@ -1,37 +1,36 @@
-# libpgen (LIBrary Packet GENerator)
-詳しいドキュメントは開発者サイトを参照してください。 http://libpgen.org
+# LibPGEN
+LibPGEN is Packet GENerator library.  
+Please see the libpgen official WEB-site http://libpgen.org
 
-## 概要、コンセプト
-libpgenはC++で書かれたパケット解析、送受信などを簡単にできるようにすることを目標としているライブラリです。
-
-コンセプトは以下のとうりです。
-* 簡単で高度にパケットを設定して送ることができる
-* ネットワークプログラミングのめんどくさいこと（ややこしく絡み合った構造体、
-	バイトオーダ操作、アドレス操作）をしなくていい
-* プログラミング素人でも、ネットワークの最低限の知識があれば高度なネットワークツールを作成することができる。
+## Description
+LibPGEN is a library that runs on Linux and BSD for C/C++.  
+This library can analize network pakcets easily.
 
 
-## 利用可能環境
-Ubuntu-Gnome14.04LTS, ArchLinux, Linux Mint 17.1で動作確認ができています。確認していませんんが、他のlinuxでも動作するはずです。
-(2015/09/16) BSDをサポートしました。OSXでも動きます。
+## Environment
+Developers have been tested in Ubuntu-Gnome14.04LTS, ArchLinux, Linux Mint17.1 and OSX10.10.5  
+We don't have been tested other Linux and BSD but maybe available.
+
  
-## 追加予定機能
-* 別のOS対応　
-* 様々なパケットに対応
+
+## Future
+* Support more protocols　
+* Become easy to extension 
 
 
-
-## 開発者
+## Developer
 Handlename  : Slank  
 Fullname    : Hiroki Shirokura  
 Country     : Japan  
 E-mail      : slank.dev@gmail.com  
+Web-Site    : slankdev.net  
+Twitter     : @slankdev  
 
 　
-## 対応プロトコル
+## Support Protocol
 Ethernet, ARP, IP, ICMP, TCP, UDP, DNS, DHCP, ar_drone
 　
-## サンプルコード
+## Sample Code
 - 　DNS query 		libpgen/sample/DNS/
 - MITM attack		libpgen/sample/MITM/
 
@@ -50,15 +49,6 @@ more infomation see http://libpgen.org
 	$ sudo make uninstall
 
 
-## LICENCE1
-	
-	本ライブラリを使用して作成されたプログラムを使用したことによって
-	起きた問題などに関しては、ライブラリ製作者は責任を持たず、
-	すべてライブラリ使用者の自己責任とさせていただきます。
-	
-	システムに影響などが起こってしまったり、
-	その他の問題が起きた場合は、ライブラリ製作者に連絡をしてください。
-	責任は負いませんが、協力は致します。
+## LICENCE
 
-## LICENCE2
 GNU GPL v2.0 https://www.gnu.org/licenses/gpl-2.0.html 
