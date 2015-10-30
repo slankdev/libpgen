@@ -72,7 +72,6 @@ void pgen_icmp::clear(){
 //	- Time Exceeded
 //	- Redirect (not yet)
 //	- Router Solicitation (not yes)
-
 void pgen_icmp::compile(){
 
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
