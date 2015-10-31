@@ -82,6 +82,9 @@ void pgen_eth::compile(){
 	
 }
 
+void write_bin(const void* buf, int buflen){
+		
+}
 
 
 void pgen_eth::cast(const void* data, int l){
@@ -106,6 +109,19 @@ void pgen_eth::cast(const void* data, int l){
 	this->ETH.type = ntohs(buf->ether_type);
 
 	add_data(p, l);
+}
+
+
+
+void pgen_eth::read_bin(const void* buf, int buflen){
+	const u_char* p = (u_char*)buf;
+	struct ethernet_header* eth = (struct ethernet_header*)p;
+
+	for(int i=0; i<6; i++){
+		this->ETH.dst._addr[i] = eth->ether_dhost[i];
+		this->ETH.src._addr[i] = eth->ether_shost[i];
+	}
+	this->ETH.type = ntohs(eth->ether_type);
 }
 
 
