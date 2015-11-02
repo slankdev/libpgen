@@ -50,8 +50,8 @@ class pgen_eth : public pgen_packet {
 		void info();
 		void help();
 
-		void write_bin(const void*, int);
-		void read_bin(const void*, int);
+		int write_bin(void*, int);
+		int read_bin(const void*, int);
 };
 
 
