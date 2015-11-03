@@ -56,9 +56,8 @@ class pgen_ip : public pgen_eth {
 		void info();
 		void help();
 
-		void ip_add_exthdr(const void*, int);
-
-		
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
 };
 
 
