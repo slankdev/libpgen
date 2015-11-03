@@ -63,14 +63,18 @@ void pgen_eth::clear(){
 
 
 void pgen_eth::compile(){
+
+    memset(this->data, 0, PGEN_MAX_PACKET_LEN);
+
+    for(int i=0; i< 6; i++){
+            this->eth.ether_dhost[i] = this->ETH.dst._addr[i];
+            this->eth.ether_shost[i] = this->ETH.src._addr[i];
+    }
+    this->eth.ether_type = htons(this->ETH.type);
+
 	u_char* p = this->data;
-	u_char buf[1000];
-	int buflen;
-
-	buflen = this->write_bin(buf, sizeof(buf));
-	memcpy(p, &buf, buflen);
-	p += buflen;
-
+    memcpy(p, &(this->eth), ETH_HDR_LEN);
+    p += ETH_HDR_LEN;
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
 
@@ -85,11 +89,19 @@ void pgen_eth::cast(const void* data, int l){
 	}
 
 	const u_char* p = (u_char*)data;
-	int buflen;
 
-	buflen = read_bin(p, l);
-	p += buflen;
-	l -= buflen;
+    struct ethernet_header* buf;
+    buf = (struct ethernet_header*)p;
+    p += ETH_HDR_LEN;
+    l -= ETH_HDR_LEN;
+
+
+    for(int i=0; i<6; i++){
+            this->ETH.dst._addr[i] = buf->ether_dhost[i];
+            this->ETH.src._addr[i] = buf->ether_shost[i];
+    }
+    this->ETH.type = ntohs(buf->ether_type);
+
 
 	add_data(p, l);
 }
