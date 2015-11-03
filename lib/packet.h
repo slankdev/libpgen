@@ -52,6 +52,8 @@ class pgen_packet{
 		virtual void summary()=0;
 		virtual void info()=0;	
 		virtual void help()=0;
+		virtual int  write_bin(void*, int)=0;
+		virtual int  read_bin(const void*, int)=0;
 
 
 
