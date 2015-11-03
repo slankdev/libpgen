@@ -151,6 +151,67 @@ void pgen_tcp::cast(const void* data, int l){
 
 
 
+int  pgen_tcp::write_bin(void* buf, int buflen){
+	if(buflen < sizeof(struct tcp_header)){
+		fprintf(stderr, "pgen_tcp::write_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+	
+	struct ip_header ip_head;
+	pgen_ip::write_bin(&ip_head, sizeof(ip_head));
+
+	struct tcp_header tcp_head;
+	memset(&tcp_head, 0, sizeof(tcp_head));
+
+	tcp_head.source = htons(this->TCP.src);
+	tcp_head.dest   = htons(this->TCP.dst);
+	tcp_head.seq    = htonl(this->TCP.seq);
+	tcp_head.ack_seq = htonl(this->TCP.ack);
+	tcp_head.doff = this->TCP.doff;  // header length
+	tcp_head.window = htons(this->TCP.window);
+	tcp_head.check  = 0;
+	tcp_head.fin = this->TCP.flags.fin;
+	tcp_head.syn = this->TCP.flags.syn;
+	tcp_head.rst = this->TCP.flags.rst;
+	tcp_head.psh = this->TCP.flags.psh;
+	tcp_head.ack = this->TCP.flags.ack;
+	tcp_head.urg = this->TCP.flags.urg;
+	memcpy(tcp_head.option, TCP.option, TCP.doff*4-20);
+	tcp_head.check = checksumTcp(ip_head, tcp_head, _additional_data,IP.tot_len-IP.hlen*4);
+
+	memcpy(buf, &tcp_head, TCP.doff*4);
+	return TCP.doff*4;	
+}
+
+
+int  pgen_tcp::read_bin(const void* buf, int buflen){
+	if(buflen < sizeof(struct tcp_header)){
+		fprintf(stderr, "pgen_tcp::read_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+
+	struct tcp_header* tcp_head = (struct tcp_header*)buf;
+
+	this->TCP.src = ntohs(tcp_head->source);
+	this->TCP.dst = ntohs(tcp_head->dest);
+	this->TCP.seq = ntohl(tcp_head->seq);
+	this->TCP.ack = ntohl(tcp_head->ack_seq);
+	this->TCP.doff = tcp_head->doff;
+	this->TCP.window = ntohs(tcp_head->window);
+	this->TCP.flags.fin = tcp_head->fin;
+    this->TCP.flags.syn = tcp_head->syn;
+    this->TCP.flags.rst = tcp_head->rst;
+    this->TCP.flags.psh = tcp_head->psh;
+    this->TCP.flags.ack = tcp_head->ack;
+	this->TCP.flags.urg = tcp_head->urg;
+	memcpy(TCP.option, tcp_head->option, TCP.doff*4-20);
+		
+	return TCP.doff*4;	
+}
+
+
+
+
 void pgen_tcp::summary(){
 	compile();
 	printf("TCP{ ");

@@ -57,6 +57,9 @@ class pgen_tcp : public pgen_ip {
 		void summary();
 		void info();
 		void help();
+
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
 };
 
 
