@@ -140,6 +140,61 @@ void pgen_arp::cast(const void* data, int len){
 	len = p - (u_char*)data;
 }
 
+int  pgen_arp::write_bin(void* buf, int buflen){
+	if(buflen < sizeof(struct arp_packet)){
+		fprintf(stderr, "pgen_arp::write_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+
+	struct arp_packet arp_pack;
+	memset(&arp_pack, 0, sizeof arp_pack);
+	
+	arp_pack.arp_hrd = htons(1);
+	arp_pack.arp_pro = htons(0x0800);
+	arp_pack.arp_hln = 6;
+	arp_pack.arp_pln = 4;
+	arp_pack.arp_op  = htons(this->ARP.operation);
+	for(int i=0; i<6; i++){
+		arp_pack.arp_sha[i] = this->ARP.srcEth._addr[i];
+		arp_pack.arp_tha[i] = this->ARP.dstEth._addr[i];
+	}
+	for(int i=0; i<4; i++){
+		arp_pack.arp_spa[i] = this->ARP.srcIp.getOctet(i);
+		arp_pack.arp_tpa[i] = this->ARP.dstIp.getOctet(i);
+	}
+		
+	memcpy(buf, &arp_pack, sizeof(arp_pack));
+	return sizeof(struct arp_packet);	
+}
+
+
+int  pgen_arp::read_bin(const void* buf, int buflen){
+	if(buflen < sizeof(struct arp_packet)){
+		fprintf(stderr, "pgen_arp::read_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+
+	struct arp_packet* arp_pack = (struct arp_packet*)buf;
+	union lc{
+		bit32 l;
+		bit8 c[4];
+	};
+	lc slc, dlc;
+
+	this->ARP.operation = ntohs(arp_pack->arp_op);
+	for(int i=0; i<6; i++){
+		this->ARP.srcEth._addr[i] = arp_pack->arp_sha[i];
+		this->ARP.dstEth._addr[i] = arp_pack->arp_tha[i];
+	}
+	for(int i=0; i<4; i++){
+		slc.c[i] = arp_pack->arp_spa[i];
+		dlc.c[i] = arp_pack->arp_tpa[i];
+	}
+	this->ARP.srcIp = slc.l;
+	this->ARP.dstIp = dlc.l;
+
+	return sizeof(struct arp_packet);	
+}
 
 
 void pgen_arp::summary(){

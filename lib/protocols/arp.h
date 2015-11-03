@@ -48,6 +48,9 @@ class pgen_arp : public pgen_eth {
 		void summary();
 		void info();
 		void help();
+
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
 };
 
 
