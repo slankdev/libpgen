@@ -31,9 +31,10 @@ class pgen_udp : public pgen_ip {
 		static const int minLen = pgen_ip::minLen+sizeof(struct udp_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
-			int src;
-			int dst;
+			bit16 src;
+			bit16 dst;
 			bit16 len;
+			bit16 check;
 		}UDP;
 
 		pgen_udp();
@@ -45,6 +46,9 @@ class pgen_udp : public pgen_ip {
 		void summary();
 		void info();
 		void help();
+
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
 };
 
 

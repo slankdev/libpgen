@@ -105,6 +105,43 @@ void pgen_udp::cast(const void* data, int len){
 
 
 
+int  pgen_udp::write_bin(void* buf, int buflen){
+	if(buflen < sizeof(struct udp_header)){
+		fprintf(stderr, "pgen_udp::write_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+	
+	struct udp_header udp_head;
+	memset(&udp_head, 0, sizeof(udp_head));
+
+	udp_head.source = htons(this->UDP.src);
+	udp_head.dest   = htons(this->UDP.dst);
+	udp_head.len    = htons(this->UDP.len);
+	udp_head.check  = htons(this->UDP.check);
+	
+	memcpy(buf, &udp_head, sizeof(udp_head));
+	return sizeof(udp_head);
+}
+
+
+int  pgen_udp::read_bin(const void* buf, int buflen){
+	if(buflen < sizeof(struct udp_header)){
+		fprintf(stderr, "pgen_udp::read_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+
+	struct udp_header *udp_head = (struct udp_header*)buf;
+
+	this->UDP.src   = ntohs(udp_head->source);
+	this->UDP.dst   = ntohs(udp_head->dest);
+	this->UDP.len   = ntohs(udp_head->len);
+	this->UDP.check = ntohs(udp_head->check);
+
+	return sizeof(udp_head);
+}
+
+
+
 void pgen_udp::summary(){
 	printf("UDP(%d -> %d) \n", UDP.src, UDP.dst);
 }
