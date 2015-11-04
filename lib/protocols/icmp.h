@@ -66,6 +66,9 @@ class pgen_icmp : public pgen_ip {
 		void info();
 		void help();
 
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
+
 		void icmp_addData(const void*, int);
 };
 
