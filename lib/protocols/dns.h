@@ -109,6 +109,17 @@ class pgen_dns :public pgen_udp {
 		void info();
 		void debug();
 		void help();
+
+		int  write_bin(void*, int);
+		int  write_bin_query(void*, int);
+		int  write_bin_answer(void*, int);
+		int  write_bin_auth(void*, int);
+		int  write_bin_addition(void*, int);
+		int  read_bin(const void*, int);
+		int  read_bin_query(const void*, int);
+		int  read_bin_answer(const void*, int);
+		int  read_bin_auth(const void*, int);
+		int  read_bin_addition(const void*, int);
 		
 		void clear_query();
 		void clear_answer();
