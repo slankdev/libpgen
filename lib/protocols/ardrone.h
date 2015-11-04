@@ -112,6 +112,9 @@ class pgen_ardrone : public pgen_udp {
 		void summary();
 		void info();
 		void help();
+
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
 	
 		int compile_pcmd();
 		int compile_ref();

@@ -66,6 +66,9 @@ class pgen_dhcp : public pgen_udp {
 		void info();
 		void help();
 
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
+
 		void dhcp_set_option(int,int,int,void*);
 		void dhcp_get_option(const void*, struct dhcp_option*);
 };

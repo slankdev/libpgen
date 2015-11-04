@@ -63,6 +63,7 @@ static void dns_print_record_data(const bit8* data, int len, int type);
 
 
 
+
 pgen_dns::pgen_dns(){
 	clear();
 }
