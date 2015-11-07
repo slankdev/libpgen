@@ -54,6 +54,7 @@ class pgen_dns :public pgen_udp {
 				bit8 ra:1;
 				bit8 nouse:3;
 				bit8 rcode:4;
+
 			}flags;
 			u_int16_t qdcnt;
 			u_int16_t ancnt;

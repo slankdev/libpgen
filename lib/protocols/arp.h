@@ -27,7 +27,6 @@
 
 class pgen_arp : public pgen_eth {
 	protected:
-		struct arp_packet arp;
 	public:
 		static const int minLen = pgen_eth::minLen+sizeof(struct arp_packet);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;

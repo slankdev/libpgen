@@ -80,6 +80,8 @@ pgen_dns::pgen_dns(const void* packet, int len){
 
 void pgen_dns::clear(){
 	pgen_udp::clear();
+	UDP.len = UDP_HDR_LEN + DNS_HDR_LEN;
+	UDP.dst = 53;
 
 	DNS.id	   = 0x0000;
 	DNS.flags.qr = 0;
@@ -307,51 +309,29 @@ void pgen_dns::compile_addition(){
 }
 
 
+
 void pgen_dns::compile(){
-	this->len = 0;
-	compile_query();
-	compile_answer();
-	compile_auth();
-	compile_addition();
+	u_char buf[100000];
+	int buflen;
 
-	//UDP.dst = 53;
-	UDP.len = UDP_HDR_LEN + DNS_HDR_LEN + query_data_len + answer_data_len + auth_data_len + addition_data_len;
-	pgen_udp::compile();
+	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
+	u_char* p = this->data;
 
-	memset(&dns, 0, sizeof dns);
-	dns.id = htons(DNS.id);
-	dns.qr = DNS.flags.qr;
-	dns.opcode = DNS.flags.opcode;
-	dns.aa = DNS.flags.aa;
-	dns.tc = DNS.flags.tc;
-	dns.rd = DNS.flags.rd;
-	dns.ra = DNS.flags.ra;
-	dns.nouse = DNS.flags.nouse;
-	dns.rcode = DNS.flags.rcode;
-
-	dns.qdcnt = htons(DNS.qdcnt);
-	dns.ancnt = htons(DNS.ancnt);
-	dns.nscnt = htons(DNS.nscnt);
-	dns.arcnt = htons(DNS.arcnt);
-
-	u_char* p = data;
-	memcpy(p, &eth, ETH_HDR_LEN);
-	p += ETH_HDR_LEN;
-	memcpy(p, &ip, IP.hlen*4);
-	p += IP.hlen*4;
-	memcpy(p, &udp, UDP_HDR_LEN);
-	p += UDP_HDR_LEN;
-	memcpy(p, &dns, DNS_HDR_LEN);
-	p += DNS_HDR_LEN;
+	buflen = pgen_eth::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_ip::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_udp::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_dns::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
 	
-	memcpy(p, &query_data, query_data_len);
-	p += query_data_len;
-	memcpy(p, &answer_data, answer_data_len);
-	p += answer_data_len;
-	memcpy(p, &auth_data, auth_data_len);
-	p += auth_data_len;
-	memcpy(p, &addition_data, addition_data_len);
-	p += addition_data_len;
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
 	
 	this->len = p - data;
 }
@@ -799,6 +779,28 @@ void pgen_dns::cast(const void* packet, int len){
 }
 
 
+//void pgen_dns::cast(const void* packet, int l){
+//	const u_char* p = (u_char*)packet;
+//	int buflen;
+//	
+//	buflen = pgen_eth::read_bin(p, l);
+//	p += buflen;
+//	l -= buflen;
+//	buflen = pgen_ip::read_bin(p, l);
+//	p += buflen;
+//	l -= buflen;
+//	buflen = pgen_udp::read_bin(p, l);
+//	p += buflen;
+//	l -= buflen;
+//	buflen = pgen_dns::read_bin(p, l);
+//	p += buflen;
+//	l -= buflen;
+//
+//	this->len = p - (u_char*)packet;
+//	add_data(p, l);
+//}
+
+
 
 
 int  pgen_dns::read_bin(const void* buf, int buflen){
@@ -1009,13 +1011,13 @@ int  pgen_dns::read_bin_addition(const void* buf, int buflen){
 void pgen_dns::summary(){
 	compile();
 	printf("DNS{ ");
-	if(dns.qr == 1){
-  		printf("Query response 0x%04x %s type=%d ", ntohs(dns.id), DNS.query[0].name.c_str(),
+	if(DNS.flags.qr == 1){
+  		printf("Query response 0x%04x %s type=%d ", ntohs(DNS.id), DNS.query[0].name.c_str(),
 				DNS.answer[0].type);
 		dns_print_record_data(DNS.answer[0].data, DNS.answer[0].len, DNS.answer[0].type);
 		printf(" }\n");
 	}else{
-		printf("Query 0x%04x %s type=%d }\n", ntohs(dns.id), DNS.query[0].name.c_str(),
+		printf("Query 0x%04x %s type=%d }\n", ntohs(DNS.id), DNS.query[0].name.c_str(),
 				DNS.query[0].type);	
 	}
 }
@@ -1060,36 +1062,39 @@ void pgen_dns::info(){
 	pgen_udp::info();
 
 	printf(" * Domain Name System \n");
-	printf("    - Identification  : 0x%04x\n", ntohs(dns.id));
-	printf("    - Flags           : 0x%04x\n", ntohs(dns.flags));
-	printf("         - qr         : %d", dns.qr);
-	if(dns.qr == 0)				printf("   (query) \n");
+	printf("    - Identification  : 0x%04x\n", DNS.id);
+
+	int flags_number = 0;
+	printf("    - Flags           : 0x%04x NOT IMPLEMENT\n", flags_number);
+
+	printf("         - qr         : %d", DNS.flags.qr);
+	if(DNS.flags.qr == 0)				printf("   (query) \n");
 	else						printf("   (response)\n");
-	printf("         - opcode     : %d", dns.opcode);
-	if(dns.opcode == 0)			printf("   (standard query) \n");
-	else if(dns.opcode == 1)	printf("   (inverse query) \n");
-	else if(dns.opcode == 2)	printf("   (server status request) \n");
+	printf("         - opcode     : %d", DNS.flags.opcode);
+	if(DNS.flags.opcode == 0)			printf("   (standard query) \n");
+	else if(DNS.flags.opcode == 1)	printf("   (inverse query) \n");
+	else if(DNS.flags.opcode == 2)	printf("   (server status request) \n");
 	else						printf("   (malformed)\n");
-	printf("         - aa         : %d", dns.aa);
-	if(dns.aa == 1)				printf("   (have authority) \n");
+	printf("         - aa         : %d", DNS.flags.aa);
+	if(DNS.flags.aa == 1)				printf("   (have authority) \n");
 	else						printf("   (no authority)\n");
-	printf("         - tc         : %d", dns.tc);
-	if(dns.tc == 1)				printf("   (caption) \n");
+	printf("         - tc         : %d", DNS.flags.tc);
+	if(DNS.flags.tc == 1)				printf("   (caption) \n");
 	else						printf("   (no caption)\n");
-	printf("         - rd         : %d", dns.rd);
-	if(dns.rd == 1)				printf("   (recursion desired) \n");
+	printf("         - rd         : %d", DNS.flags.rd);
+	if(DNS.flags.rd == 1)				printf("   (recursion desired) \n");
 	else						printf("   (no recursion)\n");
-	printf("         - ra         : %d", dns.ra);
-	if(dns.ra == 1)				printf("   (recursion available) \n");
+	printf("         - ra         : %d", DNS.flags.ra);
+	if(DNS.flags.ra == 1)				printf("   (recursion available) \n");
 	else						printf("   (recursion unavailable)\n");
 
-	printf("         - nouse      : %d\n", dns.nouse);
-	printf("         - rcode      : %d\n", dns.rcode);
+	printf("         - nouse      : %d\n", DNS.flags.nouse);
+	printf("         - rcode      : %d\n", DNS.flags.rcode);
 	
-	printf("    - Question        : 0x%04x\n", ntohs(dns.qdcnt));
-	printf("    - Answer RRs      : 0x%04x\n", ntohs(dns.ancnt));
-	printf("    - Authority RRs   : 0x%04x\n", ntohs(dns.nscnt));
-	printf("    - Additional RRs  : 0x%04x\n", ntohs(dns.arcnt));
+	printf("    - Question        : 0x%04x\n", DNS.qdcnt);
+	printf("    - Answer RRs      : 0x%04x\n", DNS.ancnt);
+	printf("    - Authority RRs   : 0x%04x\n", DNS.nscnt);
+	printf("    - Additional RRs  : 0x%04x\n", DNS.arcnt);
 
 	for(int i=0; i<DNS.qdcnt; i++){
 		printf("    - Queries[%d] \n", i);

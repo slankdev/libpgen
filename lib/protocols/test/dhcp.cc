@@ -18,7 +18,7 @@
  *
  */
 
-
+/*
 #include "packet.h"
 #include "address.h"
 #include "pgen-io.h"
@@ -85,52 +85,78 @@ void pgen_dhcp::clear(){
 
 
 
+///void pgen_dhcp::compile(){
+///	
+///	memset(&this->dhcp, 0, DHCP_HDR_LEN);
+///	this->dhcp.op = this->DHCP.op;
+///	this->dhcp.htype  = this->DHCP.htype;
+///	this->dhcp.hlen   = this->DHCP.hlen;
+///	this->dhcp.hops   = this->DHCP.hops;
+///	this->dhcp.xid    = htonl(this->DHCP.xid);
+///	this->dhcp.secs   = htons(this->DHCP.secs);
+///	this->dhcp.flags  = htons(this->DHCP.flags);
+///	this->dhcp.ciaddr = this->DHCP.ciaddr._addr;
+///	this->dhcp.yiaddr = this->DHCP.yiaddr._addr;
+///	this->dhcp.siaddr = this->DHCP.siaddr._addr;
+///	this->dhcp.giaddr = this->DHCP.giaddr._addr;
+///	for(int i=0; i<this->DHCP.hlen; i++){
+///		this->dhcp.chaddr[i] = this->DHCP.chaddr._addr[i];		
+///	}
+///	memcpy(this->dhcp.sname, this->DHCP.sname, sizeof(this->dhcp.sname));
+///	memcpy(this->dhcp.file, this->DHCP.file, sizeof(this->dhcp.file));
+///	this->dhcp.magic[0] = 0x63; 	
+///	this->dhcp.magic[1] = 0x82; 	
+///	this->dhcp.magic[2] = 0x53; 	
+///	this->dhcp.magic[3] = 0x63; 	
+///	
+///	bit8* p0 = dhcp_option;
+///	for(int i=0; i<(int)this->DHCP.option_len; i++){
+///		memcpy(p0, &DHCP.option[i], DHCP.option[i].len+2);	
+///		p0 += DHCP.option[i].len+2;
+///	}
+///	dhcp_option_len = p0 - dhcp_option;
+///
+///	UDP.len = UDP_HDR_LEN + DHCP_HDR_LEN + dhcp_option_len;
+///	pgen_udp::compile();
+///
+///	bit8* p = data;
+///	memcpy(p, &eth, ETH_HDR_LEN);
+///	p += ETH_HDR_LEN;
+///	memcpy(p, &ip, IP.hlen*4);
+///	p += IP.hlen*4;
+///	memcpy(p, &udp, UDP_HDR_LEN);
+///	p += UDP_HDR_LEN;
+///	memcpy(p, &dhcp, DHCP_HDR_LEN);
+///	p += DHCP_HDR_LEN;
+///	memcpy(p, dhcp_option, dhcp_option_len);
+///	p += dhcp_option_len;
+///
+///	this->len = p - data;
+///}
+
 
 void pgen_dhcp::compile(){
+	u_char buf[1000];
+	int buflen;
 	
-	memset(&this->dhcp, 0, DHCP_HDR_LEN);
-	this->dhcp.op = this->DHCP.op;
-	this->dhcp.htype  = this->DHCP.htype;
-	this->dhcp.hlen   = this->DHCP.hlen;
-	this->dhcp.hops   = this->DHCP.hops;
-	this->dhcp.xid    = htonl(this->DHCP.xid);
-	this->dhcp.secs   = htons(this->DHCP.secs);
-	this->dhcp.flags  = htons(this->DHCP.flags);
-	this->dhcp.ciaddr = this->DHCP.ciaddr._addr;
-	this->dhcp.yiaddr = this->DHCP.yiaddr._addr;
-	this->dhcp.siaddr = this->DHCP.siaddr._addr;
-	this->dhcp.giaddr = this->DHCP.giaddr._addr;
-	for(int i=0; i<this->DHCP.hlen; i++){
-		this->dhcp.chaddr[i] = this->DHCP.chaddr._addr[i];		
-	}
-	memcpy(this->dhcp.sname, this->DHCP.sname, sizeof(this->dhcp.sname));
-	memcpy(this->dhcp.file, this->DHCP.file, sizeof(this->dhcp.file));
-	this->dhcp.magic[0] = 0x63; 	
-	this->dhcp.magic[1] = 0x82; 	
-	this->dhcp.magic[2] = 0x53; 	
-	this->dhcp.magic[3] = 0x63; 	
+	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
+	u_char* p = this->data;
+
+	buflen = pgen_eth::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_ip::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_udp::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_dhcp::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
 	
-	bit8* p0 = dhcp_option;
-	for(int i=0; i<(int)this->DHCP.option_len; i++){
-		memcpy(p0, &DHCP.option[i], DHCP.option[i].len+2);	
-		p0 += DHCP.option[i].len+2;
-	}
-	dhcp_option_len = p0 - dhcp_option;
-
-	UDP.len = UDP_HDR_LEN + DHCP_HDR_LEN + dhcp_option_len;
-	pgen_udp::compile();
-
-	bit8* p = data;
-	memcpy(p, &eth, ETH_HDR_LEN);
-	p += ETH_HDR_LEN;
-	memcpy(p, &ip, IP.hlen*4);
-	p += IP.hlen*4;
-	memcpy(p, &udp, UDP_HDR_LEN);
-	p += UDP_HDR_LEN;
-	memcpy(p, &dhcp, DHCP_HDR_LEN);
-	p += DHCP_HDR_LEN;
-	memcpy(p, dhcp_option, dhcp_option_len);
-	p += dhcp_option_len;
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
 
 	this->len = p - data;
 }
@@ -390,4 +416,6 @@ void pgen_dhcp::help(){
 	printf("  dhcp_option {bit8 type, bit8 len, bit8 data[128]} \n");
 	printf("----------------------------------------------------\n");
 }
+
+*/
 

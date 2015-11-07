@@ -18,6 +18,8 @@
  *
  */
 
+/*
+
 #ifndef ARDRONE_H
 #define ARDRONE_H
 
@@ -161,3 +163,5 @@ class pgen_ardrone : public pgen_udp {
 
 
 #endif
+
+*/

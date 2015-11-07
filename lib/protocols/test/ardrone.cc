@@ -18,6 +18,7 @@
  *
  */
 
+/*
 
 #include <stdio.h>
 #include "packet.h"
@@ -900,3 +901,5 @@ void pgen_ardrone::help(){
 	printf("cmd_type[10]            : command type array               : int array[10] \n");
 	printf("---------------------------------------------------------------------------------\n");
 }
+
+*/

@@ -51,6 +51,9 @@ pgen_icmp::pgen_icmp(const void* packet, int len){
 
 
 void pgen_icmp::clear(){
+	pgen_ip::clear();
+	this->IP.protocol = 1;
+
 	this->ICMP.type = 8;
 	this->ICMP.code = 0;
 
@@ -64,85 +67,103 @@ void pgen_icmp::clear(){
 	icmp_ext_data_len = 0;
 } 
 
-
-
-// support icmp packet
-//  - Echo,Echo Relay
-//	- Destination Unreachable
-//	- Time Exceeded
-//	- Redirect (not yet)
-//	- Router Solicitation (not yes)
 void pgen_icmp::compile(){
+	u_char buf[1000];
+	int buflen;
 
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-
-	memset(&this->icmp, 0, ICMP_HDR_LEN);
-	this->icmp.icmp_type = this->ICMP.type;
-	this->icmp.icmp_code = this->ICMP.code;
-	this->icmp.icmp_cksum = 0;
-
-	if(ICMP.type==8 || ICMP.type==0){  // Echo or Echo Relay
-		struct icmp_echo_header ie;
-		ie.id = htons(this->ICMP.echo.id);
-		ie.seq = htons(this->ICMP.echo.seq);
-		memcpy(icmp_data, &ie, sizeof(ie));
-		icmp_data_len = sizeof(ie);
-	}else if(ICMP.type==3){				// Destination Unreachable
-		struct icmp_destination_unreach idu;
-		idu.nouse = 0;
-		idu.len   = this->ICMP.destination_unreach.len;
-		idu.next_mtu = htons(this->ICMP.destination_unreach.next_mtu);
-		memcpy(icmp_data, &idu, sizeof(idu));
-		icmp_data_len = sizeof(idu);
-	}else if(ICMP.type==11){			// Time Exceeded
-		struct icmp_time_exceeded ite;
-		ite.nouse1 = 0;
-		ite.len    = this->ICMP.time_exceeded.len;  // kokoyare
-		ite.nouse2 = htons(0);
-		memcpy(icmp_data, &ite, sizeof(ite));
-		icmp_data_len = sizeof(ite);
-	}else if(ICMP.type==5){
-		struct icmp_redirect ir;
-		ir.gw_addr = this->ICMP.redirect.gw_addr._addr;
-		memcpy(icmp_data, &ir, sizeof(ir));
-		icmp_data_len = sizeof(ir);
-	}else if(ICMP.type==9 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
-	}else if(ICMP.type==10 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
-	}else{
-		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
-	}
-
-	this->IP.tot_len = IP.hlen*4 + ICMP_HDR_LEN + icmp_data_len + icmp_ext_data_len;
-	this->IP.protocol = 1;
-	pgen_ip::compile();
-	char buffer[256];
-
-	char* p0 = buffer;
-	memcpy(p0, &this->icmp, ICMP_HDR_LEN);
-	p0 += ICMP_HDR_LEN;
-	memcpy(p0, icmp_data, icmp_data_len);
-	p0 += icmp_data_len;
-	memcpy(p0, icmp_ext_data, icmp_ext_data_len);
-	p0 += icmp_ext_data_len;
-	this->icmp.icmp_cksum = (checksum((unsigned short*)buffer, (unsigned short)(p0-buffer)));
-
-
 	u_char* p = this->data;
-	memcpy(p, &this->eth, ETH_HDR_LEN);
-	p += ETH_HDR_LEN;
-	memcpy(p, &this->ip, IP.hlen*4);
-	p += IP.hlen*4;
-	memcpy(p, &this->icmp, ICMP_HDR_LEN);
-	p += ICMP_HDR_LEN;
-	memcpy(p, icmp_data, icmp_data_len);
-	p += icmp_data_len;
-	memcpy(p, icmp_ext_data, icmp_ext_data_len);
-	p += icmp_ext_data_len;
+
+	buflen = pgen_eth::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_ip::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_icmp::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
 
 	len = p-this->data;
 } 
+
+
+
+//void pgen_icmp::compile(){
+//
+//	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
+//
+//	memset(&this->icmp, 0, ICMP_HDR_LEN);
+//	this->icmp.icmp_type = this->ICMP.type;
+//	this->icmp.icmp_code = this->ICMP.code;
+//	this->icmp.icmp_cksum = 0;
+//
+//	if(ICMP.type==8 || ICMP.type==0){  // Echo or Echo Relay
+//		struct icmp_echo_header ie;
+//		ie.id = htons(this->ICMP.echo.id);
+//		ie.seq = htons(this->ICMP.echo.seq);
+//		memcpy(icmp_data, &ie, sizeof(ie));
+//		icmp_data_len = sizeof(ie);
+//	}else if(ICMP.type==3){				// Destination Unreachable
+//		struct icmp_destination_unreach idu;
+//		idu.nouse = 0;
+//		idu.len   = this->ICMP.destination_unreach.len;
+//		idu.next_mtu = htons(this->ICMP.destination_unreach.next_mtu);
+//		memcpy(icmp_data, &idu, sizeof(idu));
+//		icmp_data_len = sizeof(idu);
+//	}else if(ICMP.type==11){			// Time Exceeded
+//		struct icmp_time_exceeded ite;
+//		ite.nouse1 = 0;
+//		ite.len    = this->ICMP.time_exceeded.len;  // kokoyare
+//		ite.nouse2 = htons(0);
+//		memcpy(icmp_data, &ite, sizeof(ite));
+//		icmp_data_len = sizeof(ite);
+//	}else if(ICMP.type==5){
+//		struct icmp_redirect ir;
+//		ir.gw_addr = this->ICMP.redirect.gw_addr._addr;
+//		memcpy(icmp_data, &ir, sizeof(ir));
+//		icmp_data_len = sizeof(ir);
+//	}else if(ICMP.type==9 && ICMP.code==0){
+//		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
+//	}else if(ICMP.type==10 && ICMP.code==0){
+//		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
+//	}else{
+//		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
+//	}
+//
+//	this->IP.tot_len = IP.hlen*4 + ICMP_HDR_LEN + icmp_data_len + icmp_ext_data_len;
+//	this->IP.protocol = 1;
+//	pgen_ip::compile();
+//	char buffer[256];
+//
+//	char* p0 = buffer;
+//	memcpy(p0, &this->icmp, ICMP_HDR_LEN);
+//	p0 += ICMP_HDR_LEN;
+//	memcpy(p0, icmp_data, icmp_data_len);
+//	p0 += icmp_data_len;
+//	memcpy(p0, icmp_ext_data, icmp_ext_data_len);
+//	p0 += icmp_ext_data_len;
+//	this->icmp.icmp_cksum = (checksum((unsigned short*)buffer, (unsigned short)(p0-buffer)));
+//
+//
+//	u_char* p = this->data;
+//	memcpy(p, &this->eth, ETH_HDR_LEN);
+//	p += ETH_HDR_LEN;
+//	memcpy(p, &this->ip, IP.hlen*4);
+//	p += IP.hlen*4;
+//	memcpy(p, &this->icmp, ICMP_HDR_LEN);
+//	p += ICMP_HDR_LEN;
+//	memcpy(p, icmp_data, icmp_data_len);
+//	p += icmp_data_len;
+//	memcpy(p, icmp_ext_data, icmp_ext_data_len);
+//	p += icmp_ext_data_len;
+//
+//
+//	len = p-this->data;
+//} 
 
 
 
@@ -258,11 +279,11 @@ int  pgen_icmp::write_bin(void* buf, int buflen){
 		icmp_datalen = sizeof(ir);
 
 	}else if(ICMP.type==9 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
+		fprintf(stderr, "pgen_icmp::write_bin: router advertisement not implement  yet\n");
 	}else if(ICMP.type==10 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
+		fprintf(stderr, "pgen_icmp::write_bin: router solicitation not implement  yet\n");
 	}else{
-		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
+		fprintf(stderr, "pgen_icmp::write_bin: icmp type & code is not support yet\n");
 	}
 
 	u_char* p = (u_char*)buf;
@@ -321,13 +342,13 @@ int  pgen_icmp::read_bin(const void* buf, int buflen){
 		this->ICMP.redirect.gw_addr._addr = ir->gw_addr;
 		p += sizeof(struct icmp_redirect);
 	}else if(ICMP.type==9 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
+		fprintf(stderr, "pgen_icmp::read_bin: router advertisement not implement  yet\n");
 		return p - (u_char*)buf;
 	}else if(ICMP.type==10 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
+		fprintf(stderr, "pgen_icmp::read_bin: router solicitation not implement  yet\n");
 		return p - (u_char*)buf;
 	}else{
-		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
+		fprintf(stderr, "pgen_icmp::read_bin: icmp type & code is not support yet\n");
 		return p - (u_char*)buf;
 	}
 
@@ -352,11 +373,11 @@ void pgen_icmp::summary(){
 	}else if(ICMP.type==5){
 		printf("Redirect gw_addr=%s", ICMP.redirect.gw_addr.c_str());
 	}else if(ICMP.type==9 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
+		fprintf(stderr, "pgen_icmp::summary: router advertisement not implement  yet\n");
 	}else if(ICMP.type==10 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
+		fprintf(stderr, "pgen_icmp::summary: router solicitation not implement  yet\n");
 	}else{
-		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
+		fprintf(stderr, "pgen_icmp::summary: icmp type & code is not support yet\n");
 	}
 
 	printf(" }\n");
@@ -391,11 +412,11 @@ void pgen_icmp::info(){
 	}else if(ICMP.type==5){
 		printf("    - Redirect GW     :  %s \n", ICMP.redirect.gw_addr.c_str()); 
 	}else if(ICMP.type==9 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router advertisement not implement  yet\n");
+		fprintf(stderr, "pgen_icmp::info: router advertisement not implement  yet\n");
 	}else if(ICMP.type==10 && ICMP.code==0){
-		fprintf(stderr, "pgen_icmp::compile: router solicitation not implement  yet\n");
+		fprintf(stderr, "pgen_icmp::info: router solicitation not implement  yet\n");
 	}else{
-		fprintf(stderr, "pgen_icmp::compile: icmp type & code is not support yet\n");
+		fprintf(stderr, "pgen_icmp::info: icmp type & code is not support yet\n");
 	}
 }
 

@@ -51,6 +51,9 @@ pgen_tcp::pgen_tcp(const void* packet, int len){
 
 void pgen_tcp::clear(){
 	pgen_ip::clear();
+	this->IP.protocol = 6;
+	this->IP.tot_len = 20+20;
+
 	this->TCP.src = 20;
 	this->TCP.dst = 80;
 	this->TCP.seq = 0;
@@ -68,39 +71,22 @@ void pgen_tcp::clear(){
 
 
 
-
-
 void pgen_tcp::compile(){
-	//this->IP.tot_len = IP.hlen*4 + 20 + _additional_len;
-	this->IP.protocol = 6;
-	pgen_ip::compile();
-	
+	u_char buf[100000];
+	int buflen;
+
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-
-	memset(&this->tcp, 0, sizeof this->tcp);
-	this->tcp.source = htons(this->TCP.src);
-	this->tcp.dest   = htons(this->TCP.dst);
-	this->tcp.seq    = htonl(this->TCP.seq);
-	this->tcp.ack_seq = htonl(this->TCP.ack);
-	this->tcp.doff = this->TCP.doff;  // header length
-	this->tcp.window = htons(this->TCP.window);
-	this->tcp.check  = 0;
-	this->tcp.fin = this->TCP.flags.fin;
-	this->tcp.syn = this->TCP.flags.syn;
-	this->tcp.rst = this->TCP.flags.rst;
-	this->tcp.psh = this->TCP.flags.psh;
-	this->tcp.ack = this->TCP.flags.ack;
-	this->tcp.urg = this->TCP.flags.urg;
-	memcpy(this->tcp.option, TCP.option, TCP.doff*4-20);
-	this->tcp.check = checksumTcp(ip, tcp, _additional_data,IP.tot_len-IP.hlen*4);
-
 	u_char* p = this->data;
-	memcpy(p, &this->eth, ETH_HDR_LEN);
-	p += ETH_HDR_LEN;
-	memcpy(p, &this->ip, IP.hlen*4);
-	p += IP.hlen*4;
-	memcpy(p, &this->tcp, tcp.doff*4);
-	p += tcp.doff*4;
+
+	buflen = pgen_eth::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_ip::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_tcp::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
 	
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
@@ -109,45 +95,62 @@ void pgen_tcp::compile(){
 }
 
 
-
-
-
 void pgen_tcp::cast(const void* data, int l){
-	if(!(this->minLen<=l && l<=this->maxLen)){
-		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", l);
-		return;
-	}
-	
-	pgen_ip::cast(data, l);
-	memset(_additional_data, 0, sizeof _additional_data);
-	_additional_len = 0;
-
 	const u_char* p = (u_char*)data;
-	p += ETH_HDR_LEN;
-	l -= ETH_HDR_LEN;
-	p += IP.hlen*4;
-	l -= IP.hlen*4;
+	int buflen;
 
-	struct tcp_header* buf = (struct tcp_header*)p;
-	p += buf->doff*4;
-	l -= buf->doff*4;
-
-	this->TCP.src = ntohs(buf->source);
-	this->TCP.dst = ntohs(buf->dest);
-	this->TCP.seq = ntohl(buf->seq);
-	this->TCP.ack = ntohl(buf->ack_seq);
-	this->TCP.doff = buf->doff;
-	this->TCP.window = ntohs(buf->window);
-	this->TCP.flags.fin = buf->fin;
-    this->TCP.flags.syn = buf->syn;
-    this->TCP.flags.rst = buf->rst;
-    this->TCP.flags.psh = buf->psh;
-    this->TCP.flags.ack = buf->ack;
-	this->TCP.flags.urg = buf->urg;
-	memcpy(TCP.option, buf->option, buf->doff*4-20);
+	buflen = pgen_eth::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
+	buflen = pgen_ip::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
+	buflen = pgen_tcp::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
 	
 	add_data(p, l);
 }
+
+
+
+
+//void pgen_tcp::cast(const void* data, int l){
+//	if(!(this->minLen<=l && l<=this->maxLen)){
+//		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", l);
+//		return;
+//	}
+//	
+//	pgen_ip::cast(data, l);
+//	memset(_additional_data, 0, sizeof _additional_data);
+//	_additional_len = 0;
+//
+//	const u_char* p = (u_char*)data;
+//	p += ETH_HDR_LEN;
+//	l -= ETH_HDR_LEN;
+//	p += IP.hlen*4;
+//	l -= IP.hlen*4;
+//
+//	struct tcp_header* buf = (struct tcp_header*)p;
+//	p += buf->doff*4;
+//	l -= buf->doff*4;
+//
+//	this->TCP.src = ntohs(buf->source);
+//	this->TCP.dst = ntohs(buf->dest);
+//	this->TCP.seq = ntohl(buf->seq);
+//	this->TCP.ack = ntohl(buf->ack_seq);
+//	this->TCP.doff = buf->doff;
+//	this->TCP.window = ntohs(buf->window);
+//	this->TCP.flags.fin = buf->fin;
+//    this->TCP.flags.syn = buf->syn;
+//    this->TCP.flags.rst = buf->rst;
+//    this->TCP.flags.psh = buf->psh;
+//    this->TCP.flags.ack = buf->ack;
+//	this->TCP.flags.urg = buf->urg;
+//	memcpy(TCP.option, buf->option, buf->doff*4-20);
+//	
+//	add_data(p, l);
+//}
 
 
 
@@ -185,7 +188,7 @@ int  pgen_tcp::write_bin(void* buf, int buflen){
 
 
 int  pgen_tcp::read_bin(const void* buf, int buflen){
-	if(buflen < sizeof(struct tcp_header)){
+	if(buflen < 20){
 		fprintf(stderr, "pgen_tcp::read_bin: binary length is not support (%d)\n", buflen);
 		return -1;
 	}
@@ -215,7 +218,7 @@ int  pgen_tcp::read_bin(const void* buf, int buflen){
 void pgen_tcp::summary(){
 	compile();
 	printf("TCP{ ");
-	int len = tcp.doff;
+	int len = TCP.doff;
 	std::string flag;
 	if(TCP.flags.fin == 1)	flag+= "FIN";
 	if(TCP.flags.syn == 1)	flag+= "SYN";
@@ -242,15 +245,15 @@ void pgen_tcp::info(){
 	printf("    - Dest Port       :  %u (%s) \n", 
 			TCP.dst, pgen_port2service(TCP.dst, "tcp", buf));
 	printf("    - Frags           :  ");
-	if(tcp.fin == 1)	printf("F");
-	if(tcp.syn == 1)	printf("S");
-	if(tcp.rst == 1)	printf("R");
-	if(tcp.psh == 1)	printf("P");
-	if(tcp.ack == 1)	printf("A");
-	if(tcp.urg == 1)	printf("U");
+	if(TCP.flags.fin == 1)	printf("F");
+	if(TCP.flags.syn == 1)	printf("S");
+	if(TCP.flags.rst == 1)	printf("R");
+	if(TCP.flags.psh == 1)	printf("P");
+	if(TCP.flags.ack == 1)	printf("A");
+	if(TCP.flags.urg == 1)	printf("U");
 	printf("\n");
 	printf("    - Window size     :  %u \n", TCP.window);
-	printf("    - Checksum        :  0x%04x \n", ntohs(tcp.check));
+	printf("    - Checksum        :  0x%04x \n", TCP.check);
 	printf("    - sequence        :  %u \n", TCP.seq);
 	printf("    - acknowledge     :  %u \n", TCP.ack);
 

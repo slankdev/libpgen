@@ -48,59 +48,59 @@ pgen_udp::pgen_udp(const void* packet, int len){
 
 void pgen_udp::clear(){
 	pgen_ip::clear();
+	this->IP.protocol = 17;
+	this->IP.tot_len = 20+8;
+
 	UDP.src = 53;
 	UDP.dst = 53;
 	UDP.len = 8;
+	UDP.check = 0;
 }
-
 
 
 
 
 void pgen_udp::compile(){
-	this->IP.protocol = 17;
-	this->IP.tot_len = IP.hlen*4 + this->UDP.len;
-	pgen_ip::compile();
+	u_char buf[100000];
+	int buflen;
 
-	memset(&this->udp, 0, UDP_HDR_LEN);
-	this->udp.source = htons(this->UDP.src);
-	this->udp.dest   = htons(this->UDP.dst);
-	this->udp.len    = htons(this->UDP.len);
-	this->udp.check  = 0;
-	
+	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
 	u_char* p = this->data;
-	memcpy(p, &this->eth, ETH_HDR_LEN);
-	p += ETH_HDR_LEN;
-	memcpy(p, &this->ip, IP.hlen*4);
-	p += IP.hlen*4;
-	memcpy(p, &this->udp, UDP_HDR_LEN);
-	p += UDP_HDR_LEN;
-	len = p - this->data;
+
+	buflen = pgen_eth::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_ip::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_udp::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
 	
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
+
+	len = p - this->data;
 }
 
 
 
-void pgen_udp::cast(const void* data, int len){
-	if(!(this->minLen<=len && len<=this->maxLen)){
-		fprintf(stderr, "pgen_udp::cast(): packet len isn`t support (%d)\n", len);
-		return;
-	}
-	
-	pgen_ip::cast(data, len);
-
+void pgen_udp::cast(const void* data, int l){
 	const u_char* p = (u_char*)data;
-	p += ETH_HDR_LEN;
-	p += IP.hlen*4;
+	int buflen;
 
-	struct udp_header *buf = (struct udp_header*)p;
-	p += UDP_HDR_LEN;
+	buflen = pgen_eth::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
+	buflen = pgen_ip::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
+	buflen = pgen_udp::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
 
-	this->UDP.src = ntohs(buf->source);
-	this->UDP.dst = ntohs(buf->dest);
-	this->UDP.len = ntohs(buf->len);
-	
 	this->len = p - (u_char*)data;
+	add_data(p, l);
 }
 
 
@@ -159,14 +159,16 @@ void pgen_udp::info(){
 	printf("    - Destination Port:  %d (%s)\n", 
 			UDP.dst, pgen_port2service(UDP.dst, "buf", buf));
 	printf("    - Length          :  %d \n", UDP.len);
+	printf("    - Checksum        :  %d \n", UDP.check);
 }
 
 
 
 void pgen_udp::help(){
 	printf("UDP Packet CLass---------------------------------------\n");
-	printf("src : source port : 16 bit field \n");
-	printf("dst : dest port   : 16 bit field \n");
-	printf("len : length      : 16 bit field \n");
+	printf("src  : source port : 16 bit field \n");
+	printf("dst  : dest port   : 16 bit field \n");
+	printf("len  : length      : 16 bit field \n");
+	printf("check: checksum    : 16 bit field \n");
 	printf("-------------------------------------------------------\n");
 }

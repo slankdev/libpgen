@@ -26,7 +26,6 @@
 
 class pgen_ip : public pgen_eth {
 	protected:
-		struct ip_header		ip;
 	public:
 		static const int minLen = pgen_eth::minLen+20;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;

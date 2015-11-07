@@ -26,7 +26,6 @@
 
 class pgen_udp : public pgen_ip {
 	protected:
-		struct udp_header udp;
 	public:
 		static const int minLen = pgen_ip::minLen+sizeof(struct udp_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;

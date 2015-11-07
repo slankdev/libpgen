@@ -57,6 +57,8 @@ pgen_ip::pgen_ip(const void* packet, int len){
 
 void pgen_ip::clear(){
 	pgen_eth::clear();
+	ETH.type = 0x0800;
+
 	this->IP.hlen = 5;
 	this->IP.tos = 0;
 	this->IP.tot_len = 20;
@@ -72,37 +74,18 @@ void pgen_ip::clear(){
 
 
 void pgen_ip::compile(){
+	u_char buf[1000];
+	int buflen;
 
-
-	ETH.type = 0x0800;
-	pgen_eth::compile();
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-
-	memset(&this->ip, 0, sizeof this->ip);
-	this->ip.ihl = this->IP.hlen;
-	this->ip.version = 4;
-	this->ip.tos = this->IP.tos; //no useing world now
-	
-
-	this->ip.tot_len = htons(this->IP.tot_len);
-	this->ip.frag_off = htons(this->IP.frag_off); // ?????
-
-	this->ip.id = htons(this->IP.id);
-	this->ip.ttl = this->IP.ttl;
-	this->ip.protocol = this->IP.protocol;
-	this->ip.saddr = this->IP.src._addr;
-	this->ip.daddr = this->IP.dst._addr;
-	this->ip.check = 0;
-	this->ip.check = checksum((unsigned short*)&this->ip, IP.hlen*4);
-	memcpy(this->ip.option, IP.option, IP.hlen*4-20);
-	
-	
-
 	u_char* p = this->data;
-	memcpy(p, &this->eth, ETH_HDR_LEN);
-	p += ETH_HDR_LEN;
-	memcpy(p, &this->ip, IP.hlen*4);
-	p += IP.hlen*4;
+	
+	buflen = pgen_eth::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_ip::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
 
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
@@ -113,38 +96,20 @@ void pgen_ip::compile(){
 
 
 
-
-
 void pgen_ip::cast(const void* data, int l){
-	if(!(this->minLen<=l && l<=this->maxLen)){
-		fprintf(stderr, "pgen_ip::cast(): packet len isn`t support (%d)\n", len);
-		return;
-	}
-	pgen_eth::cast(data, l);
-	memset(_additional_data, 0, sizeof _additional_data);
-	_additional_len = 0;
-	
-
 	const u_char* p = (u_char*)data;
-	p += ETH_HDR_LEN;
-	l -= ETH_HDR_LEN;
-	struct ip_header* buf = (struct ip_header*)p;
-	p += buf->ihl*4;
-	l -= buf->ihl*4;
-	
-	this->IP.hlen = buf->ihl;
-	this->IP.tos = buf->tos;
-	this->IP.tot_len = ntohs(buf->tot_len);
-	this->IP.id = ntohs(buf->id);
-	this->IP.frag_off = ntohs(buf->frag_off);
-	this->IP.ttl = buf->ttl;
-	this->IP.protocol = buf->protocol;
-	this->IP.src._addr = buf->saddr;
-	this->IP.dst._addr = buf->daddr;
-	memcpy(IP.option, buf->option, buf->ihl*4-20);
+	int buflen;
+
+	buflen = pgen_eth::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
+	buflen = pgen_ip::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
 
 	add_data(p, l);
 }
+
 
 
 

@@ -26,6 +26,9 @@
 #include "udp.h"
 
 
+/*
+
+
 
 #define DHCP_MAX_OPT 64
 class pgen_dhcp : public pgen_udp {
@@ -73,6 +76,6 @@ class pgen_dhcp : public pgen_udp {
 		void dhcp_get_option(const void*, struct dhcp_option*);
 };
 
-
+*/
 
 #endif
