@@ -43,24 +43,15 @@ PGEN_IO_DIR     = pgen-io
 PGEN_MODULE_DIR = pgen-module
 
 
-OTHER_SRC = \
-	pgen-error.cc \
-	debug.cc
-
-
-
-OTHER_OBJ       = $(OTHER_SRC:.cc=.o)
-OBJ =  $(OTHER_OBJ)  
-
 
 
 
 all: libpgen.a
 
 
-libpgen.a: $(OBJ) make-pgen-io make-pgen-module make-pgen-packet 
+libpgen.a: make-pgen-io make-pgen-module make-pgen-packet 
 	@rm -f $@
-	$(AR) rc $@ *.o \
+	$(AR) rc $@  \
 		$(PGEN_IO_DIR)/*.o \
 		$(PGEN_PACKET_DIR)/*.o  \
 		$(PROTOCOLS_DIR)/*.o    \

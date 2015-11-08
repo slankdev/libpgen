@@ -29,7 +29,6 @@
 #include "pgen/pgen-types.h"
 
 void debugprint(int flag, const char* str);
-void pgen_hex(const void* data, int len);
 int pgen_check(pgen_packet*, struct pgen_checkopt*);
 int pgen_checkpack(pgen_packet* pack, const void* buf, int len);
 

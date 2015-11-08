@@ -34,7 +34,8 @@ CPPFLAGS = -Wall -fPIC -std=c++11
 SRC = \
 	pgen-io.cc \
 	pgen-netutil.cc \
-	pgen-util.cc 
+	pgen-util.cc \
+	pgen-error.cc
 
 
 OBJ = $(SRC:.cc=.o)
