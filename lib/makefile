@@ -39,22 +39,17 @@ INSTALL_HDR_DIR = /usr/local/include
 PGEN_PACKET_DIR = pgen-packet
 PROTOCOLS_DIR   = $(PGEN_PACKET_DIR)/protocols
 PGEN_IO_DIR     = pgen-io
+PGEN_MODULE_DIR = pgen-module
 
 
 OTHER_SRC = \
 	pgen-error.cc \
 	debug.cc
 
-PGEN_ARPTBL_SRC = \
-	pgen-arptbl.cc 
-
 
 
 OTHER_OBJ       = $(OTHER_SRC:.cc=.o)
-PGEN_ARPTBL_OBJ = $(PGEN_ARPTBL_SRC:.cc=.o)
-
-
-OBJ =  $(OTHER_OBJ)  $(PGEN_ARPTBL_OBJ)
+OBJ =  $(OTHER_OBJ)  
 
 
 
@@ -62,9 +57,13 @@ OBJ =  $(OTHER_OBJ)  $(PGEN_ARPTBL_OBJ)
 all: libpgen.a
 
 
-libpgen.a: $(OBJ) make-pgen-io make-pgen-packet 
+libpgen.a: $(OBJ) make-pgen-io make-pgen-module make-pgen-packet 
 	@rm -f $@
-	$(AR) rc $@ *.o $(PGEN_IO_DIR)/*.o $(PGEN_PACKET_DIR)/*.o  $(PROTOCOLS_DIR)/*.o
+	$(AR) rc $@ *.o \
+		$(PGEN_IO_DIR)/*.o \
+		$(PGEN_PACKET_DIR)/*.o  \
+		$(PROTOCOLS_DIR)/*.o    \
+		$(PGEN_MODULE_DIR)/*.o
 	$(RANLIB) $@
 
 make-pgen-packet: 
@@ -73,11 +72,15 @@ make-pgen-packet:
 make-pgen-io:
 	$(MAKE) -C $(PGEN_IO_DIR) 
 
+make-pgen-module:
+	$(MAKE) -C $(PGEN_MODULE_DIR) 
+
 
 
 clean:
 	$(MAKE) -C $(PGEN_PACKET_DIR) clean
 	$(MAKE) -C $(PGEN_IO_DIR)     clean
+	$(MAKE) -C $(PGEN_MODULE_DIR)     clean
 	$(RM) *.o *.out *.a *.so
 
 
@@ -92,6 +95,8 @@ install:
 	$(CP) ../include/pgen   $(INSTALL_HDR_DIR)
 	$(CP) mac_code.list /usr/local/etc/mac_code.list
 	
+
+
 
 uninstall:
 	$(RM) $(INSTALL_LIB_DIR)/libpgen.a
