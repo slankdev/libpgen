@@ -19,22 +19,12 @@
  */
 
 
-#include "pgen/pgen-types.h"
-#include "pgen/pgen-io.h"
-#include "pgen/protocols/arp.h"
-
 #include <map>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
 
-#include <net/ethernet.h> 
-#include <netinet/if_ether.h>
+#include <pgen/protocols/arp.h>
 
 
 
@@ -112,11 +102,11 @@ int  pgen_arp::write_bin(void* buf, int buflen){
 	struct arp_packet arp_pack;
 	memset(&arp_pack, 0, sizeof arp_pack);
 	
-	arp_pack.arp_hrd = htons(1);
-	arp_pack.arp_pro = htons(0x0800);
-	arp_pack.arp_hln = 6;
-	arp_pack.arp_pln = 4;
-	arp_pack.arp_op  = htons(this->ARP.operation);
+	arp_pack.ea_hdr.ar_hrd = htons(1);
+	arp_pack.ea_hdr.ar_pro = htons(0x0800);
+	arp_pack.ea_hdr.ar_hln = 6;
+	arp_pack.ea_hdr.ar_pln = 4;
+	arp_pack.ea_hdr.ar_op  = htons(this->ARP.operation);
 	for(int i=0; i<6; i++){
 		arp_pack.arp_sha[i] = this->ARP.srcEth._addr[i];
 		arp_pack.arp_tha[i] = this->ARP.dstEth._addr[i];
@@ -144,7 +134,7 @@ int  pgen_arp::read_bin(const void* buf, int buflen){
 	};
 	lc slc, dlc;
 
-	this->ARP.operation = ntohs(arp_pack->arp_op);
+	this->ARP.operation = ntohs(arp_pack->ea_hdr.ar_op);
 	for(int i=0; i<6; i++){
 		this->ARP.srcEth._addr[i] = arp_pack->arp_sha[i];
 		this->ARP.dstEth._addr[i] = arp_pack->arp_tha[i];
