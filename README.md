@@ -35,10 +35,9 @@ Ethernet, ARP, IP, ICMP, TCP, UDP.
 We stoped supporting DNS, DHCP and AR_Drone, for refactoring. 
 　
 ## Sample Code
-- 　DNS query 		libpgen/sample/DNS/
-- MITM attack		libpgen/sample/MITM/
 
-more infomation see http://libpgen.org
+Please see http://libpgen.org/documentation/samples/
+
 
 
 ## Install
