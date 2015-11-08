@@ -18,6 +18,7 @@
  *
  */
 
+/*
 
 #include <stdio.h>
 #include "packet.h"
@@ -281,8 +282,239 @@ void pgen_ardrone::compile(){
 
 
 
+int  pgen_ardrone::write_bin(void* buf, int buflen){
+	if(buflen < 39){
+		fprintf(stderr, "pgen_ardrone::write_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+	
+	u_char* p = (u_char*)buf;
+	char ardrone_cmd[1000];
+	int ardrone_cmdlen;
+	char spliter = 0x0d;
+
+	for(int i=0; i<this->ARDRONE.cmd_count; i++){
+		ardrone_cmdlen = 0;
+		if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_PCMD){
+			snprintf(ardrone_cmd, sizeof(ardrone_cmd), "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld", 
+					this->ARDRONE.pcmd.seq, this->ARDRONE.pcmd.flag, 
+					this->ARDRONE.pcmd.roll, this->ARDRONE.pcmd.pitch, 
+					this->ARDRONE.pcmd.gaz, this->ARDRONE.pcmd.yaw.x, 
+					this->ARDRONE.pcmd.yaw.y, this->ARDRONE.pcmd.yaw.z);
+
+		}else if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_REF){
+			snprintf(ardrone_cmd, sizeof(ardrone_cmd),"AT*REF=%ld,%ld", 
+					this->ARDRONE.ref.seq, this->ARDRONE.ref.command);
+
+		}else if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_CONFIG_IDS){
+			snprintf(ardrone_cmd, sizeof(ardrone_cmd), "AT*CONFIG_IDS=%ld,\"%s\",\"%s\",\"%s\"", 
+					this->ARDRONE.configids.seq, this->ARDRONE.configids.session,
+					this->ARDRONE.configids.user, this->ARDRONE.configids.app);
+
+		}else if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_ANIM){
+			memset(ardrone_cmd, 0, sizeof(ardrone_cmd));
+
+		}else if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_FTRIM){
+			memset(ardrone_cmd, 0, sizeof(ardrone_cmd));
+
+		}else if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_CONFIG){
+			snprintf(ardrone_cmd, sizeof(ardrone_cmd), "AT*CONFIG=%ld,\"%s\",\"%s\"", 
+					this->ARDRONE.config.seq, this->ARDRONE.config.name,
+					this->ARDRONE.config.parameter);
+
+		}else if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_LED){
+			memset(ardrone_cmd, 0, sizeof(ardrone_cmd));
+
+		}else if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_COMWDG){
+			memset(ardrone_cmd, 0, sizeof(ardrone_cmd));
+
+		}else if(this->ARDRONE.cmd_type[i] == ARDRONE_CMD_CTRL){
+			snprintf(ardrone_cmd, sizeof(ardrone_cmd), "AT*CTRL=%ld,%ld,%ld", this->ARDRONE.ctrl.seq, 
+					this->ARDRONE.ctrl.ctrlmode, this->ARDRONE.ctrl.fw_update_filesize);
+
+		}else{
+			fprintf(stderr, "pgen_ardrone::compile: command type is not found \n");	
+		}
+
+		ardrone_cmdlen = strlen(ardrone_cmd);
+		memcpy(p, ardrone_cmd, ardrone_cmdlen);
+		p += ardrone_cmdlen;
+		memcpy(p, &spliter, 1);
+		p += 1;
+	}
+	buflen = p - (u_char*)buf;
+
+	return buflen;
+}
 
 
+
+
+
+int  pgen_ardrone::read_bin(const void* buf, int buflen){
+	if(buflen < 39){
+		fprintf(stderr, "pgen_ardrone::read_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+	
+	char* p = (char*)buf;
+	int ardrone_cmdlen;
+
+
+	for(this->ARDRONE.cmd_count=0; p-(char*)buf < buflen; this->ARDRONE.cmd_count++){
+		if(strncmp(p, "AT*PCMD", 7) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_PCMD;
+			ardrone_cmdlen = read_bin_pcmd(p);
+		}else if(strncmp(p, "AT*REF", 6) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_REF;
+			ardrone_cmdlen = read_bin_ref(p);
+		}else if(strncmp(p, "AT*CONFIG_IDS", 13) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CONFIG_IDS;
+			ardrone_cmdlen = read_bin_configids(p);
+		}else if(strncmp(p, "AT*ANIM", 7) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_ANIM;
+			ardrone_cmdlen = read_bin_anim(p);
+		}else if(strncmp(p, "AT*FTRIM", 8) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_FTRIM;
+			ardrone_cmdlen = read_bin_ftrim(p);
+		}else if(strncmp(p, "AT*CONFIG=", 10) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CONFIG;
+			ardrone_cmdlen = read_bin_config(p);
+		}else if(strncmp(p, "AT*LED", 6) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_LED;
+			ardrone_cmdlen = read_bin_led(p);
+		}else if(strncmp(p, "AT*COMWDG", 9) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_COMWDG;
+			ardrone_cmdlen = read_bin_comwdg(p);
+		}else if(strncmp(p, "AT*CTRL", 7) == 0){
+			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CTRL;
+			ardrone_cmdlen = read_bin_ctrl(p);
+		}else{
+			fprintf(stderr, "pgen_ardrone::cast: command type not found\n");
+			ardrone_cmdlen = 0;
+		}
+
+		p += ardrone_cmdlen + 1;
+
+	}
+
+	return p - (char*)buf;
+}
+
+
+int  pgen_ardrone::read_bin_pcmd(const void* buf){
+	int ret = sscanf((char*)buf, "AT*PCMD_MAG=%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld",
+			&ARDRONE.pcmd.seq, &ARDRONE.pcmd.flag, &ARDRONE.pcmd.roll,
+			&ARDRONE.pcmd.pitch, &ARDRONE.pcmd.gaz, &ARDRONE.pcmd.yaw.x,
+			&ARDRONE.pcmd.yaw.y, &ARDRONE.pcmd.yaw.z);
+	if(ret != 8){
+		fprintf(stderr, "pgen_ardrone::cast_pcmd: scan miss\n");
+	}
+	return get_command_len(buf);
+}
+
+int  pgen_ardrone::read_bin_ref(const void* buf){
+	int ret = sscanf((char*)buf, "AT*REF=%ld,%ld",
+			&this->ARDRONE.ref.seq, &this->ARDRONE.ref.command);
+	
+	if(ret != 2){
+		fprintf(stderr, "pgen_ardrone::cast_ref: scan miss\n");
+	}
+	return get_command_len(buf);
+}
+
+int  pgen_ardrone::read_bin_configids(const void* buf){
+	const char* p = (char*)buf;
+	int len;
+
+	char seq[256];
+	char session[256];
+	char user[256];
+	char app[256];
+	memset(seq, 0, sizeof(seq));
+	memset(session, 0, sizeof(session));
+	memset(user, 0, sizeof(user));
+	memset(app, 0, sizeof(app));
+
+	p += strlen("AT*CONFIG_IDS=");
+	for(int i=0; *p!=','; i++, p++)
+		seq[i] = *p;	
+
+	p++;
+	len = get_original_string(p, session);
+	p += len + 1;
+	len = get_original_string(p, user);
+	p += len + 1;
+	len = get_original_string(p, app);	
+	p += len;
+
+	this->ARDRONE.configids.seq = atoi(seq);
+	strcpy(this->ARDRONE.configids.session, session);
+	strcpy(this->ARDRONE.configids.user, user);
+	strcpy(this->ARDRONE.configids.app, app);
+
+	return get_command_len(buf);	
+}
+
+
+int  pgen_ardrone::read_bin_anim(const void* buf){
+	return 0;
+}
+
+
+int  pgen_ardrone::read_bin_ftrim(const void* buf){
+	return 0;
+}
+
+
+int  pgen_ardrone::read_bin_config(const void* buf){
+	const char* p = (char*)buf;
+	int len;
+	
+	char seq[256];
+	char name[256];
+	char parameter[256];
+	memset(seq, 0, sizeof(seq));
+	memset(name, 0, sizeof(name));
+	memset(parameter, 0, sizeof(parameter));
+
+	p += strlen("AT*CONFIG=");
+	for(int i=0; *p!=','; i++, p++)
+		seq[i] = *p;	
+
+	p++;
+	len = get_original_string(p, name);
+	p += len + 1;
+	len = get_original_string(p, parameter);	
+	p += len;
+
+	this->ARDRONE.config.seq = atoi(seq);
+	strcpy(this->ARDRONE.config.name, name);
+	strcpy(this->ARDRONE.config.parameter, parameter);
+
+	return get_command_len(buf);	
+		
+}
+
+
+int  pgen_ardrone::read_bin_led(const void* buf){
+	return 0;
+}
+
+
+int  pgen_ardrone::read_bin_comwdg(const void* buf){
+	return 0;
+}
+
+
+int  pgen_ardrone::read_bin_ctrl(const void* buf){
+	int ret = sscanf((char*)buf, "AT*CTRL=%ld,%ld,%ld", &this->ARDRONE.ctrl.seq, 
+			&this->ARDRONE.ctrl.ctrlmode, &this->ARDRONE.ctrl.fw_update_filesize);
+	if(ret != 3){
+		fprintf(stderr, "pgen_ardrone::cast_ctrl: scan miss (%d)\n", ret);
+	}
+	return get_command_len(buf);
+}
 
 
 int pgen_ardrone::cast_pcmd(const char* buf){
@@ -426,56 +658,56 @@ void pgen_ardrone::cast(const void* packet, int len){
 		fprintf(stderr, "pgen_tcp::cast(): packet len isn`t support (%d)\n", len);
 		return;
 	}
-	pgen_udp::cast(packet, len);
-	
-	int cmdlen;
-	const char* p = (const char*)packet;
-	p += ETH_HDR_LEN;
-	p += IP.hlen*4;
-	p += UDP_HDR_LEN;
+    pgen_udp::cast(packet, len);
 
-	for(this->ARDRONE.cmd_count=0; (const u_char*)p-(const u_char*)packet < len; this->ARDRONE.cmd_count++){
-		if(strncmp(p, "AT*PCMD", 7) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_PCMD;
-			cmdlen = cast_pcmd(p);	
-			p += cmdlen + 1;
-		}else if(strncmp(p, "AT*REF", 6) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_REF;
-			cmdlen = cast_ref(p);
-			p += cmdlen + 1;
-		}else if(strncmp(p, "AT*CONFIG_IDS", 13) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CONFIG_IDS;
-			cmdlen = cast_configids(p);
-			p += cmdlen + 1;
-		}else if(strncmp(p, "AT*ANIM", 7) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_ANIM;
-			cmdlen = cast_anim(p);
-			p += cmdlen + 1;
-		}else if(strncmp(p, "AT*FTRIM", 8) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_FTRIM;
-			cmdlen = cast_ftrim(p);
-			p += cmdlen + 1;
-		}else if(strncmp(p, "AT*CONFIG=", 10) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CONFIG;
-			cmdlen = cast_config(p);
-			p += cmdlen + 1;
-		}else if(strncmp(p, "AT*LED", 6) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_LED;
-			cmdlen = cast_led(p);
-			p += cmdlen + 1;
-		}else if(strncmp(p, "AT*COMWDG", 9) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_COMWDG;
-			cmdlen = cast_comwdg(p);
-			p += cmdlen + 1;
-		}else if(strncmp(p, "AT*CTRL", 7) == 0){
-			this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CTRL;
-			cmdlen = cast_ctrl(p);
-			p += cmdlen + 1;
-		}else{
-			fprintf(stderr, "pgen_ardrone::cast: command type not found\n");
-			return ;
-		}
-	}
+    int cmdlen;
+    const char* p = (const char*)packet;
+    p += ETH_HDR_LEN;
+    p += IP.hlen*4;
+    p += UDP_HDR_LEN;
+
+    for(this->ARDRONE.cmd_count=0; (const u_char*)p-(const u_char*)packet < len; this->ARDRONE.cmd_count++){
+            if(strncmp(p, "AT*PCMD", 7) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_PCMD;
+                    cmdlen = cast_pcmd(p);
+                    p += cmdlen + 1;
+            }else if(strncmp(p, "AT*REF", 6) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_REF;
+                    cmdlen = cast_ref(p);
+                    p += cmdlen + 1;
+            }else if(strncmp(p, "AT*CONFIG_IDS", 13) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CONFIG_IDS;
+                    cmdlen = cast_configids(p);
+                    p += cmdlen + 1;
+            }else if(strncmp(p, "AT*ANIM", 7) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_ANIM;
+                    cmdlen = cast_anim(p);
+                    p += cmdlen + 1;
+            }else if(strncmp(p, "AT*FTRIM", 8) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_FTRIM;
+                    cmdlen = cast_ftrim(p);
+                    p += cmdlen + 1;
+            }else if(strncmp(p, "AT*CONFIG=", 10) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CONFIG;
+                    cmdlen = cast_config(p);
+                    p += cmdlen + 1;
+            }else if(strncmp(p, "AT*LED", 6) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_LED;
+                    cmdlen = cast_led(p);
+                    p += cmdlen + 1;
+            }else if(strncmp(p, "AT*COMWDG", 9) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_COMWDG;
+                    cmdlen = cast_comwdg(p);
+                    p += cmdlen + 1;
+            }else if(strncmp(p, "AT*CTRL", 7) == 0){
+                    this->ARDRONE.cmd_type[this->ARDRONE.cmd_count] = ARDRONE_CMD_CTRL;
+                    cmdlen = cast_ctrl(p);
+                    p += cmdlen + 1;
+            }else{
+                    fprintf(stderr, "pgen_ardrone::cast: command type not found\n");
+                    return ;
+            }
+    }
 	
 }
 
@@ -669,3 +901,5 @@ void pgen_ardrone::help(){
 	printf("cmd_type[10]            : command type array               : int array[10] \n");
 	printf("---------------------------------------------------------------------------------\n");
 }
+
+*/

@@ -61,52 +61,81 @@ void pgen_eth::clear(){
 
 
 
-
 void pgen_eth::compile(){
+	u_char buf[1000];
+	int buflen;
+
 	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-
-	for(int i=0; i< 6; i++){
-		this->eth.ether_dhost[i] = this->ETH.dst._addr[i];	
-		this->eth.ether_shost[i] = this->ETH.src._addr[i];	
-	}
-	this->eth.ether_type = htons(this->ETH.type);
-
 	u_char* p = this->data;
-	memcpy(p, &(this->eth), ETH_HDR_LEN);
-	p += ETH_HDR_LEN;
 
+	buflen = pgen_eth::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
 
 	len = p - this->data;
-	
 }
+
+
 
 
 
 void pgen_eth::cast(const void* data, int l){
-	if(!(this->minLen<=l && l<=this->maxLen)){
-		fprintf(stderr, "pgen_eth::cast(): packet len isn`t support (len=%d)\n", this->len);
-		return;
-	}
+	u_char* p = (u_char*)data;
+	int buflen;
 
-	this->len = l;
-
-	const u_char* p = (u_char*)data;
-	struct ethernet_header* buf;
-	buf = (struct ethernet_header*)p;
-	p += ETH_HDR_LEN;
-	l -= ETH_HDR_LEN;
-	
-
-	for(int i=0; i<6; i++){
-		this->ETH.dst._addr[i] = buf->ether_dhost[i];
-		this->ETH.src._addr[i] = buf->ether_shost[i];
-	}
-	this->ETH.type = ntohs(buf->ether_type);
+	buflen = pgen_eth::read_bin(p, l);
+	p += buflen;
+	l -= buflen;
 
 	add_data(p, l);
 }
+
+
+
+
+int pgen_eth::write_bin(void* buf, int buflen){
+	if(buflen < sizeof(struct ethernet_header)){
+		fprintf(stderr, "pgen_eth::write_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+
+	struct ethernet_header eth;
+	memset(&eth, 0, sizeof eth);
+
+	for(int i=0; i< 6; i++){
+		eth.ether_dhost[i] = this->ETH.dst._addr[i];	
+		eth.ether_shost[i] = this->ETH.src._addr[i];	
+	}
+	eth.ether_type = htons(this->ETH.type);
+	
+	memcpy(buf, &eth, sizeof(struct ethernet_header));
+	return sizeof(struct ethernet_header);	
+}
+
+
+
+
+int pgen_eth::read_bin(const void* buf, int buflen){
+	if(buflen < sizeof(struct ethernet_header)){
+		fprintf(stderr, "pgen_eth::read_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+
+	const u_char* p = (u_char*)buf;
+	struct ethernet_header* eth = (struct ethernet_header*)p;
+
+	for(int i=0; i<6; i++){
+		this->ETH.dst._addr[i] = eth->ether_dhost[i];
+		this->ETH.src._addr[i] = eth->ether_shost[i];
+	}
+	this->ETH.type = ntohs(eth->ether_type);
+
+	return sizeof(struct ethernet_header);
+}
+
 
 
 
@@ -116,6 +145,8 @@ void pgen_eth::send_L2(const char* ifname){
 		pgen_perror("send_L2");		
 	}
 }
+
+
 
 
 

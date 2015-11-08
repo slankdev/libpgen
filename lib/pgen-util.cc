@@ -153,7 +153,40 @@ unsigned short checksumTcp(struct ip_header ip,
 
 
 
-unsigned short checksumUdp(const u_char *dp, int datalen){
+unsigned short checksumUdp(struct ip_header ip, 
+			struct udp_header udp, const void* data, int total_len){
+
+
+	struct{
+		bit32 ip_src;	
+		bit32 ip_dst;
+		bit8  zero;
+		bit8  ip_protocol;
+		bit16 ip_length;
+		struct udp_header udp;
+	}headers;
+	u_char buffer0[10000];
+	u_char* p = buffer0;
+	
+
+	memset(&headers, 0, sizeof headers);
+	memset(&buffer0, 0, sizeof buffer0);
+
+	headers.ip_src = ip.saddr;
+	headers.ip_dst = ip.daddr;
+	headers.ip_protocol = 0x11;
+	headers.ip_length = htons(total_len);
+	memcpy(&headers.udp, &udp, sizeof(udp));
+	
+
+	memcpy(p, &headers, sizeof(headers));
+	p += sizeof(headers);
+	memcpy(p, data, total_len-sizeof(udp));
+
+	return checksum((u_int16_t*)buffer0, total_len+sizeof(headers));
+
+
+
 	return 0;
 }
 

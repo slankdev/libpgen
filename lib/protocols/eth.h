@@ -29,7 +29,6 @@
 
 class pgen_eth : public pgen_packet {
 	protected:
-		struct ethernet_header eth; 
 	public:
 		static const int minLen = sizeof(struct ethernet_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
@@ -50,6 +49,8 @@ class pgen_eth : public pgen_packet {
 		void info();
 		void help();
 
+		int write_bin(void*, int);
+		int read_bin(const void*, int);
 };
 
 

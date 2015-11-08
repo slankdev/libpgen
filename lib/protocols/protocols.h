@@ -30,9 +30,8 @@
 #include "tcp.h"
 #include "udp.h"
 #include "dns.h"
-#include "dhcp.h"
-#include "ardrone.h"
-#include "http.h"
+//#include "dhcp.h"
+//#include "ardrone.h"
 
 
 #endif /* PROTOCOLS_H */

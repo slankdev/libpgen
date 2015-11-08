@@ -26,7 +26,6 @@
 
 class pgen_ip : public pgen_eth {
 	protected:
-		struct ip_header		ip;
 	public:
 		static const int minLen = pgen_eth::minLen+20;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
@@ -38,6 +37,7 @@ class pgen_ip : public pgen_eth {
 			bit16 frag_off;
 			bit8  ttl; 
 			bit8  protocol;
+			bit16 check;
 			ipaddr src;
 			ipaddr dst;
 
@@ -56,9 +56,10 @@ class pgen_ip : public pgen_eth {
 		void info();
 		void help();
 
-		void ip_add_exthdr(const void*, int);
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
 
-		
+		unsigned short calc_checksum();
 };
 
 

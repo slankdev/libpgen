@@ -25,15 +25,14 @@
 
 class pgen_tcp : public pgen_ip {
 	protected:
-		struct tcp_header tcp;
 	public:
 		static const int minLen = pgen_ip::minLen+20;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
-			int src;
-			int dst;
-			int seq;
-			int ack;
+			bit16 src;
+			bit16 dst;
+			bit32 seq;
+			bit32 ack;
 			u_char doff:4;
 			struct{
 				u_char fin:1;
@@ -43,7 +42,8 @@ class pgen_tcp : public pgen_ip {
 				u_char ack:1;
 				u_char urg:1;
 			}flags;
-			int window;
+			bit16 window;
+			bit16 check;
 
 			bit8 option[1000];
 		}TCP;
@@ -57,6 +57,11 @@ class pgen_tcp : public pgen_ip {
 		void summary();
 		void info();
 		void help();
+
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
+
+		unsigned short calc_checksum();
 };
 
 

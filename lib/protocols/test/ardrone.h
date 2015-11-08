@@ -18,6 +18,8 @@
  *
  */
 
+/*
+
 #ifndef ARDRONE_H
 #define ARDRONE_H
 
@@ -112,6 +114,19 @@ class pgen_ardrone : public pgen_udp {
 		void summary();
 		void info();
 		void help();
+
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
+		int  read_bin_pcmd(const void*);
+		int  read_bin_ref(const void*);
+		int  read_bin_configids(const void*);
+		int  read_bin_anim(const void*);
+		int  read_bin_ftrim(const void*);
+		int  read_bin_config(const void*);
+		int  read_bin_led(const void*);
+		int  read_bin_comwdg(const void*);
+		int  read_bin_ctrl(const void*);
+
 	
 		int compile_pcmd();
 		int compile_ref();
@@ -148,3 +163,5 @@ class pgen_ardrone : public pgen_udp {
 
 
 #endif
+
+*/

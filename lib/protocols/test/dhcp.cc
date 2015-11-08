@@ -18,7 +18,7 @@
  *
  */
 
-
+/*
 #include "packet.h"
 #include "address.h"
 #include "pgen-io.h"
@@ -85,52 +85,78 @@ void pgen_dhcp::clear(){
 
 
 
+///void pgen_dhcp::compile(){
+///	
+///	memset(&this->dhcp, 0, DHCP_HDR_LEN);
+///	this->dhcp.op = this->DHCP.op;
+///	this->dhcp.htype  = this->DHCP.htype;
+///	this->dhcp.hlen   = this->DHCP.hlen;
+///	this->dhcp.hops   = this->DHCP.hops;
+///	this->dhcp.xid    = htonl(this->DHCP.xid);
+///	this->dhcp.secs   = htons(this->DHCP.secs);
+///	this->dhcp.flags  = htons(this->DHCP.flags);
+///	this->dhcp.ciaddr = this->DHCP.ciaddr._addr;
+///	this->dhcp.yiaddr = this->DHCP.yiaddr._addr;
+///	this->dhcp.siaddr = this->DHCP.siaddr._addr;
+///	this->dhcp.giaddr = this->DHCP.giaddr._addr;
+///	for(int i=0; i<this->DHCP.hlen; i++){
+///		this->dhcp.chaddr[i] = this->DHCP.chaddr._addr[i];		
+///	}
+///	memcpy(this->dhcp.sname, this->DHCP.sname, sizeof(this->dhcp.sname));
+///	memcpy(this->dhcp.file, this->DHCP.file, sizeof(this->dhcp.file));
+///	this->dhcp.magic[0] = 0x63; 	
+///	this->dhcp.magic[1] = 0x82; 	
+///	this->dhcp.magic[2] = 0x53; 	
+///	this->dhcp.magic[3] = 0x63; 	
+///	
+///	bit8* p0 = dhcp_option;
+///	for(int i=0; i<(int)this->DHCP.option_len; i++){
+///		memcpy(p0, &DHCP.option[i], DHCP.option[i].len+2);	
+///		p0 += DHCP.option[i].len+2;
+///	}
+///	dhcp_option_len = p0 - dhcp_option;
+///
+///	UDP.len = UDP_HDR_LEN + DHCP_HDR_LEN + dhcp_option_len;
+///	pgen_udp::compile();
+///
+///	bit8* p = data;
+///	memcpy(p, &eth, ETH_HDR_LEN);
+///	p += ETH_HDR_LEN;
+///	memcpy(p, &ip, IP.hlen*4);
+///	p += IP.hlen*4;
+///	memcpy(p, &udp, UDP_HDR_LEN);
+///	p += UDP_HDR_LEN;
+///	memcpy(p, &dhcp, DHCP_HDR_LEN);
+///	p += DHCP_HDR_LEN;
+///	memcpy(p, dhcp_option, dhcp_option_len);
+///	p += dhcp_option_len;
+///
+///	this->len = p - data;
+///}
+
 
 void pgen_dhcp::compile(){
+	u_char buf[1000];
+	int buflen;
 	
-	memset(&this->dhcp, 0, DHCP_HDR_LEN);
-	this->dhcp.op = this->DHCP.op;
-	this->dhcp.htype  = this->DHCP.htype;
-	this->dhcp.hlen   = this->DHCP.hlen;
-	this->dhcp.hops   = this->DHCP.hops;
-	this->dhcp.xid    = htonl(this->DHCP.xid);
-	this->dhcp.secs   = htons(this->DHCP.secs);
-	this->dhcp.flags  = htons(this->DHCP.flags);
-	this->dhcp.ciaddr = this->DHCP.ciaddr._addr;
-	this->dhcp.yiaddr = this->DHCP.yiaddr._addr;
-	this->dhcp.siaddr = this->DHCP.siaddr._addr;
-	this->dhcp.giaddr = this->DHCP.giaddr._addr;
-	for(int i=0; i<this->DHCP.hlen; i++){
-		this->dhcp.chaddr[i] = this->DHCP.chaddr._addr[i];		
-	}
-	memcpy(this->dhcp.sname, this->DHCP.sname, sizeof(this->dhcp.sname));
-	memcpy(this->dhcp.file, this->DHCP.file, sizeof(this->dhcp.file));
-	this->dhcp.magic[0] = 0x63; 	
-	this->dhcp.magic[1] = 0x82; 	
-	this->dhcp.magic[2] = 0x53; 	
-	this->dhcp.magic[3] = 0x63; 	
+	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
+	u_char* p = this->data;
+
+	buflen = pgen_eth::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_ip::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_udp::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
+	buflen = pgen_dhcp::write_bin(buf, sizeof(buf));
+    memcpy(p, buf, buflen);
+	p += buflen;
 	
-	bit8* p0 = dhcp_option;
-	for(int i=0; i<(int)this->DHCP.option_len; i++){
-		memcpy(p0, &DHCP.option[i], DHCP.option[i].len+2);	
-		p0 += DHCP.option[i].len+2;
-	}
-	dhcp_option_len = p0 - dhcp_option;
-
-	UDP.len = UDP_HDR_LEN + DHCP_HDR_LEN + dhcp_option_len;
-	pgen_udp::compile();
-
-	bit8* p = data;
-	memcpy(p, &eth, ETH_HDR_LEN);
-	p += ETH_HDR_LEN;
-	memcpy(p, &ip, IP.hlen*4);
-	p += IP.hlen*4;
-	memcpy(p, &udp, UDP_HDR_LEN);
-	p += UDP_HDR_LEN;
-	memcpy(p, &dhcp, DHCP_HDR_LEN);
-	p += DHCP_HDR_LEN;
-	memcpy(p, dhcp_option, dhcp_option_len);
-	p += dhcp_option_len;
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
 
 	this->len = p - data;
 }
@@ -185,6 +211,116 @@ void pgen_dhcp::cast(const void* packet, int len){
 	}
 }
 
+void pgen_dhcp::dhcp_get_option(const void* p, struct dhcp_option* buf){
+	struct dhcp_option* b = (struct dhcp_option*)p;
+	buf->type = b->type;
+	buf->len  = b->len;
+	memcpy(buf->data, b->data, buf->len);
+}
+
+
+
+
+int  pgen_dhcp::write_bin(void* buf, int buflen){
+	if(buflen < sizeof(struct dhcp_header)){
+		fprintf(stderr, "pgen_dhcp::write_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+
+	struct dhcp_header dhcp_head;
+	u_char dhcp_opt[256];
+	int dhcp_optlen;
+	memset(&dhcp_head, 0, sizeof(dhcp_head));
+	memset(dhcp_opt, 0, sizeof(dhcp_opt));
+
+	dhcp_head.op = this->DHCP.op;
+	dhcp_head.htype  = this->DHCP.htype;
+	dhcp_head.hlen   = this->DHCP.hlen;
+	dhcp_head.hops   = this->DHCP.hops;
+	dhcp_head.xid    = htonl(this->DHCP.xid);
+	dhcp_head.secs   = htons(this->DHCP.secs);
+	dhcp_head.flags  = htons(this->DHCP.flags);
+	dhcp_head.ciaddr = this->DHCP.ciaddr._addr;
+	dhcp_head.yiaddr = this->DHCP.yiaddr._addr;
+	dhcp_head.siaddr = this->DHCP.siaddr._addr;
+	dhcp_head.giaddr = this->DHCP.giaddr._addr;
+	for(int i=0; i<this->DHCP.hlen; i++)
+		dhcp_head.chaddr[i] = this->DHCP.chaddr._addr[i];		
+	memcpy(dhcp_head.sname, this->DHCP.sname, sizeof(dhcp_head.sname));
+	memcpy(dhcp_head.file, this->DHCP.file, sizeof(dhcp_head.file));
+	dhcp_head.magic[0] = 0x63; 	
+	dhcp_head.magic[1] = 0x82; 	
+	dhcp_head.magic[2] = 0x53; 	
+	dhcp_head.magic[3] = 0x63; 	
+	
+	u_char* p = dhcp_opt;
+	for(int i=0; i<(int)this->DHCP.option_len; i++){
+		memcpy(p, &DHCP.option[i], DHCP.option[i].len+2);	
+		p += DHCP.option[i].len+2;
+	}
+	dhcp_optlen = p - dhcp_opt;
+
+	p = (u_char*)buf;
+	memcpy(p, &dhcp_head, sizeof(dhcp_head));
+	p += sizeof(dhcp_head);
+	memcpy(p, dhcp_opt, dhcp_optlen);
+	p += dhcp_optlen;
+
+	return (u_char*)buf-p;	
+}
+
+
+
+
+void pgen_dhcp::dhcp_set_option(int index, int type, int len, void* data){
+	this->DHCP.option[index].type = type;
+	this->DHCP.option[index].len  = len;
+	memcpy(this->DHCP.option[index].data, data, len);
+}
+
+
+
+
+int  pgen_dhcp::read_bin(const void* buf, int buflen){
+	if(buflen < sizeof(struct dhcp_header)){
+		fprintf(stderr, "pgen_dhcp::read_bin: binary length is not support (%d)\n", buflen);
+		return -1;
+	}
+
+	struct dhcp_header* dhcp_head = (struct dhcp_header*)buf;
+
+	this->DHCP.op = dhcp_head->op;
+	this->DHCP.htype = dhcp_head->htype;
+	this->DHCP.hlen = dhcp_head->hlen;
+	this->DHCP.hops = dhcp_head->hops;
+	this->DHCP.xid  = ntohl(dhcp_head->xid);
+	this->DHCP.secs = ntohs(dhcp_head->secs);
+	this->DHCP.flags = ntohs(dhcp_head->flags);
+	this->DHCP.ciaddr._addr = dhcp_head->ciaddr;
+	this->DHCP.yiaddr._addr = dhcp_head->yiaddr;
+	this->DHCP.siaddr._addr = dhcp_head->siaddr;
+	this->DHCP.giaddr._addr = dhcp_head->giaddr;
+	for(int i=0; i<DHCP.hlen; i++)
+		this->DHCP.chaddr._addr[i] = dhcp_head->chaddr[i];
+	memcpy(this->DHCP.sname, dhcp_head->sname, 64);
+	memcpy(this->DHCP.file , dhcp_head->file , 128);
+
+	u_char* p0 = (u_char*)dhcp_head + sizeof(dhcp_head);
+	u_char* p  = (u_char*)dhcp_head + sizeof(dhcp_head);
+	for(this->DHCP.option_len=0; *p!=0xff; this->DHCP.option_len++){
+		struct dhcp_option* opt = (struct dhcp_option*)p;
+		DHCP.option[dhcp_option_len].type = opt->type;
+		DHCP.option[dhcp_option_len].len  = opt->len;
+		memcpy(DHCP.option[dhcp_option_len].data, opt->data, opt->len);
+
+		p += this->DHCP.option[this->DHCP.option_len].len + 2;
+	}
+	DHCP.option[DHCP.option_len].type = 255;
+	DHCP.option[DHCP.option_len].len  = 0;
+	DHCP.option_len++;
+
+	return sizeof(dhcp_head) + (p0-p);	
+}
 
 
 
@@ -257,23 +393,6 @@ void pgen_dhcp::info(){
 
 
 
-void pgen_dhcp::dhcp_set_option(int index, int type, int len, void* data){
-	this->DHCP.option[index].type = type;
-	this->DHCP.option[index].len  = len;
-	memcpy(this->DHCP.option[index].data, data, len);
-}
-
-
-
-
-void pgen_dhcp::dhcp_get_option(const void* p, struct dhcp_option* buf){
-	struct dhcp_option* b = (struct dhcp_option*)p;
-	buf->type = b->type;
-	buf->len  = b->len;
-	memcpy(buf->data, b->data, buf->len);
-}
-
-
 
 void pgen_dhcp::help(){
 	printf("DHCP Packet CLass-----------------------------------\n");
@@ -297,4 +416,6 @@ void pgen_dhcp::help(){
 	printf("  dhcp_option {bit8 type, bit8 len, bit8 data[128]} \n");
 	printf("----------------------------------------------------\n");
 }
+
+*/
 
