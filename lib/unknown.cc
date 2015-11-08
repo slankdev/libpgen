@@ -19,13 +19,13 @@
  */
 
 
-#include "packet.h"
-#include "unknown.h"
-#include "address.h"
-#include "pgen-types.h"
-#include "pgen-io.h"
+#include "pgen/debug.h"
+#include "pgen/packet.h"
+#include "pgen/unknown.h"
+#include "pgen/address.h"
+#include "pgen/pgen-types.h"
+#include "pgen/pgen-io.h"
 
-#include "debug.h"
 
 #include <stdio.h>
 

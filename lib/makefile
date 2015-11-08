@@ -1,3 +1,4 @@
+
 #
 # copyright (C) <2015>  <Slank Hiroki Shirokura>
 # 
@@ -28,9 +29,9 @@ export RANLIB := ranlib
 .SUFFIXES: .out .c .cc .o .h 
 .cc.o: 
 	$(CPP) $(CPPFLAGS) -c $< -o $@  $(INCLUDE)
+ 
 
-INCLUDE = -I./protocols
-
+INCLUDE = -I../include 
 PROGNAME = libpgen.a
 CPPFLAGS = -Wall -fPIC -std=c++11 
 INSTALL_LIB_DIR = /usr/local/lib
@@ -57,20 +58,6 @@ PGEN_PACKET_SRC = \
 PGEN_ARPTBL_SRC = \
 	pgen-arptbl.cc 
 
-HDR = pgen.h \
-	address.h \
-	packet.h \
-	pgen-types.h \
-	pgen-endian.h \
-	pgen-error.h \
-	pgen-io.h \
-	pgen-netutil.h \
-	pgen-util.h \
-	pgen-arptbl.h \
-	release.h \
-	unknown.h \
-	debug.h 
-
 
 OTHER_OBJ       = $(OTHER_SRC:.cc=.o)
 PGEN_IO_OBJ     = $(PGEN_IO_SRC:.cc=.o)
@@ -92,10 +79,8 @@ libpgen.a: $(OBJ) makeprotocol
 	$(AR) rc $@ *.o $(PROTOCOLS_DIR)/*.o
 	$(RANLIB) $@
 
-
 makeprotocol: 
 	$(MAKE) -C $(PROTOCOLS_DIR) 
-
 
 
 
@@ -103,18 +88,22 @@ clean:
 	$(MAKE) -C $(PROTOCOLS_DIR) clean
 	$(RM) *.o *.out *.a *.so
 
-install: 
-	$(MAKE) -C $(PROTOCOLS_DIR) install
-	$(CP) $(PROGNAME) $(INSTALL_LIB_DIR)
-	for i in $(HDR); do \
-	  $(CP) $$i $(INSTALL_HDR_DIR); done
-	$(CP) mac_code.list /usr/local/etc/mac_code.list
 
-uninstall: 
-	$(MAKE) -C $(PROTOCOLS_DIR) uninstall
-	$(RM) $(INSTALL_LIB_DIR)/$(PROGNAME)
-	for i in $(HDR); do \
-	  $(RM) $(INSTALL_HDR_DIR)/$$i ; done
+install:
+	$(CP) libpgen.a          $(INSTALL_LIB_DIR)
+	$(CP) ../include/pgen.h  $(INSTALL_HDR_DIR)
+	$(CP) ../include/pgen   $(INSTALL_HDR_DIR)
+	$(CP) mac_code.list /usr/local/etc/mac_code.list
+	
+
+uninstall:
+	$(RM) $(INSTALL_LIB_DIR)/libpgen.a
+	$(RM) $(INSTALL_HDR_DIR)/pgen.h
+	$(RM) $(INSTALL_HDR_DIR)/pgen 
 	$(RM) /usr/local/etc/mac_code.list
+
+
+
+
 
 
