@@ -29,7 +29,7 @@
 #include "icmp.h"
 #include "tcp.h"
 #include "udp.h"
-#include "dns.h"
+//#include "dns.h"
 //#include "dhcp.h"
 //#include "ardrone.h"
 
