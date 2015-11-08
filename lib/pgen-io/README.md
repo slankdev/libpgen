@@ -2,12 +2,12 @@
 
 ## Function List
 
-### in pgen-error.cc
+### pgen-error.cc
 
 	char* pgen_strerror(int);
 	void  pgen_perror(const cahr*);
 
-### in pgen-io.cc
+### pgen-io.cc
 
 	pgen_t* pgen_open(const char*, void*);
 	pgen_t* pgen_open_offline(const char*, int);
@@ -17,7 +17,7 @@
 	int     pgen_sendpacket_L3(const char*, const void*, int);
 	int     pgen_sendpacket_L2(const char*, const void*, int);
 
-### in pgen-netutil.cc
+### pgen-netutil.cc
 
 	int   pgen_send_to_netif (int fd, const void* buf, int len);
 	int   pgen_recv_from_netif_to (int fd, void* buf, int len, struct timeval to);
@@ -29,7 +29,7 @@
 	int   pgen_getmacbydev (const char* dev, char* mac);
 	char* pgen_port2service (int port, const char* protocol, char* buf);
 
-### in pgen-util.cc
+### pgen-util.cc
 
 	int pgen_send_to_pcap (FILE* fp, const void* buf, int len);
 	int pgen_recv_from_pcap (FILE* fp, void* buf, int len);
