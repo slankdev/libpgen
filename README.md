@@ -28,7 +28,8 @@ Twitter     : @slankdev
 
 　
 ## Support Protocol
-Ethernet, ARP, IP, ICMP, TCP, UDP, DNS, DHCP, ar_drone
+Ethernet, ARP, IP, ICMP, TCP, UDP.  
+We stoped supporting DNS, DHCP and AR_Drone, for refactoring. 
 　
 ## Sample Code
 - 　DNS query 		libpgen/sample/DNS/
