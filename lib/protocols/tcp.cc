@@ -18,10 +18,10 @@
  */
 
 
-#include "packet.h"
-#include "address.h"
-#include "pgen-io.h"
-#include "tcp.h"
+//#include "packet.h"
+//#include "address.h"
+#include "pgen/pgen-io.h"
+#include "pgen/protocols/tcp.h"
 
 #include <map>
 #include <stdio.h>

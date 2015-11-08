@@ -27,15 +27,15 @@
 //#include "debug.h"
 //#include "pgen-error.h"
 
-#include "packet.h"
-#include "unknown.h"
-#include "protocols.h"
+#include "pgen/packet.h"
+#include "pgen/unknown.h"
+#include "pgen/protocols/protocols.h"
 
-#include "address.h"
-#include "pgen-arptbl.h"
+#include "pgen/address.h"
+#include "pgen/pgen-arptbl.h"
 
-#include "pgen-io.h"
+#include "pgen/pgen-io.h"
 
-#include "debug.h"
+#include "pgen/debug.h"
 
 #endif /* PGEN_H */

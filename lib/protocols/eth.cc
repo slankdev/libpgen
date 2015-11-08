@@ -19,11 +19,11 @@
  */
 
 
-#include "eth.h"
-#include "packet.h"
-#include "address.h"
-#include "pgen-error.h"
-#include "pgen-io.h"
+#include "pgen/protocols/eth.h"
+#include "pgen/packet.h"
+#include "pgen/address.h"
+#include "pgen/pgen-error.h"
+#include "pgen/pgen-io.h"
 
 #include <map>
 #include <stdio.h>

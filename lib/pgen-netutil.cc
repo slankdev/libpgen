@@ -17,10 +17,10 @@
  */
 
 
-#include "pgen-netutil.h"
-#include "pgen-io.h"
-#include "packet.h"
-#include "pgen-error.h"
+//#include "packet.h"
+#include "pgen/pgen-netutil.h"
+#include "pgen/pgen-io.h"
+#include "pgen/pgen-error.h"
 
 #include <stdio.h>
 #include <stdlib.h>

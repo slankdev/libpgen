@@ -19,10 +19,9 @@
  */
 
 
-#include "packet.h"
-#include "address.h"
-#include "pgen-types.h"
-#include "arp.h"
+#include "pgen/pgen-types.h"
+#include "pgen/pgen-io.h"
+#include "pgen/protocols/arp.h"
 
 #include <map>
 #include <stdio.h>
@@ -37,7 +36,6 @@
 #include <net/ethernet.h> 
 #include <netinet/if_ether.h>
 
-#include "pgen-io.h"
 
 
 

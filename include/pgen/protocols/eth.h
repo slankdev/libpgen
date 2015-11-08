@@ -19,18 +19,39 @@
  */
 
 
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef ETH_H
+#define ETH_H
 
 
+#include "pgen/packet.h"
+#include "pgen/address.h"
 
-#include <sys/types.h>
-#include "pgen.h"
-#include "pgen-types.h"
 
-void debugprint(int flag, const char* str);
-void pgen_hex(const void* data, int len);
-int pgen_check(pgen_packet*, struct pgen_checkopt*);
-int pgen_checkpack(pgen_packet* pack, const void* buf, int len);
+class pgen_eth : public pgen_packet {
+	protected:
+	public:
+		static const int minLen = sizeof(struct ethernet_header);
+		static const int maxLen = PGEN_MAX_PACKET_LEN;
+		struct{
+			macaddr dst;
+			macaddr src;
+			bit16 type;
+		}ETH;
+		
+		pgen_eth();
+		pgen_eth(const void*, int);
+		void clear();
+		void compile();
+		void cast(const void*, int);
+		void send(const char* ifname){send_L2(ifname);}
+		void send_L2(const char* ifname);
+		void summary();
+		void info();
+		void help();
 
-#endif /* DEBUG_H */
+		int write_bin(void*, int);
+		int read_bin(const void*, int);
+};
+
+
+#endif /* ETH_H */

@@ -13,16 +13,4 @@ PROTOCOL_SRC = \
 	# http.cc 
 	# dhcp.cc 
 
-PROTOCOL_HDR = protocols.h \
-	eth.h \
-	arp.h \
-	ip.h \
-	icmp.h \
-	tcp.h \
-	udp.h 
-
-	#dns.h 
-	#ardrone.h 
-	#http.h 
-	#dhcp.h 
 

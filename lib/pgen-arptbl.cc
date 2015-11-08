@@ -20,7 +20,7 @@
 
 
 
-#include "pgen-arptbl.h"
+#include "pgen/pgen-arptbl.h"
 
 
 
@@ -95,7 +95,7 @@ void arptable::show(){
 
 
 
-#include "debug.h"
+//#include "debug.h"
 
 int arptable::get(ipaddr ip){
 	struct _packet{

@@ -29,9 +29,9 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include "pgen-types.h"
-#include "pgen-io.h"
-#include "pgen-error.h"
+#include "pgen/pgen-types.h"
+#include "pgen/pgen-io.h"
+#include "pgen/pgen-error.h"
 
 #ifndef __linux
 //#include <ifaddrs.h>

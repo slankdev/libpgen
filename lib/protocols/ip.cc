@@ -19,10 +19,11 @@
  */
 
 
-#include "packet.h"
-#include "address.h"
-#include "pgen-error.h"
-#include "ip.h"
+//#include "packet.h"
+//#include "address.h"
+#include "pgen/pgen-error.h"
+#include "pgen/pgen-io.h"
+#include "pgen/protocols/ip.h"
 
 #include <map>
 #include <stdio.h>
@@ -37,7 +38,6 @@
 #include <net/ethernet.h> 
 #include <netinet/ip.h>
 
-#include "pgen-io.h"
 
 
 
