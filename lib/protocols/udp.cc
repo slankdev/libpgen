@@ -19,21 +19,13 @@
  */
 
 
-//#include "packet.h"
-//#include "address.h"
-#include "pgen/pgen-io.h"
-#include "pgen/protocols/udp.h"
-
-#include <map>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/udp.h>		// for struct udp		
+
+#include <pgen/protocols/udp.h>
+
+
 
 pgen_udp::pgen_udp(){
 	clear();
@@ -175,6 +167,7 @@ void pgen_udp::info(){
 	printf("    - Length          :  %d \n", UDP.len);
 	printf("    - Checksum        :  %d \n", UDP.check);
 }
+
 
 
 

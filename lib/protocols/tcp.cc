@@ -18,21 +18,12 @@
  */
 
 
-//#include "packet.h"
-//#include "address.h"
-#include "pgen/pgen-io.h"
-#include "pgen/protocols/tcp.h"
 
-#include <map>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/tcp.h>		// for struct tcp		
+
+#include <pgen/protocols/tcp.h>
 
 
 
