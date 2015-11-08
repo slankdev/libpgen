@@ -45,8 +45,6 @@ PGEN_MODULE_DIR = pgen-module
 
 
 
-
-
 all: libpgen.a
 
 
@@ -80,7 +78,6 @@ clean:
 	$(MAKE) -C $(PGEN_ADDRESS_DIR) clean
 	$(MAKE) -C $(PGEN_MODULE_DIR)     clean
 	$(RM) *.o *.out *.a *.so
-
 
 
 
