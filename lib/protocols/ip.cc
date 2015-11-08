@@ -116,6 +116,7 @@ void pgen_ip::cast(const void* data, int l){
 
 
 int  pgen_ip::write_bin(void* buf, int buflen){
+
 	if(buflen < 20){
 		fprintf(stderr, "pgen_ip::write_bin: binary length is not support (%d)\n", buflen);
 		return -1;
@@ -134,9 +135,7 @@ int  pgen_ip::write_bin(void* buf, int buflen){
 	ip_head.protocol = this->IP.protocol;
 	ip_head.saddr = this->IP.src._addr;
 	ip_head.daddr = this->IP.dst._addr;
-	ip_head.check = htons(this->IP.check);
-	//ip_head.check = 0;
-	//ip_head.check = checksum((unsigned short*)&ip_head, IP.hlen*4);
+	ip_head.check = this->IP.check;
 	memcpy(ip_head.option, IP.option, IP.hlen*4-20);
 
 	memcpy(buf, &ip_head, IP.hlen*4);
@@ -167,6 +166,27 @@ int  pgen_ip::read_bin(const void* buf, int buflen){
 	memcpy(IP.option, ip_head->option, ip_head->ihl*4-20);
 
 	return IP.hlen*4;
+}
+
+
+unsigned short pgen_ip::calc_checksum(){
+	struct ip_header ip_head;
+	memset(&ip_head, 0, sizeof(ip_head));
+
+	ip_head.ihl = this->IP.hlen;
+	ip_head.version = 4;
+	ip_head.tos = this->IP.tos; //no useing world now
+	ip_head.tot_len = htons(this->IP.tot_len);
+	ip_head.frag_off = htons(this->IP.frag_off); // ?????
+	ip_head.id = htons(this->IP.id);
+	ip_head.ttl = this->IP.ttl;
+	ip_head.protocol = this->IP.protocol;
+	ip_head.saddr = this->IP.src._addr;
+	ip_head.daddr = this->IP.dst._addr;
+	ip_head.check = 0;
+	memcpy(ip_head.option, IP.option, IP.hlen*4-20);
+
+	return checksum((unsigned short*)&ip_head, IP.hlen*4);
 }
 
 
