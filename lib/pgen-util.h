@@ -32,9 +32,9 @@ int pgen_recv_from_pcap(FILE*, void*, int);
 int pgen_send_to_pcap(FILE*, const void*, int);
 
 unsigned short checksum(unsigned short *data, int len);
-unsigned short checksumUdp(const u_char* dp, int datalen);
 
 unsigned short checksumTcp(struct ip_header, struct tcp_header, const void*, int);
+unsigned short checksumUdp(struct ip_header, struct udp_header, const void*, int);
 
 
 

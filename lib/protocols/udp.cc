@@ -143,7 +143,14 @@ int  pgen_udp::read_bin(const void* buf, int buflen){
 
 
 unsigned short pgen_udp::calc_checksum(){
-	return 1;
+	this->UDP.check = 0;
+	
+	struct ip_header ip_head;
+	pgen_ip::write_bin(&ip_head, sizeof(ip_head));
+	struct udp_header udp_head;
+	pgen_udp::write_bin(&udp_head, sizeof(udp_head));
+	
+	return ntohs(checksumUdp(ip_head, udp_head, _additional_data,IP.tot_len-IP.hlen*4));
 }
 
 
