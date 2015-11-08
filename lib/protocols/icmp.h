@@ -35,8 +35,9 @@ class pgen_icmp : public pgen_ip {
 		static const int minLen = pgen_ip::minLen+ICMP_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{	
-			int type;
-			int code;
+			bit8  type;
+			bit8  code;
+			bit16 check;
 			
 			struct{
 				int id;
@@ -70,6 +71,7 @@ class pgen_icmp : public pgen_ip {
 		int  read_bin(const void*, int);
 
 		void icmp_addData(const void*, int);
+		unsigned short calc_checksum();
 };
 
 

@@ -127,7 +127,7 @@ int  pgen_icmp::write_bin(void* buf, int buflen){
 
 	icmp_head.icmp_type = this->ICMP.type;
 	icmp_head.icmp_code = this->ICMP.code;
-	icmp_head.icmp_cksum = 0;
+	icmp_head.icmp_cksum = htons(this->ICMP.check);
 
 	if(ICMP.type==8 || ICMP.type==0){  // Echo or Echo Relay
 		struct icmp_echo_header ie;
@@ -209,6 +209,7 @@ int  pgen_icmp::read_bin(const void* buf, int buflen){
 
 	this->ICMP.type = icmp_head->icmp_type;
 	this->ICMP.code = icmp_head->icmp_code;
+	this->ICMP.check = ntohs(icmp_head->icmp_cksum);
 
 	if(ICMP.type==8 || ICMP.type==0){  // Echo or Echo Relay
 		struct icmp_echo_header* ie = (struct icmp_echo_header*)p;
@@ -246,6 +247,25 @@ int  pgen_icmp::read_bin(const void* buf, int buflen){
 	return p - (u_char*)buf;
 }
 
+
+
+unsigned short pgen_icmp::calc_checksum(){
+	u_char buf[10000];
+	u_char* p = buf;
+
+	struct icmp_header icmp_head;
+	memset(&icmp_head, 0, sizeof(icmp_head));
+	icmp_head.icmp_type = ICMP.type;
+	icmp_head.icmp_code = ICMP.code;
+	icmp_head.icmp_cksum = 0;
+
+	memcpy(p, &icmp_head, sizeof(icmp_head));
+	p += sizeof(icmp_head);
+	memcpy(p, _additional_data, _additional_len);
+	p += _additional_len;
+
+	return checksum((unsigned short*)buf, p-buf);
+}
 
 
 

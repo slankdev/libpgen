@@ -180,7 +180,8 @@ int  pgen_tcp::write_bin(void* buf, int buflen){
 	tcp_head.ack = this->TCP.flags.ack;
 	tcp_head.urg = this->TCP.flags.urg;
 	memcpy(tcp_head.option, TCP.option, TCP.doff*4-20);
-	tcp_head.check = checksumTcp(ip_head, tcp_head, _additional_data,IP.tot_len-IP.hlen*4);
+	tcp_head.check = htons(this->TCP.check);
+	//tcp_head.check = checksumTcp(ip_head, tcp_head, _additional_data,IP.tot_len-IP.hlen*4);
 
 	memcpy(buf, &tcp_head, TCP.doff*4);
 	return TCP.doff*4;	
@@ -200,13 +201,14 @@ int  pgen_tcp::read_bin(const void* buf, int buflen){
 	this->TCP.seq = ntohl(tcp_head->seq);
 	this->TCP.ack = ntohl(tcp_head->ack_seq);
 	this->TCP.doff = tcp_head->doff;
-	this->TCP.window = ntohs(tcp_head->window);
 	this->TCP.flags.fin = tcp_head->fin;
     this->TCP.flags.syn = tcp_head->syn;
     this->TCP.flags.rst = tcp_head->rst;
     this->TCP.flags.psh = tcp_head->psh;
     this->TCP.flags.ack = tcp_head->ack;
 	this->TCP.flags.urg = tcp_head->urg;
+	this->TCP.window = ntohs(tcp_head->window);
+	this->TCP.check  = ntohs(tcp_head->check);
 	memcpy(TCP.option, tcp_head->option, TCP.doff*4-20);
 		
 	return TCP.doff*4;	

@@ -37,6 +37,7 @@ class pgen_ip : public pgen_eth {
 			bit16 frag_off;
 			bit8  ttl; 
 			bit8  protocol;
+			bit16 check;
 			ipaddr src;
 			ipaddr dst;
 

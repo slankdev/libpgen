@@ -134,8 +134,9 @@ int  pgen_ip::write_bin(void* buf, int buflen){
 	ip_head.protocol = this->IP.protocol;
 	ip_head.saddr = this->IP.src._addr;
 	ip_head.daddr = this->IP.dst._addr;
-	ip_head.check = 0;
-	ip_head.check = checksum((unsigned short*)&ip_head, IP.hlen*4);
+	ip_head.check = htons(this->IP.check);
+	//ip_head.check = 0;
+	//ip_head.check = checksum((unsigned short*)&ip_head, IP.hlen*4);
 	memcpy(ip_head.option, IP.option, IP.hlen*4-20);
 
 	memcpy(buf, &ip_head, IP.hlen*4);
@@ -160,6 +161,7 @@ int  pgen_ip::read_bin(const void* buf, int buflen){
 	this->IP.frag_off = ntohs(ip_head->frag_off);
 	this->IP.ttl = ip_head->ttl;
 	this->IP.protocol = ip_head->protocol;
+	this->IP.check = ntohs(ip_head->check);
 	this->IP.src._addr = ip_head->saddr;
 	this->IP.dst._addr = ip_head->daddr;
 	memcpy(IP.option, ip_head->option, ip_head->ihl*4-20);
