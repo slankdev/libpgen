@@ -38,31 +38,23 @@ INSTALL_LIB_DIR = /usr/local/lib
 INSTALL_HDR_DIR = /usr/local/include
 PGEN_PACKET_DIR = pgen-packet
 PROTOCOLS_DIR   = $(PGEN_PACKET_DIR)/protocols
+PGEN_IO_DIR     = pgen-io
 
-LOWLAYER_SRC = \
-	pgen-netutil.cc \
-	pgen-util.cc 
 
 OTHER_SRC = \
 	pgen-error.cc \
 	debug.cc
 
-PGEN_IO_SRC = \
-	$(LOWLAYER_SRC) \
-	pgen-io.cc 
-
-
 PGEN_ARPTBL_SRC = \
 	pgen-arptbl.cc 
 
 
+
 OTHER_OBJ       = $(OTHER_SRC:.cc=.o)
-PGEN_IO_OBJ     = $(PGEN_IO_SRC:.cc=.o)
 PGEN_ARPTBL_OBJ = $(PGEN_ARPTBL_SRC:.cc=.o)
 
 
-OBJ = $(LOWLAYER_OBJ) $(OTHER_OBJ) \
-	$(PGEN_IO_OBJ) $(PGEN_ARPTBL_OBJ)
+OBJ =  $(OTHER_OBJ)  $(PGEN_ARPTBL_OBJ)
 
 
 
@@ -70,17 +62,22 @@ OBJ = $(LOWLAYER_OBJ) $(OTHER_OBJ) \
 all: libpgen.a
 
 
-libpgen.a: $(OBJ) make-pgen-packet
+libpgen.a: $(OBJ) make-pgen-io make-pgen-packet 
 	@rm -f $@
-	$(AR) rc $@ *.o  $(PGEN_PACKET_DIR)/*.o  $(PROTOCOLS_DIR)/*.o
+	$(AR) rc $@ *.o $(PGEN_IO_DIR)/*.o $(PGEN_PACKET_DIR)/*.o  $(PROTOCOLS_DIR)/*.o
 	$(RANLIB) $@
 
 make-pgen-packet: 
 	$(MAKE) -C $(PGEN_PACKET_DIR) 
 
+make-pgen-io:
+	$(MAKE) -C $(PGEN_IO_DIR) 
+
+
 
 clean:
 	$(MAKE) -C $(PGEN_PACKET_DIR) clean
+	$(MAKE) -C $(PGEN_IO_DIR)     clean
 	$(RM) *.o *.out *.a *.so
 
 
