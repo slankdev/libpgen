@@ -142,6 +142,13 @@ int  pgen_udp::read_bin(const void* buf, int buflen){
 
 
 
+unsigned short pgen_udp::calc_checksum(){
+	return 1;
+}
+
+
+
+
 void pgen_udp::summary(){
 	printf("UDP(%d -> %d) \n", UDP.src, UDP.dst);
 }

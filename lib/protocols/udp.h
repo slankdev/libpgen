@@ -48,6 +48,8 @@ class pgen_udp : public pgen_ip {
 
 		int  write_bin(void*, int);
 		int  read_bin(const void*, int);
+
+		unsigned short calc_checksum();
 };
 
 

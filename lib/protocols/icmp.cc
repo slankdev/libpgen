@@ -68,6 +68,7 @@ void pgen_icmp::clear(){
 } 
 
 void pgen_icmp::compile(){
+
 	u_char buf[1000];
 	int buflen;
 
@@ -250,21 +251,19 @@ int  pgen_icmp::read_bin(const void* buf, int buflen){
 
 
 unsigned short pgen_icmp::calc_checksum(){
+	this->ICMP.check = 0;
+
 	u_char buf[10000];
+	int buflen;
 	u_char* p = buf;
-
-	struct icmp_header icmp_head;
-	memset(&icmp_head, 0, sizeof(icmp_head));
-	icmp_head.icmp_type = ICMP.type;
-	icmp_head.icmp_code = ICMP.code;
-	icmp_head.icmp_cksum = 0;
-
-	memcpy(p, &icmp_head, sizeof(icmp_head));
-	p += sizeof(icmp_head);
+	
+	buflen = pgen_icmp::write_bin(buf, sizeof(buf));
+	memcpy(p, buf, buflen);
+	p += buflen;
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
 
-	return checksum((unsigned short*)buf, p-buf);
+	return ntohs(checksum((unsigned short*)buf, p-buf));
 }
 
 

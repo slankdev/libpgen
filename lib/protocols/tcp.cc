@@ -72,6 +72,7 @@ void pgen_tcp::clear(){
 
 
 void pgen_tcp::compile(){
+
 	u_char buf[100000];
 	int buflen;
 
@@ -119,7 +120,6 @@ void pgen_tcp::cast(const void* data, int l){
 
 
 int  pgen_tcp::write_bin(void* buf, int buflen){
-	this->TCP.check = pgen_tcp::calc_checksum();
 
 	if(buflen < sizeof(struct tcp_header)){
 		fprintf(stderr, "pgen_tcp::write_bin: binary length is not support (%d)\n", buflen);
@@ -180,26 +180,12 @@ int  pgen_tcp::read_bin(const void* buf, int buflen){
 
 
 unsigned short pgen_tcp::calc_checksum(){
+	this->TCP.check = 0;
+		
 	struct ip_header ip_head;
 	pgen_ip::write_bin(&ip_head, sizeof(ip_head));
-
 	struct tcp_header tcp_head;
-	memset(&tcp_head, 0, sizeof(tcp_head));
-
-	tcp_head.source = htons(this->TCP.src);
-	tcp_head.dest   = htons(this->TCP.dst);
-	tcp_head.seq    = htonl(this->TCP.seq);
-	tcp_head.ack_seq = htonl(this->TCP.ack);
-	tcp_head.doff = this->TCP.doff;  // header length
-	tcp_head.window = htons(this->TCP.window);
-	tcp_head.check  = 0;
-	tcp_head.fin = this->TCP.flags.fin;
-	tcp_head.syn = this->TCP.flags.syn;
-	tcp_head.rst = this->TCP.flags.rst;
-	tcp_head.psh = this->TCP.flags.psh;
-	tcp_head.ack = this->TCP.flags.ack;
-	tcp_head.urg = this->TCP.flags.urg;
-	memcpy(tcp_head.option, TCP.option, TCP.doff*4-20);
+	pgen_tcp::write_bin(&tcp_head, sizeof(tcp_head));
 	
 	return ntohs(checksumTcp(ip_head, tcp_head, _additional_data,IP.tot_len-IP.hlen*4));
 }
