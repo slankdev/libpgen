@@ -40,7 +40,7 @@
 #endif
 
 
-#define FILEPATH "/usr/local/etc/mac_code.list"
+#define FILEPATH "/usr/local/etc/pgen/mac_code.list"
 
 
 union lc{
