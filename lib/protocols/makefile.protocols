@@ -6,9 +6,9 @@ PROTOCOL_SRC = \
 	ip.cc \
 	icmp.cc \
 	tcp.cc \
-	udp.cc \
-	dns.cc 
+	udp.cc 
 
+	# dns.cc 
 	# ardrone.cc 
 	# http.cc 
 	# dhcp.cc 
@@ -19,9 +19,9 @@ PROTOCOL_HDR = protocols.h \
 	ip.h \
 	icmp.h \
 	tcp.h \
-	udp.h \
-	dns.h 
+	udp.h 
 
+	#dns.h 
 	#ardrone.h 
 	#http.h 
 	#dhcp.h 
