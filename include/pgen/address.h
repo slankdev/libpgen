@@ -33,14 +33,9 @@
 #include "pgen/pgen-io.h"
 #include "pgen/pgen-error.h"
 
-#ifndef __linux
-//#include <ifaddrs.h>
-//#include <net/if_dl.h>
-//#include <net/if_types.h>
-#endif
 
 
-#define FILEPATH "/usr/local/etc/pgen/mac_code.list"
+#define FILEPATH "/usr/local/etc/libpgen/mac_code.list"
 
 
 union lc{

@@ -94,8 +94,8 @@ install:
 	$(CP) libpgen.a          $(INSTALL_LIB_DIR)
 	$(CP) ../include/pgen.h  $(INSTALL_HDR_DIR)
 	$(CP) ../include/pgen   $(INSTALL_HDR_DIR)
-	$(MKDIR) /usr/local/etc/pgen
-	$(CP) ../etc/mac_code.list /usr/local/etc/pgen/mac_code.list
+	$(MKDIR) /usr/local/etc/libpgen
+	$(CP) ../etc/mac_code.list /usr/local/etc/libpgen/mac_code.list
 
 	
 
