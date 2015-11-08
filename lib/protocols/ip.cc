@@ -116,6 +116,7 @@ void pgen_ip::cast(const void* data, int l){
 
 
 int  pgen_ip::write_bin(void* buf, int buflen){
+	this->IP.check = pgen_ip::calc_checksum();
 
 	if(buflen < 20){
 		fprintf(stderr, "pgen_ip::write_bin: binary length is not support (%d)\n", buflen);
@@ -135,7 +136,7 @@ int  pgen_ip::write_bin(void* buf, int buflen){
 	ip_head.protocol = this->IP.protocol;
 	ip_head.saddr = this->IP.src._addr;
 	ip_head.daddr = this->IP.dst._addr;
-	ip_head.check = this->IP.check;
+	ip_head.check = htons(this->IP.check);
 	memcpy(ip_head.option, IP.option, IP.hlen*4-20);
 
 	memcpy(buf, &ip_head, IP.hlen*4);
@@ -186,7 +187,7 @@ unsigned short pgen_ip::calc_checksum(){
 	ip_head.check = 0;
 	memcpy(ip_head.option, IP.option, IP.hlen*4-20);
 
-	return checksum((unsigned short*)&ip_head, IP.hlen*4);
+	return ntohs(checksum((unsigned short*)&ip_head, IP.hlen*4));
 }
 
 
