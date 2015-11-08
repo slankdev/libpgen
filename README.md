@@ -1,4 +1,7 @@
 # LibPGEN
+
+[![Build Status](https://travis-ci.org/slankdev/libpgen.svg?branch=master)](https://travis-ci.org/slankdev/libpgen)
+
 LibPGEN is Packet GENerator library.  
 Please see the libpgen official WEB-site http://libpgen.org
 
