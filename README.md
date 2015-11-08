@@ -26,7 +26,7 @@ Handlename  : Slank
 Fullname    : Hiroki Shirokura  
 Country     : Japan  
 E-mail      : slank.dev@gmail.com  
-Web-Site    : slankdev.net  
+Web-Site    : http://slankdev.net  
 Twitter     : @slankdev  
 
 　
