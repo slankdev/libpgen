@@ -19,19 +19,29 @@
  */
 
 
-#ifndef PGEN_H
-#define PGEN_H
+#ifndef NETUTIL_H
+#define NETUTIL_H
 
 
 
-
-#include <pgen/module/pgen-arptbl.h>
-#include <pgen/module/debug.h>
-#include <pgen/packet/packet.h>
-#include <pgen/packet/unknown.h>
-#include <pgen/packet/protocols/protocols.h>
-#include <pgen/packet/address/address.h>
-#include <pgen/io/pgen-io.h>
+#include <sys/types.h>
+#include <pgen/pgen-types.h>
+#include <pgen/io/pgen-netutil.h>
+#include <pgen/io/pgen-util.h>
 
 
-#endif /* PGEN_H */
+
+pgen_t* pgen_open(const char* dev, void*);
+pgen_t* pgen_open_offline(const char*, int mode);
+void pgen_close(pgen_t* p);
+
+
+int pgen_sendpacket_L2(const char*, const void*, int);
+int pgen_sendpacket_L3(const char*, const void*, int, struct sockaddr*);
+int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len);
+
+
+void sniff(pgen_t* handle, bool (*callback)(const u_char*, int));
+
+
+#endif /* NETUTIL_H */

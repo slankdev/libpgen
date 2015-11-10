@@ -19,19 +19,39 @@
  */
 
 
-#ifndef PGEN_H
-#define PGEN_H
+#ifndef ETH_H
+#define ETH_H
 
 
-
-
-#include <pgen/module/pgen-arptbl.h>
-#include <pgen/module/debug.h>
 #include <pgen/packet/packet.h>
-#include <pgen/packet/unknown.h>
-#include <pgen/packet/protocols/protocols.h>
 #include <pgen/packet/address/address.h>
-#include <pgen/io/pgen-io.h>
 
 
-#endif /* PGEN_H */
+class pgen_eth : public pgen_packet {
+	protected:
+	public:
+		static const int minLen = sizeof(struct ethernet_header);
+		static const int maxLen = PGEN_MAX_PACKET_LEN;
+		struct{
+			macaddr dst;
+			macaddr src;
+			bit16 type;
+		}ETH;
+		
+		pgen_eth();
+		pgen_eth(const void*, int);
+		void clear();
+		void compile();
+		void cast(const void*, int);
+		void send(const char* ifname){send_L2(ifname);}
+		void send_L2(const char* ifname);
+		void summary();
+		void info();
+		void help();
+
+		int write_bin(void*, int);
+		int read_bin(const void*, int);
+};
+
+
+#endif /* ETH_H */

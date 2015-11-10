@@ -19,19 +19,80 @@
  */
 
 
-#ifndef PGEN_H
-#define PGEN_H
 
 
-
-
-#include <pgen/module/pgen-arptbl.h>
 #include <pgen/module/debug.h>
 #include <pgen/packet/packet.h>
-#include <pgen/packet/unknown.h>
-#include <pgen/packet/protocols/protocols.h>
-#include <pgen/packet/address/address.h>
 #include <pgen/io/pgen-io.h>
+#include <pgen/io/pgen-error.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 
-#endif /* PGEN_H */
+
+
+
+
+
+
+
+
+pgen_packet::pgen_packet(){
+	len = 0;
+	memset(data, 0, sizeof(data));
+	_additional_len = 0;
+	memset(_additional_data, 0, sizeof _additional_data);
+}
+
+
+
+
+void pgen_packet::add_data(const void* buf, int l) {
+	memcpy(_additional_data, buf, l);
+	_additional_len = l;
+
+	return ;	
+}
+
+
+
+
+void pgen_packet::hex(){
+	compile();
+	
+	pgen_hex(this->data, this->len);
+}
+
+
+
+int pgen_packet::length(){
+	compile();
+	return this->len;
+}
+
+
+
+
+
+u_char* pgen_packet::byte(){
+	compile();
+	return this->data;
+}
+
+
+
+
+
+
+
+void pgen_packet::send_handle(pgen_t* handle){
+	compile();
+	int r = pgen_sendpacket_handle(handle, this->data, this->len);
+	if(r < 0){
+		pgen_perror("send_handle");	
+	}
+}
+
+

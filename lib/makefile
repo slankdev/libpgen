@@ -37,32 +37,30 @@ PROGNAME = libpgen.a
 CPPFLAGS = -Wall -fPIC -std=c++11 
 INSTALL_LIB_DIR = /usr/local/lib
 INSTALL_HDR_DIR = /usr/local/include
-PGEN_PACKET_DIR = pgen-packet
+
+PGEN_IO_DIR     = io
+PGEN_MODULE_DIR = module
+PGEN_PACKET_DIR = packet
 PROTOCOLS_DIR   = $(PGEN_PACKET_DIR)/protocols
-PGEN_ADDRESS_DIR= pgen-address
-PGEN_IO_DIR     = pgen-io
-PGEN_MODULE_DIR = pgen-module
+ADDRESS_DIR     = $(PGEN_PACKET_DIR)/address
 
 
 
 all: libpgen.a
 
 
-libpgen.a: make-pgen-io make-pgen-module make-pgen-address make-pgen-packet 
+libpgen.a: make-pgen-io make-pgen-module make-pgen-packet 
 	@rm -f $@
 	$(AR) rc $@  \
 		$(PGEN_IO_DIR)/*.o \
 		$(PGEN_PACKET_DIR)/*.o  \
 		$(PROTOCOLS_DIR)/*.o    \
-		$(PGEN_ADDRESS_DIR)/*.o \
+		$(ADDRESS_DIR)/*.o \
 		$(PGEN_MODULE_DIR)/*.o
 	$(RANLIB) $@
 
 make-pgen-packet: 
 	$(MAKE) -C $(PGEN_PACKET_DIR) 
-
-make-pgen-address:
-	$(MAKE) -C $(PGEN_ADDRESS_DIR) 
 
 make-pgen-io:
 	$(MAKE) -C $(PGEN_IO_DIR) 
@@ -75,7 +73,6 @@ make-pgen-module:
 clean:
 	$(MAKE) -C $(PGEN_PACKET_DIR) clean
 	$(MAKE) -C $(PGEN_IO_DIR)     clean
-	$(MAKE) -C $(PGEN_ADDRESS_DIR) clean
 	$(MAKE) -C $(PGEN_MODULE_DIR)     clean
 	$(RM) *.o *.out *.a *.so
 
