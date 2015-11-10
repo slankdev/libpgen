@@ -44,7 +44,19 @@ union lc{
 };
 
 
-class ipaddr{
+class pgen_address{
+	protected:
+	public:
+		virtual char* c_str();
+		virtual void  clear();
+		virtual int setOctet(int, int);
+		virtual unsigned char getOctet(int);
+};
+
+
+
+
+class ipaddr : pgen_address {
 	private:
 		
 	public:
@@ -81,7 +93,7 @@ class ipaddr{
 
 
 
-class macaddr{
+class macaddr : pgen_address {
 	private:
 	public:
 		char _str[256];
