@@ -28,6 +28,7 @@
 #include <pgen/pgen-types.h>
 #include <pgen/io/pgen-netutil.h>
 #include <pgen/io/pgen-util.h>
+#include <pgen/io/pgen-error.h>
 
 
 
