@@ -1,39 +1,42 @@
-# Pgen-IO
+
+
+# PGEN-IO
+This component has many functions that send/recv packet to network interface and pcap files.  
+
+
 
 ## Function List
 
 ### pgen-error.cc
 
-	char* pgen_strerror(int);
-	void  pgen_perror(const cahr*);
+	pgen_strerror();           --> Get error message that is char* string from error number
+	pgen_perror();             --> Print error message with original message like perror()
 
 ### pgen-io.cc
 
-	pgen_t* pgen_open(const char*, void*);
-	pgen_t* pgen_open_offline(const char*, int);
-	void    pgen_close(pgen_t*);
-	bool    sniff(pgen_t*, bool (*callback)(const u_char*, int));
-	int     pgen_sendpacket_handle(pgen_t*, const void*, int);
-	int     pgen_sendpacket_L3(const char*, const void*, int);
-	int     pgen_sendpacket_L2(const char*, const void*, int);
+	pgen_open();               --> Open PGEN-discripter available handling network interface
+	pgen_open_offline();       --> Open PGEN-discripter available handling pcap file
+	pgen_close();              --> Close PGEN-discripter
+	pgen_sendpacket_handle();  --> Send binary with PGEN-discripter
+	pgen_sendpacket_L3();      --> Send binary to L3 network interface from device-name
+	pgen_sendpacket_L2();      --> send binary to L2 network interface from device-name
 
 ### pgen-netutil.cc
 
-	int   pgen_send_to_netif (int fd, const void* buf, int len);
-	int   pgen_recv_from_netif_to (int fd, void* buf, int len, struct timeval to);
-	int   pgen_recv_from_netif (int fd, void* buf, int len);
-	int   open_bpf (const char* dev, int promisc);
-	int   initRawSocket (const char* dev, int promisc, int overIp);
-	int   pgen_getipbydev (const char* dev, char* ip);
-	int   pgen_getmaskbydev (const char* dev, char* ip);
-	int   pgen_getmacbydev (const char* dev, char* mac);
-	char* pgen_port2service (int port, const char* protocol, char* buf);
+	pgen_send_to_netif ();
+	pgen_recv_from_netif_to();
+	pgen_recv_from_netif();
+
+	pgen_getipbydev();
+	pgen_getmaskbydev();
+	pgen_getmacbydev();
+	pgen_port2service();
 
 ### pgen-util.cc
 
-	int pgen_send_to_pcap (FILE* fp, const void* buf, int len);
-	int pgen_recv_from_pcap (FILE* fp, void* buf, int len);
-	void pgen_hex (const void* d, int len);
-	unsigned short checksum (unsigned short *data, int len);
-	unsigned short checksumTcp (struct ip_header ip, struct tcp_header tcp, const void* data, int total_len);
-	unsigned short checksumUdp (struct ip_header ip, struct udp_header udp, const void* data, int total_len);
+	pgen_send_to_pcap();
+	pgen_recv_from_pcap();
+	pgen_hex();
+	checksum();
+	checksumTcp();
+	checksumUdp();
