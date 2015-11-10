@@ -1,14 +1,22 @@
-# Component
 
+# Component
+This directory has important components for PGEN.  
 more information, see http://libpgen.org
 
+
 ## Pgen-Module
-This Components has modules that coded with Pgen-. 
+This component has some functions and classes that were coded with PGEN-IO and PGEN-Core.  
+Users can add a new module to PGEN-Module easily.  
+For example, sniff was coded by slank(@slankdev) with pgen_arp class and Pgen-IO's functions.  
+
+
 
 ## Pgen-Packet
-Pgen-Packet is the most important component of LibPGEN.
+Pgen-Packet is the most important component of LibPGEN.  
 It gives users easy interface of analize packet binary. 
 
 
+
 ## Pgen-IO
-Pgen-IO has many IO-functions. It absorbs the difference of each OS. 
+PGEN-IO has many IO-functions. It absorbs the difference of each OS.  
+It makes users ablable to send and recv packets to network-interface and pcap-files. 
