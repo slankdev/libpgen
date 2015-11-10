@@ -27,10 +27,10 @@
 
 #include <pgen/module/pgen-arptbl.h>
 #include <pgen/module/debug.h>
-#include <pgen/packet/packet.h>
-#include <pgen/packet/unknown.h>
-#include <pgen/packet/protocols/protocols.h>
-#include <pgen/packet/address/address.h>
+#include <pgen/core/packet.h>
+#include <pgen/core/unknown.h>
+#include <pgen/core/protocols/protocols.h>
+#include <pgen/core/address/address.h>
 #include <pgen/io/pgen-io.h>
 
 

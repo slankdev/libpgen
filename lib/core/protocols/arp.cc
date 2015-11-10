@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <pgen/packet/protocols/arp.h>
+#include <pgen/core/protocols/arp.h>
 
 
 

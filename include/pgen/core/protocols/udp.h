@@ -18,50 +18,29 @@
  *
  */
 
+#ifndef UDP_H
+#define UDP_H
 
-#ifndef ICMP_H
-#define ICMP_H
 
-#include "ip.h"
+#include <pgen/core/protocols/ip.h>
 
-class pgen_icmp : public pgen_ip {
+class pgen_udp : public pgen_ip {
 	protected:
-		struct icmp_header icmp;
-		bit8  icmp_data[256];
-		bit32 icmp_data_len;
-		bit8  icmp_ext_data[256];
-		bit32 icmp_ext_data_len;
 	public:
-		static const int minLen = pgen_ip::minLen+ICMP_HDR_LEN;
+		static const int minLen = pgen_ip::minLen+sizeof(struct udp_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		struct{	
-			bit8  type;
-			bit8  code;
+		struct{
+			bit16 src;
+			bit16 dst;
+			bit16 len;
 			bit16 check;
-			
-			struct{
-				int id;
-				int seq;
-			}echo;
-			struct{
-				ipaddr gw_addr;	
-			}redirect;
-			struct{
-				bit8 len;
-				bit16 next_mtu;
-			}destination_unreach;
-			struct{
-				bit8 len;
-			}time_exceeded;
+		}UDP;
 
-
-		}ICMP;
-		
-		pgen_icmp();
-		pgen_icmp(const void*, int);
+		pgen_udp();
+		pgen_udp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const void*, int);
+		void cast(const void*, const int len);
 		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
@@ -70,9 +49,10 @@ class pgen_icmp : public pgen_ip {
 		int  write_bin(void*, int);
 		int  read_bin(const void*, int);
 
-		void icmp_addData(const void*, int);
 		unsigned short calc_checksum();
 };
+
+
 
 
 #endif

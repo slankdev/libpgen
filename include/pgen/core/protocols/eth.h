@@ -23,8 +23,8 @@
 #define ETH_H
 
 
-#include <pgen/packet/packet.h>
-#include <pgen/packet/address/address.h>
+#include <pgen/core/packet.h>
+#include <pgen/core/address/address.h>
 
 
 class pgen_eth : public pgen_packet {

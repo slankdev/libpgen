@@ -24,7 +24,7 @@
 #define PGEN_ARPTBL
 
 
-#include <pgen/packet/address/address.h>
+#include <pgen/core/address/address.h>
 #include <vector>
 
 typedef struct arpent arpent_t;

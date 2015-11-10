@@ -23,7 +23,7 @@
 #include <string>
 #include <iostream>
 
-#include <pgen/packet/protocols/icmp.h>
+#include <pgen/core/protocols/icmp.h>
 
 #include <stdio.h>
 #include <string.h>

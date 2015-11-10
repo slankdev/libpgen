@@ -18,39 +18,61 @@
  *
  */
 
-#ifndef ARP_H
-#define ARP_H
 
+#ifndef ICMP_H
+#define ICMP_H
 
-#include "eth.h"
+#include <pgen/core/protocols/ip.h>
 
-
-class pgen_arp : public pgen_eth {
+class pgen_icmp : public pgen_ip {
 	protected:
+		struct icmp_header icmp;
+		bit8  icmp_data[256];
+		bit32 icmp_data_len;
+		bit8  icmp_ext_data[256];
+		bit32 icmp_ext_data_len;
 	public:
-		static const int minLen = pgen_eth::minLen+sizeof(struct arp_packet);
+		static const int minLen = pgen_ip::minLen+ICMP_HDR_LEN;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		struct{
-			int operation;
-			macaddr	srcEth;
-			macaddr	dstEth;
-			ipaddr	srcIp;
-			ipaddr	dstIp;
-		}ARP;
+		struct{	
+			bit8  type;
+			bit8  code;
+			bit16 check;
+			
+			struct{
+				int id;
+				int seq;
+			}echo;
+			struct{
+				ipaddr gw_addr;	
+			}redirect;
+			struct{
+				bit8 len;
+				bit16 next_mtu;
+			}destination_unreach;
+			struct{
+				bit8 len;
+			}time_exceeded;
 
-		pgen_arp();
-		pgen_arp(const void*, int);
+
+		}ICMP;
+		
+		pgen_icmp();
+		pgen_icmp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const void*, const int);
-		void send(const char* ifname){send_L2(ifname);}
+		void cast(const void*, int);
+		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
 		void help();
 
 		int  write_bin(void*, int);
 		int  read_bin(const void*, int);
+
+		void icmp_addData(const void*, int);
+		unsigned short calc_checksum();
 };
 
 
-#endif 
+#endif

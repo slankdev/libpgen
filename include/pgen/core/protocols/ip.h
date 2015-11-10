@@ -21,7 +21,7 @@
 #ifndef IP_H
 #define IP_H
 
-#include "eth.h"
+#include <pgen/core/protocols/eth.h>
 
 
 class pgen_ip : public pgen_eth {

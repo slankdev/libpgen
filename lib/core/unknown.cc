@@ -22,9 +22,9 @@
 #include <pgen/pgen-types.h>
 
 #include <pgen/module/debug.h>
-#include <pgen/packet/packet.h>
-#include <pgen/packet/unknown.h>
-#include <pgen/packet/address/address.h>
+#include <pgen/core/packet.h>
+#include <pgen/core/unknown.h>
+#include <pgen/core/address/address.h>
 #include <pgen/io/pgen-io.h>
 
 #include <stdio.h>

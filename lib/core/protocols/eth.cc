@@ -25,7 +25,7 @@
 #include <stdlib.h>
 
 
-#include <pgen/packet/protocols/eth.h>
+#include <pgen/core/protocols/eth.h>
 #include <pgen/io/pgen-io.h>
 #include <pgen/io/pgen-error.h>
 

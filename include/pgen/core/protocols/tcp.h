@@ -18,26 +18,38 @@
  *
  */
 
-#ifndef UDP_H
-#define UDP_H
+#ifndef TCP_H
+#define TCP_H
 
+#include <pgen/core/protocols/ip.h>
 
-#include "ip.h"
-
-class pgen_udp : public pgen_ip {
+class pgen_tcp : public pgen_ip {
 	protected:
 	public:
-		static const int minLen = pgen_ip::minLen+sizeof(struct udp_header);
+		static const int minLen = pgen_ip::minLen+20;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			bit16 src;
 			bit16 dst;
-			bit16 len;
+			bit32 seq;
+			bit32 ack;
+			u_char doff:4;
+			struct{
+				u_char fin:1;
+				u_char syn:1;
+				u_char rst:1;
+				u_char psh:1;
+				u_char ack:1;
+				u_char urg:1;
+			}flags;
+			bit16 window;
 			bit16 check;
-		}UDP;
 
-		pgen_udp();
-		pgen_udp(const void*, int);
+			bit8 option[1000];
+		}TCP;
+
+		pgen_tcp();
+		pgen_tcp(const void*, int);
 		void clear();
 		void compile();
 		void cast(const void*, const int len);
