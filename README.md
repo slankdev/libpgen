@@ -17,7 +17,7 @@ We don't have been tested other Linux and BSD but maybe available.
  
 
 ## Future
-* Support more protocols　
+* Support more protocols  
 * Become easy to extension 
 
 
@@ -29,14 +29,19 @@ E-mail      : slank.dev@gmail.com
 Web-Site    : http://slankdev.net  
 Twitter     : @slankdev  
 
-　
+
 ## Support Protocol
 Ethernet, ARP, IP, ICMP, TCP, UDP.  
 We stoped supporting DNS, DHCP and AR_Drone, for refactoring. 
-　
+
+
 ## Sample Code
 
-Please see http://libpgen.org/documentation/samples/
+Please see.
+ - http://libpgen.org/documentation/samples/
+ - lib/module/README.md
+ - lib/core/README.md
+
 
 
 
