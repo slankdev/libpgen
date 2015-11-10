@@ -134,6 +134,11 @@ int ipaddr::setnetbydev(const char* ifname){
 
 int ipaddr::setnetbyaddr(ipaddr ip, ipaddr mask){
 	this->_addr = ip._addr & mask._addr;
+
+	//printf("addr: %s\n" ,ip.c_str());
+	//printf("mask: %s\n" ,mask.c_str());
+	//printf("net : %s\n" ,this->c_str());
+	
 	return 1;
 }
 
@@ -254,6 +259,7 @@ ipaddr  ipaddr::operator++(int){
 			lc.c[i]++;
 			break;
 		}
+		lc.c[i] = 0;
 	}
 	this->_addr = lc.l;
 	return newaddr;
