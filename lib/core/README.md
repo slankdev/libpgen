@@ -29,7 +29,7 @@ Address class has some utility operator for size comparison, increment and more.
 
 ## Packet class
 We support Ethernet, ARP, IP, ICMP, TCP and UDP by default.
-You can extension new protocols easily. If you want extend protocols, see http://libpgen.org .
+You can extension new protocols easily. If you want extend protocols, please see http://libpgen.org .
 
 ### Sample Code
 
