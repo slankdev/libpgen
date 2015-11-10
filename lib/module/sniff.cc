@@ -19,28 +19,42 @@
  */
 
 
-#ifndef NETUTIL_H
-#define NETUTIL_H
-
-
-
-#include <sys/types.h>
 #include <pgen/pgen-types.h>
-#include <pgen/io/pgen-netutil.h>
-#include <pgen/io/pgen-util.h>
+#include <pgen/io/pgen-io.h>
+#include <pgen/io/pgen-error.h>
+#include <pgen/module/sniff.h>
 
 
 
-pgen_t* pgen_open(const char* dev, void*);
-pgen_t* pgen_open_offline(const char*, int mode);
-void pgen_close(pgen_t* p);
+void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
+	if(handle->is_read == 0){
+		fprintf(stderr, "sniff: handle is not read mode \n");
+		return;
+	}
 
+	
+	u_char  packet[4096];
+	bool result = true;
+	int len;
+	
 
-int pgen_sendpacket_L2(const char*, const void*, int);
-int pgen_sendpacket_L3(const char*, const void*, int, struct sockaddr*);
-int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len);
+	for(;result;){
+		if(handle->is_offline == 1){ // offline sniff
+			len = pgen_recv_from_pcap(handle->offline.fd, packet, sizeof(packet));
+			if(len < 0){
+				pgen_perror("sniff");
+				return;
+			}
 
+		}else{ // online sniff	
+			len = pgen_recv_from_netif(handle->fd, packet, sizeof(packet));
+			if(len < 0){
+				pgen_perror("sniff");
+				return;
+			}
 
+		}
+		result = (*callback)(packet, len);
+	}
+}
 
-
-#endif /* NETUTIL_H */

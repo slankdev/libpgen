@@ -33,7 +33,8 @@ CPPFLAGS = -Wall -fPIC -std=c++11
 
 SRC = \
 	pgen-arptbl.cc \
-	debug.cc
+	debug.cc \
+	sniff.cc 
 
 
 OBJ = $(SRC:.cc=.o)

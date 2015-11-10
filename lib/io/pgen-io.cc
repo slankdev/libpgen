@@ -146,40 +146,6 @@ void pgen_close(pgen_t* p){
 
 
 
-void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
-	if(handle->is_read == 0){
-		fprintf(stderr, "sniff: handle is not read mode \n");
-		return;
-	}
-
-	
-	u_char  packet[4096];
-	bool result = true;
-	int len;
-	
-
-	for(;result;){
-		if(handle->is_offline == 1){ // offline sniff
-			len = pgen_recv_from_pcap(handle->offline.fd, packet, sizeof(packet));
-			if(len < 0){
-				pgen_perror("sniff");
-				return;
-			}
-
-		}else{ // online sniff	
-			len = pgen_recv_from_netif(handle->fd, packet, sizeof(packet));
-			if(len < 0){
-				pgen_perror("sniff");
-				return;
-			}
-
-		}
-		result = (*callback)(packet, len);
-	}
-}
-
-
-
 
 
 
