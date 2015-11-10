@@ -24,9 +24,8 @@
 
 
 
-#include <sys/types.h>
-#include "pgen.h"
-#include "pgen/pgen-types.h"
+#include <pgen.h>
+#include <pgen/core/packet.h>
 
 void debugprint(int flag, const char* str);
 int pgen_check(pgen_packet*, struct pgen_checkopt*);

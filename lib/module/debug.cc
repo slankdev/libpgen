@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <pgen/pgen-types.h>
 #include <pgen/module/debug.h>
+#include <pgen/core/packet.h>
 
 
 int pgen_checkpack(pgen_packet* pack, const void* buf, int len){

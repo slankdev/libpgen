@@ -47,10 +47,11 @@ union lc{
 class pgen_address{
 	protected:
 	public:
-		virtual char* c_str();
-		virtual void  clear();
-		virtual int setOctet(int, int);
-		virtual unsigned char getOctet(int);
+
+		//virtual char* c_str();
+		//virtual void  clear();
+		//virtual int setOctet(int, int);
+		//virtual unsigned char getOctet(int);
 };
 
 
