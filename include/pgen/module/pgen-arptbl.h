@@ -19,19 +19,40 @@
  */
 
 
-#ifndef PGEN_H
-#define PGEN_H
+
+#ifndef PGEN_ARPTBL
+#define PGEN_ARPTBL
 
 
-
-
-#include <pgen/module/pgen-arptbl.h>
-#include <pgen/module/debug.h>
-#include <pgen/packet/packet.h>
-#include <pgen/packet/unknown.h>
-#include <pgen/packet/protocols/protocols.h>
 #include <pgen/packet/address/address.h>
-#include <pgen/io/pgen-io.h>
+#include <vector>
+
+typedef struct arpent arpent_t;
+
+struct arpent{
+	ipaddr ip;
+	macaddr mac;
+};
 
 
-#endif /* PGEN_H */
+
+class arptable{
+	private:
+		std::vector<arpent_t> entry;
+		pgen_t* handle;
+	public:
+		arptable();
+		arptable(pgen_t*);
+		void sethandle(pgen_t*);
+		int  add(ipaddr, macaddr);
+		int  del(ipaddr);
+		int  get(ipaddr);
+		int  learn(const void*, int len);
+		void show();
+		macaddr find(ipaddr);
+};
+
+
+
+#endif /* PGEN_ARPTBL */
+
