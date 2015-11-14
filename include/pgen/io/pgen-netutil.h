@@ -26,14 +26,13 @@
 
 
 
-int pgen_send_to_netif(int, const void*, int);
-int pgen_recv_from_netif(int, void*, int);
-int pgen_recv_from_netif_to(int, void*, int, struct timeval);
+int   pgen_send_to_netif(int, const void*, int);
+int   pgen_recv_from_netif(int, void*, int);
+int   pgen_recv_from_netif_to(int, void*, int, struct timeval);
 
-int open_bpf(const char* dev, int promisc);
-int initRawSocket(const char* dev, int promisc, int overIp);
-
-
+int   open_bpf(const char* dev, int promisc);
+int   initRawSocket(const char* dev, int promisc, int overIp);
+      
 int   pgen_getipbydev(const char* dev, char* ip);
 int   pgen_getmaskbydev(const char* dev, char* ip);
 int   pgen_getmacbydev(const char* dev, char* mac);

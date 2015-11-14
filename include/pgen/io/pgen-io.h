@@ -36,6 +36,7 @@ pgen_t* pgen_open(const char* dev, void*);
 pgen_t* pgen_open_offline(const char*, int mode);
 void pgen_close(pgen_t* p);
 
+void pgen_perror(const char* str);		/* print err-msg with string */
 
 int pgen_sendpacket_L2(const char*, const void*, int);
 int pgen_sendpacket_L3(const char*, const void*, int, struct sockaddr*);

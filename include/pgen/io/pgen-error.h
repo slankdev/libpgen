@@ -65,8 +65,7 @@ extern int pgen_errno2;
 
 
 
-char* pgen_strerror(int errno);
-void pgen_perror(const char* str);
+char* pgen_strerror(int errno);			/* return error message */
 
 
 #endif
