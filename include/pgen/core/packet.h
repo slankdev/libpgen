@@ -36,9 +36,11 @@
 
 
 class pgen_packet{
+	protected:
+		int len;
+		u_char data[PGEN_MAX_PACKET_LEN];
 	public:
-		int 	len;
-		u_char 	data[PGEN_MAX_PACKET_LEN];
+
 		u_char  _additional_data[10000];
 		int     _additional_len;
 		

@@ -18,19 +18,13 @@
  *
  */
 
-
-#ifndef PGEN_H
-#define PGEN_H
-
+#ifndef MODULE_H
+#define MODULE_H
 
 
-
-#include <pgen/module/module.h>
-#include <pgen/core/packet.h>
-#include <pgen/core/unknown.h>
-#include <pgen/core/protocols/protocols.h>
-#include <pgen/core/address/address.h>
-#include <pgen/io/pgen-io.h>
+#include <pgen/module/sniff.h>
+#include <pgen/module/pgen-arptbl.h>
+#include <pgen/module/debug.h>
 
 
-#endif /* PGEN_H */
+#endif /* MODULE_H */

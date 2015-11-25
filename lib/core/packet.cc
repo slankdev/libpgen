@@ -61,7 +61,6 @@ void pgen_packet::add_data(const void* buf, int l) {
 
 void pgen_packet::hex(){
 	compile();
-	
 	pgen_hex(this->data, this->len);
 }
 

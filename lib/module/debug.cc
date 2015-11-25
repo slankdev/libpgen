@@ -29,9 +29,9 @@ int pgen_checkpack(pgen_packet* pack, const void* buf, int len){
 	pack->cast(buf, len);
 	pack->compile();
 
-	if(pack->len != len){
+	if(pack->length() != len){
 		return 1;
-	}else if(memcmp(buf, pack->data, len) != 0){
+	}else if(memcmp(buf, pack->byte(), len) != 0){
 		return 2;
 	}else{
 		return 0;	
@@ -58,11 +58,11 @@ int pgen_check(pgen_packet* pack, struct pgen_checkopt* str){
 		pack->cast(buf, len);
 		pack->compile();
 
-		if(len != pack->len){
+		if(len != pack->length()){
 			str->result[i] = 1;
 			pgen_send_to_pcap(write_handle->offline.fd, buf, len);
 			str->len_failed_count++;
-		}else if((memcmp(pack->data, buf, len)!=0)){
+		}else if((memcmp(pack->byte(), buf, len)!=0)){
 			str->result[i] = 2;
 			pgen_send_to_pcap(write_handle->offline.fd, buf, len);
 			str->bin_failed_count++;

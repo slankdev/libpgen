@@ -22,6 +22,9 @@
 #ifndef SNIFF_H
 #define SNIFF_H
 
+#include <sys/types.h>
+#include <pgen/pgen-types.h>
+
 
 
 void sniff(pgen_t* handle, bool (*callback)(const u_char*, int));
