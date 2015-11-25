@@ -1,10 +1,10 @@
 
 
-# Pgen-Module
+# PGEN-Module
 
-This component has some functions and classes that were coded with Pgen-IO and Pgen-Core.  
-Users can add a new module to Pgen-Module easily.  
-For example, sniff was coded by slank(@slankdev) with pgen_arp class and Pgen-IO's functions.  
+This component has some functions and classes that were coded with PGEN-IO and PGEN-Core.  
+Users can add a new module to PGEN-Module easily.  
+For example, sniff was coded by slank(@slankdev) with pgen_arp class and PGEN-IO's functions.  
 
 ## sniff
 This is function that recv binary with PGEN-discripter, and calls callback function. 
