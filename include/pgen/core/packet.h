@@ -45,7 +45,7 @@ class pgen_packet{
 		pgen_packet();
 		virtual void clear()=0;
 		virtual void compile()=0;
-		virtual void cast(const void*, const int)=0;
+		virtual void cast(const void*, int)=0;
 		virtual void send(const char* ifname)=0;
 		virtual void summary()=0;
 		virtual void info()=0;	
