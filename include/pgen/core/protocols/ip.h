@@ -50,8 +50,6 @@ class pgen_ip : public pgen_eth {
 		void clear();
 		void compile();
 		void cast(const void*, int);
-		void send(const char* ifname){send_L3(ifname);}
-		void send_L3(const char* ifname);
 		void summary();
 		void info();
 		void help();

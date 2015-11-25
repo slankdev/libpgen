@@ -43,8 +43,6 @@ class pgen_eth : public pgen_packet {
 		void clear();
 		void compile();
 		void cast(const void*, int);
-		void send(const char* ifname){send_L2(ifname);}
-		void send_L2(const char* ifname);
 		void summary();
 		void info();
 		void help();

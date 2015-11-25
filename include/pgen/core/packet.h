@@ -37,8 +37,8 @@
 
 class pgen_packet{
 	protected:
-		int len;
-		u_char data[PGEN_MAX_PACKET_LEN];
+		int    __len;
+		u_char __data[PGEN_MAX_PACKET_LEN];
 	public:
 
 		u_char  _additional_data[10000];
@@ -48,7 +48,6 @@ class pgen_packet{
 		virtual void clear()=0;
 		virtual void compile()=0;
 		virtual void cast(const void*, int)=0;
-		virtual void send(const char* ifname)=0;
 		virtual void summary()=0;
 		virtual void info()=0;	
 		virtual void help()=0;
@@ -58,6 +57,7 @@ class pgen_packet{
 
 
 		void hex();
+		void send(const char* ifname);
 		void send_handle(pgen_t*);
 		void add_data(const void*, int);
 		

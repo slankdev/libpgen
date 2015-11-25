@@ -62,7 +62,6 @@ class pgen_icmp : public pgen_ip {
 		void clear();
 		void compile();
 		void cast(const void*, int);
-		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
 		void help();

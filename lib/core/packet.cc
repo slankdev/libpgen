@@ -40,8 +40,8 @@
 
 
 pgen_packet::pgen_packet(){
-	len = 0;
-	memset(data, 0, sizeof(data));
+	__len = 0;
+	memset(__data, 0, sizeof(__data));
 	_additional_len = 0;
 	memset(_additional_data, 0, sizeof _additional_data);
 }
@@ -61,14 +61,14 @@ void pgen_packet::add_data(const void* buf, int l) {
 
 void pgen_packet::hex(){
 	compile();
-	pgen_hex(this->data, this->len);
+	pgen_hex(this->__data, this->__len);
 }
 
 
 
 int pgen_packet::length(){
 	compile();
-	return this->len;
+	return this->__len;
 }
 
 
@@ -77,18 +77,24 @@ int pgen_packet::length(){
 
 u_char* pgen_packet::byte(){
 	compile();
-	return this->data;
+	return this->__data;
 }
 
 
 
+void pgen_packet::send(const char* ifname){
+	compile();		
+	if(pgen_sendpacket_L2(ifname, this->__data, this->__len) < 0){
+		pgen_perror("send_L2");		
+	}
+}
 
 
 
 
 void pgen_packet::send_handle(pgen_t* handle){
 	compile();
-	int r = pgen_sendpacket_handle(handle, this->data, this->len);
+	int r = pgen_sendpacket_handle(handle, this->__data, this->__len);
 	if(r < 0){
 		pgen_perror("send_handle");	
 	}

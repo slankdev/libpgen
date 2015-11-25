@@ -59,8 +59,8 @@ void pgen_arp::compile(){
 	u_char buf[1000];
 	int buflen;
 
-	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-	u_char* p = this->data;
+	memset(this->__data, 0, PGEN_MAX_PACKET_LEN);
+	u_char* p = this->__data;
 
 	buflen = pgen_eth::write_bin(buf, sizeof(buf));
     memcpy(p, buf, buflen);
@@ -72,7 +72,7 @@ void pgen_arp::compile(){
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
 
-	len = p - this->data;
+	__len = p - this->__data;
 }
 
 
@@ -88,7 +88,7 @@ void pgen_arp::cast(const void* data, int l){
 	l -= buflen;
 	
 	add_data(p, l);
-	len = p - (u_char*)data;
+	__len = p - (u_char*)__data;
 }
 
 

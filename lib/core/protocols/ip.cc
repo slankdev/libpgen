@@ -66,8 +66,8 @@ void pgen_ip::compile(){
 	u_char buf[1000];
 	int buflen;
 
-	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-	u_char* p = this->data;
+	memset(this->__data, 0, PGEN_MAX_PACKET_LEN);
+	u_char* p = this->__data;
 	
 	buflen = pgen_eth::write_bin(buf, sizeof(buf));
     memcpy(p, buf, buflen);
@@ -79,7 +79,7 @@ void pgen_ip::compile(){
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
 
-	this->len = p - this->data;
+	this->__len = p - this->__data;
 }
 
 
@@ -167,21 +167,6 @@ unsigned short pgen_ip::calc_checksum(){
 	return ntohs(checksum((unsigned short*)&ip_head, IP.hlen*4));
 }
 
-
-
-void pgen_ip::send_L3(const char* ifname){
-	compile();	
-	
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof addr);
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = this->IP.dst._addr;
-	
-	if(pgen_sendpacket_L3(ifname, this->data+ETH_HDR_LEN, this->len-ETH_HDR_LEN,
-				(struct sockaddr*)&addr) < 0){
-		pgen_perror("send_L3");
-	}
-}
 
 
 

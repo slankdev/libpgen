@@ -58,8 +58,8 @@ void pgen_eth::compile(){
 	u_char buf[1000];
 	int buflen;
 
-	memset(this->data, 0, PGEN_MAX_PACKET_LEN);
-	u_char* p = this->data;
+	memset(this->__data, 0, PGEN_MAX_PACKET_LEN);
+	u_char* p = this->__data;
 
 	buflen = pgen_eth::write_bin(buf, sizeof(buf));
     memcpy(p, buf, buflen);
@@ -68,7 +68,7 @@ void pgen_eth::compile(){
 	memcpy(p, _additional_data, _additional_len);
 	p += _additional_len;
 
-	len = p - this->data;
+	__len = p - this->__data;
 }
 
 
@@ -129,15 +129,6 @@ int pgen_eth::read_bin(const void* buf, int buflen){
 	return sizeof(struct ethernet_header);
 }
 
-
-
-
-void pgen_eth::send_L2(const char* ifname){
-	compile();		
-	if(pgen_sendpacket_L2(ifname, this->data, this->len) < 0){
-		pgen_perror("send_L2");		
-	}
-}
 
 
 

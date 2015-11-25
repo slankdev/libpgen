@@ -53,7 +53,6 @@ class pgen_tcp : public pgen_ip {
 		void clear();
 		void compile();
 		void cast(const void*, const int len);
-		void send(const char* ifname){send_L3(ifname);}
 		void summary();
 		void info();
 		void help();

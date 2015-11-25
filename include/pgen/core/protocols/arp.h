@@ -43,7 +43,6 @@ class pgen_arp : public pgen_eth {
 		void clear();
 		void compile();
 		void cast(const void*, const int);
-		void send(const char* ifname){send_L2(ifname);}
 		void summary();
 		void info();
 		void help();
