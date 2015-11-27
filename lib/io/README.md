@@ -1,7 +1,6 @@
 
 
 # PGEN-IO
-うんこ
 This component has many functions that send/recv packet to network interface and pcap files.  
 
 
