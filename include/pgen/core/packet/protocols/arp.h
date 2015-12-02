@@ -18,52 +18,38 @@
  *
  */
 
-#ifndef TCP_H
-#define TCP_H
+#ifndef ARP_H
+#define ARP_H
 
-#include <pgen/core/protocols/ip.h>
 
-class pgen_tcp : public pgen_ip {
+#include <pgen/core/packet/protocols/eth.h>
+
+
+class pgen_arp : public pgen_eth {
 	protected:
 	public:
-		static const int minLen = pgen_ip::minLen+20;
+		static const int minLen = pgen_eth::minLen+sizeof(struct arp_packet);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
-			bit16 src;
-			bit16 dst;
-			bit32 seq;
-			bit32 ack;
-			u_char doff:4;
-			struct{
-				u_char fin:1;
-				u_char syn:1;
-				u_char rst:1;
-				u_char psh:1;
-				u_char ack:1;
-				u_char urg:1;
-			}flags;
-			bit16 window;
-			bit16 check;
+			int operation;
+			macaddr	hwsrc;
+			macaddr	hwdst;
+			ipaddr	psrc;
+			ipaddr	pdst;
+		}ARP;
 
-			bit8 option[1000];
-		}TCP;
-
-		pgen_tcp();
-		pgen_tcp(const void*, int);
+		pgen_arp();
+		pgen_arp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const void*, const int len);
+		void cast(const void*, const int);
 		void summary();
 		void info();
 		void help();
 
 		int  write_bin(void*, int);
 		int  read_bin(const void*, int);
-
-		unsigned short calc_checksum();
 };
 
 
-
-
-#endif
+#endif 

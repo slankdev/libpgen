@@ -27,25 +27,21 @@ export RM  := rm -rf
 	$(CPP) $(CPPFLAGS) -c $< -o $@  $(INCLUDE)
  
 
-INCLUDE = -I../../include 
+INCLUDE = -I../../../include 
 CPPFLAGS = -Wall -fPIC -std=c++11 
-PGEN_ADDRESS_DIR= address
-PGEN_PACKET_DIR= packet
+PROTOCOLS_DIR = protocols
 
 
-all: makeaddress makepacket 
+all:  packet.o unknown.o makeprotocol 
 
 
-makeaddress:
-	$(MAKE) -C $(PGEN_ADDRESS_DIR)
-
-makepacket:
-	$(MAKE) -C $(PGEN_PACKET_DIR)
+makeprotocol: 
+	$(MAKE) -C $(PROTOCOLS_DIR) 
 
 
 
 clean:
-	$(MAKE) -C $(PGEN_ADDRESS_DIR) clean
-	$(MAKE) -C $(PGEN_PACKET_DIR) clean
+	$(MAKE) -C $(PROTOCOLS_DIR) clean
+	$(RM) *.o 
 
 

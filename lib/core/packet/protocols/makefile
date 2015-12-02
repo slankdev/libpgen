@@ -7,7 +7,7 @@ export RM  := rm -rf
 
 CPPFLAGS = -Wall -fPIC -std=c++11 
 PROTOCOL_OBJ = $(PROTOCOL_SRC:.cc=.o)
-INCLUDE_DIR = ../../../include
+INCLUDE_DIR = ../../../../include
 	
 .SUFFIXES: .out .c .cc .o .h 
 .cc.o: 

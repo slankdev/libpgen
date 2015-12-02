@@ -18,38 +18,29 @@
  *
  */
 
-#ifndef IP_H
-#define IP_H
-
-#include <pgen/core/protocols/eth.h>
+#ifndef UDP_H
+#define UDP_H
 
 
-class pgen_ip : public pgen_eth {
+#include <pgen/core/packet/protocols/ip.h>
+
+class pgen_udp : public pgen_ip {
 	protected:
 	public:
-		static const int minLen = pgen_eth::minLen+20;
+		static const int minLen = pgen_ip::minLen+sizeof(struct udp_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
-			bit8  hlen:4;
-			bit8  tos;
-			bit16 tot_len;
-			bit16 id;
-			bit16 frag_off;
-			bit8  ttl; 
-			bit8  protocol;
+			bit16 src;
+			bit16 dst;
+			bit16 len;
 			bit16 check;
-			ipaddr src;
-			ipaddr dst;
+		}UDP;
 
-			bit8 option[256];
-		}IP;
-
-
-		pgen_ip();
-		pgen_ip(const void*, int);
+		pgen_udp();
+		pgen_udp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const void*, int);
+		void cast(const void*, const int len);
 		void summary();
 		void info();
 		void help();
@@ -63,4 +54,4 @@ class pgen_ip : public pgen_eth {
 
 
 
-#endif 
+#endif

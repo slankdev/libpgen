@@ -22,8 +22,8 @@
 #include <pgen/pgen-types.h>
 
 #include <pgen/module/debug.h>
-#include <pgen/core/packet.h>
-#include <pgen/core/unknown.h>
+#include <pgen/core/packet/packet.h>
+#include <pgen/core/packet/unknown.h>
 #include <pgen/core/address/address.h>
 #include <pgen/io/pgen-io.h>
 

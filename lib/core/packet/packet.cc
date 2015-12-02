@@ -22,7 +22,7 @@
 
 
 #include <pgen/module/debug.h>
-#include <pgen/core/packet.h>
+#include <pgen/core/packet/packet.h>
 #include <pgen/io/pgen-io.h>
 #include <pgen/io/pgen-error.h>
 

@@ -42,8 +42,9 @@ INSTALL_HDR_DIR = /usr/local/include
 PGEN_IO_DIR     = io
 PGEN_MODULE_DIR = module
 PGEN_CORE_DIR = core
-PROTOCOLS_DIR   = $(PGEN_CORE_DIR)/protocols
 ADDRESS_DIR     = $(PGEN_CORE_DIR)/address
+PACKET_DIR      = $(PGEN_CORE_DIR)/packet
+PROTOCOLS_DIR   = $(PACKET_DIR)/protocols
 
 
 
@@ -54,9 +55,9 @@ libpgen.a: make-pgen-io make-pgen-module make-pgen-core
 	@rm -f $@
 	$(AR) rc $@  \
 		$(PGEN_IO_DIR)/*.o \
-		$(PGEN_CORE_DIR)/*.o  \
-		$(PROTOCOLS_DIR)/*.o    \
 		$(ADDRESS_DIR)/*.o \
+		$(PACKET_DIR)/*.o \
+		$(PROTOCOLS_DIR)/*.o    \
 		$(PGEN_MODULE_DIR)/*.o
 	$(RANLIB) $@
 
