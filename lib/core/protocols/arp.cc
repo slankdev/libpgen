@@ -47,10 +47,10 @@ void pgen_arp::clear(){
 	pgen_eth::clear();
 	this->ETH.type = 0x0806;
 
-	this->ARP.srcIp = 0;
-	this->ARP.dstIp = 0;
-	this->ARP.srcEth = 0;
-	this->ARP.dstEth = 0;
+	this->ARP.psrc = 0;
+	this->ARP.pdst = 0;
+	this->ARP.hwsrc = 0;
+	this->ARP.hwdst = 0;
 	this->ARP.operation = 1; // arp request
 }   
 
@@ -108,12 +108,12 @@ int  pgen_arp::write_bin(void* buf, int buflen){
 	arp_pack.ea_hdr.ar_pln = 4;
 	arp_pack.ea_hdr.ar_op  = htons(this->ARP.operation);
 	for(int i=0; i<6; i++){
-		arp_pack.arp_sha[i] = this->ARP.srcEth._addr[i];
-		arp_pack.arp_tha[i] = this->ARP.dstEth._addr[i];
+		arp_pack.arp_sha[i] = this->ARP.hwsrc._addr[i];
+		arp_pack.arp_tha[i] = this->ARP.hwdst._addr[i];
 	}
 	for(int i=0; i<4; i++){
-		arp_pack.arp_spa[i] = this->ARP.srcIp.getOctet(i);
-		arp_pack.arp_tpa[i] = this->ARP.dstIp.getOctet(i);
+		arp_pack.arp_spa[i] = this->ARP.psrc.getOctet(i);
+		arp_pack.arp_tpa[i] = this->ARP.pdst.getOctet(i);
 	}
 		
 	memcpy(buf, &arp_pack, sizeof(arp_pack));
@@ -136,15 +136,15 @@ int  pgen_arp::read_bin(const void* buf, int buflen){
 
 	this->ARP.operation = ntohs(arp_pack->ea_hdr.ar_op);
 	for(int i=0; i<6; i++){
-		this->ARP.srcEth._addr[i] = arp_pack->arp_sha[i];
-		this->ARP.dstEth._addr[i] = arp_pack->arp_tha[i];
+		this->ARP.hwsrc._addr[i] = arp_pack->arp_sha[i];
+		this->ARP.hwdst._addr[i] = arp_pack->arp_tha[i];
 	}
 	for(int i=0; i<4; i++){
 		slc.c[i] = arp_pack->arp_spa[i];
 		dlc.c[i] = arp_pack->arp_tpa[i];
 	}
-	this->ARP.srcIp = slc.l;
-	this->ARP.dstIp = dlc.l;
+	this->ARP.psrc = slc.l;
+	this->ARP.pdst = dlc.l;
 
 	return sizeof(struct arp_packet);	
 }
@@ -153,9 +153,9 @@ int  pgen_arp::read_bin(const void* buf, int buflen){
 void pgen_arp::summary(){
 	printf("ARP{ ");
 	if(ARP.operation == 1){
-		printf("who has %s tell %s }\n", ARP.dstIp.c_str(), ARP.srcEth.c_str());
+		printf("who has %s tell %s }\n", ARP.pdst.c_str(), ARP.hwsrc.c_str());
 	}else if(ARP.operation == 2){
-		printf("%s is at %s }\n", ARP.srcIp.c_str(), ARP.srcEth.c_str());	
+		printf("%s is at %s }\n", ARP.psrc.c_str(), ARP.hwsrc.c_str());	
 	}else{
 		printf("other arp operation!! }\n");	
 	}
@@ -178,12 +178,12 @@ void pgen_arp::info(){
 	printf("    - Opcode          :  %s (%d) \n", 
 			_arpopcode[ARP.operation], ARP.operation);
 	printf("    - Sender Mac      :  %s (%s) \n", 
-			ARP.srcEth.c_str(), ARP.srcEth.bender());
+			ARP.hwsrc.c_str(), ARP.hwsrc.bender());
 	printf("    - Sender IP       :  %s  \n", 
-			ARP.srcIp.c_str() );
+			ARP.psrc.c_str() );
 	printf("    - Target Mac      :  %s (%s) \n", 
-			ARP.dstEth.c_str(), ARP.dstEth.bender());
-	printf("    - Target IP       :  %s  \n", ARP.dstIp.c_str() );
+			ARP.hwdst.c_str(), ARP.hwdst.bender());
+	printf("    - Target IP       :  %s  \n", ARP.pdst.c_str() );
 }
 
 

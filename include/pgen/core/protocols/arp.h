@@ -32,10 +32,10 @@ class pgen_arp : public pgen_eth {
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
 			int operation;
-			macaddr	srcEth;
-			macaddr	dstEth;
-			ipaddr	srcIp;
-			ipaddr	dstIp;
+			macaddr	hwsrc;
+			macaddr	hwdst;
+			ipaddr	psrc;
+			ipaddr	pdst;
 		}ARP;
 
 		pgen_arp();
