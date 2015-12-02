@@ -25,7 +25,7 @@
 
 
 #include <pgen.h>
-#include <pgen/core/packet.h>
+#include <pgen/core/packet/packet.h>
 
 void debugprint(int flag, const char* str);
 int pgen_check(pgen_packet*, struct pgen_checkopt*);

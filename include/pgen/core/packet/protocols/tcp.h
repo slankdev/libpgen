@@ -18,38 +18,52 @@
  *
  */
 
+#ifndef TCP_H
+#define TCP_H
 
-#ifndef ETH_H
-#define ETH_H
+#include <pgen/core/packet/protocols/ip.h>
 
-
-#include <pgen/core/packet.h>
-#include <pgen/core/address/address.h>
-
-
-class pgen_eth : public pgen_packet {
+class pgen_tcp : public pgen_ip {
 	protected:
 	public:
-		static const int minLen = sizeof(struct ethernet_header);
+		static const int minLen = pgen_ip::minLen+20;
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
 		struct{
-			macaddr dst;
-			macaddr src;
-			bit16 type;
-		}ETH;
-		
-		pgen_eth();
-		pgen_eth(const void*, int);
+			bit16 src;
+			bit16 dst;
+			bit32 seq;
+			bit32 ack;
+			u_char doff:4;
+			struct{
+				u_char fin:1;
+				u_char syn:1;
+				u_char rst:1;
+				u_char psh:1;
+				u_char ack:1;
+				u_char urg:1;
+			}flags;
+			bit16 window;
+			bit16 check;
+
+			bit8 option[1000];
+		}TCP;
+
+		pgen_tcp();
+		pgen_tcp(const void*, int);
 		void clear();
 		void compile();
-		void cast(const void*, int);
+		void cast(const void*, const int len);
 		void summary();
 		void info();
 		void help();
 
-		int write_bin(void*, int);
-		int read_bin(const void*, int);
+		int  write_bin(void*, int);
+		int  read_bin(const void*, int);
+
+		unsigned short calc_checksum();
 };
 
 
-#endif /* ETH_H */
+
+
+#endif

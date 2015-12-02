@@ -25,7 +25,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <pgen/core/protocols/ip.h>
+#include <pgen/core/packet/protocols/ip.h>
 
 
 

@@ -19,46 +19,27 @@
  */
 
 
-#ifndef ICMP_H
-#define ICMP_H
+#ifndef ETH_H
+#define ETH_H
 
-#include <pgen/core/protocols/ip.h>
 
-class pgen_icmp : public pgen_ip {
+#include <pgen/core/packet/packet.h>
+#include <pgen/core/address/address.h>
+
+
+class pgen_eth : public pgen_packet {
 	protected:
-		struct icmp_header icmp;
-		bit8  icmp_data[256];
-		bit32 icmp_data_len;
-		bit8  icmp_ext_data[256];
-		bit32 icmp_ext_data_len;
 	public:
-		static const int minLen = pgen_ip::minLen+ICMP_HDR_LEN;
+		static const int minLen = sizeof(struct ethernet_header);
 		static const int maxLen = PGEN_MAX_PACKET_LEN;
-		struct{	
-			bit8  type;
-			bit8  code;
-			bit16 check;
-			
-			struct{
-				int id;
-				int seq;
-			}echo;
-			struct{
-				ipaddr gw_addr;	
-			}redirect;
-			struct{
-				bit8 len;
-				bit16 next_mtu;
-			}destination_unreach;
-			struct{
-				bit8 len;
-			}time_exceeded;
-
-
-		}ICMP;
+		struct{
+			macaddr dst;
+			macaddr src;
+			bit16 type;
+		}ETH;
 		
-		pgen_icmp();
-		pgen_icmp(const void*, int);
+		pgen_eth();
+		pgen_eth(const void*, int);
 		void clear();
 		void compile();
 		void cast(const void*, int);
@@ -66,12 +47,9 @@ class pgen_icmp : public pgen_ip {
 		void info();
 		void help();
 
-		int  write_bin(void*, int);
-		int  read_bin(const void*, int);
-
-		void icmp_addData(const void*, int);
-		unsigned short calc_checksum();
+		int write_bin(void*, int);
+		int read_bin(const void*, int);
 };
 
 
-#endif
+#endif /* ETH_H */

@@ -26,9 +26,9 @@
 
 
 #include <pgen/module/module.h>
-#include <pgen/core/packet.h>
-#include <pgen/core/unknown.h>
-#include <pgen/core/protocols/protocols.h>
+#include <pgen/core/packet/packet.h>
+#include <pgen/core/packet/unknown.h>
+#include <pgen/core/packet/protocols/protocols.h>
 #include <pgen/core/address/address.h>
 #include <pgen/io/pgen-io.h>
 
