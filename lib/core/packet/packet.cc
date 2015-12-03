@@ -82,7 +82,7 @@ u_char* pgen_packet::byte(){
 
 
 
-void pgen_packet::send(const char* ifname){
+void pgen_packet::send_dev(const char* ifname){
 	compile();		
 	if(pgen_sendpacket_L2(ifname, this->__data, this->__len) < 0){
 		pgen_perror("send_L2");		
@@ -92,7 +92,7 @@ void pgen_packet::send(const char* ifname){
 
 
 
-void pgen_packet::send_handle(pgen_t* handle){
+void pgen_packet::send(pgen_t* handle){
 	compile();
 	int r = pgen_sendpacket_handle(handle, this->__data, this->__len);
 	if(r < 0){

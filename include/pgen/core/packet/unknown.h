@@ -1,4 +1,25 @@
 
+/*
+ * copyright (c) <2015>  <slank hiroki shirokura>
+ * 
+ * this program is free software: you can redistribute it and/or modify
+ * it under the terms of the gnu general public license as published by
+ * the free software foundation; either version 3 of the license, or
+ * (at your option) any later version.
+ * 
+ * this program is distributed in the hope that it will be useful,
+ * but without any warranty; without even the implied warranty of
+ * merchantability or fitness for a particular purpose.  see the
+ * gnu general public license for more details.
+ * 
+ * you should have received a copy of the gnu general public license
+ * along with this program.  if not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
+
+
+
 #ifndef UNKNOWN_H
 #define UNKNOWN_H
 
@@ -63,8 +84,8 @@ class _unknown_port{
 
 class pgen_unknown{
 	private:
-		bit8 data[PGEN_MAX_PACKET_LEN];
-		int  len;
+		bit8 __data[PGEN_MAX_PACKET_LEN];
+		int  __len;
 		bool __isETH;
 		bool __isARP;
 		bool __isIP;
@@ -78,12 +99,11 @@ class pgen_unknown{
 		_unknown_port TCP;
 		_unknown_port UDP;
 
-
 		pgen_unknown();
 		pgen_unknown(const void*, int);
 		void clear();
-		void send_handle(pgen_t*);
 		int  cast(const void*, int);
+		void send(pgen_t*);
 		void summary();
 		void hex();
 
@@ -97,4 +117,5 @@ class pgen_unknown{
 
 
 
-#endif
+
+#endif /* UNKNOWN_H */
