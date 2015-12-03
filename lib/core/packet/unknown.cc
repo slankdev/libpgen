@@ -52,20 +52,20 @@ pgen_unknown::pgen_unknown(const void* packet, int len){
 
 void pgen_unknown::clear(){
 	len = 0;
-	isETH = false;
-	isARP = false;
-	isIP  = false;
-	isICMP= false;
-	isTCP = false;
-	isUDP = false;
-	ETH.src = 0;
-	ETH.dst = 0;
-	IP.src = 0;
-	IP.dst = 0;
-	TCP.src = 0;
-	TCP.dst = 0;
-	UDP.src = 0;
-	UDP.dst = 0;
+	__isETH = false;
+	__isARP = false;
+	__isIP  = false;
+	__isICMP= false;
+	__isTCP = false;
+	__isUDP = false;
+	ETH._addr.src = 0;
+	ETH._addr.dst = 0;
+	IP._addr.src = 0;
+	IP._addr.dst = 0;
+	TCP._port.src = 0;
+	TCP._port.dst = 0;
+	UDP._port.src = 0;
+	UDP._port.dst = 0;
 	memset(data, 0 , PGEN_MAX_PACKET_LEN);
 }
 
@@ -93,36 +93,36 @@ int pgen_unknown::cast(const void* packet, int len){
 	struct udp_header*  udp;
 		
 	const bit8* p = (bit8*)packet;
-	isETH = true;
+	__isETH = true;
 	eth = (struct ethernet_header*)p;
-	p += sizeof(struct ethernet_header);
-	this->ETH.src.setmacbyarry(eth->ether_shost);
-	this->ETH.dst.setmacbyarry(eth->ether_dhost);
+	p += 14;
+	this->ETH._addr.src.setmacbyarry(eth->ether_shost);
+	this->ETH._addr.dst.setmacbyarry(eth->ether_dhost);
 
 	if(ntohs(eth->ether_type) == 0x0800){
-		this->isIP = true;
+		this->__isIP = true;
 		ip = (struct ip_header*)p;
 		p += ip->ihl*4;
-		this->IP.src._addr = ip->saddr;
-		this->IP.dst._addr = ip->daddr;
+		this->IP._addr.src._addr = ip->saddr;
+		this->IP._addr.dst._addr = ip->daddr;
 
 		if(ip->protocol == 1){
-			this->isICMP = true;
+			this->__isICMP = true;
 			p += sizeof(struct icmp_header);
 		}
 		else if(ip->protocol == 6){
-			this->isTCP = true;
+			this->__isTCP = true;
 			tcp = (struct tcp_header*)p;
 			p += sizeof(struct tcp_header);
-			this->TCP.src = ntohs(tcp->source);
-			this->TCP.dst = ntohs(tcp->dest);
+			this->TCP._port.src = ntohs(tcp->source);
+			this->TCP._port.dst = ntohs(tcp->dest);
 		}
 		else if(ip->protocol == 17){
-			this->isUDP = true;
+			this->__isUDP = true;
 			udp = (struct udp_header*)p;
 			p += sizeof(struct udp_header);
-			this->UDP.src = ntohs(udp->source);
-			this->UDP.dst = ntohs(udp->dest);
+			this->UDP._port.src = ntohs(udp->source);
+			this->UDP._port.dst = ntohs(udp->dest);
 		}
 		else{
 			// other L4 protocol
@@ -131,7 +131,7 @@ int pgen_unknown::cast(const void* packet, int len){
 	}
 	
 	else if(ntohs(eth->ether_type) == 0x0806){
-		this->isARP = true;
+		this->__isARP = true;
 	}
 	else{
 		// other L3 protocol
@@ -147,59 +147,36 @@ int pgen_unknown::cast(const void* packet, int len){
 
 void pgen_unknown::summary(){
 	printf("unknown(packet=[");
-	if(isTCP) printf("TCP|");
-	if(isUDP) printf("UDP|");
-	if(isICMP) printf("ICMP|");
-	if(isIP) printf("IP|");
-	if(isARP) printf("ARP|");
-	if(isETH) printf("ETH]  ");
+	if(isTCP()) printf("TCP|");
+	if(isUDP()) printf("UDP|");
+	if(isICMP()) printf("ICMP|");
+	if(isIP()) printf("IP|");
+	if(isARP()) printf("ARP|");
+	if(isETH()) printf("ETH]  ");
 
 
-	if(isTCP)			
-		printf("%s:%d > %s:%d", IP.src.c_str(), TCP.src, IP.dst.c_str(), TCP.dst);
-	else if(isUDP)	
-		printf("%s:%d > %s:%d", IP.src.c_str(), UDP.src, IP.dst.c_str(), UDP.dst);
-	else if(isICMP)	
-		printf("%s > %s ", IP.src.c_str(), IP.dst.c_str());
-	else if(isIP)		
-		printf("%s > %s", IP.src.c_str(), IP.dst.c_str()); 
-	else if(isARP)	
-		printf("%s > %s ", ETH.src.c_str(), ETH.dst.c_str()); 
-	else if(isETH)	
-		printf("%s > %s", ETH.src.c_str(), ETH.dst.c_str());
-	else			
+	if(isTCP()){			
+		printf("%s:%d > %s:%d",IP._addr.src.c_str(),
+				TCP._port.src,IP._addr.dst.c_str(),TCP._port.dst);
+	}else if(isUDP()){
+		printf("%s:%d > %s:%d",IP._addr.src.c_str(),
+				UDP._port.src,IP._addr.dst.c_str(),UDP._port.dst);
+	}else if(isICMP()){	
+		printf("%s > %s ", IP._addr.src.c_str(), IP._addr.dst.c_str());
+	}else if(isIP()){	
+		printf("%s > %s", IP._addr.src.c_str(), IP._addr.dst.c_str()); 
+	}else if(isARP()){	
+		printf("%s > %s ", ETH._addr.src.c_str(), ETH._addr.dst.c_str()); 
+	}else if(isETH()){	
+		printf("%s > %s", ETH._addr.src.c_str(), ETH._addr.dst.c_str());
+	}else{
 		printf("no support");
+	}
 	printf(" len=%d\n", len);
 }
 
 
 
-
-
-bool pgen_unknown::ipaddris(ipaddr addr){
-	if(!isIP) return false;
-	return (addr==IP.src || addr==IP.dst);
-}
-
-
-
-
-bool pgen_unknown::macaddris(macaddr addr){
-	if(!isETH) return false;
-	return (addr==ETH.src || addr==ETH.dst);
-}
-
-
-
-
-bool pgen_unknown::portis(unsigned short port){
-	if(!(isUDP || isTCP)) return false;
-	if(isTCP){
-		return (port==TCP.src || port==TCP.dst);	
-	}else{
-		return (port==UDP.src || port==UDP.dst);	
-	}
-}
 
 
 
@@ -241,3 +218,13 @@ void pgen_unknown::hex(){
 	}
 	printf("\n");
 }
+
+
+bool pgen_unknown::isETH(){return __isETH;}
+bool pgen_unknown::isARP(){return __isARP;}
+bool pgen_unknown::isIP(){return __isIP;}
+bool pgen_unknown::isICMP(){return __isICMP;}
+bool pgen_unknown::isTCP(){return __isTCP;}
+bool pgen_unknown::isUDP(){return __isUDP;}
+
+
