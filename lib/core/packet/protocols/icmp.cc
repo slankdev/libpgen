@@ -46,6 +46,7 @@ pgen_icmp::pgen_icmp(const void* packet, int len){
 void pgen_icmp::clear(){
 	pgen_ip::clear();
 	this->IP.protocol = 1;
+	this->IP.tot_len = 20 + 8;
 
 	this->ICMP.type = 8;
 	this->ICMP.code = 0;
