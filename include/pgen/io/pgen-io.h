@@ -32,6 +32,14 @@
 
 
 
+/* for pgen_open_offline()'s  *
+ * 2nd argument, opening mode */
+#define PCAP_READ 0
+#define PCAP_WRITE 1
+#define PCAPNG_READ 2
+#define PCAPNG_WRITE 3
+
+
 pgen_t* pgen_open(const char* dev, void*);
 pgen_t* pgen_open_offline(const char*, int mode);
 void pgen_close(pgen_t* p);
