@@ -212,6 +212,7 @@ void pgen_ip::help(){
 	printf("frag_off : fragment offset   : 16 bit field \n"); // fix soon
 	printf("ttl      : time to leave     :  8 bit field \n");
 	printf("protocol : L4 protocol       :  8 bit field \n");
+	printf("check    : header checksum   : 16 bit field \n");
 	printf("src      : source ip address : 32 bit field \n");
 	printf("dst      : dest ip address   : 32 bit field \n");
 	printf("----------------------------------------------------------------\n");
