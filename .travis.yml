@@ -1,4 +1,7 @@
-language: cpp
+language: 
+    - cpp
+    - objective-c
+
 compiler:
     - clang++
 script:
