@@ -129,7 +129,7 @@ int  pgen_udp::read_bin(const void* buf, int buflen){
 	this->UDP.len   = ntohs(udp_head->len);
 	this->UDP.check = ntohs(udp_head->check);
 
-	return sizeof(udp_head);
+	return sizeof(struct udp_header);
 }
 
 
