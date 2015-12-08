@@ -5,9 +5,10 @@ include makefile.protocols
 # CPPFLAGS = -Wall -fPIC -std=c++11 
 # export CPP := clang++
 # export RM  := rm -rf
-# .SUFFIXES: .out .c .cc .o .h 
-# .cc.o: 
-# 	$(CPP) $(CPPFLAGS) -c $< -o $@ -I$(INCLUDE_DIR)
+
+.SUFFIXES: .out .c .cc .o .h 
+.cc.o: 
+	$(CPP) $(CPPFLAGS) -c $< -o $@ -I$(INCLUDE_DIR)
 
 
 
