@@ -23,6 +23,12 @@
 #define PGEN_H
 
 
+/*
+ * These macro for Checking OS Type, 
+ * Linux, BSD of Cygwin 
+ */
+
+
 
 
 #include <pgen/module/module.h>

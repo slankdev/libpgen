@@ -20,24 +20,26 @@
 
 
 
+include ../makefile.config
 
-export CPP := clang++
-export AR  := ar
-export CP  := cp -rf
-export RM  := rm -rf
-export MKDIR  := mkdir -p
-export RANLIB := ranlib
-
-.SUFFIXES: .out .c .cc .o .h 
-.cc.o: 
-	$(CPP) $(CPPFLAGS) -c $< -o $@  $(INCLUDE)
+# export CPP := clang++
+# export AR  := ar
+# export CP  := cp -rf
+# export RM  := rm -rf
+# export MKDIR  := mkdir -p
+# export RANLIB := ranlib
+# CPPFLAGS = -Wall -fPIC -std=c++11 
+# .SUFFIXES: .out .c .cc .o .h 
+# .cc.o: 
+# 	$(CPP) $(CPPFLAGS) -c $< -o $@  $(INCLUDE)
  
+
 
 INCLUDE = -I../include 
 PROGNAME = libpgen.a
-CPPFLAGS = -Wall -fPIC -std=c++11 
 INSTALL_LIB_DIR = /usr/local/lib
 INSTALL_HDR_DIR = /usr/local/include
+
 
 PGEN_IO_DIR     = io
 PGEN_MODULE_DIR = module
@@ -48,7 +50,9 @@ PROTOCOLS_DIR   = $(PACKET_DIR)/protocols
 
 
 
+
 all: libpgen.a
+
 
 
 libpgen.a: make-pgen-io make-pgen-module make-pgen-core
@@ -80,19 +84,12 @@ clean:
 
 
 
-
-
-
 install:
 	$(CP) libpgen.a          $(INSTALL_LIB_DIR)
 	$(CP) ../include/pgen.h  $(INSTALL_HDR_DIR)
 	$(CP) ../include/pgen   $(INSTALL_HDR_DIR)
 	$(MKDIR) /usr/local/etc/libpgen
 	$(CP) ../etc/mac_code.list /usr/local/etc/libpgen/mac_code.list
-
-	
-
-
 
 uninstall:
 	$(RM) $(INSTALL_LIB_DIR)/libpgen.a

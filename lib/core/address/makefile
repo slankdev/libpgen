@@ -19,16 +19,18 @@
 
 
 
-export CPP := clang++
-export RM  := rm -rf
+# export CPP := clang++
+# export RM  := rm -rf
+# CPPFLAGS = -Wall -fPIC -std=c++11 
+# 
+# .SUFFIXES: .out .c .cc .o .h 
+# .cc.o: 
+# 	$(CPP) $(CPPFLAGS) -c $< -o $@  $(INCLUDE)
+#  
 
-.SUFFIXES: .out .c .cc .o .h 
-.cc.o: 
-	$(CPP) $(CPPFLAGS) -c $< -o $@  $(INCLUDE)
- 
 
+include ../../../makefile.config
 INCLUDE = -I../../../include 
-CPPFLAGS = -Wall -fPIC -std=c++11 
 
 
 SRC = \
@@ -39,7 +41,6 @@ OBJ = $(SRC:.cc=.o)
 
 
 all: $(OBJ)
-
 
 
 clean:
