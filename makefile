@@ -19,7 +19,6 @@
 # this makefile is in top
 
 
-include makefile.config
 
 
 all:
