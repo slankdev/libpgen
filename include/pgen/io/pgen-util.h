@@ -31,6 +31,9 @@
 int pgen_recv_from_pcap(FILE*, void*, int);
 int pgen_send_to_pcap(FILE*, const void*, int);
 
+int pgen_recv_from_pcapng(FILE*, void*, int);
+int pgen_send_to_pcapng(FILE*, const void*, int);
+
 void pgen_hex(const void* data, int len);
 
 unsigned short checksum(unsigned short *data, int len);

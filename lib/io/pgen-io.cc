@@ -71,7 +71,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				handle = NULL;
 				return NULL;
 			}
-			if(fread(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
+			if(fread(&handle->offline.filehdr,
+						sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
 				pgen_errno = errno;
 				pgen_errno2 = PG_ERRNO_FREAD;
 				pgen_close(handle);
@@ -96,7 +97,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			handle->offline.filehdr.sigfigs  = 0x0000;
 			handle->offline.filehdr.snaplen  = 0x0000ffff;
 			handle->offline.filehdr.linktype = 0x00000001;
-			if(fwrite(&handle->offline.filehdr,sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
+			if(fwrite(&handle->offline.filehdr,
+						sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
 				pgen_errno = errno;
 				pgen_errno2 = PG_ERRNO_FWRITE;
 				pgen_close(handle);
@@ -116,6 +118,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 
 
 
+
 pgen_t* pgen_open(const char* dev, void* nouseyet){
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
 	strncpy(handle->online.ifname, dev, sizeof(handle->online.ifname)-1);
@@ -130,6 +133,7 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 	
 	return handle;
 }
+
 
 
 

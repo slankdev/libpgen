@@ -93,6 +93,12 @@ int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
 
 
 
+int pgen_recv_from_pcapng(FILE* fp, void* buf, int buflen){
+	return 1;	
+}
+int pgen_send_to_pcapng(FILE* fp, const void* buf, int buflen){
+	return 1;	
+}
 
 void pgen_hex(const void* d, int len){
 	printf("hexdump len: %d \n", len);
