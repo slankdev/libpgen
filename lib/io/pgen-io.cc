@@ -253,7 +253,7 @@ bool pgen_descriptor_is_writeable(pgen_t* handle){
 
 
 void pgen_perror(const char* msg){
-	int errstrlen = 255;
+	const int errstrlen = 255;
 	char str[errstrlen];
 
 
