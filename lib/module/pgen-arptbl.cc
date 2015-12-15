@@ -137,11 +137,11 @@ int arptable::get(ipaddr ip){
 		send_pack.arp.arp_tpa[i] = ip.getOctet(i);
 	}
 	
-	pgen_send_to_netif(handle->fd, &send_pack, sizeof(send_pack));
+	pgen_send_to_netif(handle->online.fd, &send_pack, sizeof(send_pack));
 	
 	int timeout_flag = 1;
 	for(int i=0; i<3; i++){
-		len = pgen_recv_from_netif_to(handle->fd, data, sizeof(data), tv);
+		len = pgen_recv_from_netif_to(handle->online.fd, data, sizeof(data), tv);
 		if(len == 0){
 			timeout_flag = 1;
 			continue;

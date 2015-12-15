@@ -24,6 +24,7 @@
 #include <pgen/io/pgen-netutil.h>
 #include <pgen/io/pgen-util.h>
 #include <pgen/io/pgen-error.h>
+#include <pgen/pgen-types.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,12 +58,10 @@
 pgen_t* pgen_open_offline(const char* filename, int mode){
 
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
-	handle->is_offline = 1;
-	
+	handle->mode = mode;
+
 	switch(mode){
-		case 0: // pcap read mode
-			handle->is_write = 0;
-			handle->is_read  = 1;
+		case PCAP_READ: // pcap read mode
 			handle->offline.fd = fopen(filename, "rb");
 			if(handle->offline.fd == NULL){
 				pgen_errno = errno;
@@ -80,9 +79,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			}
 			break;
 		
-		case 1: // pcap write mode 
-			handle->is_write = 1;
-			handle->is_read  = 0;
+		case PCAP_WRITE: // pcap write mode 
 			handle->offline.fd = fopen(filename, "wb");
 			if(handle->offline.fd == NULL){
 				pgen_errno = errno;
@@ -106,6 +103,13 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			}
 			break;
 		
+		case PCAPNG_READ:
+			printf("pgen_open_offline: this mode is not implement yet coming soon \n");
+			break;
+		case PCAPNG_WRITE:
+			printf("pgen_open_offline: this mode is not implement yet coming soon \n");
+			break;
+
 		default: // mode not found
 			fprintf(stderr, "pgen_open_offline: mode not found\n");
 			pgen_close(handle);
@@ -123,11 +127,10 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
 	strncpy(handle->online.ifname, dev, sizeof(handle->online.ifname)-1);
 	
-	handle->is_write = 1;
-	handle->is_read  = 1;
+	handle->mode = NETIF;
 
-	handle->fd = initRawSocket(dev, 1, 0);
-	if(handle->fd < 0){
+	handle->online.fd = initRawSocket(dev, 1, 0);
+	if(handle->online.fd < 0){
 		handle =  NULL;
 	}
 	
@@ -138,10 +141,10 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 
 
 void pgen_close(pgen_t* p){
-	if(p->is_offline == 1){
+	if(pgen_descriptor_is_offline(p)){
 		fclose(p->offline.fd);
-	}else{
-		close(p->fd);
+	}else {
+		close(p->online.fd);
 	}
 
 	free(p);
@@ -156,16 +159,16 @@ void pgen_close(pgen_t* p){
 
 // send packet in handle
 int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
-	if(p->is_write == 0){
+	if(pgen_descriptor_is_writeable(p) == false){
 		pgen_errno2 = PG_ERRNO_RONLY;
 		return -1;
 	}
 	int sendlen;
 	
-	if(p->is_offline == 1){
+	if(pgen_descriptor_is_offline(p)){
 		sendlen = pgen_send_to_pcap(p->offline.fd, packet, len);
 	}else{
-		sendlen = pgen_send_to_netif(p->fd, packet, len);
+		sendlen = pgen_send_to_netif(p->online.fd, packet, len);
 	}
 	
 	return sendlen;
@@ -212,6 +215,39 @@ int pgen_sendpacket_L2(const char* dev, const void* packet, int len){
 	return sendlen;
 }
 
+
+
+
+
+bool pgen_descriptor_is_offline(pgen_t* handle){
+	return !pgen_descriptor_is_online(handle);
+}
+
+
+bool pgen_descriptor_is_online(pgen_t* handle){
+	int mode = handle->mode;
+	if(mode == NETIF)
+		return true;
+	else
+		return false;
+}
+
+
+bool pgen_descriptor_is_readable(pgen_t* handle){
+	int mode = handle->mode;
+	if(mode==NETIF || mode==PCAP_READ || mode==PCAPNG_READ)
+		return true;
+	else
+		return false;
+}
+bool pgen_descriptor_is_writeable(pgen_t* handle){
+	int mode = handle->mode;
+	if(mode==NETIF || mode==PCAP_WRITE || mode==PCAPNG_WRITE)
+		return true;
+	else
+		return false;
+		
+}
 
 
 

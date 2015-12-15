@@ -32,13 +32,11 @@
 
 
 
-/* for pgen_open_offline()'s  *
- * 2nd argument, opening mode */
-#define NETIF 			0
-#define PCAP_READ		1
-#define PCAP_WRITE		2
-#define PCAPNG_READ		3
-#define PCAPNG_WRITE	4
+bool pgen_descriptor_is_offline(pgen_t* handle);
+bool pgen_descriptor_is_online(pgen_t* handle);
+
+bool pgen_descriptor_is_readable(pgen_t* handle);
+bool pgen_descriptor_is_writeable(pgen_t* handle);
 
 
 pgen_t* pgen_open(const char* dev, void*);
