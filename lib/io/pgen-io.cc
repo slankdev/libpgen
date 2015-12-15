@@ -326,6 +326,9 @@ void pgen_perror(const char* msg){
 		case PG_ERRNO_NOSUPPORT:
 			strncpy(str, "not support", errstrlen);
 			break;
+		case PG_ERRNO_UNDEFINED:
+			strncpy(str, "this error wasn't implemented yet", errstrlen);
+			break;
 
 #ifndef __linux // for bsd
 		case PG_ERRNOBSD_OPENBPF:
@@ -355,7 +358,7 @@ void pgen_perror(const char* msg){
 #endif
 
 		default:
-			strncpy(str, "unknown error!", errstrlen);
+			strncpy(str, "unknown error! We didn't use this error number", errstrlen);
 			break;
 			
 	}
@@ -363,4 +366,6 @@ void pgen_perror(const char* msg){
 
 	fprintf(stderr, "%s(%s): %s \n", msg, str, pgen_strerror(pgen_errno));	
 }
+
+
 
