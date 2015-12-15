@@ -178,29 +178,6 @@ int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 
 
 
-int pgen_sendpacket_L3(const char* dev,const void* packet,int len,struct sockaddr* sa){
-#ifndef __linux
-	pgen_errno2 = PG_ERRNO_NOSUPPORT;
-	return -1;
-#endif
-
-	int sock;
-	int sendlen;
-
-	if((sock=initRawSocket(dev, 0, 1)) < 0){
-		return -1;
-	}
-
-	sendlen = sendto(sock, packet, len, 0, sa, sizeof(struct sockaddr));
-	if(sendlen < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_SENDTO;
-	}
-
-	close(sock);
-	return sendlen;
-}
-
 
 
 
@@ -216,6 +193,41 @@ int pgen_sendpacket_L2(const char* dev, const void* packet, int len){
 	close(sock);
 	return sendlen;
 }
+
+
+
+int pgen_recvpacket_L2(const char* dev, void* packet, int len){
+	int sock;
+	int sendlen;
+
+	if((sock=initRawSocket(dev, 0, 0)) < 0){
+		return -1;
+	}
+	sendlen = pgen_recv_from_netif(sock, packet, len);
+
+	close(sock);
+	return sendlen;
+}
+
+
+
+// recv packet in handle
+int pgen_recvpacket_handle(pgen_t* p, void* packet, int len){
+	if(pgen_descriptor_is_readable(p) == false){
+		pgen_errno2 = PG_ERRNO_WONLY;
+		return -1;
+	}
+	int sendlen;
+	
+	if(pgen_descriptor_is_offline(p)){
+		sendlen = pgen_recv_from_pcap(p->offline.fd, packet, len);
+	}else{
+		sendlen = pgen_recv_from_netif(p->online.fd, packet, len);
+	}
+	
+	return sendlen;
+}
+
 
 
 

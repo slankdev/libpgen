@@ -46,8 +46,10 @@ void pgen_close(pgen_t* p);
 void pgen_perror(const char* str);		/* print err-msg with string */
 
 int pgen_sendpacket_L2(const char*, const void*, int);
-int pgen_sendpacket_L3(const char*, const void*, int, struct sockaddr*);
 int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len);
+
+int pgen_recvpacket_L2(const char*, void*, int);
+int pgen_recvpacket_handle(pgen_t* p, void* packet, int len);
 
 
 
