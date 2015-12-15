@@ -57,6 +57,7 @@
 // mode 0: read , 1: write
 pgen_t* pgen_open_offline(const char* filename, int mode){
 
+	struct pcap_fhdr filehdr;
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
 	handle->mode = mode;
 
@@ -70,7 +71,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				handle = NULL;
 				return NULL;
 			}
-			if(fread(&handle->offline.filehdr,
+
+			if(fread(&filehdr,
 						sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
 				pgen_errno = errno;
 				pgen_errno2 = PG_ERRNO_FREAD;
@@ -87,14 +89,14 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				pgen_close(handle);
 				handle = NULL;
 			}
-			handle->offline.filehdr.magic = 0xa1b2c3d4;
-			handle->offline.filehdr.version_major = 0x0002;
-			handle->offline.filehdr.version_minor = 0x0004;
-			handle->offline.filehdr.timezone = 0x0000;
-			handle->offline.filehdr.sigfigs  = 0x0000;
-			handle->offline.filehdr.snaplen  = 0x0000ffff;
-			handle->offline.filehdr.linktype = 0x00000001;
-			if(fwrite(&handle->offline.filehdr,
+			filehdr.magic = 0xa1b2c3d4;
+			filehdr.version_major = 0x0002;
+			filehdr.version_minor = 0x0004;
+			filehdr.timezone = 0x0000;
+			filehdr.sigfigs  = 0x0000;
+			filehdr.snaplen  = 0x0000ffff;
+			filehdr.linktype = 0x00000001;
+			if(fwrite(&filehdr,
 						sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
 				pgen_errno = errno;
 				pgen_errno2 = PG_ERRNO_FWRITE;

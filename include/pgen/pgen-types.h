@@ -101,9 +101,9 @@ struct pgen{
 	}online;
 	struct{
 		FILE* fd;
-		struct pcap_fhdr filehdr;
+		char filename[64]; // not use yet
 	}offline;
-	struct pgen_opt opt;
+	struct pgen_opt opt; // not use yet
 };
 
 
