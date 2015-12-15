@@ -60,7 +60,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 	handle->is_offline = 1;
 	
 	switch(mode){
-		case 0: // read mode
+		case 0: // pcap read mode
 			handle->is_write = 0;
 			handle->is_read  = 1;
 			handle->offline.fd = fopen(filename, "rb");
@@ -80,7 +80,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			}
 			break;
 		
-		case 1: // write mode 
+		case 1: // pcap write mode 
 			handle->is_write = 1;
 			handle->is_read  = 0;
 			handle->offline.fd = fopen(filename, "wb");
