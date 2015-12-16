@@ -96,6 +96,93 @@ int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
 
 
 
+int pgen_readblock_from_pcapng(FILE* fp, void* buf, int buflen){
+	struct __pcapng_block block;
+	u_char buffer[1000];
+
+
+	if(fread(&block, sizeof(block), 1, fp) != 1){
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FREAD;
+		if(ferror(fp)==0)	return 0;
+		else 			return -1;
+	}
+	if(fread(buffer, block.tot_len-8, 1, fp) != 1){
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FREAD;
+		if(ferror(fp)==0)	return 0;
+		else 			return -1;
+	}
+
+	if(buflen < block.tot_len){
+		pgen_errno_native = -1;
+		pgen_errno = PG_ERRNO_BUFLEN_FAIL;
+		return -1;
+	}
+
+	u_char* p = (u_char*)buf;
+	memcpy(p, &block, sizeof(block));
+	p += 8;
+	memcpy(p, buffer, block.tot_len-8);
+
+	return block.tot_len;	
+}
+
+
+
+
+
+
+int pgen_recv_from_pcapng(FILE* fp, void* buf, int buflen){
+	u_char buffer[1000];
+	int bufferlen;
+	unsigned int* type;
+	u_char* p = (u_char*)buffer;
+
+	while(1){
+		bufferlen = pgen_readblock_from_pcapng(fp, buffer, sizeof(buffer));
+		if(bufferlen <= 0){
+			return bufferlen ;
+		}
+
+		type = (unsigned int*)buffer;
+		if(*type == 0x00000006){ 			/* Enhanced Packet Block */
+			struct __pcapng_EPB* epb = (struct __pcapng_EPB*)buffer;
+			if(buflen < epb->packet_len){
+				printf("error buffer length\n");
+				pgen_errno_native = 0;
+				pgen_errno = PG_ERRNO_NOSUPPORT;
+				return -1;
+			}
+			p += sizeof(struct __pcapng_EPB);
+			memcpy(buf, p, epb->packet_len);
+			return epb->packet_len;
+
+		}else if(*type == 0x00000003){ 		/* Simple Packet Block   */
+			struct __pcapng_SPB* spb = (struct __pcapng_SPB*)buffer;
+			if(buflen < spb->packet_len){
+				printf("error buffer length\n");
+				pgen_errno_native = 0;
+				pgen_errno = PG_ERRNO_NOSUPPORT;
+				return -1;
+			}
+			p += sizeof(struct __pcapng_SPB);
+			memcpy(buf, p, spb->packet_len);
+			return spb->packet_len;
+
+		}else{
+			/* Block is not packet */
+			continue;	
+		}
+	}
+}
+
+
+
+
+
+
+
 
 void pgen_hex(const void* d, int len){
 	printf("hexdump len: %d \n", len);

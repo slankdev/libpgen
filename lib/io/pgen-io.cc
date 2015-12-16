@@ -106,11 +106,34 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			break;
 		
 		case PCAPNG_READ:
-			printf("pgen_open_offline: this mode is not implement yet coming soon \n");
+			u_char buf[1000];
+			int buflen;
+
+			handle->offline.fd = fopen(filename, "rb");
+			if(handle->offline.fd == NULL){
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FOPEN;
+				free(handle);
+				handle = NULL;
+				return NULL;
+			}
+
+			buflen = pgen_readblock_from_pcapng(handle->offline.fd, buf, sizeof(buf));
+			if(buflen < 0){
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FOPEN;
+				pgen_close(handle);
+				handle = NULL;
+			}
 			break;
+
+
+
 		case PCAPNG_WRITE:
 			printf("pgen_open_offline: this mode is not implement yet coming soon \n");
 			break;
+
+
 
 		default: // mode not found
 			fprintf(stderr, "pgen_open_offline: mode not found\n");
