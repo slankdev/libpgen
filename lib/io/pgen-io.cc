@@ -102,6 +102,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				pgen_close(handle);
 				handle = NULL;
 			}
+			
 			break;
 		
 		case PCAPNG_READ:

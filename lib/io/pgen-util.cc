@@ -75,15 +75,17 @@ int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 
 int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
 	struct pgen_pcap_pkthdr hdr;
-	if(fread(&hdr, sizeof(struct pgen_pcap_pkthdr), 1, fp) < 1){
+	if(fread(&hdr, sizeof(struct pgen_pcap_pkthdr), 1, fp) != 1){
 		pgen_errno_native = errno;
 		pgen_errno = PG_NERRNO_FREAD;
-		return -1;
+		if(feof(fp) == 0)	return 0;
+		else 				return -1;
 	}
 	if(fread(buf, hdr.len, 1, fp) != 1){
 		pgen_errno_native = errno;
 		pgen_errno = PG_NERRNO_FREAD;
-		return -1;
+		if(feof(fp) == 0)	return 0;
+		else 				return -1;
 	}
 
 	return hdr.len;
@@ -92,12 +94,8 @@ int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
 
 
 
-// int pgen_recv_from_pcapng(FILE* fp, void* buf, int buflen){
-// 	return 1;	
-// }
-// int pgen_send_to_pcapng(FILE* fp, const void* buf, int buflen){
-// 	return 1;	
-// }
+
+
 
 void pgen_hex(const void* d, int len){
 	printf("hexdump len: %d \n", len);
