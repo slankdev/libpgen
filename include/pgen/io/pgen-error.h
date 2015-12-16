@@ -22,48 +22,51 @@
 #ifndef PGEN_ERROR_H
 #define PGEN_ERROR_H
 
-char* pgen_strerror(int errno);			/* return error message */
 
+char* pgen_strerror(int errno);			/* return error message */
 
 extern int pgen_errno_native;
 extern int pgen_errno;
 
 
-/* others */
-#define PG_ERRNO_UNDEFINED 256
-#define PG_ERRNO_BUFLEN 1001
+
+
 
 
 /* Pgen-Func's Errno */
-#define PG_ERRNO_NOWRITE         10001   /* descriptor isn't writeable */
-#define PG_ERRNO_NOREAD          10002   /* descriptor isn't readable */
-#define PG_ERRNO_TIMEOUT         10003   /* timeout */
-#define PG_ERRNO_OPENBPF         10004   /* cant open bpf */
-#define PG_ERRNO_GETHARDADDR_BSD 10005   /* get hardware address on bsd */
-#define PG_ERRNO_NOSUPPORT         255   /* not support */
+#define PG_ERRNO_UNDEFINED          -1  /* undefined error             */ 
+#define PG_ERRNO_NOWRITE         10001  /* descriptor isn't writeable  */
+#define PG_ERRNO_NOREAD          10002  /* descriptor isn't readable   */
+#define PG_ERRNO_TIMEOUT         10003  /* timeout                     */
+#define PG_ERRNO_OPENBPF         10004  /* cant open bpf               */
+#define PG_ERRNO_GETHARDADDR_BSD 10005  /* get hardware address on bsd */
+#define PG_ERRNO_NOSUPPORT       10006  /* not support                 */
+#define PG_ERRNO_BUFLEN_FAIL     10007  /* buffer length no support    */
+
+
+
 
 /* System-Call's Errno */
+#define PG_NERRNO_WRITE              8
+#define PG_NERRNO_READ               9
 #define PG_NERRNO_FOPEN             11
 #define PG_NERRNO_FREAD              7
 #define PG_NERRNO_FWRITE             6
-#define PG_NERRNO_WRITE              8
-#define PG_NERRNO_READ               9
-#define PG_NERRNO_SENDTO            10
-#define PG_NERRNO_IOCTL             12
 #define PG_NERRNO_SOCKET            13
-#define PG_NERRNO_SELECT            14
 #define PG_NERRNO_SETSOCKOPT        15
+#define PG_NERRNO_IOCTL             12
+#define PG_NERRNO_SELECT            14
 #define PG_NERRNO_BIND               1
+#define PG_NERRNO_SENDTO            10
+
+
 
 
 /* old errno */
 // #define PG_ERRNO_SUCSS   0
 // #define PG_ERRNO_HDRINC  2
 // #define PG_ERRNO_PROMISC 3
-//
 // #define PG_ERRNO_ARPERR 16
-
-
 
 
 #endif

@@ -248,6 +248,9 @@ bool pgen_descriptor_is_offline(pgen_t* handle){
 }
 
 
+
+
+
 bool pgen_descriptor_is_online(pgen_t* handle){
 	int mode = handle->mode;
 	if(mode == NETIF)
@@ -257,6 +260,9 @@ bool pgen_descriptor_is_online(pgen_t* handle){
 }
 
 
+
+
+
 bool pgen_descriptor_is_readable(pgen_t* handle){
 	int mode = handle->mode;
 	if(mode==NETIF || mode==PCAP_READ || mode==PCAPNG_READ)
@@ -264,117 +270,91 @@ bool pgen_descriptor_is_readable(pgen_t* handle){
 	else
 		return false;
 }
+
+
+
+
+
+
 bool pgen_descriptor_is_writeable(pgen_t* handle){
 	int mode = handle->mode;
-	if(mode==NETIF || mode==PCAP_WRITE || mode==PCAPNG_WRITE)
+	if(mode==NETIF || mode==PCAP_WRITE || mode==PCAPNG_WRITE) 
 		return true;
-	else
+	else	
 		return false;
-		
 }
+
 
 
 
 
 void pgen_perror(const char* msg){
-	const int errstrlen = 255;
-	char str[errstrlen];
+	if(pgen_errno_native < 0){
+		printf("%s: %s \n", msg, pgen_strerror(pgen_errno));
+	}else{
+		printf("%s: %s \n" , msg, pgen_strerror(pgen_errno));
+	}
+}
 
+
+
+
+
+// void _old_pgen_perror(const char* msg){
+// 	const int errstrlen = 255;
+// 	char str[errstrlen];
+//
 // 	switch(pgen_errno){
-// 		case PG_ERRNO_SUCSS:
-// 			strncpy(str, "success", errstrlen);
+// 		case PG_NERRNO_BIND:
+// 			strncpy(str, "bind error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_BIND:
-// 			strncpy(str, "bind", errstrlen);
+// 		case PG_NERRNO_FWRITE:
+// 			strncpy(str, "fwrite error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_HDRINC: 
-// 			strncpy(str, "setsockopt hdrinc", errstrlen);
+// 		case PG_NERRNO_FREAD:
+// 			strncpy(str, "fread error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_PROMISC:
-// 			strncpy(str, "set promisc", errstrlen);
+// 		case PG_NERRNO_WRITE:
+// 			strncpy(str, "write error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_WONLY:
-// 			strncpy(str, "handle is write only", errstrlen);
+// 		case PG_NERRNO_READ:
+// 			strncpy(str, "read error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_RONLY: 
-// 			strncpy(str, "handle is read only", errstrlen);
+// 		case PG_NERRNO_SENDTO:
+// 			strncpy(str, "sendto error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_FWRITE:
-// 			strncpy(str, "fwrite", errstrlen);
+// 		case PG_NERRNO_FOPEN:
+// 			strncpy(str, "fopen error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_FREAD:
-// 			strncpy(str, "fread", errstrlen);
+// 		case PG_NERRNO_IOCTL:
+// 			strncpy(str, "ioctl error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_WRITE:
-// 			strncpy(str, "write", errstrlen);
+// 		case PG_NERRNO_SOCKET:
+// 			strncpy(str, "socket error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_READ:
-// 			strncpy(str, "read", errstrlen);
+// 		case PG_NERRNO_SELECT:
+// 			strncpy(str, "select error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_SENDTO:
-// 			strncpy(str, "sendto", errstrlen);
-// 			break;
-// 		case PG_ERRNO_FOPEN:
-// 			strncpy(str, "fopen", errstrlen);
-// 			break;
-// 		case PG_ERRNO_IOCTL:
-// 			strncpy(str, "ioctl", errstrlen);
-// 			break;
-// 		case PG_ERRNO_SOCKET:
-// 			strncpy(str, "socket", errstrlen);
-// 			break;
-// 		case PG_ERRNO_SELECT:
-// 			strncpy(str, "select", errstrlen);
-// 			break;
+//
 // 		case PG_ERRNO_TIMEOUT:
-// 			strncpy(str, "timeout", errstrlen);
+// 			strncpy(str, "timeout error", errstrlen);
 // 			break;
-// 		case PG_ERRNO_ARPERR:
-// 			strncpy(str, "arp table error", errstrlen);
+// 		case PG_ERRNO_NOSUPPORT:
+// 			strncpy(str, "not support", errstrlen);
 // 			break;
-// 		// case PG_ERRNO_NOSUPPORT:
-// 		// 	strncpy(str, "not support", errstrlen);
-// 		// 	break;
 // 		case PG_ERRNO_UNDEFINED:
 // 			strncpy(str, "this error wasn't implemented yet", errstrlen);
 // 			break;
 //
-// #ifndef __linux // for bsd
-// 		case PG_ERRNOBSD_OPENBPF:
-// 			strncpy(str, "open bpf", errstrlen);
-// 			break;
-// 		case PG_ERRNOBSD_SETBUF:
-// 			strncpy(str, "set buf", errstrlen);
-// 			break;
-// 		case PG_ERRNOBSD_BIND:
-// 			strncpy(str, "bind", errstrlen);
-// 			break;
-// 		case PG_ERRNOBSD_PROMISC:
-// 			strncpy(str, "set promisc", errstrlen);
-// 			break;
-// 		case PG_ERRNOBSD_IMDAT:
-// 			strncpy(str, "set immediate", errstrlen);
-// 			break;
-// 		case PG_ERRNOBSD_RCVALL: 
-// 			strncpy(str, "set rcv all", errstrlen);
-// 			break;
-// 		case PG_ERRNOBSD_FLUSH:
-// 			strncpy(str, "buf flush", errstrlen);
-// 			break;
-// 		case PG_ERRNOBSD_NCMPMAC:
-// 			strncpy(str, "no cmpl mac", errstrlen);
-// 			break;
-// #endif
-//
 // 		default:
 // 			strncpy(str, "unknown error! We didn't use this error number", errstrlen);
 // 			break;
-// 		
+//
 // }
-
-
-	// fprintf(stderr, "%s(%s): %s \n", msg, str, pgen_strerror(pgen_errno_native));	
-}
-
+//
+//
+// 	fprintf(stderr, "%s(%s): %s \n", msg, str, pgen_strerror(pgen_errno_native));	
+// }
+//
 
 
