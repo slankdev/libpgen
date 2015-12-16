@@ -36,6 +36,72 @@ typedef unsigned long      bit64;
 typedef unsigned long long bit128;
 
 
+/* Basic pcapng Block */
+struct __pcapng_block {
+	bit32 type;	
+	bit32 tot_len;	
+};
+
+
+/* Section Header Block 
+ * Type is 0a0d0d0a */
+struct __pcapng_SHB {
+	bit32 type;	
+	bit32 tot_len;	
+	bit32 byteorder_magic;
+	bit16 major_version;
+	bit16 minor_version;
+	bit32 section_length[3];
+};
+
+/* Interface Description Block 
+ * Type is 00000001 */
+struct __pcapng_IDB {
+	bit32 type;	
+	bit32 tot_len;	
+	bit16 link_type;
+	bit16 reserved;
+	bit32 nmap_length;
+};
+
+/* Enhanced Packet Block 
+ * Type is 00000006 */
+struct __pcapng_EPB {
+	bit32 type;	
+	bit32 tot_len;	
+	bit32 interface_id;
+	bit32 timestamp_high;
+	bit32 timestamp_low;
+	bit32 capture_len;
+	bit32 packet_len;
+};
+
+/* Simple Packet Block 
+ * Type is 00000003 */
+struct __pcapng_SPB {
+	bit32 type;	
+	bit32 tot_len;	
+	bit32 packet_len;
+};
+
+/* Name Resolution Block 
+ * Type is 00000004 */
+struct __pcapng_NRB {
+	bit32 type;	
+	bit32 tot_len;	
+	bit16 record_type;
+	bit16 record_length;
+};
+
+/* Interface Statistics Block 
+ * Type is 00000005 */
+struct __pcapng_ISB {
+	bit32 type;	
+	bit32 tot_len;	
+	bit32 interface_id;
+	bit32 timestamp_high;
+	bit32 timestamp_low;
+};
 
 /* 0:succes, 1:len, 2:bin */
 struct pgen_checkopt{

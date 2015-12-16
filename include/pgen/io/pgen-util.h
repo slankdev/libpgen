@@ -28,6 +28,9 @@
 #include <sys/types.h>
 
 
+int pgen_readblock_from_pcapng(FILE* fp, void* buf, int buflen);
+int pgen_recv_from_pcapng(FILE* fp, void* buf, int buflen);
+
 int pgen_recv_from_pcap(FILE*, void*, int);
 int pgen_send_to_pcap(FILE*, const void*, int);
 
