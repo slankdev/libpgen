@@ -51,8 +51,8 @@
 int pgen_send_to_netif(int fd, const void* buf, int len){
 	int sendlen = write(fd, buf, len);
 	if(sendlen < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_WRITE;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_WRITE;
 	}
 
 	return sendlen;	
@@ -72,12 +72,12 @@ int pgen_recv_from_netif_to(int fd, void* buf, int len, struct timeval to){
 
 	recv_len = select(fd+1, &fds, NULL, NULL, &to);
 	if(recv_len < 0){
-		pgen_errno  = errno;
-		pgen_errno2 = PG_ERRNO_SELECT;
+		pgen_errno_native  = errno;
+		pgen_errno = PG_NERRNO_SELECT;
 		return recv_len;
 	}else if(recv_len == 0){
-		pgen_errno  = errno;
-		pgen_errno2 = PG_ERRNO_TIMEOUT;
+		pgen_errno_native  = errno;
+		pgen_errno = PG_ERRNO_TIMEOUT;
 		return recv_len;
 	}
 
@@ -85,8 +85,8 @@ int pgen_recv_from_netif_to(int fd, void* buf, int len, struct timeval to){
 		recv_len = read(fd, p, 4096);
 		if(recv_len < 0){
 			perror("pgen_recv");
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_READ;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_READ;
 			return recv_len;
 		}
 	}
@@ -117,8 +117,8 @@ int pgen_recv_from_netif(int fd, void* buf, int len){
 	recv_len = read(fd, p, 4096);
 	if(recv_len < 0){
 		perror("pgen_recv");
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_READ;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_READ;
 		return recv_len;
 	}
 
@@ -144,7 +144,7 @@ int pgen_recv_from_netif(int fd, void* buf, int len){
 int open_bpf(const char* dev, int promisc) {
 #ifdef __linux
 	
-	pgen_errno2 = PG_ERRNO_NOSUPPORT;
+	pgen_errno = PG_ERRNO_NOSUPPORT;
 	return -1;
 
 #else /* __linux */
@@ -164,16 +164,16 @@ int open_bpf(const char* dev, int promisc) {
 
 	if (i >= 5) {
 		fprintf(stderr, "cannot open BPF\n");
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNOBSD_OPENBPF;
+		pgen_errno_native = errno;
+		pgen_errno = PG_ERRNO_OPENBPF;
 		return -1;
 	}
 	
 	// set buffer size
 	int bufsize = 4096;
 	if (ioctl(sock, BIOCSBLEN, &bufsize) < 0) {
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNOBSD_SETBUF;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sock);
 		return -1;
 	}
@@ -182,8 +182,8 @@ int open_bpf(const char* dev, int promisc) {
 	memset(&ifr, 0, sizeof(ifr));
 	strncpy(ifr.ifr_name, dev, IFNAMSIZ);
 	if(ioctl(sock, BIOCSETIF, &ifr) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNOBSD_BIND;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sock);
 		return -1;
 	}
@@ -191,8 +191,8 @@ int open_bpf(const char* dev, int promisc) {
 	// set promisc
 	if(promisc){
 		if (ioctl(sock, BIOCPROMISC, NULL) < 0) {
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNOBSD_PROMISC;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_IOCTL;
 			close(sock);
 			return -1;
 		}
@@ -200,32 +200,32 @@ int open_bpf(const char* dev, int promisc) {
 
 	//if recv packet then call read fast
 	if (ioctl(sock, BIOCIMMEDIATE, &one) < 0) {
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNOBSD_IMDAT;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sock);
 		return -1;
 	}
 
 	// set recv sendPacket 
 	if (ioctl(sock, BIOCSSEESENT, &one) < 0) {
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNOBSD_RCVALL;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sock);
 			return -1;
 	}
 
 	// flush recv buffer
 	if (ioctl(sock, BIOCFLUSH, NULL) < 0) {
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNOBSD_FLUSH;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sock);
 		return -1;
 	}
 
 	// no complite src macaddr
 	if (ioctl(sock, BIOCSHDRCMPLT, &one) < 0) {
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNOBSD_NCMPMAC;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sock);
 		return -1;
 	}
@@ -252,22 +252,22 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		sock = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
 #endif
 		if(sock < 0){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_SOCKET;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_SOCKET;
 			return -1;
 		}
 	
 		if(setsockopt(sock, IPPROTO_IP, IP_HDRINCL, &one, sizeof(one)) < 0){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_HDRINC;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_SETSOCKOPT;
 			close(sock);
 			return -1;
 		}
 
 #ifdef __linux
 		if(setsockopt(sock, SOL_SOCKET, SO_BINDTODEVICE, dev, sizeof(dev))<0){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_BIND;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_SETSOCKOPT;
 			close(sock);
 			return -1;	
 		}
@@ -281,8 +281,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		sock=socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 		if(sock < 0){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_SOCKET;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_SOCKET;
 			return -1;
 		}
 
@@ -290,8 +290,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		memset(&ifreq, 0, sizeof(struct ifreq));
 		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
 		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_BIND;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_IOCTL;
 			close(sock);
 			return -1;
 		}
@@ -301,8 +301,8 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		sa.sll_protocol = htons(ETH_P_ALL);
 		sa.sll_ifindex  = ifreq.ifr_ifindex;
 		if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)) < 0){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_BIND;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_BIND;
 			close(sock);
 			return -1;
 		}
@@ -310,15 +310,15 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 
 		if(promisc){
 			if(ioctl(sock, SIOCGIFFLAGS, &ifreq) < 0)	{
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_PROMISC;
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_IOCTL;
 				close(sock);
 				return -1;
 			}
 			ifreq.ifr_flags = ifreq.ifr_flags|IFF_PROMISC;
 			if(ioctl(sock, SIOCSIFFLAGS, &ifreq) < 0){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_PROMISC;
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_IOCTL;
 				close(sock);
 				return -1;
 			}
@@ -347,15 +347,15 @@ int pgen_getipbydev(const char* dev, char* ip){
 	struct sockaddr_in *sa;
 
 	if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_SOCKET;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_SOCKET;
 		return -1;
 	}
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
 	if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_IOCTL;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sockd);
 		return -1;
 	}
@@ -376,15 +376,15 @@ int pgen_getmaskbydev(const char* dev, char* ip){
 	struct sockaddr_in *sa;
 
 	if((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_SOCKET;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_SOCKET;
 		return -1;
 	}
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
 	if(ioctl(sockd, SIOCGIFNETMASK, &ifr) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_IOCTL;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sockd);
 		return -1;
 	}
@@ -407,15 +407,15 @@ int pgen_getmacbydev(const char* dev, char* mac){
 	int sockd;
 	struct ifreq ifr;
 	if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_SOCKET;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_SOCKET;
 		return -1;
 	}
 	ifr.ifr_addr.sa_family = AF_INET;
 	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
 	if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_IOCTL;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_IOCTL;
 		close(sockd);
 		return -1;
 	}
@@ -447,6 +447,8 @@ int pgen_getmacbydev(const char* dev, char* mac){
 			return 1;
 		}
 	}
+	pgen_errno_native = -1;
+	pgen_errno = PG_ERRNO_GETHARDADDR_BSD;
 	return -1;
 
 #endif

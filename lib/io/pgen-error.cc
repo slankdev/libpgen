@@ -26,8 +26,8 @@
 
 #define PGEN_ERRSTR_LEN 256
 
+int pgen_errno_native=0;
 int pgen_errno=0;
-int pgen_errno2=0;
 char pgen_errstr[PGEN_ERRSTR_LEN]={0};
 
 

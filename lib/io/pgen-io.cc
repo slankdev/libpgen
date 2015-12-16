@@ -53,8 +53,7 @@
 
 
 
-
-// mode 0: read , 1: write
+/* This is pgen-syscall */
 pgen_t* pgen_open_offline(const char* filename, int mode){
 
 	struct pcap_fhdr filehdr;
@@ -65,8 +64,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 		case PCAP_READ: // pcap read mode
 			handle->offline.fd = fopen(filename, "rb");
 			if(handle->offline.fd == NULL){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_FWRITE;
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FOPEN;
 				free(handle);
 				handle = NULL;
 				return NULL;
@@ -74,8 +73,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 
 			if(fread(&filehdr,
 						sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_FREAD;
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FREAD;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -84,8 +83,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 		case PCAP_WRITE: // pcap write mode 
 			handle->offline.fd = fopen(filename, "wb");
 			if(handle->offline.fd == NULL){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_FOPEN;
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FOPEN;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -98,8 +97,8 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			filehdr.linktype = 0x00000001;
 			if(fwrite(&filehdr,
 						sizeof(struct pcap_fhdr),1,handle->offline.fd)<1){
-				pgen_errno = errno;
-				pgen_errno2 = PG_ERRNO_FWRITE;
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FWRITE;
 				pgen_close(handle);
 				handle = NULL;
 			}
@@ -125,6 +124,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 
 
 
+/* This is pgen-syscall */
 pgen_t* pgen_open(const char* dev, void* nouseyet){
 	pgen_t* handle = (pgen_t*)malloc(sizeof(pgen_t));
 	strncpy(handle->online.ifname, dev, sizeof(handle->online.ifname)-1);
@@ -142,6 +142,7 @@ pgen_t* pgen_open(const char* dev, void* nouseyet){
 
 
 
+/* This is pgen-syscall */
 void pgen_close(pgen_t* p){
 	if(pgen_descriptor_is_offline(p)){
 		fclose(p->offline.fd);
@@ -159,10 +160,11 @@ void pgen_close(pgen_t* p){
 
 
 
-// send packet in handle
+/* This is pgen-syscall */
 int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 	if(pgen_descriptor_is_writeable(p) == false){
-		pgen_errno2 = PG_ERRNO_RONLY;
+		pgen_errno_native = -1;
+		pgen_errno = PG_ERRNO_NOWRITE;
 		return -1;
 	}
 	int sendlen;
@@ -181,6 +183,7 @@ int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 
 
 
+/* This is pgen-syscall */
 int pgen_sendpacket_L2(const char* dev, const void* packet, int len){
 	int sock;
 	int sendlen;
@@ -189,6 +192,9 @@ int pgen_sendpacket_L2(const char* dev, const void* packet, int len){
 		return -1;
 	}
 	sendlen = pgen_send_to_netif(sock, packet, len);
+	if(sendlen < 0){
+		return -1;	
+	}
 
 	close(sock);
 	return sendlen;
@@ -196,6 +202,7 @@ int pgen_sendpacket_L2(const char* dev, const void* packet, int len){
 
 
 
+/* This is pgen-syscall */
 int pgen_recvpacket_L2(const char* dev, void* packet, int len){
 	int sock;
 	int sendlen;
@@ -203,6 +210,8 @@ int pgen_recvpacket_L2(const char* dev, void* packet, int len){
 	if((sock=initRawSocket(dev, 0, 0)) < 0){
 		return -1;
 	}
+
+
 	sendlen = pgen_recv_from_netif(sock, packet, len);
 
 	close(sock);
@@ -211,10 +220,11 @@ int pgen_recvpacket_L2(const char* dev, void* packet, int len){
 
 
 
-// recv packet in handle
+/* This is pgen-syscall */
 int pgen_recvpacket_handle(pgen_t* p, void* packet, int len){
 	if(pgen_descriptor_is_readable(p) == false){
-		pgen_errno2 = PG_ERRNO_WONLY;
+		pgen_errno_native = -1;
+		pgen_errno = PG_ERRNO_NOREAD;
 		return -1;
 	}
 	int sendlen;
@@ -270,101 +280,100 @@ void pgen_perror(const char* msg){
 	const int errstrlen = 255;
 	char str[errstrlen];
 
+// 	switch(pgen_errno){
+// 		case PG_ERRNO_SUCSS:
+// 			strncpy(str, "success", errstrlen);
+// 			break;
+// 		case PG_ERRNO_BIND:
+// 			strncpy(str, "bind", errstrlen);
+// 			break;
+// 		case PG_ERRNO_HDRINC: 
+// 			strncpy(str, "setsockopt hdrinc", errstrlen);
+// 			break;
+// 		case PG_ERRNO_PROMISC:
+// 			strncpy(str, "set promisc", errstrlen);
+// 			break;
+// 		case PG_ERRNO_WONLY:
+// 			strncpy(str, "handle is write only", errstrlen);
+// 			break;
+// 		case PG_ERRNO_RONLY: 
+// 			strncpy(str, "handle is read only", errstrlen);
+// 			break;
+// 		case PG_ERRNO_FWRITE:
+// 			strncpy(str, "fwrite", errstrlen);
+// 			break;
+// 		case PG_ERRNO_FREAD:
+// 			strncpy(str, "fread", errstrlen);
+// 			break;
+// 		case PG_ERRNO_WRITE:
+// 			strncpy(str, "write", errstrlen);
+// 			break;
+// 		case PG_ERRNO_READ:
+// 			strncpy(str, "read", errstrlen);
+// 			break;
+// 		case PG_ERRNO_SENDTO:
+// 			strncpy(str, "sendto", errstrlen);
+// 			break;
+// 		case PG_ERRNO_FOPEN:
+// 			strncpy(str, "fopen", errstrlen);
+// 			break;
+// 		case PG_ERRNO_IOCTL:
+// 			strncpy(str, "ioctl", errstrlen);
+// 			break;
+// 		case PG_ERRNO_SOCKET:
+// 			strncpy(str, "socket", errstrlen);
+// 			break;
+// 		case PG_ERRNO_SELECT:
+// 			strncpy(str, "select", errstrlen);
+// 			break;
+// 		case PG_ERRNO_TIMEOUT:
+// 			strncpy(str, "timeout", errstrlen);
+// 			break;
+// 		case PG_ERRNO_ARPERR:
+// 			strncpy(str, "arp table error", errstrlen);
+// 			break;
+// 		// case PG_ERRNO_NOSUPPORT:
+// 		// 	strncpy(str, "not support", errstrlen);
+// 		// 	break;
+// 		case PG_ERRNO_UNDEFINED:
+// 			strncpy(str, "this error wasn't implemented yet", errstrlen);
+// 			break;
+//
+// #ifndef __linux // for bsd
+// 		case PG_ERRNOBSD_OPENBPF:
+// 			strncpy(str, "open bpf", errstrlen);
+// 			break;
+// 		case PG_ERRNOBSD_SETBUF:
+// 			strncpy(str, "set buf", errstrlen);
+// 			break;
+// 		case PG_ERRNOBSD_BIND:
+// 			strncpy(str, "bind", errstrlen);
+// 			break;
+// 		case PG_ERRNOBSD_PROMISC:
+// 			strncpy(str, "set promisc", errstrlen);
+// 			break;
+// 		case PG_ERRNOBSD_IMDAT:
+// 			strncpy(str, "set immediate", errstrlen);
+// 			break;
+// 		case PG_ERRNOBSD_RCVALL: 
+// 			strncpy(str, "set rcv all", errstrlen);
+// 			break;
+// 		case PG_ERRNOBSD_FLUSH:
+// 			strncpy(str, "buf flush", errstrlen);
+// 			break;
+// 		case PG_ERRNOBSD_NCMPMAC:
+// 			strncpy(str, "no cmpl mac", errstrlen);
+// 			break;
+// #endif
+//
+// 		default:
+// 			strncpy(str, "unknown error! We didn't use this error number", errstrlen);
+// 			break;
+// 		
+// }
 
-	switch(pgen_errno2){
-		case PG_ERRNO_SUCSS:
-			strncpy(str, "success", errstrlen);
-			break;
-		case PG_ERRNO_BIND:
-			strncpy(str, "bind", errstrlen);
-			break;
-		case PG_ERRNO_HDRINC: 
-			strncpy(str, "setsockopt hdrinc", errstrlen);
-			break;
-		case PG_ERRNO_PROMISC:
-			strncpy(str, "set promisc", errstrlen);
-			break;
-		case PG_ERRNO_WONLY:
-			strncpy(str, "handle is write only", errstrlen);
-			break;
-		case PG_ERRNO_RONLY: 
-			strncpy(str, "handle is read only", errstrlen);
-			break;
-		case PG_ERRNO_FWRITE:
-			strncpy(str, "fwrite", errstrlen);
-			break;
-		case PG_ERRNO_FREAD:
-			strncpy(str, "fread", errstrlen);
-			break;
-		case PG_ERRNO_WRITE:
-			strncpy(str, "write", errstrlen);
-			break;
-		case PG_ERRNO_READ:
-			strncpy(str, "read", errstrlen);
-			break;
-		case PG_ERRNO_SENDTO:
-			strncpy(str, "sendto", errstrlen);
-			break;
-		case PG_ERRNO_FOPEN:
-			strncpy(str, "fopen", errstrlen);
-			break;
-		case PG_ERRNO_IOCTL:
-			strncpy(str, "ioctl", errstrlen);
-			break;
-		case PG_ERRNO_SOCKET:
-			strncpy(str, "socket", errstrlen);
-			break;
-		case PG_ERRNO_SELECT:
-			strncpy(str, "select", errstrlen);
-			break;
-		case PG_ERRNO_TIMEOUT:
-			strncpy(str, "timeout", errstrlen);
-			break;
-		case PG_ERRNO_ARPERR:
-			strncpy(str, "arp table error", errstrlen);
-			break;
-		case PG_ERRNO_NOSUPPORT:
-			strncpy(str, "not support", errstrlen);
-			break;
-		case PG_ERRNO_UNDEFINED:
-			strncpy(str, "this error wasn't implemented yet", errstrlen);
-			break;
 
-#ifndef __linux // for bsd
-		case PG_ERRNOBSD_OPENBPF:
-			strncpy(str, "open bpf", errstrlen);
-			break;
-		case PG_ERRNOBSD_SETBUF:
-			strncpy(str, "set buf", errstrlen);
-			break;
-		case PG_ERRNOBSD_BIND:
-			strncpy(str, "bind", errstrlen);
-			break;
-		case PG_ERRNOBSD_PROMISC:
-			strncpy(str, "set promisc", errstrlen);
-			break;
-		case PG_ERRNOBSD_IMDAT:
-			strncpy(str, "set immediate", errstrlen);
-			break;
-		case PG_ERRNOBSD_RCVALL: 
-			strncpy(str, "set rcv all", errstrlen);
-			break;
-		case PG_ERRNOBSD_FLUSH:
-			strncpy(str, "buf flush", errstrlen);
-			break;
-		case PG_ERRNOBSD_NCMPMAC:
-			strncpy(str, "no cmpl mac", errstrlen);
-			break;
-#endif
-
-		default:
-			strncpy(str, "unknown error! We didn't use this error number", errstrlen);
-			break;
-			
-	}
-
-
-	fprintf(stderr, "%s(%s): %s \n", msg, str, pgen_strerror(pgen_errno));	
+	// fprintf(stderr, "%s(%s): %s \n", msg, str, pgen_strerror(pgen_errno_native));	
 }
 
 
