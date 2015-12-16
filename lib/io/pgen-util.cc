@@ -53,13 +53,13 @@ int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 	pkthdr.len    = len;
 
 	if(fwrite(&pkthdr, sizeof(struct pgen_pcap_pkthdr), 1, fp) != 1){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_FWRITE;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FWRITE;
 		sendlen = -1;
 	}else{
 		if(fwrite(buf, len, 1, fp) < 1){
-			pgen_errno = errno;
-			pgen_errno2 = PG_ERRNO_FWRITE;
+			pgen_errno_native = errno;
+			pgen_errno = PG_NERRNO_FWRITE;
 			sendlen = -1;
 		}
 		sendlen = len;
@@ -76,13 +76,13 @@ int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
 	struct pgen_pcap_pkthdr hdr;
 	if(fread(&hdr, sizeof(struct pgen_pcap_pkthdr), 1, fp) < 1){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_FREAD;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FREAD;
 		return -1;
 	}
 	if(fread(buf, hdr.len, 1, fp) != 1){
-		pgen_errno = errno;
-		pgen_errno2 = PG_ERRNO_FREAD;
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FREAD;
 		return -1;
 	}
 

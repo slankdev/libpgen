@@ -166,7 +166,7 @@ int arptable::get(ipaddr ip){
 		}
 	}
 	if(timeout_flag == 1){
-		pgen_errno2 = PG_ERRNO_ARPERR;		
+		// pgen_errno = PG_ERRNO_ARPERR;		
 	}
 
 	return -1;
