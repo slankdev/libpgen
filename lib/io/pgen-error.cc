@@ -34,12 +34,6 @@ char pgen_errstr[PGEN_ERRSTR_LEN]={0};
 
 
 
-// char* old_pgen_strerror(int errno){
-// 	strncpy(pgen_errstr, strerror(errno), PGEN_ERRSTR_LEN);
-// 	return pgen_errstr;	
-// }
-
-
 
 char* pgen_strerror(int errno){
 	int errstrlen = sizeof(pgen_errstr) -1;

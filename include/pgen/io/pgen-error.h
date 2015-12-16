@@ -62,11 +62,7 @@ extern int pgen_errno;
 
 
 
-/* old errno */
-// #define PG_ERRNO_SUCSS   0
-// #define PG_ERRNO_HDRINC  2
-// #define PG_ERRNO_PROMISC 3
-// #define PG_ERRNO_ARPERR 16
+
 
 
 #endif
