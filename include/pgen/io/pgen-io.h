@@ -32,12 +32,11 @@
 
 
 
-/* for pgen_open_offline()'s  *
- * 2nd argument, opening mode */
-#define PCAP_READ 0
-#define PCAP_WRITE 1
-#define PCAPNG_READ 2
-#define PCAPNG_WRITE 3
+bool pgen_descriptor_is_offline(pgen_t* handle);
+bool pgen_descriptor_is_online(pgen_t* handle);
+
+bool pgen_descriptor_is_readable(pgen_t* handle);
+bool pgen_descriptor_is_writeable(pgen_t* handle);
 
 
 pgen_t* pgen_open(const char* dev, void*);
@@ -47,8 +46,10 @@ void pgen_close(pgen_t* p);
 void pgen_perror(const char* str);		/* print err-msg with string */
 
 int pgen_sendpacket_L2(const char*, const void*, int);
-int pgen_sendpacket_L3(const char*, const void*, int, struct sockaddr*);
 int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len);
+
+int pgen_recvpacket_L2(const char*, void*, int);
+int pgen_recvpacket_handle(pgen_t* p, void* packet, int len);
 
 
 

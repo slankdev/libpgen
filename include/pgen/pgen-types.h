@@ -77,6 +77,13 @@ struct pgen_pcap_pkthdr{
 };
 
 
+/* for pgen_open_offline()'s  *
+ * 2nd argument, opening mode */
+#define NETIF         0
+#define PCAP_READ     1
+#define PCAP_WRITE    2
+#define PCAPNG_READ	  3
+#define PCAPNG_WRITE  4
 
 
 #define PGEN_PCAPFILE_MAXLEN 100000000
@@ -87,19 +94,33 @@ struct pgen_opt{
 
 
 struct pgen{
-	int fd;
-	int is_offline;
-	int is_write;
-	int is_read;
+	int mode;
 	struct{
+		int fd;
 		char ifname[64];
 	}online;
 	struct{
 		FILE* fd;
-		struct pcap_fhdr filehdr;
+		char filename[64]; // not use yet
 	}offline;
-	struct pgen_opt opt;
+	struct pgen_opt opt; // not use yet
 };
+
+
+// struct pgen{
+// 	int fd;
+// 	int is_offline;
+// 	int is_write;
+// 	int is_read;
+// 	struct{
+// 		char ifname[64];
+// 	}online;
+// 	struct{
+// 		FILE* fd;
+// 		struct pcap_fhdr filehdr;
+// 	}offline;
+// 	struct pgen_opt opt;
+// };
 
 
 

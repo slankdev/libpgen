@@ -15,6 +15,8 @@ This component has many functions that send/recv packet to network interface and
 	pgen_close();                --> Close PGEN-discripter
 	pgen_sendpacket_handle();    --> Send binary with PGEN-discripter
 	pgen_sendpacket_L2();        --> send binary to L2 network interface from device-name
+	pgen_recvpacket_handle();    --> recv binary with PGEN-discripter
+	pgen_recvpacket_L2();        --> recv binary to L2 network interface from device-name
 	pgen_perror();               --> Print error message with original message like perror()
 
 ### pgen-netutil.cc

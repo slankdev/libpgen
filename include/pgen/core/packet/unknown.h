@@ -94,8 +94,8 @@ class pgen_unknown{
 		bool __isUDP;
 
 	public:
-		_unknown_mac ETH;
-		_unknown_ip IP;
+		_unknown_mac  ETH;
+		_unknown_ip   IP;
 		_unknown_port TCP;
 		_unknown_port UDP;
 
