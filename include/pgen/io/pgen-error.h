@@ -42,6 +42,7 @@ extern int pgen_errno;
 #define PG_ERRNO_GETHARDADDR_BSD 10005  /* get hardware address on bsd */
 #define PG_ERRNO_NOSUPPORT       10006  /* not support                 */
 #define PG_ERRNO_BUFLEN_FAIL     10007  /* buffer length no support    */
+#define PG_ERRNO_MODENFOUND       10008  /* mode not found              */
 
 
 

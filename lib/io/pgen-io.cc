@@ -136,8 +136,10 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 
 
 		default: // mode not found
-			fprintf(stderr, "pgen_open_offline: mode not found\n");
+			pgen_errno_native = -1;
+			pgen_errno = PG_ERRNO_MODENFOUND;
 			pgen_close(handle);
+			handle = NULL;
 			break;
 	}
 
@@ -253,14 +255,21 @@ int pgen_recvpacket_handle(pgen_t* p, void* packet, int len){
 	}
 	int sendlen;
 	
-	if(pgen_descriptor_is_offline(p)){
-		sendlen = pgen_recv_from_pcap(p->offline.fd, packet, len);
-	}else{
+	if(p->mode == NETIF){
 		sendlen = pgen_recv_from_netif(p->online.fd, packet, len);
+	}else if(p->mode == PCAP_READ){
+		sendlen = pgen_recv_from_pcap(p->offline.fd, packet, len);
+	}else if(p->mode == PCAPNG_READ){
+		sendlen = pgen_recv_from_pcapng(p->offline.fd, packet, len);
+	}else{
+		pgen_errno_native = -1;
+			pgen_errno = PG_ERRNO_MODENFOUND;
+		return -1;
 	}
 	
 	return sendlen;
 }
+
 
 
 
