@@ -130,7 +130,70 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 
 
 		case PCAPNG_WRITE:
-			printf("pgen_open_offline: this mode is not implement yet coming soon \n");
+
+			handle->offline.fd = fopen(filename, "wb");
+			if(handle->offline.fd == NULL){
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FOPEN;
+				pgen_close(handle);
+				handle = NULL;
+			}
+			unsigned int tot_len_tail;
+			
+			// write section header block
+			struct __pcapng_SHB filehdrng;
+			filehdrng.type    = 0x0a0d0d0a;
+			filehdrng.tot_len = 0x00000020;
+			filehdrng.byteorder_magic = 0x1a2b3c4d;
+			filehdrng.major_version = 0x0001;
+			filehdrng.minor_version = 0x0000;
+			filehdrng.section_length[0] = 0xffffffff;
+			filehdrng.section_length[1] = 0xffffffff;
+			filehdrng.section_length[2] = 0x000000ff;
+			tot_len_tail = filehdrng.tot_len;
+			if(fwrite(&filehdrng,
+						sizeof(struct __pcapng_SHB),1,handle->offline.fd)<1){
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FWRITE;
+				pgen_close(handle);
+				handle = NULL;
+			}
+			if(fwrite(&tot_len_tail,
+						sizeof(tot_len_tail),1,handle->offline.fd)<1){
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FWRITE;
+				pgen_close(handle);
+				handle = NULL;
+			}
+
+
+			// write interface description block
+			struct __pcapng_IDB idb;
+			idb.type    = 0x00000001;
+			idb.tot_len = 0x00000014;
+			idb.link_type = 0x0001;
+			idb.reserved = 0x0000;
+			idb.snap_length = 0x0000;
+			tot_len_tail = idb.tot_len;
+			if(fwrite(&idb,
+						sizeof(struct __pcapng_IDB),1,handle->offline.fd)<1){
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FWRITE;
+				pgen_close(handle);
+				handle = NULL;
+			}
+			if(fwrite(&tot_len_tail,
+						sizeof(tot_len_tail),1,handle->offline.fd)<1){
+				pgen_errno_native = errno;
+				pgen_errno = PG_NERRNO_FWRITE;
+				pgen_close(handle);
+				handle = NULL;
+			}
+			break;
+
+
+
+
 			break;
 
 
@@ -195,10 +258,16 @@ int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 	}
 	int sendlen;
 	
-	if(pgen_descriptor_is_offline(p)){
-		sendlen = pgen_send_to_pcap(p->offline.fd, packet, len);
-	}else{
+	if(p->mode == NETIF){
 		sendlen = pgen_send_to_netif(p->online.fd, packet, len);
+	}else if(p->mode == PCAP_WRITE){
+		sendlen = pgen_send_to_pcap(p->offline.fd, packet, len);
+	}else if(p->mode == PCAPNG_WRITE){
+		sendlen = pgen_send_to_pcapng(p->offline.fd, packet, len);
+	}else{
+		pgen_errno_native = -1;
+		pgen_errno = PG_ERRNO_MODENFOUND;
+		sendlen = -1;
 	}
 	
 	return sendlen;
@@ -263,8 +332,8 @@ int pgen_recvpacket_handle(pgen_t* p, void* packet, int len){
 		sendlen = pgen_recv_from_pcapng(p->offline.fd, packet, len);
 	}else{
 		pgen_errno_native = -1;
-			pgen_errno = PG_ERRNO_MODENFOUND;
-		return -1;
+		pgen_errno = PG_ERRNO_MODENFOUND;
+		sendlen = -1;
 	}
 	
 	return sendlen;

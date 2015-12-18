@@ -28,6 +28,7 @@
 #include <sys/types.h>
 
 
+int pgen_send_to_pcapng(FILE* fp, const void* buf, int buflen);
 int pgen_readblock_from_pcapng(FILE* fp, void* buf, int buflen);
 int pgen_recv_from_pcapng(FILE* fp, void* buf, int buflen);
 
