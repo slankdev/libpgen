@@ -61,7 +61,7 @@ struct __pcapng_IDB {
 	bit32 tot_len;	
 	bit16 link_type;
 	bit16 reserved;
-	bit32 nmap_length;
+	bit32 snap_length;
 };
 
 /* Enhanced Packet Block 

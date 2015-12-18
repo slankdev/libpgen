@@ -112,6 +112,10 @@ char* pgen_strerror(int errno){
 			snprintf(pgen_errstr, sizeof(pgen_errstr), "Buffer length is failed \n");
 			break;
 
+		case PG_ERRNO_MODENFOUND:
+			snprintf(pgen_errstr, sizeof(pgen_errstr), "Mode not found \n");
+			break;
+
 
 		default:
 			strncpy(pgen_errstr, "unknown error! We didn't use this error number", errstrlen);
