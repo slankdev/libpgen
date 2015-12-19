@@ -137,6 +137,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				pgen_errno = PG_NERRNO_FOPEN;
 				pgen_close(handle);
 				handle = NULL;
+				break;
 			}
 			unsigned int tot_len_tail;
 			
@@ -152,20 +153,21 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			filehdrng.section_length[2] = 0x000000ff;
 			tot_len_tail = filehdrng.tot_len;
 			if(fwrite(&filehdrng,
-						sizeof(struct __pcapng_SHB),1,handle->offline.fd)<1){
+						sizeof(struct __pcapng_SHB),1,handle->offline.fd) != 1){
 				pgen_errno_native = errno;
 				pgen_errno = PG_NERRNO_FWRITE;
 				pgen_close(handle);
 				handle = NULL;
+				break;
 			}
 			if(fwrite(&tot_len_tail,
-						sizeof(tot_len_tail),1,handle->offline.fd)<1){
+						sizeof(tot_len_tail),1,handle->offline.fd) != 1){
 				pgen_errno_native = errno;
 				pgen_errno = PG_NERRNO_FWRITE;
 				pgen_close(handle);
 				handle = NULL;
+				break;
 			}
-
 
 			// write interface description block
 			struct __pcapng_IDB idb;
@@ -176,24 +178,21 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 			idb.snap_length = 0x0000;
 			tot_len_tail = idb.tot_len;
 			if(fwrite(&idb,
-						sizeof(struct __pcapng_IDB),1,handle->offline.fd)<1){
+						sizeof(struct __pcapng_IDB),1,handle->offline.fd) != 1){
 				pgen_errno_native = errno;
 				pgen_errno = PG_NERRNO_FWRITE;
 				pgen_close(handle);
 				handle = NULL;
+				break;
 			}
 			if(fwrite(&tot_len_tail,
-						sizeof(tot_len_tail),1,handle->offline.fd)<1){
+						sizeof(tot_len_tail),1,handle->offline.fd) != 1){
 				pgen_errno_native = errno;
 				pgen_errno = PG_NERRNO_FWRITE;
 				pgen_close(handle);
 				handle = NULL;
+				break;
 			}
-			break;
-
-
-
-
 			break;
 
 
