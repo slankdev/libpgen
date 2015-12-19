@@ -41,8 +41,6 @@
 
 
 
-
-
 int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 	int sendlen = 0;
 	struct timeval ts_now;
@@ -59,7 +57,7 @@ int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 		pgen_errno = PG_NERRNO_FWRITE;
 		sendlen = -1;
 	}else{
-		if(fwrite(buf, len, 1, fp) < 1){
+		if(fwrite(buf, len, 1, fp) != 1){
 			pgen_errno_native = errno;
 			pgen_errno = PG_NERRNO_FWRITE;
 			sendlen = -1;
@@ -68,6 +66,50 @@ int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 	}
 	
 	return sendlen;	
+}
+
+
+
+
+
+int pgen_send_to_pcapng(FILE* fp, const void* buf, int buflen){
+	unsigned int tot_len_tail;
+	struct __pcapng_EPB epb;
+	u_char padding[4] = {0,0,0,0};
+	int paddinglen = 4 - buflen % 4;
+
+	epb.type    = 0x00000006;
+	epb.tot_len = 0x20 + buflen + paddinglen;
+	epb.interface_id = 0x0;
+	epb.timestamp_high = 0x11111111;
+	epb.timestamp_low = 0x22222222;
+	epb.capture_len = buflen;
+	epb.packet_len = buflen;
+	tot_len_tail = epb.tot_len;
+
+	if(fwrite(&epb,
+				sizeof(struct __pcapng_EPB),1,fp) !=1){
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FWRITE;
+		return  -1;
+	}
+	if(fwrite(buf, buflen, 1, fp) != 1){
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FWRITE;
+		return -1;
+	}
+	if(fwrite(&padding, paddinglen, 1,fp) != 1){
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FWRITE;
+		return -1;
+	}
+	if(fwrite(&tot_len_tail,
+				sizeof(tot_len_tail),1,fp)<1){
+		pgen_errno_native = errno;
+		pgen_errno = PG_NERRNO_FWRITE;
+		return -1;
+	}
+	return buflen;
 }
 
 
@@ -92,6 +134,13 @@ int pgen_recv_from_pcap(FILE* fp, void* buf, int len){
 
 	return hdr.len;
 }
+
+
+
+
+
+
+
 
 
 

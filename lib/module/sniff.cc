@@ -39,21 +39,32 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 	
 
 	for(;result;){
-		if(pgen_descriptor_is_offline(handle)){ // offline sniff
-			len = pgen_recv_from_pcap(handle->offline.fd, packet, sizeof(packet));
-			if(len < 0){
-				pgen_perror("sniff");
-				return;
-			}
-
-		}else{ // online sniff	
-			len = pgen_recv_from_netif(handle->online.fd, packet, sizeof(packet));
-			if(len < 0){
-				pgen_perror("sniff");
-				return;
-			}
-
+		len = pgen_recvpacket_handle(handle, packet, sizeof(packet));
+		if(len < 0){
+			pgen_perror("sniff");
+			return;
+		}else if(len == 0){
+			printf("fin pack\n");	
+			return;
 		}
+
+
+		// if(pgen_descriptor_is_offline(handle)){ // offline sniff
+		// 	len = pgen_recv_from_pcap(handle->offline.fd, packet, sizeof(packet));
+		// 	if(len < 0){
+		// 		pgen_perror("sniff");
+		// 		return;
+		// 	}
+        //
+		// }else{ // online sniff	
+		// 	len = pgen_recv_from_netif(handle->online.fd, packet, sizeof(packet));
+		// 	if(len < 0){
+		// 		pgen_perror("sniff");
+		// 		return;
+		// 	}
+        //
+		// }
+		
 		result = (*callback)(packet, len);
 	}
 }
