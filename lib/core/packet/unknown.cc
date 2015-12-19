@@ -41,6 +41,17 @@ pgen_unknown::pgen_unknown(const void* packet, int len){
 
 
 
+u_char* pgen_unknown::byte(){
+	return __data;
+}
+
+int pgen_unknown::length(){
+	return __len;	
+}
+
+
+
+
 bool pgen_unknown::isETH(){return __isETH;}
 bool pgen_unknown::isARP(){return __isARP;}
 bool pgen_unknown::isIP(){return __isIP;}

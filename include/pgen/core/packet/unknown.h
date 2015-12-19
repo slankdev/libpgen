@@ -106,6 +106,8 @@ class pgen_unknown{
 		void send(pgen_t*);
 		void summary();
 		void hex();
+		u_char* byte();
+		int length();
 
 		bool isETH();
 		bool isARP();
