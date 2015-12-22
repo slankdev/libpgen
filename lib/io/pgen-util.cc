@@ -64,6 +64,7 @@ int pgen_send_to_pcap(FILE* fp, const void* buf, int len){
 		}
 		sendlen = len;
 	}
+	fflush(fp);
 	
 	return sendlen;	
 }
@@ -109,6 +110,7 @@ int pgen_send_to_pcapng(FILE* fp, const void* buf, int buflen){
 		pgen_errno = PG_NERRNO_FWRITE;
 		return -1;
 	}
+	fflush(fp);
 	return buflen;
 }
 

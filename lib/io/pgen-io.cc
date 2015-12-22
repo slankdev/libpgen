@@ -102,6 +102,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				pgen_close(handle);
 				handle = NULL;
 			}
+			fflush(handle->offline.fd);
 			
 			break;
 		
@@ -168,6 +169,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				handle = NULL;
 				break;
 			}
+			fflush(handle->offline.fd);
 
 			// write interface description block
 			struct __pcapng_IDB idb;
@@ -193,6 +195,7 @@ pgen_t* pgen_open_offline(const char* filename, int mode){
 				handle = NULL;
 				break;
 			}
+			fflush(handle->offline.fd);
 			break;
 
 
