@@ -262,16 +262,16 @@ int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 	
 
 	if(p->mode == NETIF){
-		printf("pgen_sendpacket_handle NETIF \n");
+		// printf("pgen_sendpacket_handle NETIF \n");
 		sendlen = pgen_send_to_netif(p->online.fd, packet, len);
 	}else if(p->mode == PCAP_WRITE){
-		printf("pgen_sendpacket_handle PCAP \n");
+		// printf("pgen_sendpacket_handle PCAP \n");
 		sendlen = pgen_send_to_pcap(p->offline.fd, packet, len);
 	}else if(p->mode == PCAPNG_WRITE){
-		printf("pgen_sendpacket_handle PCAPNG \n");
+		// printf("pgen_sendpacket_handle PCAPNG \n");
 		sendlen = pgen_send_to_pcapng(p->offline.fd, packet, len);
 	}else{
-		printf("pgen_sendpacket_handle OTHER \n");
+		// printf("pgen_sendpacket_handle OTHER \n");
 		pgen_errno_native = -1;
 		pgen_errno = PG_ERRNO_MODENFOUND;
 		sendlen = -1;
