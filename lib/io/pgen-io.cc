@@ -247,8 +247,12 @@ void pgen_close(pgen_t* p){
 
 
 
-
-
+int pgen_send(pgen_t* p, const void* packet, int len){
+	return pgen_sendpacket_handle(p, packet, len);
+}
+int pgen_recv(pgen_t* p, void* packet, int len){
+	return pgen_recvpacket_handle(p, packet, len);
+}
 
 
 /* This is pgen-syscall */

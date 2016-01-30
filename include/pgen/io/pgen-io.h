@@ -52,6 +52,8 @@ int pgen_recvpacket_L2(const char*, void*, int);
 int pgen_recvpacket_handle(pgen_t* p, void* packet, int len);
 
 
+int pgen_send(pgen_t* p, const void* packet, int len);
+int pgen_recv(pgen_t* p, void* packet, int len);
 
 
 #endif /* NETUTIL_H */
