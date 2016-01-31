@@ -248,34 +248,20 @@ void pgen_close(pgen_t* p){
 
 
 int pgen_send(pgen_t* p, const void* packet, int len){
-	return pgen_sendpacket_handle(p, packet, len);
-}
-int pgen_recv(pgen_t* p, void* packet, int len){
-	return pgen_recvpacket_handle(p, packet, len);
-}
-
-
-/* This is pgen-syscall */
-int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 	if(pgen_descriptor_is_writeable(p) == false){
 		pgen_errno_native = -1;
 		pgen_errno = PG_ERRNO_NOWRITE;
 		return -1;
 	}
 	int sendlen;
-	
-
+		
 	if(p->mode == NETIF){
-		// printf("pgen_sendpacket_handle NETIF \n");
 		sendlen = pgen_send_to_netif(p->online.fd, packet, len);
 	}else if(p->mode == PCAP_WRITE){
-		// printf("pgen_sendpacket_handle PCAP \n");
 		sendlen = pgen_send_to_pcap(p->offline.fd, packet, len);
 	}else if(p->mode == PCAPNG_WRITE){
-		// printf("pgen_sendpacket_handle PCAPNG \n");
 		sendlen = pgen_send_to_pcapng(p->offline.fd, packet, len);
 	}else{
-		// printf("pgen_sendpacket_handle OTHER \n");
 		pgen_errno_native = -1;
 		pgen_errno = PG_ERRNO_MODENFOUND;
 		sendlen = -1;
@@ -285,7 +271,45 @@ int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
 }
 
 
+int pgen_recv(pgen_t* p, void* packet, int len){
+	if(pgen_descriptor_is_readable(p) == false){
+		pgen_errno_native = -1;
+		pgen_errno = PG_ERRNO_NOREAD;
+		return -1;
+	}
+	int sendlen;
+	
+	if(p->mode == NETIF){
+		sendlen = pgen_recv_from_netif(p->online.fd, packet, len);
+	}else if(p->mode == PCAP_READ){
+		sendlen = pgen_recv_from_pcap(p->offline.fd, packet, len);
+	}else if(p->mode == PCAPNG_READ){
+		sendlen = pgen_recv_from_pcapng(p->offline.fd, packet, len);
+	}else{
+		pgen_errno_native = -1;
+		pgen_errno = PG_ERRNO_MODENFOUND;
+		sendlen = -1;
+	}
+	
+	return sendlen;
+}
 
+
+/* This is pgen-syscall */
+int pgen_sendpacket_handle(pgen_t* p, const void* packet, int len){
+	fprintf(stderr, "pgen_sendpacket_handle: This function is old. Please use pgen_send().\n");
+	fprintf(stderr, "pgen_sendpacket_handle: This function will be deleted in version2.0\n");
+	return pgen_send(p, packet, len);
+}
+
+
+
+/* This is pgen-syscall */
+int pgen_recvpacket_handle(pgen_t* p, void* packet, int len){
+	fprintf(stderr, "pgen_recvpacket_handle: This function is old. Please use pgen_recv().\n");
+	fprintf(stderr, "pgen_sendpacket_handle: This function will be deleted in version2.0\n");
+	return pgen_recv(p, packet, len);
+}
 
 
 
@@ -317,7 +341,6 @@ int pgen_recvpacket_L2(const char* dev, void* packet, int len){
 		return -1;
 	}
 
-
 	sendlen = pgen_recv_from_netif(sock, packet, len);
 
 	close(sock);
@@ -326,36 +349,15 @@ int pgen_recvpacket_L2(const char* dev, void* packet, int len){
 
 
 
-/* This is pgen-syscall */
-int pgen_recvpacket_handle(pgen_t* p, void* packet, int len){
-	if(pgen_descriptor_is_readable(p) == false){
-		pgen_errno_native = -1;
-		pgen_errno = PG_ERRNO_NOREAD;
-		return -1;
-	}
-	int sendlen;
-	
-	if(p->mode == NETIF){
-		sendlen = pgen_recv_from_netif(p->online.fd, packet, len);
-	}else if(p->mode == PCAP_READ){
-		sendlen = pgen_recv_from_pcap(p->offline.fd, packet, len);
-	}else if(p->mode == PCAPNG_READ){
-		sendlen = pgen_recv_from_pcapng(p->offline.fd, packet, len);
-	}else{
-		pgen_errno_native = -1;
-		pgen_errno = PG_ERRNO_MODENFOUND;
-		sendlen = -1;
-	}
-	
-	return sendlen;
+
+
+
+
+
+
+bool pgen_descriptor_is_online(pgen_t* handle){
+	return handle->mode==NETIF;
 }
-
-
-
-
-
-
-
 bool pgen_descriptor_is_offline(pgen_t* handle){
 	return !pgen_descriptor_is_online(handle);
 }
@@ -364,37 +366,13 @@ bool pgen_descriptor_is_offline(pgen_t* handle){
 
 
 
-bool pgen_descriptor_is_online(pgen_t* handle){
-	int mode = handle->mode;
-	if(mode == NETIF)
-		return true;
-	else
-		return false;
-}
-
-
-
-
-
 bool pgen_descriptor_is_readable(pgen_t* handle){
 	int mode = handle->mode;
-	if(mode==NETIF || mode==PCAP_READ || mode==PCAPNG_READ)
-		return true;
-	else
-		return false;
+	return (mode==NETIF || mode==PCAP_READ || mode==PCAPNG_READ);
 }
-
-
-
-
-
-
 bool pgen_descriptor_is_writeable(pgen_t* handle){
 	int mode = handle->mode;
-	if(mode==NETIF || mode==PCAP_WRITE || mode==PCAPNG_WRITE) 
-		return true;
-	else	
-		return false;
+	return (mode==NETIF || mode==PCAP_WRITE || mode==PCAPNG_WRITE);
 }
 
 
