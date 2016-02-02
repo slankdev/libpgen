@@ -39,7 +39,7 @@ void sniff(pgen_t* handle, bool (*callback)(const u_char*, int)){
 	
 
 	for(;result;){
-		len = pgen_recvpacket_handle(handle, packet, sizeof(packet));
+		len = pgen_recv(handle, packet, sizeof(packet));
 		if(len < 0){
 			pgen_perror("sniff");
 			return;

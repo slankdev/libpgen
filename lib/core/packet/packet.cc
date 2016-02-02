@@ -94,7 +94,7 @@ void pgen_packet::send_dev(const char* ifname){
 
 void pgen_packet::send(pgen_t* handle){
 	compile();
-	int r = pgen_sendpacket_handle(handle, this->__data, this->__len);
+	int r = pgen_send(handle, this->__data, this->__len);
 	if(r < 0){
 		pgen_perror("send_handle");	
 	}
