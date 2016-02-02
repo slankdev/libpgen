@@ -170,7 +170,7 @@ int  pgen_tcp::read_bin(const void* buf, int buflen){
 
 
 
-unsigned short pgen_tcp::calc_checksum(){
+unsigned short pgen_tcp::calc_tcp_checksum(){
 	this->TCP.check = 0;
 		
 	struct ip_header ip_head;
