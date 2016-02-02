@@ -57,7 +57,7 @@ class pgen_ip : public pgen_eth {
 		int  write_bin(void*, int);
 		int  read_bin(const void*, int);
 
-		unsigned short calc_checksum();
+		unsigned short calc_ip_checksum();
 };
 
 

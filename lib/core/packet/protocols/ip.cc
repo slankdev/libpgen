@@ -158,7 +158,7 @@ int  pgen_ip::read_bin(const void* buf, int buflen){
 }
 
 
-unsigned short pgen_ip::calc_checksum(){
+unsigned short pgen_ip::calc_ip_checksum(){
 	this->IP.check = 0;
 		
 	struct ip_header ip_head;

@@ -337,6 +337,11 @@ unsigned short checksumTcp(struct ip_header ip,
 
 	memcpy(p, &headers, 12+tcp.doff*4);
 	p += 12+tcp.doff*4;
+
+	if (total_len - tcp.doff*4 < 0) {
+		fprintf(stderr, "checksumTCP: packet maybe malformed about length \n");		
+	}
+
 	memcpy(p, data, total_len-tcp.doff*4);
 
 	return checksum((u_int16_t*)buffer0, 12+total_len);
