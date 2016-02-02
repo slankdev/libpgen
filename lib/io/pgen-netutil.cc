@@ -290,6 +290,7 @@ int initRawSocket(const char* dev, int promisc, int overIp){
 		memset(&ifreq, 0, sizeof(struct ifreq));
 		strncpy(ifreq.ifr_name, dev, sizeof(ifreq.ifr_name)-1);
 		if(ioctl(sock, SIOCGIFINDEX, &ifreq) < 0){
+			printf("errcode: %d \n", errno);
 			pgen_errno_native = errno;
 			pgen_errno = PG_NERRNO_IOCTL;
 			close(sock);
