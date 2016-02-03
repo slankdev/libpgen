@@ -33,8 +33,23 @@
 
 
 
+void pgen_packet::DATA_set(const void* buf, int l) {
+	memcpy(_additional_data, buf, l);
+	_additional_len = l;
+}
 
+void pgen_packet::add_data(const void* buf, int l) {
+	DATA_set(buf, l);
+}
 
+int pgen_packet::DATA_len() {
+	this->compile();
+	return _additional_len;
+}
+void* pgen_packet::DATA_get() {
+	this->compile();
+	return _additional_data;
+}
 
 
 
@@ -44,17 +59,10 @@ pgen_packet::pgen_packet(){
 	memset(__data, 0, sizeof(__data));
 	_additional_len = 0;
 	memset(_additional_data, 0, sizeof _additional_data);
+
+	_D.pack = this;
 }
 
-
-
-
-void pgen_packet::add_data(const void* buf, int l) {
-	memcpy(_additional_data, buf, l);
-	_additional_len = l;
-
-	return ;	
-}
 
 
 
@@ -99,5 +107,11 @@ void pgen_packet::send(pgen_t* handle){
 		pgen_perror("send_handle");	
 	}
 }
+
+
+
+
+
+
 
 
