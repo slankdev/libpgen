@@ -1,0 +1,40 @@
+
+
+class packet {
+	void send();
+	void recv()
+	void summary();
+};
+
+class ip_packet : packet {
+	public:
+		eth_member e;
+		ip_member i;
+}
+
+
+
+class eth_member {
+	private:
+		macaddr src;	
+		macaddr dst;	
+		16bit   type;
+	public:
+		set_src();
+		set_dst();
+		set_type();
+
+};
+
+
+class ip_member {
+	private:
+		bit4 hlen;
+		ipaddr src;	
+		ipaddr dst;	
+		16bit  protocol;
+	public:
+		set_src();
+		set_dst();
+		set_type();
+}
