@@ -10,15 +10,35 @@
 void func(const void* d, int len);
 
 
+#include <vector>
+#include <stdint.h>
 
-
-
+    
+/*
+ * container class -- manage the byte array for libpgen version 2.0
+ * 
+ * Data Structure
+ * 		
+ * 	    0 1 ...                     128  ....                                                N
+ * 		+----------------------------+--------------------------...--------------------------+
+ * 		| 0101...                    |  001011...                                            |  
+ * 		+----------------------------+--------------------------...--------------------------+
+ * 		 <------Packet-Headers------> <------------------Packet-Contents-------------------->
+ * 	                                 ^ 
+ * 	                               pivot
+ *
+ *		Packet Headers		--		Packet's headers. For example, if it's ip packet class, 
+ *									this field contain ethernet and ip header fields.
+ *
+ *		Packet Contents		--		Packet's Contents, For example, if it's ip packet class,
+ *									this field contain ip's data.
+ */
 class container {
 	private:
 		std::vector<uint8_t> _vec;
-		size_t _pivot;
+		static const size_t _pivot = 128; /* [byte] */
 	public:
-		container(size_t size=128, size_t pivot=128) : _pivot(pivot){ 
+		container(size_t size=128) { 
 			_vec.resize(size, 0);
 		}
 		void set_size(int size) {
@@ -58,6 +78,7 @@ class container {
 		void insert_tail( uint8_t* buf, size_t buflen) {
 			_vec.insert(_vec.end(), buf, buf+buflen);
 		}
+
 		void hex() const {
 			func((void*)_vec.data(), _vec.size());
 		}
@@ -78,6 +99,8 @@ int main() {
 	c.hex();
 	
 }
+
+
 
 
 
