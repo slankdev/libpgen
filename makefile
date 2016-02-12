@@ -1,24 +1,25 @@
 
-include config.make
+include config.mk
 
 INCLUDE_DIR = include 
 
 SRC_DIR   = src
 
+# origin source
 IO_DIR    = $(SRC_DIR)/io
 CORE_DIR  = $(SRC_DIR)/core
 TYPES_DIR = $(SRC_DIR)/types
+PROTCOL_DIR = $(CORE_DIR)/protocol
+
 
 
 OBJ = \
 	$(IO_DIR)/*.o \
 	$(CORE_DIR)/*.o \
-	$(TYPES_DIR)/*.o 
+	$(TYPES_DIR)/*.o \
+	$(PROTCOL_DIR)/*.o
 
 
-.SUFFIXES: .out .c .cc .o .h 
-.cc.o: 
-	$(CPP) $(CPPFLAGS) -c $< -o $@  $(INCLUDE)
 
 all: build build-main
 
@@ -32,4 +33,5 @@ build:
 
 
 clean:
+	$(RM) *.o *.out
 	$(MAKE) -C $(SRC_DIR) clean

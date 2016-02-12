@@ -1,5 +1,5 @@
 
-include ../config.make
+include ../config.mk
 
 
 IO_DIR    = io
@@ -19,7 +19,6 @@ clean:
 	$(MAKE) -C $(IO_DIR) clean
 	$(MAKE) -C $(CORE_DIR) clean
 	$(MAKE) -C $(TYPES_DIR) clean
-	$(RM) *.o *.out
 
 
 
