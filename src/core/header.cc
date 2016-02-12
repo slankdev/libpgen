@@ -67,8 +67,8 @@ size_t ethernet_header::read(const void* buffer, size_t buffer_len) {
     };
     const struct eth* p = (const struct eth*)buffer;
 
-    src().setmacbyarray(p->src);
-    dst().setmacbyarray(p->dst);
+    src().setbyarray(p->src);
+    dst().setbyarray(p->dst);
     type() = ntohs(p->type);
     
     return 1;      

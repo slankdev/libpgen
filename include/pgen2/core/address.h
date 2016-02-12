@@ -17,6 +17,8 @@ class macaddress {
         uint8_t _raw[length];
         std::string _name;
 
+        static const size_t strlength = 3*length - 1;
+
         void _update_name();
         void  set_str(const std::string& str);
     public:
@@ -34,8 +36,7 @@ class macaddress {
             set_str(str);
         }
         void clear(){
-            for (size_t i=0; i<length; i++)
-                _raw[i] = 0;
+            memset(_raw, 0, sizeof(_raw));
             _update_name();
         }
 
@@ -59,8 +60,8 @@ class macaddress {
         bool operator==(const macaddress& addr) const ;
         bool operator!=(const macaddress& addr) const ;
 
-        void setmacbyarray(const uint8_t* array);
-        void setmacbydev(const char* ifname);
+        void setbydev(const char* ifname);
+        void setbyarray(const uint8_t array[6]);
 };
 
 
