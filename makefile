@@ -25,7 +25,7 @@ all: build build-main
 
 
 build-main: 
-	$(CPP) -I$(INCLUDE_DIR) $(OBJ)	main.cc
+	$(CPP) $(CPPFLAGS) -I$(INCLUDE_DIR) $(OBJ)	main.cc
 
 
 build: 

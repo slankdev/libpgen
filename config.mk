@@ -14,7 +14,7 @@ export MKDIR  := mkdir -p
 export RANLIB := ranlib
 export MAKE := make
 
-CPPFLAGS = -Wall -fPIC -std=c++11 
+CPPFLAGS = -Wall -fPIC -std=c++11 -Wextra
 
 
 .SUFFIXES: .out .c .cc .o .h 

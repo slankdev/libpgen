@@ -12,7 +12,6 @@ namespace pgen {
 namespace core {
 
 
-packet::packet() {}
 
 
 void  packet::set_contents(const void* buffer, size_t buflen) {
@@ -33,7 +32,6 @@ size_t packet::length() const {
     assert(_raw.size() >= pgen::core::packet::max_header_len);
     return _raw.size() - pgen::core::packet::max_header_len + header_length();
 }
-
 
 
 packet_type packet::get_type() const {

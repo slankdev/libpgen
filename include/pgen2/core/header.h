@@ -3,31 +3,25 @@
 
 
 #include <stdio.h>
-#include <pgen2.h>
+#include <stdint.h>
+#include <pgen2/core/address.h>
 
 
 
 namespace pgen {
 namespace core {
-namespace header {
 
 
-class header {
-    private:
-    public:
-        virtual size_t write_header(void* buffer, size_t buffer_len) = 0;
-        virtual size_t read_header(const void* buffer, size_t buffer_len) = 0;
-};
 
 
-class ethernet : public header {
+class ethernet_header {
     private:
         macaddress _dst;
         macaddress _src;
         uint16_t   _type;
 
     public:
-        ethernet();
+        ethernet_header();
         const macaddress& src() const;
         const macaddress& dst() const;
         const uint16_t&   type() const;
@@ -35,8 +29,8 @@ class ethernet : public header {
         macaddress& dst();
         uint16_t&   type();
 
-        size_t write_header(void* buffer, size_t buffer_len);
-        size_t read_header(const void* buffer, size_t buffer_len);
+        size_t write(void* buffer, size_t buffer_len);
+        size_t read(const void* buffer, size_t buffer_len);
 
 };
 
@@ -77,14 +71,13 @@ class ethernet : public header {
 // 		ipaddr&     src();
 // 		ipaddr&     dst();
 //
-// 		size_t write_header(void* buffer, size_t buffer_len);
-// 		size_t read_header(const void* buffer, size_t buffer_len);
+// 		size_t write(void* buffer, size_t buffer_len);
+// 		size_t read(const void* buffer, size_t buffer_len);
 // };
 //
 
 
 
-} /* header */
 } /* core */
 } /* pgen */
 

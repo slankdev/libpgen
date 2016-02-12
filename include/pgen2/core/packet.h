@@ -8,11 +8,13 @@
 #include <pgen2/types/data_container.h>
 
 
+
+
 namespace pgen {
 namespace core {
 
 
-enum packet_type {
+enum class packet_type {
     unknown,
     ethernet, 
     arp,
@@ -36,9 +38,6 @@ class packet {
     public:
         static const size_t max_header_len = 128; /* [byte] */
 
-        packet();
-        virtual ~packet();
-
         /* For Packet Contents */
         void  set_contents(const void* buffer, size_t buflen);
         const uint8_t* contents() const;
@@ -57,8 +56,6 @@ class packet {
         virtual void summary(bool moreinfo=false) const = 0;
         virtual void help() const = 0;
 };
-
-
 
 
 
