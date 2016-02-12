@@ -2,15 +2,14 @@
 #pragma once
 
 #include <vector>
-#include <stdio.h>
+#include <stddef.h>
 #include <stdint.h>
 
-#include <pgen2/io/util.h>
-#include <pgen2/types/data_container.h>
 
 
 namespace pgen { 
 namespace types { 
+
 
 class data_container {
     private:
@@ -25,7 +24,6 @@ class data_container {
 
         void write_before(int index, void* buf, size_t buflen);
         void set_content(const void* buf, size_t buflen);
-        void delete_content();
 };
 
 } /* namespace types */

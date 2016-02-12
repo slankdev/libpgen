@@ -37,15 +37,9 @@ void data_container::write_before(int index, void* buf, size_t buflen) {
 }
 
 void data_container::set_content(const void* buf, size_t buflen) {
-    delete_content();
     _vec.insert(_vec.end(), (uint8_t*)buf, (uint8_t*)buf+buflen);
 }
 
-void data_container::delete_content() {
-    std::vector<uint8_t>::iterator it = _vec.begin();
-    it += _pivot;
-    _vec.erase(it, _vec.end());       
-}
 
 
 } /* namespace types */
