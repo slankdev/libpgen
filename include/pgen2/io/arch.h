@@ -6,7 +6,7 @@ namespace pgen {
 namespace io {
 namespace arch {
 
-void getmacbydev(const char* dev, char* mac);
+void getmacbydev(const char* dev, uint8_t mac[6]);
         
 } /* namespace arch */
 } /* namespace io */

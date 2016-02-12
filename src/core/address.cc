@@ -15,48 +15,31 @@ namespace core {
  
 
 void macaddress::_update_name() {
-    char str[18];
-    sprintf(str, "%02x:%02x:%02x:%02x:%02x:%02x", _raw[0], 
+    _name.resize(strlength+1);
+    sprintf(&_name[0], "%02x:%02x:%02x:%02x:%02x:%02x", _raw[0],
             _raw[1], _raw[2], _raw[3], _raw[4], _raw[5]);
-    _name = str;
+    _name.resize(strlength);
 }
 
 
-macaddress::macaddress() {
-    clear();
-}
-macaddress::macaddress(const macaddress& m) {
-    *this = m;
-}
-macaddress::macaddress(const std::string& str) {
-    *this = str; 
-}
-macaddress::macaddress(const char* str) {
-    std::string s = str;
-    *this = s;
-}
 
 
-void macaddress::clear() {
-    for (int i=0; i<6; i++)       
-        _raw[i] = 0;
-    _update_name();
-}
+
 
 
 void macaddress::set_str(const std::string& str) {
-    if (str.length() != 17) {
+    if (str.length() != strlength) {
         throw std::length_error("format error");
     }
 
-    uint32_t buf[6];
-	int n = sscanf(str.c_str(), "%02x:%02x:%02x:%02x:%02x:%02x", 
-			&buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
+    uint32_t buf[length];
+    int n = sscanf(str.c_str(), "%02x:%02x:%02x:%02x:%02x:%02x",
+            &buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
     
-    if (n != 6) {
+    if (n != length) {
         throw std::length_error("format error");
     }
-	for(int i=0; i<6; i++)	_raw[i] = buf[i];
+    for(size_t i=0; i<length; i++)  _raw[i] = buf[i];
 
     _update_name();
 }
@@ -104,64 +87,39 @@ const uint8_t* macaddress::get_raw() const {
 
 
 
-macaddress& macaddress::operator=(const macaddress& m) {
-    for (int i=0; i<6; i++) {
-        _raw[i] = m._raw[i];      
-    }
-    _name = m._name;
+macaddress& macaddress::operator=(const macaddress& rhs) {
+    memcpy(_raw, rhs._raw, sizeof(_raw));
+    _name = rhs._name;
     return *this;
 }
 
 
 
-macaddress& macaddress::operator=(const std::string& str) {
-    set_str(str);
-    return *this;
-}
 
 
-macaddress& macaddress::operator=(const char* str) {
-    std::string s = str;
-    *this = s;
-    return *this;
-}
-
-
-
-bool macaddress::operator==(const macaddress& addr) const {
-    for (int i=0; i<6; i++) {
-        if (_raw[i] == addr.get_octet(i+1))
-            continue;
-        else
-            return false;
-    }
-    return true;
+bool macaddress::operator==(const macaddress& rhs) const {
+    return memcmp(_raw, rhs._raw, sizeof(_raw)) == 0;
 }
 
 
 
 
-bool macaddress::operator!=(const macaddress& addr) const {
-    return !(*this==addr);
+bool macaddress::operator!=(const macaddress& rhs) const {
+    return !(*this==rhs);
 }
 
 
 
-void macaddress::setmacbyarray(const uint8_t* array) {
-    for (int i=0; i<6; i++) {  
-        _raw[i] = array[i];      
-    }
+
+void macaddress::setbydev(const char* ifname) {
+    pgen::io::arch::getmacbydev(ifname, _raw);
     _update_name();
 }
 
-
-
-void macaddress::setmacbydev(const char* ifname) {
-    char buf[256];
-    pgen::io::arch::getmacbydev(ifname, buf);
-    *this = buf;
+void macaddress::setbyarray(const uint8_t array[6]) {
+    memcpy(_raw, array, length);
+    _update_name();
 }
-
 
 
 

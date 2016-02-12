@@ -1,19 +1,16 @@
 
-include ../../config.make
-
+include ../../config.mk
 INCLUDE_DIR = ../../include
 
 
-
-.SUFFIXES: .out .c .cc .o .h 
-.cc.o: 
-	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
+PROTCOL_DIR = protocol
 
 
-SRC = address.cc header.cc
-OBJ = $(SRC:.cc=.o)
+build: address.o header.o packet.o build-protocol
 
-build: $(OBJ) 
-	
+build-protocol:
+	$(MAKE) -C $(PROTCOL_DIR) build
+
 clean:
 	$(RM) *.o
+	$(MAKE) -C $(PROTCOL_DIR) clean

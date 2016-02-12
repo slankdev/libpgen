@@ -24,28 +24,31 @@ namespace arch {
 
 
 
-void getmacbydev(const char* dev, char* mac) {
+void getmacbydev(const char* dev, uint8_t mac[6]) {
 #ifdef __linux
+    if(strlen(dev) >= IFNAMSIZ) {
+        // throw  
+        printf("atode \n");
+        exit(-1);
+    }
 
 	int sockd;
 	struct ifreq ifr;
 	if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
         throw std::domain_error(strerr(errno));
 	}
+
 	ifr.ifr_addr.sa_family = AF_INET;
-	strncpy(ifr.ifr_name, dev, IFNAMSIZ-1);
+	strcpy(ifr.ifr_name, dev);
 	if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
+	    close(sockd);
         throw std::domain_error(strerr(errno));
 	}
 	close(sockd);
-	sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x", 
-	 	(unsigned char)ifr.ifr_hwaddr.sa_data[0], 
-	 	(unsigned char)ifr.ifr_hwaddr.sa_data[1], 
-	 	(unsigned char)ifr.ifr_hwaddr.sa_data[2], 
-	 	(unsigned char)ifr.ifr_hwaddr.sa_data[3], 
-	 	(unsigned char)ifr.ifr_hwaddr.sa_data[4], 
-	 	(unsigned char)ifr.ifr_hwaddr.sa_data[5] );
+    memcpy(mac, ifr.ifr_hwaddr.sa_data, 6);
+    
 	return ; //success
+
 
 #else // for bsd
     
@@ -58,15 +61,15 @@ void getmacbydev(const char* dev, char* mac) {
 		if (!strcmp((ifaptr)->ifa_name, dev) && 
 				(((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
 			ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
-			sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x",
-								*ptr, *(ptr+1), *(ptr+2), 
-								*(ptr+3), *(ptr+4), *(ptr+5));
+            memcpy(mac, ptr, 6);
 			freeifaddrs(ifap);
 			return; // success
 		}
 	}
+    
 
 #endif
+    throw std::domain_error("not support");
 }
 
         

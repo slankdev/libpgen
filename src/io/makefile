@@ -1,19 +1,14 @@
 
-include ../../config.make
-
+include ../../config.mk
 INCLUDE_DIR = ../../include
 
 
 
-.SUFFIXES: .out .c .cc .o .h 
-.cc.o: 
-	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
 
+IO_SRC = arch.cc util.cc
+IO_OBJ = $(IO_SRC:.cc=.o)
 
-SRC = arch.cc util.cc
-OBJ = $(SRC:.cc=.o)
-
-build: $(OBJ)
+build: $(IO_OBJ)
 	
 clean:
 	$(RM) *.o

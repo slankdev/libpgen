@@ -5,44 +5,43 @@
 
 namespace pgen {
 namespace core {
-namespace header {
  
 
-ethernet::ethernet() {
+ethernet_header::ethernet_header() {
     src().clear();
     dst().clear();
     type() = 0;
 }
 
 
-const macaddress& ethernet::src() const {
+const macaddress& ethernet_header::src() const {
     return _src;      
 }
 
-const macaddress& ethernet::dst() const {
+const macaddress& ethernet_header::dst() const {
     return _dst;      
 }
 
-const uint16_t& ethernet::type() const {
+const uint16_t& ethernet_header::type() const {
     return _type;      
 }
 
-macaddress& ethernet::src() {
+macaddress& ethernet_header::src() {
     return _src;       
 }
 
 
-macaddress& ethernet::dst() {
+macaddress& ethernet_header::dst() {
     return _dst;      
 }
 
-uint16_t& ethernet::type() {
+uint16_t& ethernet_header::type() {
     return _type;      
 }
 
 
 
-size_t ethernet::write_header(void* buffer, size_t buffer_len) {
+size_t ethernet_header::write(void* buffer, size_t buffer_len) {
     
     struct eth {
         uint8_t dst[6];
@@ -60,7 +59,7 @@ size_t ethernet::write_header(void* buffer, size_t buffer_len) {
     return sizeof(struct eth);
 }
 
-size_t ethernet::read_header(const void* buffer, size_t buffer_len) {
+size_t ethernet_header::read(const void* buffer, size_t buffer_len) {
     struct eth {
         uint8_t dst[6];
         uint8_t src[6];
@@ -68,13 +67,12 @@ size_t ethernet::read_header(const void* buffer, size_t buffer_len) {
     };
     const struct eth* p = (const struct eth*)buffer;
 
-    src().setmacbyarray(p->src);
-    dst().setmacbyarray(p->dst);
+    src().setbyarray(p->src);
+    dst().setbyarray(p->dst);
     type() = ntohs(p->type);
     
     return 1;      
 }
 
-} /* header */
 } /* core */
 } /* pgen */
