@@ -10,10 +10,10 @@ INCLUDE_DIR = ../../include
 	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
 
 
-IO_SRC = arch.cc util.cc
-IO_OBJ = $(IO_SRC:.cc=.o)
+TYPES_SRC = data_container.cc
+TYPES_OBJ = $(TYPES_SRC:.cc=.o)
 
-build: $(IO_OBJ)
+build: $(TYPES_OBJ)
 	
 clean:
 	$(RM) *.o

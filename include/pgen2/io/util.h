@@ -4,7 +4,7 @@ namespace pgen {
 namespace io   {
 namespace util {
 
-void hex(const void* d, int len);
+void hex(const void* buffer, size_t bufferlen);
 
 } /* namespace util */
 } /* namespace io   */

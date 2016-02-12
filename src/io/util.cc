@@ -1,6 +1,7 @@
 
 
-#include <pgen2.h>
+#include <stdio.h>
+#include <stdint.h>
 #include <pgen2/io/util.h>
 
 
@@ -10,16 +11,17 @@ namespace io   {
 namespace util {
 
 
-void hex(const void* d, int len){
-	printf("hexdump len: %d \n", len);
+void hex(const void* buffer, size_t bufferlen) { 
 
-	const uint8_t* data = (const uint8_t*)d;
+	printf("hexdump len: %lu \n", bufferlen);
+
+	const uint8_t* data = (const uint8_t*)buffer;
 
 	int row=0;
 	int column=0;
-	for(row=0; (row+column)<16+len; row+=16){
+	for(row=0; (row+column)<16+bufferlen; row+=16){
 		for(column=0; column<=15; column++){
-			if(!(row+column < len)){
+			if(!(row+column < bufferlen)){
 				printf("   ");
 				if((row+column)%8  == 0 && (row+column)%16 != 0) printf(" ");
 			}else{
@@ -30,7 +32,7 @@ void hex(const void* d, int len){
 		}
 
 		for(column=0; column<=15; column++){
-			if(!(row+column < len)){
+			if(!(row+column < bufferlen)){
 				printf(" ");
 			}else{
 				if((row+column)%16 == 0) 

@@ -4,12 +4,18 @@
 #include <pgen2/core/header.h>
 #include <pgen2/io/util.h>
 #include <pgen2/io/arch.h>
+#include <pgen2/types/data_container.h>
+
+
 
 
 namespace pgen {
+    using io::util::hex;
+    
+
+
 	// This component's designing will be do after designed core and io. 
     namespace module {}
-
 
     namespace core {
         namespace header {}
@@ -26,14 +32,18 @@ namespace pgen {
         // class port;
     }
 
-
     namespace io {
-        namespace util {}
+
+        namespace util {
+            // void hex(const void* buffer, size_t bufferlen);
+        }
         namespace netutil {}
         namespace arch {}
     }
 	
-	// namespace types {} #<{(| define and typedef types |)}>#
+	namespace types {
+        // class data_container;
+    } 
 }
 
 

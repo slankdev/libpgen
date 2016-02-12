@@ -10,6 +10,7 @@ void show(const pgen::core::header::ethernet& e) {
 }
 
 int main() {
+
     uint8_t buf[1000];
     size_t buflen;
 
@@ -17,11 +18,12 @@ int main() {
     e.src() = "11:22:33:44:55:66";
     e.dst() = "aa:bb:cc:dd:ee:ff";
     e.type() = 0x1234;
-    
+
     buflen = e.write_header(buf, sizeof(buf));
-    pgen::io::util::hex(buf, buflen);
+    pgen::hex(buf, buflen);
     show(e);
 
     buflen = e.read_header(buf, buflen);
     show(e);
+
 }
