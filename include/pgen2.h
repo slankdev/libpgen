@@ -18,8 +18,20 @@ namespace pgen {
     namespace module {}
 
     namespace core {
-        namespace header {}
-        // class packet;
+        namespace header {
+            /* 
+             * Implemented class 
+             *
+             *      class header;
+             *      class ethernet : header;
+             */
+        }
+        /* 
+         * Implemented class 
+         *
+         *      class packet;
+         */
+
         // class ethernet  : packet; #<{(| has eth header              |)}>#
         // class arp       : packet; #<{(| has eth and arp header      |)}>#
         // class ip        : packet; #<{(| has eth and ip header       |)}>#
@@ -35,14 +47,22 @@ namespace pgen {
     namespace io {
 
         namespace util {
-            // void hex(const void* buffer, size_t bufferlen);
+            /*
+             * Implemented Functions
+             *
+             *      void hex(const void* buffer, size_t bufferlen);
+             */
         }
         namespace netutil {}
         namespace arch {}
     }
 	
 	namespace types {
-        // class data_container;
+        /* 
+         * Implemented class 
+         *
+         *      class data_container;
+         */
     } 
 }
 
