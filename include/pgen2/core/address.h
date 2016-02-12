@@ -10,20 +10,35 @@ namespace core {
 
 
 class macaddress {
+    public:
+        static const size_t length = 6;
+
     private:
-        uint8_t _raw[6];
+        uint8_t _raw[length];
         std::string _name;
 
         void _update_name();
+        void  set_str(const std::string& str);
     public:
     
-        macaddress();
-        macaddress(const macaddress& m);
-        macaddress(const std::string& str);
-        macaddress(const char* str);
-        void clear(void);
+        macaddress() {
+            clear();
+        }
+        macaddress(const macaddress& m) {
+            *this = m;
+        }
+        macaddress(const std::string& str) {
+            set_str(str);
+        }
+        macaddress(const char* str) {
+            set_str(str);
+        }
+        void clear(){
+            for (size_t i=0; i<length; i++)
+                _raw[i] = 0;
+            _update_name();
+        }
 
-        void  set_str(const std::string& str);
         const std::string get_str() const ;
         const std::string get_bender() const ;
 
@@ -32,9 +47,15 @@ class macaddress {
         
         const uint8_t* get_raw() const;
 
-        macaddress& operator=(const macaddress& m);
-        macaddress& operator=(const std::string& str);
-        macaddress& operator=(const char* str);
+        macaddress& operator=(const macaddress& m) ;
+        macaddress& operator=(const std::string& str) {
+            set_str(str);
+            return *this;
+        }
+        macaddress& operator=(const char* str) {
+            set_str(str);
+            return *this;
+        }
         bool operator==(const macaddress& addr) const ;
         bool operator!=(const macaddress& addr) const ;
 
