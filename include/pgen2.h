@@ -44,6 +44,13 @@ namespace pgen {
     }
 
     namespace io {
+        /*
+         * Implemented class
+         *      
+         *      class stream ;
+         *      IO stream class with NETIF and FILES
+         *
+         */
 
         namespace util {
             /*

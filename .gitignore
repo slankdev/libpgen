@@ -1,0 +1,13 @@
+
+
+.DS_Store
+*.out
+*.o
+*.a
+*.so
+*.dat
+*.dvi
+*.log
+*.aux
+*.dll
+tags
