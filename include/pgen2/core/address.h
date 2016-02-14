@@ -6,7 +6,6 @@
 
 
 namespace pgen {
-namespace core {
 
 
 class macaddress {
@@ -107,5 +106,6 @@ class ipaddress {
 
 
 
-} /* namespace core */
 } /* namespace pgen */
+
+

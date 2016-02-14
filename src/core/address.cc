@@ -7,11 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <iostream>
 #include <exception>
 
 
 namespace pgen {
-namespace core {
  
 
 void macaddress::_update_name() {
@@ -112,7 +112,7 @@ bool macaddress::operator!=(const macaddress& rhs) const {
 
 
 void macaddress::setbydev(const char* ifname) {
-    pgen::io::arch::getmacbydev(ifname, _raw);
+    pgen::arch::getmacbydev(ifname, _raw);
     _update_name();
 }
 
@@ -123,5 +123,4 @@ void macaddress::setbyarray(const uint8_t array[6]) {
 
 
 
-} /* namespace core */
 } /* namespace pgen */

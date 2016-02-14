@@ -4,7 +4,6 @@
 
 
 namespace pgen {
-namespace core {
  
 
 ethernet_header::ethernet_header() {
@@ -86,5 +85,4 @@ size_t ethernet_header::read(const void* buffer, size_t buffer_len) {
     return 1;      
 }
 
-} /* core */
 } /* pgen */

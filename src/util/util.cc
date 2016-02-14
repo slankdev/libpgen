@@ -2,12 +2,11 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <pgen2/io/util.h>
+#include <pgen2/util/util.h>
 
 
 
 namespace pgen {
-namespace io   {
 namespace util {
 
 
@@ -56,7 +55,6 @@ void hex(const void* buffer, size_t bufferlen) {
 
 
 } /* namespace util */
-} /* namespace io   */
 } /* namespace pgen */
 
 

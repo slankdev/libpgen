@@ -9,7 +9,6 @@
 
 
 namespace pgen {
-namespace core {
 
 
 
@@ -78,6 +77,5 @@ class ethernet_header {
 
 
 
-} /* core */
 } /* pgen */
 

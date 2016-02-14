@@ -4,14 +4,13 @@
 
 
 #include <assert.h>
-#include <pgen2/io/util.h>
+#include <pgen2/util/util.h>
 #include <pgen2/types/data_container.h>
 
 
 
 
 namespace pgen {
-namespace core {
 
 
 enum class packet_type {
@@ -29,7 +28,7 @@ enum class packet_type {
 
 class packet {
     protected:
-        pgen::core::packet_type _type;
+        pgen::packet_type _type;
         pgen::types::data_container  _raw;
         size_t _header_len;
 
@@ -64,7 +63,6 @@ class packet {
 
 
 
-} /* namespace core */
 } /* namespace pgen */
 
 

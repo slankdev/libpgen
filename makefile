@@ -5,25 +5,25 @@ INCLUDE_DIR = include
 
 SRC_DIR   = src
 
-# origin source
-IO_DIR      = $(SRC_DIR)/io
-UTIL_DIR    = $(IO_DIR)/util
-            
-CORE_DIR    = $(SRC_DIR)/core
-PROTCOL_DIR = $(CORE_DIR)/protocol
+OBJ = `find . -name "*.o"`
 
-TYPES_DIR   = $(SRC_DIR)/types
-ARCH_DIR    = $(SRC_DIR)/arch
+# # origin source
+# IO_DIR      = $(SRC_DIR)/io
+#             
+# CORE_DIR    = $(SRC_DIR)/core
+# PROTCOL_DIR = $(CORE_DIR)/protocol
+#
+# TYPES_DIR   = $(SRC_DIR)/types
+# UTIL_DIR    = $(SRC_DIR)/util
+# ARCH_DIR    = $(SRC_DIR)/arch
 
-
-
-OBJ = \
-	$(IO_DIR)/*.o \
-	$(UTIL_DIR)/*.o \
-	$(CORE_DIR)/*.o \
-	$(TYPES_DIR)/*.o \
-	$(PROTCOL_DIR)/*.o \
-	$(ARCH_DIR)/*.o 
+# OBJ = \
+# 	$(IO_DIR)/*.o \
+# 	$(UTIL_DIR)/*.o \
+# 	$(CORE_DIR)/*.o \
+# 	$(TYPES_DIR)/*.o \
+# 	$(PROTCOL_DIR)/*.o \
+# 	$(ARCH_DIR)/*.o 
 
 
 

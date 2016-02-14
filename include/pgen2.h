@@ -2,9 +2,8 @@
 
 
 #include <pgen2/types/data_container.h>
-
-#include <pgen2/io/util.h>
-#include <pgen2/io/arch.h>
+#include <pgen2/util/util.h>
+#include <pgen2/arch/arch.h>
 
 #include <pgen2/core/address.h>
 #include <pgen2/core/header.h>

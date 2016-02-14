@@ -2,7 +2,6 @@
 #pragma once
 
 
-// #include <assert.h>
 // #include <pgen2/io/util.h>
 #include <pgen2/core/packet.h>
 #include <pgen2/core/header.h>
@@ -10,7 +9,6 @@
 
 
 namespace pgen {
-namespace core {
 
 
 
@@ -19,7 +17,7 @@ class ethernet : public packet {
         void compile() override;
         
     public:
-        pgen::core::ethernet_header ETH;
+        pgen::ethernet_header ETH;
 
         ethernet();
         void clear() override;
@@ -31,6 +29,5 @@ class ethernet : public packet {
 };
 
 
-} /* namespace core */
 } /* namespace pgen */
 

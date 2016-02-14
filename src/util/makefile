@@ -1,6 +1,6 @@
 
-include ../../../config.mk
-INCLUDE_DIR = ../../../include
+include ../../config.mk
+INCLUDE_DIR = ../../include
 
 
 

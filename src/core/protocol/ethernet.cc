@@ -5,7 +5,6 @@
 #include <pgen2/core/ethernet.h>
 
 namespace pgen {
-namespace core {
 
 
 
@@ -27,26 +26,26 @@ void ethernet::clear() {
 
 
 size_t ethernet::header_length() const {
-    printf("length: %d \n", 
-            (int)(ETH.src().length + ETH.dst().length + sizeof(uint16_t)));
     return ETH.src().length + ETH.dst().length + sizeof(uint16_t);      
 }
 
 
 void ethernet::analyze(const void* buffer, size_t buffer_len) {
+    if (buffer == NULL) printf("OKASII \n");
+    if (buffer_len < 1) printf("OKASII \n");
     printf("ethernet::analyze: is not implemented yet \n" );
     return ;   
 }
 
 void ethernet::summary(bool moreinfo) const {
     if (moreinfo) {
-        printf(" Ethernet \n");
+        printf("Ethernet \n");
         printf(" - source      : %s \n", ETH.src().get_str().c_str());
         printf(" - destination : %s \n", ETH.dst().get_str().c_str());
         printf(" - type        : 0x%04x \n", ETH.type());
 
     } else {
-        printf(" Ethernet [%s -> %s, type=0x%04x] \n", 
+        printf("Ethernet [%s -> %s, type=0x%04x] \n", 
                 ETH.src().get_str().c_str(),
                 ETH.dst().get_str().c_str(), ETH.type());
     }
@@ -57,6 +56,5 @@ void ethernet::summary(bool moreinfo) const {
 
 
 
-} /* namespace core */
 } /* namespace pgen */
 

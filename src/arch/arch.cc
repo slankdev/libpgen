@@ -1,6 +1,6 @@
 
 
-#include <pgen2/io/util.h>
+#include <pgen2/arch/arch.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -22,7 +22,6 @@
 #include <exception>
 
 namespace pgen {
-namespace io {
 namespace arch {
 
 
@@ -77,7 +76,6 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
 
         
 } /* namespace arch */
-} /* namespace io */
 } /* namespace pgen */
 
 
