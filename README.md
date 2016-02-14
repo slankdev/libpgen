@@ -9,8 +9,17 @@ LibPGEN is Packet GENerator library.
 Please see the libpgen official WEB-site http://libpgen.org
 
 ## Description
+
+Latest version is [libpgen version 1.1](https://github.com/slankdev/libpgen/tree/v1.1). Now, I am developing new version, 2.0. It has no version1.1's compatible.
+If you want to need more information about version2.0, please access to libpgen's official page
+
+ - [about version 2.0 -- libgpgen.org](http://libpgen.org/2016/02/14/about-version2-0)
+
+
 LibPGEN is a library that runs on Linux and BSD for C/C++.  
 This library can analize network pakcets easily.
+
+
 
 
 ## Environment
