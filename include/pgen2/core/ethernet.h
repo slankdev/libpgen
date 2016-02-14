@@ -28,7 +28,6 @@ class ethernet : public packet {
 
         void analyze(const void* buffer, size_t buffer_len) override;
         void summary(bool moreinfo=false) const override;
-        void help() const override;
 };
 
 

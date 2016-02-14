@@ -54,7 +54,6 @@ class packet {
         virtual void analyze(const void* buffer, size_t buffer_len) = 0;
 
         virtual void summary(bool moreinfo=false) const = 0;
-        virtual void help() const = 0;
 };
 
 

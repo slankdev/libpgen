@@ -55,9 +55,6 @@ void ethernet::summary(bool moreinfo) const {
 }
 
 
-void ethernet::help() const {
-        
-}
 
 
 } /* namespace core */
