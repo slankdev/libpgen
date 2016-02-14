@@ -1,5 +1,9 @@
 
 
+#pragma once
+#include <stddef.h>
+
+
 namespace pgen {
 namespace io   {
 namespace util {
