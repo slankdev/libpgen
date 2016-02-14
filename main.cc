@@ -9,7 +9,6 @@ int main() {
 
     pack.ETH.src() = "11:22:33:44:55:66";
     pack.summary();
-    pack.length();
 
     // pgen::io::util::hex(pack.raw(), pack.length());
 }
