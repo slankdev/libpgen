@@ -8,8 +8,11 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#ifndef __linux
 #include <ifaddrs.h>
 #include <net/if_dl.h>
+#endif
 
 // #include <net/bpf.h>
 // #include <fcntl.h>
