@@ -7,13 +7,13 @@ SRC_DIR   = src
 
 # origin source
 IO_DIR    = $(SRC_DIR)/io
-ARCH_DIR  = $(IO_DIR)/arch
 UTIL_DIR  = $(IO_DIR)/util
 
 CORE_DIR  = $(SRC_DIR)/core
 PROTCOL_DIR = $(CORE_DIR)/protocol
 
 TYPES_DIR = $(SRC_DIR)/types
+ARCH_DIR  = $(SRC_DIR)/arch
 
 
 
