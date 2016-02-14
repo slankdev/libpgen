@@ -35,6 +35,8 @@
 #define PGEN_MAX_EXT_DATA_LEN 98000
 
 
+
+
 class pgen_packet{
 	protected:
 		int    __len;
@@ -54,7 +56,7 @@ class pgen_packet{
 		virtual int  write_bin(void*, int)=0;
 		virtual int  read_bin(const void*, int)=0;
 
-
+		
 
 		void hex();
 		void send(pgen_t*);
@@ -63,9 +65,12 @@ class pgen_packet{
 		
 		int  length();
 		u_char* byte();
+
+		void  DATA_set(const void*, int);
+		int   DATA_len();
+		void* DATA_get();
+
 };
-
-
 
 
 
