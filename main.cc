@@ -4,12 +4,13 @@
 
 
 int main() {
-    pgen::core::macaddress m = "00:11:22:33:44:55";
 
     pgen::core::ethernet pack;
 
-     printf(" - source      : %s \n", pack.ETH.src().get_str().c_str());
-     printf(" - destination : %s \n", pack.ETH.dst().get_str().c_str());
-     printf(" - type        : 0x%04x \n", pack.ETH.type());
+    pack.ETH.src() = "11:22:33:44:55:66";
+    pack.summary();
+    pack.length();
+
+    // pgen::io::util::hex(pack.raw(), pack.length());
 }
 

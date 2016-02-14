@@ -31,7 +31,7 @@ void data_container::write_before(int index, void* buf, size_t buflen) {
     std::vector<uint8_t>::iterator it = _vec.begin();
     it += index - buflen;
     uint8_t* p = (uint8_t*)buf;
-    for (int i=0; i<buflen; i++, it++) {
+    for (size_t i=0; i<buflen; i++, it++) {
         *it = p[i];
     }
 }

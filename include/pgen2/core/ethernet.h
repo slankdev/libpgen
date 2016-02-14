@@ -14,7 +14,7 @@ namespace core {
 
 
 
-class ethernet : packet {
+class ethernet : public packet {
     private:
         void compile() override;
         

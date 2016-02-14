@@ -28,6 +28,8 @@ const uint8_t* packet::raw() const {
     assert(headerlen <= pgen::core::packet::max_header_len);
     return contents() - headerlen;  
 }
+
+
 size_t packet::length() const {
     assert(_raw.size() >= pgen::core::packet::max_header_len);
     return _raw.size() - pgen::core::packet::max_header_len + header_length();
