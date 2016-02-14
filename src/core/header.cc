@@ -82,7 +82,7 @@ size_t ethernet_header::read(const void* buffer, size_t buffer_len) {
     dst().setbyarray(p->dst);
     type() = ntohs(p->type);
     
-    return 1;      
+    return sizeof(struct eth);      
 }
 
 } /* pgen */

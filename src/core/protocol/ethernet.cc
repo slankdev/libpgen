@@ -9,7 +9,9 @@ namespace pgen {
 
 
 void ethernet::compile() {
-
+    uint8_t buf[16];
+    _header_len = ETH.write(buf, sizeof(buf));
+    _raw.write_before(_raw.pivot(), buf, _header_len);
 }
 
 
@@ -31,9 +33,15 @@ size_t ethernet::header_length() const {
 
 
 void ethernet::analyze(const void* buffer, size_t buffer_len) {
-    if (buffer == NULL) printf("OKASII \n");
-    if (buffer_len < 1) printf("OKASII \n");
-    printf("ethernet::analyze: is not implemented yet \n" );
+    if (buffer_len < 1) {
+        printf("length error \n");
+        // throw
+        return ;
+    }
+
+    _header_len = ETH.read(buffer, buffer_len); 
+    this->set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
+
     return ;   
 }
 
@@ -49,8 +57,6 @@ void ethernet::summary(bool moreinfo) const {
                 ETH.src().get_str().c_str(),
                 ETH.dst().get_str().c_str(), ETH.type());
     }
-
-
 }
 
 

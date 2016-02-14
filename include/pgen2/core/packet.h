@@ -32,9 +32,8 @@ class packet {
         pgen::types::data_container  _raw;
         size_t _header_len;
 
-        virtual void compile() = 0;
-
     public:
+        virtual void compile() = 0;
         static const size_t max_header_len = 128; /* [byte] */
 
         /* For Packet Contents */

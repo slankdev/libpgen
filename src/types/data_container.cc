@@ -39,6 +39,9 @@ void data_container::write_before(int index, void* buf, size_t buflen) {
 void data_container::set_content(const void* buf, size_t buflen) {
     _vec.insert(_vec.end(), (uint8_t*)buf, (uint8_t*)buf+buflen);
 }
+void data_container::delete_content() {
+    _vec.resize(pivot());
+}
 
 
 

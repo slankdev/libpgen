@@ -14,9 +14,9 @@ namespace pgen {
 
 class ethernet : public packet {
     private:
-        void compile() override;
         
     public:
+        void compile() override;
         pgen::ethernet_header ETH;
 
         ethernet();
