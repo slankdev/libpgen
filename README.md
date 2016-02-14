@@ -2,79 +2,105 @@
 
 # LibPGEN version 2.0 alpha
 
-Version1.0は設計が安定していなく、C, C++のどちらのスタイルにもどっちつかずな
-やり方で実装していた。
+I redesign this library because past libpgen is not implemented that using C++'s 
+traditional design style. 
+
+ - Version2.0's new feature
+ 	 - Design secure architecture
+	 - Use C++' style IO, stream class
+ 	 - Use C++'s design concept
+	 - Use Namespace
+	 - Use Exception
 
 
 
-## コンセプト
-
-Version2.0では以下の内容をコンセプトに設計、開発をしていきたい。
-
- - C++的設計思想を貫く(ある程度は)
- - パケットクラスの使い方などはあまり変えたくない
- - パケットの各要素へのアクセスが自由すぎて危険。ある程度束縛をする
- - 入出力系関数がCのスタイルなので、それをC++スタイルに書き直す
-
-また、開発を進めるにあたり、以下だけは絶対に誰にも譲れないものがあり、それを以下に示す。
-
- - パケット単位での通信の考え方。(もしpingを作るなら、icmpパケットを作って送る)
- - パケットの各プロトコルヘッダはユーザが直接扱えるようにする
+ - master [![Build Status](https://travis-ci.org/slankdev/libpgen.svg?branch=master)](https://travis-ci.org/slankdev/libpgen)
+ - develop [![Build Status](https://travis-ci.org/slankdev/libpgen.svg?branch=develop)](https://travis-ci.org/slankdev/libpgen)
 
 
-## これ使ってやりたい
+LibPGEN is Packet GENerator library.  
+Please see the libpgen official WEB-site http://libpgen.org
 
 
 
-## LibPGEN Overview
+## Description
+
+Latest version is [libpgen version 1.1](https://github.com/slankdev/libpgen/tree/v1.1). 
+Now, I am developing new version, 2.0. It has no version1.1's compatible.
+If you want to need more information about version2.0, please access to libpgen's official page
+
+ - [about version 2.0 -- libgpgen.org](http://libpgen.org/2016/02/14/about-version2-0)
 
 
-### 名前空間
+LibPGEN is a library that runs on Linux and BSD for C/C++.  
+This library can analize network pakcets easily.
 
-pgen_arpとかじゃなくてpgen::arpてきな使い方をしたいね
 
+## Release
+
+Now, latest stable version is version1.1 on 14/Feb/2016. 
+
+ - Stables
+	 - [version 1.1 (14/Feb/2016)](https://github.com/slankdev/libpgen/tree/v1.1)
+ - Develop
+ 	 - [version 2.0 alpha](https://github.com/slankdev/libpgen/tree/develop)
+
+
+
+## Environment
+Developers have been tested in Ubuntu-Gnome14.04LTS, ArchLinux, Linux Mint17.1 and OSX10.10.5  
+We don't have been tested other Linux and BSD but maybe available.
+
+ 
+
+## Future
+* Support more protocols  
+* Become easy to extension 
+
+
+
+## Developer
+Handlename  : Slank  
+Fullname    : Hiroki Shirokura  
+Country     : Japan  
+E-mail      : slank.dev@gmail.com  
+Web-Site    : http://slankdev.net  
+Twitter     : @slankdev  
+
+
+
+## Support Protocol
+
+ - Ethernet 
+ - ARP 
+ - IP
+ - ICMP
+ - TCP
+ - UDP  
+
+
+
+## Sample Code
+
+Write soon.
+
+
+## Install
 
 ```
-pgen::pgen_t handle(filename, pgen::mode::pcap_write);
+$ cd libpgen
+$ make
+$ sudo make install
 ```
 
-### 例外処理
-
-try catch構文でエラーを捉えられるようにしたい。
+## Uninstall 
 
 ```
-/* version1.0はこんな */
-pgen_t* handle = pgen_open(filename, mode);
-if (handle == NULL) {
-	pgen_perror("oops");
-	return -1;
-}
-
-/* これからはこうでしょ */
-try { 
-	pgen::pgen_t handle(filename, mode);
-} catch(std::exception e) {
-	printf("error: %s \n", e.what());
-}
+$ cd libpgen
+$ sudo make uninstall
 ```
 
 
+## LICENCE
 
-
-## 今のところの問題点(解決済み)
-
-
-
-
-## 今のところの問題点(未解決)
-
-### ヘッダの要素間の依存問題
-
-長さなど、依存する場合の問題をどうしよう。。
-
-### 好き勝手パケットをいじれる機能をどう残そう
-
-前の問題と逆な問題だが、できればMalformed Packetも作れるようにしたい。
-そういうパケットも好きだから。。。(個人的思想)
-
-
+GNU GPL v2.0 https://www.gnu.org/licenses/gpl-2.0.html 
