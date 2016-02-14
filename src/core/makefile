@@ -8,8 +8,10 @@ PROTCOL_DIR = protocol
 
 build: address.o header.o packet.o build-protocol
 
+
 build-protocol:
 	$(MAKE) -C $(PROTCOL_DIR) build
+
 
 clean:
 	$(RM) *.o
