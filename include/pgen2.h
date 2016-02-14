@@ -16,65 +16,46 @@
 
 
 namespace pgen {
-    using io::util::hex;
-    
 
+//    /* PGEN-Core Decraretion */
+//        class packet;
+//        class ethernet : packet;
+//
+//        class ipaddress;
+//        class macaddress;
+//
+//        class ethernet_header;
+//    
+//
+//
+//    /* PGEN-IO Decraretion */
+//        class stream;
+//
+//    namespace util {
+//
+//        hex();
+//
+//        open();
+//        close();
+//
+//        send_to_netif();
+//        send_to_pcap();
+//        send_to_pcapng();
+//
+//        recv_from_netif();
+//        recv_from_pcap();
+//        recv_from_pcapng();
+//    }
+//
+//    namespace arch {
+//        getmacbydev();
+//    }
+//
+//    namespace types {
+//        class data_container;
+//    }
 
-	// This component's designing 
-    // will be do after designed core and io. 
-    namespace module {}
-
-    namespace core {
-        /* 
-         * Implemented class 
-         *
-         *      class header;
-         *      class ethernet_header : header;
-         */
-
-        /* 
-         * Implemented class 
-         *
-         *      class packet;
-         */
-
-        // class ipaddress;
-        // class macaddress;
-        // class port;
-    }
-
-    namespace io {
-        /*
-         * Implemented class
-         *      
-         *      class stream ;
-         *      IO stream class with NETIF and FILES
-         *
-         */
-
-        namespace util {
-            /*
-             * Implemented Functions
-             *
-             *      void hex(const void* buffer, size_t bufferlen);
-             */
-        }
-        namespace netutil {}
-        namespace arch {}
-    }
-	
-	namespace types {
-        /* 
-         * Implemented class 
-         *
-         *      class data_container;
-         */
-    } 
 }
 
 
 
-namespace core {
-
-	          
-}
