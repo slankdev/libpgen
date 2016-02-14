@@ -60,7 +60,7 @@ pgen_packet::pgen_packet(){
 	_additional_len = 0;
 	memset(_additional_data, 0, sizeof _additional_data);
 
-	_D.pack = this;
+	// _D.pack = this;
 }
 
 
