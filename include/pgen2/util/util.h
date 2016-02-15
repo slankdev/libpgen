@@ -9,7 +9,7 @@ namespace util {
 
 void hex(const void* buffer, size_t bufferlen);
 
-size_t send_to_netif(int fd, const void* buffer, size_t bufferlen);
+// size_t send_to_netif(int fd, const void* buffer, size_t bufferlen);
 // size_t send_to_pcap(FILE* fd, const void* buffer, size_t bufferlen);
 // size_t send_to_pcapng(FILE* fd, const void* buffer, size_t bufferlen);
 //

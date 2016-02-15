@@ -3,53 +3,39 @@
 include config.mk
 INCLUDE_DIR = include 
 
+IO_SRC       = \
+	src/io/stream.cc
 
-SRC_DIR = src
-IO_DIR       = $(SRC_DIR)/io
-TYPES_DIR    = $(SRC_DIR)/types
-UTIL_DIR     = $(SRC_DIR)/util
-ARCH_DIR     = $(SRC_DIR)/arch
-CORE_DIR     = $(SRC_DIR)/core
-PROTOCOL_DIR = $(CORE_DIR)/protocol
+TYPES_SRC    = \
+	src/types/data_container.cc
 
-IO_SRC       = $(IO_DIR)/*.cc
-TYPES_SRC    = $(TYPES_DIR)/*.cc
-UTIL_SRC     = $(UTIL_DIR)/*.cc
-ARCH_SRC     = $(ARCH_DIR)/*.cc
-CORE_SRC     = $(CORE_DIR)/*.cc
-PROTOCOL_SRC = $(PROTOCOL_DIR)/*.cc
+UTIL_SRC = \
+	src/util/util.cc
 
-SRC = $(IO_SRC) $(TYPES_SRC) $(UTIL_SRC) $(ARCH_SRC) $(CORE_SRC) $(PROTOCOL_SRC)
-OBJ = $(SRC:.c=.o)
+ARCH_SRC = \
+	src/arch/arch.cc
+
+CORE_SRC = \
+	src/core/address.cc \
+	src/core/header.cc \
+	src/core/packet.cc \
+	src/core/protocol/ethernet.cc
+	
+ALL_SRC = $(IO_SRC) $(TYPES_SRC) $(UTIL_SRC) $(ARCH_SRC) $(CORE_SRC) 
+OBJ = $(ALL_SRC:.cc=.o)
 
 
 
 all: libpgen2.a
 
-libpgen2.a: build
+libpgen2.a: $(OBJ)
 	@rm -f $@
 	$(AR) rc $@ $(OBJ)
 	$(RANLIB) $@
 
-
-build: $(OBJ)
-
-
-
-
-
-
-
 clean:
+	$(RM) libpgen2.a a.out
 	$(RM) $(OBJ)
-
-
-
-
-
-
-
-
 
 install:
 	$(CP) libpgen2.a      $(INSTALL_LIB_DIR)
@@ -63,3 +49,5 @@ uninstall:
 
 main:
 	g++ -std=c++11 main.cc -lpgen2 -Iinclude -L./ -lpgen2
+	./a.out
+

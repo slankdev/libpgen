@@ -53,9 +53,9 @@ void hex(const void* buffer, size_t bufferlen) {
     printf("\n");
 }
 
-size_t send_to_netif(int fd, const void* buffer, size_t bufferlen) {
-    return 1;
-}
+// size_t send_to_netif(int fd, const void* buffer, size_t bufferlen) {
+//     return 1;
+// }
 
 
 
