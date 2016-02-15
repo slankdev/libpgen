@@ -28,7 +28,7 @@
 
 
 
-typedef struct pgen pgen_t;
+typedef struct _pgen pgen_t;
 typedef unsigned char      bit8;
 typedef unsigned short     bit16;
 typedef unsigned int       bit32;
@@ -159,7 +159,7 @@ struct pgen_opt{
 };
 
 
-struct pgen{
+struct _pgen{
 	int mode;
 	struct{
 		int fd;
