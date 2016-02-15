@@ -9,6 +9,8 @@ TYPES_DIR = types
 ARCH_DIR  = arch
 UTIL_DIR  = util
 
+SRC = `find . -name "*.cc"`
+
 
 
 build: 

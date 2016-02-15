@@ -9,6 +9,10 @@ OBJ = `find . -name "*.o"`
 
 all: libpgen2.a
 
+# all:
+# 	g++ -std=c++11 `find . -name "*.cc" | xargs`  -Iinclude
+
+
 libpgen2.a: build
 	@rm -f $@
 	$(AR) rc $@ $(OBJ)
