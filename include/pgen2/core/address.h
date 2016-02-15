@@ -11,7 +11,7 @@ namespace pgen {
 class macaddress {
     public:
         static const size_t length = 6;
-        static const size_t strlength = 3*length - 1;
+        static const size_t strlength = 3*length-1;
     private:
 
         uint8_t _raw[length];
@@ -33,7 +33,7 @@ class macaddress {
         void set_octet(int index, uint8_t oct);
         uint8_t get_octet(int index) const;
         
-        const uint8_t* get_raw() const;
+        const uint8_t* get_raw() const; // I'v not used this function
 
         macaddress& operator=(const macaddress& m);
         macaddress& operator=(const std::string& str);
@@ -49,11 +49,20 @@ class macaddress {
 
 
 class ipaddress {
+    public:
+        static const size_t length4 = 4;
+        static const size_t length6 = 16;
+        static const size_t strlength4 = 3*length4-1;
+        static const size_t strlength6 = 2*length6+7;
     private:
-        uint32_t _rawv4;
-        uint8_t _rawv6[16];
+
+        uint8_t _raw4[4];
+        uint16_t _raw6[8];
         std::string _name;
         bool _isV4; 
+
+        void _update_name();
+        void set_str(const std::string& str);
         
     public:
 
@@ -63,26 +72,27 @@ class ipaddress {
         ipaddress(const char* str);
         void clear();
         
-        void set_str(const std::string& str);
         const std::string& get_str() const ;
 
-        void setOctet(int index, uint8_t oct);
-        uint8_t getOctet(int index) const ;
-        void setRaw4(uint32_t raw); 
-        uint32_t getRaw4() const ;
-        void setRaw6(uint32_t raw);  // mitei
-        uint32_t getRaw6() const ;   // mitei
+        void set_octet4(int index, uint8_t oct);
+        uint8_t get_octet4(int index) const ;
+        void set_section6(int index, uint16_t num);
+        uint16_t get_section6(int index) const ;
 
-        int setipbydev(const char* ifname);
-        int setmaskbydev(const char* ifname);
-        int setnetbydev(const char* ifname);
-        int maskby(const ipaddress& mask);
+        const uint8_t* get_raw4() const ;
+        const uint16_t* get_raw6() const ;
 
         ipaddress& operator=(const ipaddress& i);
         ipaddress& operator=(const std::string& str);
         ipaddress& operator=(const char* str);
         bool operator==(const ipaddress& addr) const ;
         bool operator!=(const ipaddress& addr) const ;
+
+        // int setbydev(const char* ifname);
+        // int setmaskbydev(const char* ifname);
+        // int setnetbydev(const char* ifname);
+        // int maskby(const ipaddress& mask);
+
 };
 
 
