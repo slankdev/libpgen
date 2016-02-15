@@ -19,7 +19,8 @@ CORE_SRC = \
 	src/core/address.cc \
 	src/core/header.cc \
 	src/core/packet.cc \
-	src/core/protocol/ethernet.cc
+	src/core/protocol/ethernet.cc \
+	src/core/protocol/ip.cc
 	
 ALL_SRC = $(IO_SRC) $(TYPES_SRC) $(UTIL_SRC) $(ARCH_SRC) $(CORE_SRC) 
 OBJ = $(ALL_SRC:.cc=.o)

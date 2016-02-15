@@ -4,7 +4,7 @@
 #include <sstream>
 #include <assert.h>
 #include <pgen2/core/packet.h>
-#include <pgen2/util/util.h>
+#include <pgen2/util.h>
 
 
 

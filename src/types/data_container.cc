@@ -3,7 +3,7 @@
 #include <vector>
 #include <stdio.h>
 #include <stdint.h>
-#include <pgen2/types/data_container.h>
+#include <pgen2/data_container.h>
 
 
 namespace pgen {

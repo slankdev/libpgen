@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <pgen2/util/util.h>
+#include <pgen2/util.h>
 
 
 

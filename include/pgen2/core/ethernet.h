@@ -5,7 +5,7 @@
 // #include <pgen2/io/util.h>
 #include <pgen2/core/packet.h>
 #include <pgen2/core/header.h>
-#include <pgen2/types/data_container.h>
+#include <pgen2/data_container.h>
 
 
 namespace pgen {
