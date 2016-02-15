@@ -3,6 +3,7 @@
 #include <pgen2/core/header.h>
 #include <pgen2/core/packet.h>
 #include <pgen2/core/ethernet.h>
+#include <pgen2/exception.h>
 
 namespace pgen {
 
@@ -33,9 +34,7 @@ size_t ethernet::header_length() const {
 
 void ethernet::analyze(const void* buffer, size_t buffer_len) {
     if (buffer_len < pgen::ethernet_header::min_length) {
-        printf("length error \n");
-        // throw
-        return ;
+        throw pgen::exception("pgen::ethernet::analyze: Buffer length is too small");
     }
 
     _header_len = ETH.read(buffer, buffer_len); 

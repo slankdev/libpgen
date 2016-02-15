@@ -1,5 +1,5 @@
-
-#include <pgen2.h>
+#include <pgen2/arch/arch.h>
+#include <pgen2/exception.h>
 #include <pgen2/core/address.h>
 
 #include <stdint.h>
@@ -44,7 +44,7 @@ void macaddress::_update_name() {
 
 void macaddress::set_str(const std::string& str) {
     if (str.length() != strlength) {
-        throw std::length_error("format error");
+        throw pgen::exception("pgen::macaddress::set_str: Format error");
     }
 
     uint32_t buf[length];
@@ -52,7 +52,7 @@ void macaddress::set_str(const std::string& str) {
             &buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
     
     if (n != (int)length) {
-        throw std::length_error("format error");
+        throw pgen::exception("pgen::macaddress::set_str: Format error");
     }
     for(size_t i=0; i<length; i++)  _raw[i] = buf[i];
 
@@ -67,14 +67,13 @@ const std::string macaddress::get_str() const {
 
 
 const std::string macaddress::get_bender() const {
-    printf("macaddress::get_bender: This func was not implemented yet \n");
-    return "";
+    throw pgen::exception("pgen::macaddress::get_bender: Not implement yet");
 }
 
 
 void macaddress::set_octet(int index, uint8_t oct) {
     if (index < 1 || 6 < index) {
-        throw std::out_of_range("index is faild");
+        throw pgen::exception("pgen::macaddress::set_octet: index, 1st-arg is faild");
     }
     _raw[index-1] = oct;
     _update_name();
@@ -82,7 +81,7 @@ void macaddress::set_octet(int index, uint8_t oct) {
 
 uint8_t macaddress::get_octet(int index) const {
     if (index < 1 || 6 < index) {
-        throw std::out_of_range("index is faild");
+        throw pgen::exception("pgen::macaddress::set_octet: index, 1st-arg is faild");
     }
     return _raw[index-1];
 }

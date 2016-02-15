@@ -1,5 +1,6 @@
 
 
+#include <pgen2/exception.h>
 
 #include <pgen2/data_container.h>
 #include <pgen2/util.h>

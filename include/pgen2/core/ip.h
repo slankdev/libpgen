@@ -1,6 +1,11 @@
 
 #pragma once
 
+namespace pgen {
+    
+
+void func() ;
+
 // class ip : packet {
 //     private:
 //         void compile();
@@ -20,3 +25,4 @@
 //
 
 
+} /* namespace pgen */
