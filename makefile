@@ -1,29 +1,54 @@
 
+
 include config.mk
 INCLUDE_DIR = include 
 
-SRC_DIR   = src
-OBJ = `find . -name "*.o"`
+
+SRC_DIR = src
+IO_DIR       = $(SRC_DIR)/io
+TYPES_DIR    = $(SRC_DIR)/types
+UTIL_DIR     = $(SRC_DIR)/util
+ARCH_DIR     = $(SRC_DIR)/arch
+CORE_DIR     = $(SRC_DIR)/core
+PROTOCOL_DIR = $(CORE_DIR)/protocol
+
+IO_SRC       = $(IO_DIR)/*.cc
+TYPES_SRC    = $(TYPES_DIR)/*.cc
+UTIL_SRC     = $(UTIL_DIR)/*.cc
+ARCH_SRC     = $(ARCH_DIR)/*.cc
+CORE_SRC     = $(CORE_DIR)/*.cc
+PROTOCOL_SRC = $(PROTOCOL_DIR)/*.cc
+
+SRC = $(IO_SRC) $(TYPES_SRC) $(UTIL_SRC) $(ARCH_SRC) $(CORE_SRC) $(PROTOCOL_SRC)
+OBJ = $(SRC:.c=.o)
 
 
 
 all: libpgen2.a
-
-# all:
-# 	g++ -std=c++11 `find . -name "*.cc" | xargs`  -Iinclude
-
 
 libpgen2.a: build
 	@rm -f $@
 	$(AR) rc $@ $(OBJ)
 	$(RANLIB) $@
 
-build: 
-	$(MAKE) -C $(SRC_DIR) build
+
+build: $(OBJ)
+
+
+
+
+
+
 
 clean:
-	$(RM) *.o *.out *.a
-	$(MAKE) -C $(SRC_DIR) clean
+	$(RM) $(OBJ)
+
+
+
+
+
+
+
 
 
 install:
@@ -35,9 +60,6 @@ uninstall:
 	$(RM) $(INSTALL_LIB_DIR)/libpgen2.a
 	$(RM) $(INSTALL_HDR_DIR)/pgen2.h
 	$(RM) $(INSTALL_HDR_DIR)/pgen2 
-
-
-
 
 main:
 	g++ -std=c++11 main.cc -lpgen2 -Iinclude -L./ -lpgen2
