@@ -9,16 +9,10 @@ namespace pgen {
 
 
 
-void ethernet::compile() {
-    uint8_t buf[ETH.max_length];
-    _header_len = ETH.write(buf, sizeof(buf));
-    _raw.write_before(_raw.pivot(), buf, _header_len);
-}
-
-
 ethernet::ethernet() {
     clear();       
 }
+
 
 void ethernet::clear() {
     ETH.src()  = "00:00:00:00:00:00";
@@ -28,17 +22,25 @@ void ethernet::clear() {
 
 
 size_t ethernet::header_length() const {
-    return ETH.length();      
+    return ETH.length();
 }
 
 
+
+void ethernet::compile() {
+    uint8_t buf[pgen::ethernet_header::max_length];
+    _header_len = ETH.write(buf, sizeof(buf));
+    _raw.write_before(_raw.pivot(), buf, _header_len);
+}
+
+
+
 void ethernet::analyze(const void* buffer, size_t buffer_len) {
-    if (buffer_len < pgen::ethernet_header::min_length) {
+    if (buffer_len < pgen::ethernet_header::min_length)
         throw pgen::exception("pgen::ethernet::analyze: Buffer length is too small");
-    }
 
     _header_len = ETH.read(buffer, buffer_len); 
-    this->set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
+    set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
 }
 
 
