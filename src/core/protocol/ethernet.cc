@@ -32,7 +32,7 @@ size_t ethernet::header_length() const {
 
 
 void ethernet::analyze(const void* buffer, size_t buffer_len) {
-    if (buffer_len < header_length()) {
+    if (buffer_len < pgen::ethernet_header::min_length) {
         printf("length error \n");
         // throw
         return ;
@@ -40,8 +40,6 @@ void ethernet::analyze(const void* buffer, size_t buffer_len) {
 
     _header_len = ETH.read(buffer, buffer_len); 
     this->set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
-
-    return ;   
 }
 
 
