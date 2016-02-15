@@ -10,7 +10,7 @@ namespace pgen {
 
 
 void ethernet::compile() {
-    uint8_t buf[ETH.length()];
+    uint8_t buf[ETH.max_length];
     _header_len = ETH.write(buf, sizeof(buf));
     _raw.write_before(_raw.pivot(), buf, _header_len);
 }
