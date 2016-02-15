@@ -15,7 +15,6 @@ void ethernet::compile() {
 }
 
 
-
 ethernet::ethernet() {
     clear();       
 }
@@ -33,7 +32,7 @@ size_t ethernet::header_length() const {
 
 
 void ethernet::analyze(const void* buffer, size_t buffer_len) {
-    if (buffer_len < 1) {
+    if (buffer_len < header_length()) {
         printf("length error \n");
         // throw
         return ;
@@ -45,18 +44,17 @@ void ethernet::analyze(const void* buffer, size_t buffer_len) {
     return ;   
 }
 
+
 void ethernet::summary(bool moreinfo) const {
+    printf("Ethernet [%s -> %s, type=0x%04x] \n", 
+            ETH.src().get_str().c_str(),
+            ETH.dst().get_str().c_str(), ETH.type());
+
     if (moreinfo) {
-        printf("Ethernet \n");
         printf(" - source      : %s \n", ETH.src().get_str().c_str());
         printf(" - destination : %s \n", ETH.dst().get_str().c_str());
         printf(" - type        : 0x%04x \n", ETH.type());
-
-    } else {
-        printf("Ethernet [%s -> %s, type=0x%04x] \n", 
-                ETH.src().get_str().c_str(),
-                ETH.dst().get_str().c_str(), ETH.type());
-    }
+    } 
 }
 
 

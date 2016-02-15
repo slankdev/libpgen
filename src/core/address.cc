@@ -13,9 +13,6 @@
 
 namespace pgen {
  
-size_t macaddress::length() const {
-    return _length;
-}
 macaddress::macaddress() {
     clear();
 }
@@ -50,14 +47,14 @@ void macaddress::set_str(const std::string& str) {
         throw std::length_error("format error");
     }
 
-    uint32_t buf[length()];
+    uint32_t buf[length];
     int n = sscanf(str.c_str(), "%02x:%02x:%02x:%02x:%02x:%02x",
             &buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
     
-    if (n != (int)length()) {
+    if (n != (int)length) {
         throw std::length_error("format error");
     }
-    for(size_t i=0; i<length(); i++)  _raw[i] = buf[i];
+    for(size_t i=0; i<length; i++)  _raw[i] = buf[i];
 
     _update_name();
 }
@@ -134,7 +131,7 @@ void macaddress::setbydev(const char* ifname) {
 }
 
 void macaddress::setbyarray(const uint8_t array[6]) {
-    memcpy(_raw, array, _length);
+    memcpy(_raw, array, length);
     _update_name();
 }
 

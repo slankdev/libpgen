@@ -20,6 +20,9 @@ class ethernet_header {
         uint16_t   _type;
 
     public:
+        static const size_t max_length = pgen::macaddress::length;
+        static const size_t min_length = pgen::macaddress::length;
+
         ethernet_header();
         const macaddress& src() const;
         const macaddress& dst() const;

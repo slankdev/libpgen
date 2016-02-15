@@ -9,11 +9,12 @@ namespace pgen {
 
 
 class macaddress {
+    public:
+        static const size_t length = 6;
+        static const size_t strlength = 3*length - 1;
     private:
-        static const size_t _length = 6;
-        static const size_t strlength = 3*_length - 1;
 
-        uint8_t _raw[_length];
+        uint8_t _raw[length];
         std::string _name;
 
         void _update_name();
@@ -25,7 +26,6 @@ class macaddress {
         macaddress(const std::string& str);
         macaddress(const char* str);
         void clear();
-        size_t length() const;
 
         const std::string get_str() const;
         const std::string get_bender() const;
