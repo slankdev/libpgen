@@ -85,4 +85,8 @@ size_t ethernet_header::read(const void* buffer, size_t buffer_len) {
     return sizeof(struct eth);      
 }
 
+size_t ethernet_header::length() const {
+    return src().length() + dst().length() + sizeof(uint16_t);
+}
+
 } /* pgen */

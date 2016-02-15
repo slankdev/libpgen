@@ -9,7 +9,7 @@ namespace pgen {
 
 
 void ethernet::compile() {
-    uint8_t buf[16];
+    uint8_t buf[ETH.length()];
     _header_len = ETH.write(buf, sizeof(buf));
     _raw.write_before(_raw.pivot(), buf, _header_len);
 }
@@ -28,7 +28,7 @@ void ethernet::clear() {
 
 
 size_t ethernet::header_length() const {
-    return ETH.src().length + ETH.dst().length + sizeof(uint16_t);      
+    return ETH.length();      
 }
 
 

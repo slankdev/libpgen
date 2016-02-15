@@ -13,6 +13,27 @@
 
 namespace pgen {
  
+size_t macaddress::length() const {
+    return _length;
+}
+macaddress::macaddress() {
+    clear();
+}
+macaddress::macaddress(const macaddress& m) {
+    *this = m;
+}
+macaddress::macaddress(const std::string& str) {
+    set_str(str);
+}
+macaddress::macaddress(const char* str) {
+    set_str(str);
+}
+void macaddress::clear(){
+    memset(_raw, 0, sizeof(_raw));
+    _update_name();
+}
+
+
 
 void macaddress::_update_name() {
     _name.resize(strlength+1);
@@ -24,22 +45,19 @@ void macaddress::_update_name() {
 
 
 
-
-
-
 void macaddress::set_str(const std::string& str) {
     if (str.length() != strlength) {
         throw std::length_error("format error");
     }
 
-    uint32_t buf[length];
+    uint32_t buf[length()];
     int n = sscanf(str.c_str(), "%02x:%02x:%02x:%02x:%02x:%02x",
             &buf[0], &buf[1], &buf[2], &buf[3], &buf[4], &buf[5]);
     
-    if (n != length) {
+    if (n != (int)length()) {
         throw std::length_error("format error");
     }
-    for(size_t i=0; i<length; i++)  _raw[i] = buf[i];
+    for(size_t i=0; i<length(); i++)  _raw[i] = buf[i];
 
     _update_name();
 }
@@ -51,15 +69,10 @@ const std::string macaddress::get_str() const {
 
 
 
-
-
 const std::string macaddress::get_bender() const {
     printf("macaddress::get_bender: This func was not implemented yet \n");
     return "";
 }
-
-
-
 
 
 void macaddress::set_octet(int index, uint8_t oct) {
@@ -70,8 +83,6 @@ void macaddress::set_octet(int index, uint8_t oct) {
     _update_name();
 }
 
-
-
 uint8_t macaddress::get_octet(int index) const {
     if (index < 1 || 6 < index) {
         throw std::out_of_range("index is faild");
@@ -79,12 +90,9 @@ uint8_t macaddress::get_octet(int index) const {
     return _raw[index-1];
 }
 
-
 const uint8_t* macaddress::get_raw() const {
     return _raw;
 }
-
-
 
 
 macaddress& macaddress::operator=(const macaddress& rhs) {
@@ -94,7 +102,16 @@ macaddress& macaddress::operator=(const macaddress& rhs) {
 }
 
 
+macaddress& macaddress::operator=(const std::string& str) {
+    set_str(str);
+    return *this;
+}
 
+
+macaddress& macaddress::operator=(const char* str) {
+    set_str(str);
+    return *this;
+}
 
 
 bool macaddress::operator==(const macaddress& rhs) const {
@@ -117,7 +134,7 @@ void macaddress::setbydev(const char* ifname) {
 }
 
 void macaddress::setbyarray(const uint8_t array[6]) {
-    memcpy(_raw, array, length);
+    memcpy(_raw, array, _length);
     _update_name();
 }
 

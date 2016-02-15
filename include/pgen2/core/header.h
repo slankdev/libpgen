@@ -30,7 +30,7 @@ class ethernet_header {
 
         size_t write(void* buffer, size_t buffer_len);
         size_t read(const void* buffer, size_t buffer_len);
-
+        size_t length() const ;
 };
 
 

@@ -9,53 +9,35 @@ namespace pgen {
 
 
 class macaddress {
-    public:
-        static const size_t length = 6;
-
     private:
-        uint8_t _raw[length];
-        std::string _name;
+        static const size_t _length = 6;
+        static const size_t strlength = 3*_length - 1;
 
-        static const size_t strlength = 3*length - 1;
+        uint8_t _raw[_length];
+        std::string _name;
 
         void _update_name();
         void  set_str(const std::string& str);
     public:
     
-        macaddress() {
-            clear();
-        }
-        macaddress(const macaddress& m) {
-            *this = m;
-        }
-        macaddress(const std::string& str) {
-            set_str(str);
-        }
-        macaddress(const char* str) {
-            set_str(str);
-        }
-        void clear(){
-            memset(_raw, 0, sizeof(_raw));
-            _update_name();
-        }
+        macaddress();
+        macaddress(const macaddress& m);
+        macaddress(const std::string& str);
+        macaddress(const char* str);
+        void clear();
+        size_t length() const;
 
-        const std::string get_str() const ;
-        const std::string get_bender() const ;
+        const std::string get_str() const;
+        const std::string get_bender() const;
 
         void set_octet(int index, uint8_t oct);
-        uint8_t get_octet(int index) const ;
+        uint8_t get_octet(int index) const;
         
         const uint8_t* get_raw() const;
 
-        macaddress& operator=(const macaddress& m) ;
-        macaddress& operator=(const std::string& str) {
-            set_str(str);
-            return *this;
-        }
-        macaddress& operator=(const char* str) {
-            set_str(str);
-            return *this;
-        }
+        macaddress& operator=(const macaddress& m);
+        macaddress& operator=(const std::string& str);
+        macaddress& operator=(const char* str);
         bool operator==(const macaddress& addr) const ;
         bool operator!=(const macaddress& addr) const ;
 
