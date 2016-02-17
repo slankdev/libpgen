@@ -3,21 +3,10 @@
 #include <stdio.h>
 
 namespace pgen {
-namespace io   {
 
-    
-size_t stream::send(const void* buffer, size_t bufferlen) {
-    if (buffer == NULL) return 1;
-    printf("not implemented yet \n");
-    return bufferlen;   
-}
-
-size_t stream::recv(void* buffer, size_t bufferlen) {
-    if (buffer == NULL) return 1;
-    printf("not implemented yet \n");
-    return bufferlen;   
+void testfunc() {
+    printf("I love packet \n");
 }
 
 
-} /* namespace io   */
 } /* namespace pgen */
