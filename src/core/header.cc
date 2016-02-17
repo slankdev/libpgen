@@ -50,7 +50,7 @@ void ethernet_header::write() {
     // }
 
     struct eth* p = (struct eth*)_raw;
-    for (int i=0; i<6; i++) {
+    for (size_t i=0; i<pgen::macaddress::length; i++) {
         p->src[i] = src().get_octet(i+1);
         p->dst[i] = dst().get_octet(i+1);
     }

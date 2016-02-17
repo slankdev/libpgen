@@ -116,6 +116,9 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
 }
 
 
+void getipv6bydev(const char* dev, uint16_t ip[8]) {
+    throw pgen::exception("pgen::getipv6bydev; not implemnted yet");
+}
 
 
 } /* namespace arch */
