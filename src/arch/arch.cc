@@ -1,9 +1,15 @@
 
 
+
+
+
+
+
 #include <pgen2/arch/arch.h>
 #include <pgen2/exception.h>
 
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -11,16 +17,19 @@
 #include <sys/socket.h>
 #include <ifaddrs.h>
 
-#ifndef __linux
-#include <net/if_dl.h>
-#endif
-
-// #include <net/bpf.h>
-// #include <fcntl.h>
-// #include <ifaddrs.h>
-
 #include <iostream> 
 #include <exception>
+
+#ifdef __PGEN_MAXOS
+#include <net/if_dl.h>
+#include <net/bpf.h>
+#include <fcntl.h>
+#endif
+
+#ifdef __PGEN_LINUX
+#include <uapi/linux/if.h>
+#endif
+
 
 namespace pgen {
 namespace arch {

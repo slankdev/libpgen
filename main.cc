@@ -1,13 +1,18 @@
 
 
 #include <pgen2.h>
-#include <pgen2/exception.h>
 #include <iostream>
 #include <exception>
 
 int main() {
-    pgen::ethernet pack;
-    pack.compile();
-    pack.hex();
+#ifdef __PGEN_LINUX
+    printf("is linux \n");
+#endif
+#ifdef __PGEN_MAXOS
+    printf("is osx \n");
+#endif
+    // pgen::ethernet pack;
+    // pack.compile();
+    // pack.hex();
 }
     
