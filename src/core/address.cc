@@ -207,9 +207,6 @@ void ipaddress::set_str(const std::string& str) {
     _update_name();
 }
 
-const std::string& ipaddress::get_str() const  {
-    return _name;
-}
 
 void ipaddress::set_octet4(int index, uint8_t oct) {
     if (_isV4) {
@@ -271,6 +268,11 @@ size_t ipaddress::length() const {
     else 
         return length6;
 }
+
+const std::string& ipaddress::get_str() const  {
+    return _name;
+}
+
 
 ipaddress& ipaddress::operator=(const ipaddress& rhs) {
     _isV4 = rhs._isV4;

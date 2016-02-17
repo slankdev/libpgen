@@ -19,6 +19,7 @@ class macaddress {
 
         void _update_name();
         void  set_str(const std::string& str);
+
     public:
     
         macaddress();
@@ -72,17 +73,16 @@ class ipaddress {
         ipaddress(const char* str);
         void clear();
         bool is_v4() const ;
-        void set_version_v4(bool isv4);
-        
-        const std::string& get_str() const ;
-
-        void set_octet4(int index, uint8_t oct);
-        uint8_t get_octet4(int index) const ;
-        void set_section6(int index, uint16_t num);
-        uint16_t get_section6(int index) const ;
+        void set_version_v4(bool isv4=true);
         
         const void* raw() const ;
         size_t length() const;
+        const std::string& get_str() const ;
+
+        void     set_octet4(int index, uint8_t oct);
+        uint8_t  get_octet4(int index) const ;
+        void     set_section6(int index, uint16_t num);
+        uint16_t get_section6(int index) const ;
 
         ipaddress& operator=(const ipaddress& i);
         ipaddress& operator=(const std::string& str);
