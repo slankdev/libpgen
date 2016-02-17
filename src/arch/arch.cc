@@ -117,6 +117,11 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
     memcpy(ip, &(sa->sin_addr.s_addr), sizeof(uint32_t));
 }
 
+
+/* 
+ * Thanks 
+ *  http://d.hatena.ne.jp/shammer/20101212/p1 
+ */
 void getipv6bydev(const char* dev, uint16_t ip[8]) {
     if (strlen(dev) >= IFNAMSIZ) {
         throw pgen::exception("pgen::arch::getipv6bydev: Interface name size is too large");
