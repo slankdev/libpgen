@@ -30,6 +30,8 @@ void macaddress::clear(){
     _update_name();
 }
 
+
+
 void macaddress::_update_name() {
     _name.resize(strlength+1);
     sprintf(&_name[0], "%02x:%02x:%02x:%02x:%02x:%02x", _raw[0],
@@ -135,37 +137,48 @@ ipaddress::ipaddress(const ipaddress& i) {
     *this = i;
 }
 
-ipaddress::ipaddress(const std::string& str) {
+ipaddress::ipaddress(const std::string& str) : _isV4(true) {
+    clear();
     set_str(str);
 }
 
-ipaddress::ipaddress(const char* str) {
+ipaddress::ipaddress(const char* str) : _isV4(true) {
+    clear();
     set_str(str);
 }
 
 void ipaddress::clear() {
-    if (_isV4) {
-        for (size_t i=0; i<ipaddress::length4; i++)
-            _raw4[i] = 0;
-    } else {
-        for (size_t i=0; i<ipaddress::length6; i++)
-            _raw6[i] = 0;
-    }
+    for (size_t i=0; i<ipaddress::length4; i++)
+        _raw4[i] = 0;
+    for (size_t i=0; i<ipaddress::length6; i++)
+        _raw6[i] = 0;
     _update_name();
 }
 
+
+bool ipaddress::is_v4() const {
+    return _isV4;
+}
+void ipaddress::set_version_v4(bool isv4) {
+    _isV4 = isv4;
+    _update_name();
+}
+
+
 void ipaddress::_update_name() {
     if (_isV4) {
-        char str4[strlength4+1];
-        sprintf(str4, "%d.%d.%d.%d", 
+        _name.resize(strlength4+1);
+        std::fill(_name.begin(), _name.end(), 0);
+        sprintf(&_name[0], "%d.%d.%d.%d", 
                 _raw4[0], _raw4[1], _raw4[2], _raw4[3]);
-        _name = str4;
+        _name.resize(strlen(&_name[0]));
     } else {
-        char str6[strlength6+1];
-        sprintf(str6, "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x", 
+        _name.resize(strlength6+1);
+        std::fill(_name.begin(), _name.end(), 0);
+        sprintf(&_name[0], "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x", 
                 _raw6[0], _raw6[1], _raw6[2], _raw6[3],
                 _raw6[4], _raw6[5], _raw6[6], _raw6[7]);
-        _name = str6;
+        _name.resize(strlen(&_name[0]));
     }
 }
 

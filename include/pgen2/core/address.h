@@ -71,6 +71,8 @@ class ipaddress {
         ipaddress(const std::string& str);
         ipaddress(const char* str);
         void clear();
+        bool is_v4() const ;
+        void set_version_v4(bool isv4);
         
         const std::string& get_str() const ;
 
