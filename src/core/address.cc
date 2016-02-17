@@ -78,7 +78,7 @@ uint8_t macaddress::get_octet(int index) const {
     return _raw[index-1];
 }
 
-const uint8_t* macaddress::get_raw() const {
+const uint8_t* macaddress::raw() const {
     return _raw;
 }
 
@@ -244,16 +244,16 @@ uint16_t ipaddress::get_section6(int index) const  {
     }
 }
 
-const uint8_t* ipaddress::get_raw4() const  {
+const uint8_t* ipaddress::raw4() const  {
     if (_isV4) 
         return _raw4;
     else 
-        throw pgen::exception("pgen::ipaddress::get_raw4: This address is IPv6");
+        throw pgen::exception("pgen::ipaddress::raw4: This address is IPv6");
 }
 
-const uint16_t* ipaddress::get_raw6() const {
+const uint16_t* ipaddress::raw6() const {
     if (_isV4) 
-        throw pgen::exception("pgen::ipaddress::get_raw6: This address is IPv4");
+        throw pgen::exception("pgen::ipaddress::raw6: This address is IPv4");
     else 
         return _raw6;
 }

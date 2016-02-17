@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <pgen2/data_container.h>
+#include <pgen2/exception.h>
 
 
 namespace pgen {
@@ -27,7 +28,10 @@ size_t data_container::pivot() const {
     return _pivot;      
 }
 
-void data_container::write_before(int index, void* buf, size_t buflen) {
+void data_container::write_before(size_t index, const void* buf, size_t buflen) {
+    if (index < buflen) 
+        throw pgen::exception("pgen::types::data_container::write_before: buflen is too large");
+
     std::vector<uint8_t>::iterator it = _vec.begin();
     it += index - buflen;
     uint8_t* p = (uint8_t*)buf;

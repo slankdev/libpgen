@@ -28,9 +28,13 @@ size_t ethernet::header_length() const {
 
 
 void ethernet::compile() {
-    uint8_t buf[pgen::ethernet_header::max_length];
-    _header_len = ETH.write(buf, sizeof(buf));
-    _raw.write_before(_raw.pivot(), buf, _header_len);
+    // uint8_t buf[pgen::ethernet_header::max_length];
+    // _header_len = ETH.write(buf, sizeof(buf));
+    // _raw.write_before(_raw.pivot(), buf, _header_len);
+    
+    ETH.write();
+    _raw.write_before(_raw.pivot(), ETH.raw(), ETH.length());
+
 }
 
 

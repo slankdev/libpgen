@@ -14,14 +14,17 @@ namespace pgen {
 
 
 class ethernet_header {
+    public:
+        static const size_t max_length = pgen::macaddress::length*2+sizeof(uint16_t);
+        static const size_t min_length = pgen::macaddress::length*2+sizeof(uint16_t);
+
     private:
         macaddress _dst;
         macaddress _src;
         uint16_t   _type;
 
+        uint8_t _raw[max_length];
     public:
-        static const size_t max_length = pgen::macaddress::length*2+sizeof(uint16_t);
-        static const size_t min_length = pgen::macaddress::length*2+sizeof(uint16_t);
 
         ethernet_header();
         const macaddress& src() const;
@@ -31,8 +34,10 @@ class ethernet_header {
         macaddress& dst();
         uint16_t&   type();
 
-        size_t write(void* buffer, size_t buffer_len);
+        // size_t write(void* buffer, size_t buffer_len);
+        void write();
         size_t read(const void* buffer, size_t buffer_len);
+        const uint8_t* raw() const; 
         size_t length() const ;
 };
 

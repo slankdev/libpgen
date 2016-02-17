@@ -22,7 +22,7 @@ class data_container {
         size_t size() const;
         size_t pivot() const;
 
-        void write_before(int index, void* buf, size_t buflen);
+        void write_before(size_t index, const void* buf, size_t buflen);
         void set_content(const void* buf, size_t buflen);
         void delete_content();
 };

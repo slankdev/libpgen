@@ -33,7 +33,7 @@ class macaddress {
         void set_octet(int index, uint8_t oct);
         uint8_t get_octet(int index) const;
         
-        const uint8_t* get_raw() const; // I'v not used this function
+        const uint8_t* raw() const; // I'v not used this function
 
         macaddress& operator=(const macaddress& m);
         macaddress& operator=(const std::string& str);
@@ -79,8 +79,8 @@ class ipaddress {
         void set_section6(int index, uint16_t num);
         uint16_t get_section6(int index) const ;
 
-        const uint8_t* get_raw4() const ;
-        const uint16_t* get_raw6() const ;
+        const uint8_t* raw4() const ;
+        const uint16_t* raw6() const ;
 
         ipaddress& operator=(const ipaddress& i);
         ipaddress& operator=(const std::string& str);

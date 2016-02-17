@@ -37,25 +37,30 @@ uint16_t& ethernet_header::type() {
     return _type;      
 }
 
-size_t ethernet_header::write(void* buffer, size_t buffer_len) {
+// void ethernet_header::write(const void* buffer, size_t buffer_len) {
+void ethernet_header::write() {
     struct eth {
         uint8_t dst[pgen::macaddress::length];
         uint8_t src[pgen::macaddress::length];
         uint16_t type;
     };
 
-    if (buffer_len < sizeof(struct eth)) {
-        throw pgen::exception("pgen::ethernet_header::write: Buffer length is too small");
-    }
+    // if (buffer_len < sizeof(struct eth)) {
+    //     throw pgen::exception("pgen::ethernet_header::write: Buffer length is too small");
+    // }
 
-    struct eth* p = (struct eth*)buffer;
+    struct eth* p = (struct eth*)_raw;
     for (int i=0; i<6; i++) {
         p->src[i] = src().get_octet(i+1);
         p->dst[i] = dst().get_octet(i+1);
     }
     p->type = htons(type());
 
-    return sizeof(struct eth);
+    // return sizeof(struct eth);
+}
+
+const uint8_t* ethernet_header::raw() const {
+    return _raw;
 }
 
 size_t ethernet_header::read(const void* buffer, size_t buffer_len) {
