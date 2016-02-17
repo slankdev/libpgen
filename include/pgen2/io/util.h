@@ -7,13 +7,15 @@
 namespace pgen {
 
 
+namespace util {
 
 int  open_netif(const char* ifname);
 void close_netif(int fd);
-// size_t send_to_netif(int fd, const void* buffer, size_t bufferlen);
-// size_t recv_from_netif(int fd, void* buffer, size_t bufferlen);
+size_t send_to_netif(int fd, const void* buffer, size_t bufferlen);
+size_t recv_from_netif(int fd, void* buffer, size_t bufferlen);
 
 
+} /* namespace util */
 
 
 

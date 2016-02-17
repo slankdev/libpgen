@@ -5,11 +5,52 @@
 #include <unistd.h>
 #include <pgen2/io/util.h>
 #include <pgen2/arch/arch.h>
+#include <pgen2/exception.h>
 
 
 
 
 namespace pgen {
+
+
+
+namespace util {
+
+size_t send_to_netif(int fd, const void* buffer, size_t bufferlen) {
+    int sent_len = write(fd, buffer, bufferlen);
+    if (sent_len < 0) {
+        std::string errmsg = "pgen::util::send_to_netif:write: ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+    return (size_t)sent_len;   
+}
+
+
+
+
+/*
+ * HELP
+ * read system call returns -1, 3rd argument, bufferlen is not 4096.
+ * It was hard-coded in pgen::util::open_bpf's set buffer.
+ * I think that this hard-coding is reason... but MENDOKUSAI...
+ *
+ * BUG
+ * This function can't work correct. find and fix bug.
+ */
+size_t recv_from_netif(int fd, void* buffer, size_t bufferlen) {
+    int recved_len = read(fd, buffer, bufferlen);
+    if (recved_len < 0) {
+        printf("recved_len is %d \n", recved_len);
+        std::string errmsg = "pgen::util::recv_from_netif:read: ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+    return (size_t)recved_len;
+}
+
+
+
 
 
 int open_netif(const char* ifname) {
@@ -23,9 +64,15 @@ int open_netif(const char* ifname) {
 }
 
 
+
+
 void close_netif(int fd) {
     close(fd);   
 }
+
+
+} /* namespace util */
+
 
 void hex(const void* buffer, size_t bufferlen) { 
 
