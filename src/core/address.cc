@@ -176,8 +176,8 @@ void ipaddress::_update_name() {
         _name.resize(strlength6+1);
         std::fill(_name.begin(), _name.end(), 0);
         sprintf(&_name[0], "%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x", 
-                _raw6[0], _raw6[1], _raw6[2], _raw6[3],
-                _raw6[4], _raw6[5], _raw6[6], _raw6[7]);
+                ntohs(_raw6[0]), ntohs(_raw6[1]), ntohs(_raw6[2]), ntohs(_raw6[3]),
+                ntohs(_raw6[4]), ntohs(_raw6[5]), ntohs(_raw6[6]), ntohs(_raw6[7]));
         _name.resize(strlen(&_name[0]));
     }
 }
@@ -307,7 +307,8 @@ void ipaddress::setbydev(const char* ifname) {
         pgen::arch::getipv4bydev(ifname, _raw4);
         _update_name();
     } else {
-        throw pgen::exception("pgen::ipaddress::setbydev: version6 is not implemented yet");
+        pgen::arch::getipv6bydev(ifname, _raw6);
+        _update_name();
     }
 }
 

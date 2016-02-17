@@ -13,13 +13,15 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <ifaddrs.h>
 
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
 #include <net/if.h>
 #include <netinet/in.h>
-#include <ifaddrs.h>
+#include <arpa/inet.h>
 
 
 #include <iostream> 
@@ -90,7 +92,7 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
 
 void getipv4bydev(const char* dev, uint8_t ip[4]) {
     if(strlen(dev) >= IFNAMSIZ) {
-        throw pgen::exception("pgen::arch::getmacbydev: Interface name size is too large");
+        throw pgen::exception("pgen::arch::getipv4bydev: Interface name size is too large");
     }
 
     int sockd;
@@ -115,9 +117,36 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
     memcpy(ip, &(sa->sin_addr.s_addr), sizeof(uint32_t));
 }
 
-
 void getipv6bydev(const char* dev, uint16_t ip[8]) {
-    throw pgen::exception("pgen::getipv6bydev; not implemnted yet");
+    if (strlen(dev) >= IFNAMSIZ) {
+        throw pgen::exception("pgen::arch::getipv6bydev: Interface name size is too large");
+    }
+
+    struct ifaddrs * if_list;
+    void * tmp;
+
+    getifaddrs(&if_list);
+    for (struct ifaddrs* ifa = if_list ; ifa != NULL ; ifa = ifa->ifa_next) {
+        if (strcmp(ifa->ifa_name, dev) == 0) { 
+            if (!ifa->ifa_addr) {
+                continue;
+            } else {
+                if (ifa->ifa_addr->sa_family == AF_INET6) { 
+                    tmp = &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
+                    memcpy(ip, tmp, sizeof(struct in6_addr));
+                    freeifaddrs(if_list);
+                    return ;
+                }
+                else {
+                    // For example, reach here the cases
+                    // sa_family is AF_PACKET(17).
+                    // sa_family is AF_INET6(23).
+                }
+            }
+        }
+    }
+    freeifaddrs(if_list);
+    throw pgen::exception("pgen::getipv6bydev: can't get address");
 }
 
 
