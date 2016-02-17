@@ -15,7 +15,9 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <net/if.h>
 #include <ifaddrs.h>
+
 
 #include <iostream> 
 #include <exception>
@@ -27,7 +29,6 @@
 #endif
 
 #ifdef __PGEN_LINUX
-#include <uapi/linux/if.h>
 #endif
 
 
