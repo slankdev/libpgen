@@ -1,6 +1,6 @@
 
 
-#include <pgen2/core/ip.h>
+#include <pgen2/core/protocol/ip.h>
 
 
 namespace pgen {

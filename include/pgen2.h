@@ -10,7 +10,7 @@
 #include <pgen2/core/header.h>
 
 // protocol class 
-#include <pgen2/core/ethernet.h>
+#include <pgen2/core/protocol/ethernet.h>
 
 
 

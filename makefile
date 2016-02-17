@@ -7,10 +7,10 @@ IO_SRC       = \
 	src/io/stream.cc
 
 TYPES_SRC    = \
-	src/types/data_container.cc
+	src/data_container.cc
 
 UTIL_SRC = \
-	src/util/util.cc
+	src/util.cc
 
 ARCH_SRC = \
 	src/arch/arch.cc

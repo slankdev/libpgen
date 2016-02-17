@@ -6,6 +6,8 @@
 #include <exception>
 
 int main() {
-    // pgen::ipaddress ip;
+    pgen::ethernet pack;
+    pack.compile();
+    pack.hex();
 }
     
