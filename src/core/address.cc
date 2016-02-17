@@ -187,21 +187,13 @@ void ipaddress::_update_name() {
 void ipaddress::set_str(const std::string& str) {
     if (_isV4) {
         int n = inet_pton(AF_INET, str.c_str(), _raw4);
-        if(n == 0){
+        if(n <= 0){
             throw pgen::exception("pgen::ipaddress::set_str(IPv4): Format error");
-        }else if(n == -1){
-            std::string error_str = "pgen::ipaddress::set_str(IPv4): Format error ";
-            error_str += strerror(errno);
-            throw pgen::exception(error_str);
         }
     } else {
         int n = inet_pton(AF_INET6, str.c_str(), _raw6);
         if(n == 0){
             throw pgen::exception("pgen::ipaddress::set_str(IPv6): Format error");
-        }else if(n == -1){
-            std::string error_str = "pgen::ipaddress::set_str(IPv6): Format error ";
-            error_str += strerror(errno);
-            throw pgen::exception(error_str);
         }
     }
     _update_name();

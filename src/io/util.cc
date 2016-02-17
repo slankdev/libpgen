@@ -19,9 +19,7 @@ namespace util {
 size_t send_to_netif(int fd, const void* buffer, size_t bufferlen) {
     int sent_len = write(fd, buffer, bufferlen);
     if (sent_len < 0) {
-        std::string errmsg = "pgen::util::send_to_netif:write: ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
+        throw pgen::exception("pgen::util::send_to_netif:write: ");
     }
     return (size_t)sent_len;   
 }
@@ -41,10 +39,7 @@ size_t send_to_netif(int fd, const void* buffer, size_t bufferlen) {
 size_t recv_from_netif(int fd, void* buffer, size_t bufferlen) {
     int recved_len = read(fd, buffer, bufferlen);
     if (recved_len < 0) {
-        printf("recved_len is %d \n", recved_len);
-        std::string errmsg = "pgen::util::recv_from_netif:read: ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
+        throw pgen::exception("pgen::util::recv_from_netif:read: ")<<recved_len;
     }
     return (size_t)recved_len;
 }

@@ -27,6 +27,8 @@
 #include <iostream> 
 #include <exception>
 
+#include <assert.h>
+
 #ifdef __PGEN_OSX
 #include <net/if_dl.h>
 #include <net/bpf.h>
@@ -52,91 +54,80 @@ int open_rawsock(const char* ifname) {
 
 
 #if defined(__PGEN_OSX)
+
+class BSD_Fd {
+    private:
+        int fd;
+        bool do_close;
+        BSD_Fd(const BSD_Fd&) = delete;
+        BSD_Fd& operator=(const BSD_Fd&) = delete;
+
+    public:
+        BSD_Fd() : fd(-1), do_close(true){}
+        ~BSD_Fd() {
+            if (fd >= 0 && do_close) 
+                ::close(fd);
+        }
+        void open() {
+            for (int i = 0; i < 4; i++) { 
+                std::string str = "/dev/bpf" + std::to_string(i);
+                fd = ::open(str.c_str(), O_RDWR);
+                if (fd >= 0)
+                    return;
+            }
+            throw pgen::exception("pgen::arch::open_bpf: cannot open BPF ");
+
+        }
+        void ioctl(int request, void* p) {
+            if (::ioctl(fd, request, p) < 0) {
+                throw pgen::exception("pgen::arch::open_bpf:");
+            }
+        }
+        void ioctl_c(int request, const void* p) {
+            if (::ioctl(fd, request, p) < 0) {
+                throw pgen::exception("pgen::arch::open_bpf:");
+            }
+        }
+        int get_fd() const {
+            return fd;
+        }
+        void dont_close() {
+            do_close = false;
+        }
+};
+
+
 int open_bpf(const char* ifname) {
+    assert(strlen(ifname) < IFNAMSIZ);
+
+    BSD_Fd fd;
     // throw pgen::exception("pgen::arch::open_bpf() is not implemented yet");
     // return 1;   
-    int fd;
     struct ifreq ifr;
-    const unsigned int one  = 1;
 
-    int i;
-    for (i = 0; i < 4; i++) { 
-        std::string str = "/dev/bpf" + std::to_string(i);
-        if ((fd = open(str.c_str(), O_RDWR)) > 0)
-            break;
-    }
-
-    /* 
-     * TODO 
-     *  This if statement's condition may be vulnerable.
-     *  Please fix condition, with relax.
-     */
-    if (i >= 5) { 
-        std::string errmsg = "pgen::arch::open_bpf: cannot open BPF ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
-    }
+    fd.open();
 
     // set buffer size
     int bufsize = 4096;
-    if (ioctl(fd, BIOCSBLEN, &bufsize) < 0) {
-        close(fd);
-        std::string errmsg = "pgen::arch::open_bpf: set buffer size ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
-    }
-
-    // bind to device
+    fd.ioctl(BIOCSBLEN, &bufsize);
     memset(&ifr, 0, sizeof(ifr));
-    strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
-    if(ioctl(fd, BIOCSETIF, &ifr) < 0){
-        close(fd);
-        std::string errmsg = "pgen::arch::open_bpf: bind to device ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
-    }
+    strcpy(ifr.ifr_name, ifname);
+    fd.ioctl(BIOCSETIF, &ifr);
 
-    // set promisc
-    if (ioctl(fd, BIOCPROMISC, NULL) < 0) {
-        close(fd);
-        std::string errmsg = "pgen::arch::open_bpf: set promisc ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
-    }
+    fd.ioctl_c(BIOCPROMISC, nullptr);
 
     //if recv packet then call read fast
-    if (ioctl(fd, BIOCIMMEDIATE, &one) < 0) {
-        close(fd);
-        std::string errmsg = "pgen::arch::open_bpf: ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
-    }
+    const unsigned int one  = 1;
+    fd.ioctl_c(BIOCIMMEDIATE, &one);
 
     // set recv sendPacket 
-    if (ioctl(fd, BIOCSSEESENT, &one) < 0) {
-        close(fd);
-        std::string errmsg = "pgen::arch::open_bpf: ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
-    }
+    fd.ioctl_c(BIOCSSEESENT, &one);
 
-    // flush recv buffer
-    if (ioctl(fd, BIOCFLUSH, NULL) < 0) {
-        close(fd);
-        std::string errmsg = "pgen::arch::open_bpf: flush recv-buffer ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
-    }
+    fd.ioctl_c(BIOCFLUSH, nullptr);
+    fd.ioctl_c(BIOCSHDRCMPLT, &one);
 
-    // no complite src macaddr
-    if (ioctl(fd, BIOCSHDRCMPLT, &one) < 0) {
-        close(fd);
-        std::string errmsg = "pgen::arch::open_bpf: no complite src-macaddress ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
-    }
-
-    return fd;
+    fd.dont_close();
+    return fd.get_fd();
 }
 #endif
 
@@ -201,17 +192,13 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
     struct sockaddr_in *sa;
 
     if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-        std::string errmsg = "pgen::arch::getipv4bydev:socket: ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
+        throw pgen::exception("pgen::arch::getipv4bydev:socket: ");
     }
     ifr.ifr_addr.sa_family = AF_INET;
     strcpy(ifr.ifr_name, dev);
     if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
         close(sockd);
-        std::string errmsg = "pgen::arch::getipv4bydev:ioctl: ";
-        errmsg += strerror(errno);
-        throw pgen::exception(errmsg);
+        throw pgen::exception("pgen::arch::getipv4bydev:ioctl: ");
     }
     close(sockd);
     sa = (struct sockaddr_in*)&ifr.ifr_addr;

@@ -4,6 +4,8 @@
 
 #include <exception>
 #include <string>
+#include <errno.h>
+#include <stdlib.h>
 #include <iostream>
 #include <sstream>
 
@@ -15,7 +17,13 @@ class exception : public std::exception {
     private:
         std::string str;
     public:
-        explicit exception(const std::string& s="") : str(s) {} 
+        // explicit exception(const std::string& s="") {}
+        explicit exception(const char* s) {
+            int e = errno;
+            str = s; 
+            if (e != 0)
+                str += strerror(e);
+        } 
         template<class T>
         exception& operator<<(const T& t) {
             std::ostringstream os;
