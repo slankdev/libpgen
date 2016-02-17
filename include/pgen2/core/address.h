@@ -52,7 +52,7 @@ class ipaddress {
     public:
         static const size_t length4 = 4;
         static const size_t length6 = 16;
-        static const size_t strlength4 = 3*length4-1;
+        static const size_t strlength4 = 3*length4+3;
         static const size_t strlength6 = 2*length6+7;
     private:
 
