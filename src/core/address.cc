@@ -9,6 +9,8 @@
 #include <string>
 #include <iostream>
 #include <exception>
+#include <arpa/inet.h>
+#include <string.h>
 
 
 namespace pgen {
@@ -182,8 +184,6 @@ void ipaddress::_update_name() {
     }
 }
 
-#include <arpa/inet.h>
-#include <string.h>
 void ipaddress::set_str(const std::string& str) {
     if (_isV4) {
         int n = inet_pton(AF_INET, str.c_str(), _raw4);
@@ -257,18 +257,19 @@ uint16_t ipaddress::get_section6(int index) const  {
     }
 }
 
-const uint8_t* ipaddress::raw4() const  {
+const void* ipaddress::raw() const {
     if (_isV4) 
         return _raw4;
     else 
-        throw pgen::exception("pgen::ipaddress::raw4: This address is IPv6");
+        return _raw6;
 }
 
-const uint16_t* ipaddress::raw6() const {
+
+size_t ipaddress::length() const {
     if (_isV4) 
-        throw pgen::exception("pgen::ipaddress::raw6: This address is IPv4");
+        return length4;
     else 
-        return _raw6;
+        return length6;
 }
 
 ipaddress& ipaddress::operator=(const ipaddress& rhs) {
