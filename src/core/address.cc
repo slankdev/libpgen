@@ -302,6 +302,14 @@ bool ipaddress::operator!=(const ipaddress& rhs) const {
     return !(*this==rhs);
 }
 
+void ipaddress::setbydev(const char* ifname) {
+    if (_isV4) {
+        pgen::arch::getipv4bydev(ifname, _raw4);
+        _update_name();
+    } else {
+        throw pgen::exception("pgen::ipaddress::setbydev: version6 is not implemented yet");
+    }
+}
 
 
 } /* namespace pgen */

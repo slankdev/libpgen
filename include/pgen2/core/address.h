@@ -90,7 +90,7 @@ class ipaddress {
         bool operator==(const ipaddress& addr) const ;
         bool operator!=(const ipaddress& addr) const ;
 
-        // int setbydev(const char* ifname);
+        void setbydev(const char* ifname);
         // int setmaskbydev(const char* ifname);
         // int setnetbydev(const char* ifname);
         // int maskby(const ipaddress& mask);
