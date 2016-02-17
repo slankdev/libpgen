@@ -4,7 +4,7 @@
 #include <sstream>
 #include <assert.h>
 #include <pgen2/core/packet.h>
-#include <pgen2/util.h>
+#include <pgen2/io/util.h>
 
 
 
@@ -37,7 +37,7 @@ packet_type packet::get_type() const {
     return _type;   
 }
 void packet::hex() const {
-    pgen::util::hex(raw(), length());
+    pgen::hex(raw(), length());
 }
 
 

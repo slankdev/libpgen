@@ -4,13 +4,11 @@ include config.mk
 INCLUDE_DIR = include 
 
 IO_SRC       = \
-	src/io/stream.cc
+	src/io/stream.cc \
+	src/io/util.cc
 
 TYPES_SRC    = \
 	src/data_container.cc
-
-UTIL_SRC = \
-	src/util.cc
 
 ARCH_SRC = \
 	src/arch/arch.cc
@@ -22,7 +20,7 @@ CORE_SRC = \
 	src/core/protocol/ethernet.cc \
 	src/core/protocol/ip.cc
 	
-ALL_SRC = $(IO_SRC) $(TYPES_SRC) $(UTIL_SRC) $(ARCH_SRC) $(CORE_SRC) 
+ALL_SRC = $(IO_SRC) $(TYPES_SRC) $(ARCH_SRC) $(CORE_SRC) 
 OBJ = $(ALL_SRC:.cc=.o)
 
 

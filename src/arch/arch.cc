@@ -7,7 +7,7 @@
 
 #include <pgen2/arch/arch.h>
 #include <pgen2/exception.h>
-#include <pgen2/util.h>
+#include <pgen2/io/util.h>
 
 #include <stdio.h>
 #include <errno.h>
@@ -27,7 +27,7 @@
 #include <iostream> 
 #include <exception>
 
-#ifdef __PGEN_MAXOS
+#ifdef __PGEN_OSX
 #include <net/if_dl.h>
 #include <net/bpf.h>
 #include <fcntl.h>
@@ -41,9 +41,110 @@ namespace pgen {
 namespace arch {
 
 
+#if defined(__PGEN_LINUX)
+int open_rawsock(const char* ifname) {
+    throw pgen::exception("pgen::arch::open_rawsock() is not implemented yet");
+    return 1;
+}
+#endif
+
+
+
+
+#if defined(__PGEN_OSX)
+int open_bpf(const char* ifname) {
+    // throw pgen::exception("pgen::arch::open_bpf() is not implemented yet");
+    // return 1;   
+    int fd;
+    struct ifreq ifr;
+    const unsigned int one  = 1;
+
+    int i;
+    for (i = 0; i < 4; i++) { 
+        std::string str = "/dev/bpf" + std::to_string(i);
+        if ((fd = open(str.c_str(), O_RDWR)) > 0)
+            break;
+    }
+
+    /* 
+     * TODO 
+     *  This if statement's condition may be vulnerable.
+     *  Please fix condition, with relax.
+     */
+    if (i >= 5) { 
+        std::string errmsg = "pgen::arch::open_bpf: cannot open BPF ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+
+    // set buffer size
+    int bufsize = 4096;
+    if (ioctl(fd, BIOCSBLEN, &bufsize) < 0) {
+        close(fd);
+        std::string errmsg = "pgen::arch::open_bpf: set buffer size ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+
+    // bind to device
+    memset(&ifr, 0, sizeof(ifr));
+    strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
+    if(ioctl(fd, BIOCSETIF, &ifr) < 0){
+        close(fd);
+        std::string errmsg = "pgen::arch::open_bpf: bind to device ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+
+    // set promisc
+    if (ioctl(fd, BIOCPROMISC, NULL) < 0) {
+        close(fd);
+        std::string errmsg = "pgen::arch::open_bpf: set promisc ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+
+    //if recv packet then call read fast
+    if (ioctl(fd, BIOCIMMEDIATE, &one) < 0) {
+        close(fd);
+        std::string errmsg = "pgen::arch::open_bpf: ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+
+    // set recv sendPacket 
+    if (ioctl(fd, BIOCSSEESENT, &one) < 0) {
+        close(fd);
+        std::string errmsg = "pgen::arch::open_bpf: ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+
+    // flush recv buffer
+    if (ioctl(fd, BIOCFLUSH, NULL) < 0) {
+        close(fd);
+        std::string errmsg = "pgen::arch::open_bpf: flush recv-buffer ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+
+    // no complite src macaddr
+    if (ioctl(fd, BIOCSHDRCMPLT, &one) < 0) {
+        close(fd);
+        std::string errmsg = "pgen::arch::open_bpf: no complite src-macaddress ";
+        errmsg += strerror(errno);
+        throw pgen::exception(errmsg);
+    }
+
+    return fd;
+}
+#endif
+
+
+
 
 void getmacbydev(const char* dev, uint8_t mac[6]) {
-#ifdef __linux
+#if defined(__PGEN_LINUX)
     if(strlen(dev) >= IFNAMSIZ) {
         throw pgen::exception("pgen::arch::getmacbydev: Interface name size is too large");
     }
@@ -66,7 +167,7 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
     return ; //success
 
 
-#else // for bsd
+#elif defined(__PGEN_OSX)
     
     struct ifaddrs *ifap, *ifaptr;
     unsigned char *ptr;

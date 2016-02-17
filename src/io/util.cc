@@ -2,14 +2,30 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <pgen2/util.h>
+#include <unistd.h>
+#include <pgen2/io/util.h>
+#include <pgen2/arch/arch.h>
 
 
 
 
 namespace pgen {
-namespace util {
 
+
+int open_netif(const char* ifname) {
+#if defined(__PGEN_OSX)
+    return pgen::arch::open_bpf(ifname);
+#elif defined(__PGEN_LINUX)
+    return pgen::arch::open_rawsock(ifname);
+#else
+#error "pgen::arch: unknown architecture"
+#endif
+}
+
+
+void close_netif(int fd) {
+    close(fd);   
+}
 
 void hex(const void* buffer, size_t bufferlen) { 
 
@@ -53,13 +69,8 @@ void hex(const void* buffer, size_t bufferlen) {
     printf("\n");
 }
 
-// size_t send_to_netif(int fd, const void* buffer, size_t bufferlen) {
-//     return 1;
-// }
 
 
-
-} /* namespace util */
 } /* namespace pgen */
 
 
