@@ -3,7 +3,11 @@
 include config.mk
 INCLUDE_DIR = include 
 
-IO_SRC       = \
+IO_HDR = \
+	stream.h \
+	util.h
+
+IO_SRC = \
 	src/io/stream.cc \
 	src/io/util.cc
 
