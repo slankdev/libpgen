@@ -10,13 +10,7 @@ namespace pgen {
 
 namespace util {
 
-int  open_netif(const char* ifname);
-void close_netif(int fd);
-size_t send_to_netif(int fd, const void* buffer, size_t bufferlen);
-size_t recv_from_netif(int fd, void* buffer, size_t bufferlen);
 
-FILE*  open_pcap(const char* filename, pgen::open_mode mode);
-size_t send_to_pcap(FILE* fd, const void* buffer, size_t bufferlen);
 
 } /* namespace util */
 

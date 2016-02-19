@@ -25,4 +25,15 @@ struct pcap_fhdr{
 	uint32_t linktype;
 };
 
+
+struct pcap_packet_headr {
+    uint32_t timestamp_sec;
+    uint32_t timestamp_usec;
+    uint32_t include_len;
+    uint32_t original_len;
+};
+
+
+
+
 } /* namespace pgen */
