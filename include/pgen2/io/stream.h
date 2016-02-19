@@ -14,36 +14,57 @@
 namespace pgen {
 
 
-class stream {
+
+enum class open_mode {
+    pcap_read,
+    pcap_write,
+    pcapng_read,
+    pcapng_write,
+    netif
+};
+
+
+
+
+class base_stream {
+    public:
+        void print();
+
+        // virtual ~base_stream(){}
+
+        virtual void open(const char* name, pgen::open_mode mode) = 0;
+        virtual void close() = 0;
+        virtual size_t send(const void* buffer, size_t bufferlen) = 0;
+        virtual size_t recv(void* buffer, size_t bufferlen) = 0;
+        virtual pgen::open_mode mode() const = 0;
+};
+
+
+
+
+class pcap_stream : public base_stream {
     private:
-        FILE* _offline_fd;
+        FILE* _fd;
         pgen::open_mode _mode;
-
-        void open_file(const char* fname, const char* mode);
         
-        void write(const void* buf, size_t buflen);
-        size_t read(void* buf, size_t buflen);
+        void fopen(const char* name, const char* mode);
+        void fwrite(const void* buf, size_t buflen);
+        size_t fread(void* buf, size_t buflen);
     
-        stream(const stream&) = delete;
-        stream& operator=(const stream&) = delete;
-
     public:
 
-        stream();
-        ~stream();
+        pcap_stream();
+        ~pcap_stream();
         pgen::open_mode mode() const;
 
         void open(const char* name, pgen::open_mode _mode);
         void close();
-
-        void send(const void* buf, size_t buflen);
+        size_t send(const void* buf, size_t buflen);
         size_t recv(void* buf, size_t buflen);
 
         bool eof() const;
         void flush() const;
-
-    public:
-        FILE* fd() const {return _offline_fd;} // Todo: Remove after implementing.
+        FILE* fd() const {return _fd;} // Todo: Remove after implementing.
 };
 
 
