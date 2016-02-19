@@ -31,11 +31,12 @@ void stream::write(const void* buf, size_t buflen) {
         throw pgen::exception("pgen::stream::open_file::fwirte: ");
     }
 }
-void stream::read(void* buf, size_t buflen) {
+size_t stream::read(void* buf, size_t buflen) {
     size_t number_of_read = fread(buf, buflen, 1, _offline_fd);   
     if (number_of_read != 1) {
         throw pgen::exception("pgen::stream::open_file::fread: ");
     }
+    return buflen;
 }
 
 
@@ -86,6 +87,8 @@ void stream::close() {
 
 
 void stream::send(const void* buf, size_t buflen) {
+// mode is pcap only yet
+   
     struct pgen::pcap_packet_headr phdr;
     phdr.timestamp_sec  = 0;
     phdr.timestamp_usec = 0;
@@ -96,14 +99,40 @@ void stream::send(const void* buf, size_t buflen) {
     this->write(buf, buflen);
 }
 size_t stream::recv(void* buf, size_t buflen) {
+// mode is pcap only yet
+    
     struct pgen::pcap_packet_headr phdr;
     this->read(&phdr, sizeof(phdr));
     
-    if (buflen < phdr.original_len)
+    if (buflen < phdr.original_len) {
         throw pgen::exception("pgen::stream::recv: buffer length is too small");
+    }
 
     this->read(buf, phdr.original_len);
     return phdr.original_len;
+}
+
+
+
+bool stream::eof() const {
+    if (_mode == pgen::open_mode::netif)
+        throw pgen::exception("pgen::stream::eof: mode is netif now, can't use eof().");
+
+    uint8_t c;
+    int res = fread(&c, 1, 1, _offline_fd);
+    if (res != 1 && feof(_offline_fd)) {
+        return true;
+    } else {
+        fseek(_offline_fd, -1, SEEK_CUR);
+        return false;
+    }
+}
+
+
+void stream::flush() const {
+    if (_mode == pgen::open_mode::netif)
+        throw pgen::exception("pgen::stream::flush: mode is netif now, can't use eof().");
+    fflush(_offline_fd);
 }
 
 
