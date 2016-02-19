@@ -18,88 +18,6 @@ namespace pgen {
 namespace util {
 
 
-class file_fd {
-    private:
-        FILE* fd;
-        pgen::open_mode mode;
-    public:
-        file_fd() : fd(NULL) {}
-        FILE* get_fd() const {
-            return fd;
-        }
-        void open(const char* filename, pgen::open_mode m) {
-            mode = m;
-            if (mode == pgen::open_mode::pcap_read) { 
-                fd = fopen(filename, "rb");
-            } else if (mode == pgen::open_mode::pcap_write) { 
-                fd = fopen(filename, "wb");
-            } else {
-                throw pgen::exception("pgen::util::file_fd::open: unknown mode");
-            }
-            if (fd == NULL) {
-                throw pgen::exception("pgen::util::file_fd ");
-            }
-        }
-        size_t read(void* buffer, size_t bufferlen) {
-            size_t read_num = fread(buffer, bufferlen, 1, fd);
-            if (read_num != 1) {
-                throw pgen::exception("pgen::util::file_fd::read: ");
-            }
-            return bufferlen;
-        }
-        size_t write(const void* buffer, size_t bufferlen) {
-            size_t write_num = fwrite(buffer, bufferlen, 1, fd);
-            if (write_num != 1) {
-                throw pgen::exception("pgen::util::file_fd::write: ");
-            }
-            return bufferlen;
-        }
-        void flush() {
-            fflush(fd);
-        }
-};
-
-
-FILE*  open_pcap(const char* filename, pgen::open_mode mode) {
-    file_fd Fd;
-    Fd.open(filename, mode);
-
-    if (mode == pgen::open_mode::pcap_read) {
-        struct pcap_fhdr fh;
-        Fd.read(&fh, sizeof(pcap_fhdr));
-    
-    } else if (mode == pgen::open_mode::pcap_write) {
-        struct pcap_fhdr fh;
-        fh.magic = 0xa1b2c3d4;
-        fh.version_major = 0x0002;
-        fh.version_minor = 0x0004;
-        fh.timezone = 0x0000;
-        fh.sigfigs  = 0x0000;
-        fh.snaplen  = 0x0000ffff;
-        fh.linktype = 0x00000001;
-
-        Fd.write(&fh, sizeof(pcap_fhdr));
-        Fd.flush();
-        
-    } else {
-        throw pgen::exception("pgen::util::open_pcap: unknown mode");
-    }
-    
-    return Fd.get_fd();
-}
-
-
-
-
-size_t send_to_pcap(FILE* fd, const void* buffer, size_t bufferlen) {
-
-    
-}
-
-
-
-
-
 
 
 
@@ -156,6 +74,10 @@ void close_netif(int fd) {
 
 
 } /* namespace util */
+
+
+
+
 
 
 void hex(const void* buffer, size_t bufferlen) { 
