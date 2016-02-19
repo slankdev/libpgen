@@ -15,7 +15,7 @@ enum class open_mode {
     netif
 };
 
-struct pcap_fhdr{
+struct pcap_file_header {
 	uint32_t magic;
 	uint16_t version_major;
 	uint16_t version_minor;
