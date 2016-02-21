@@ -49,7 +49,7 @@ void ethernet::analyze(const void* buffer, size_t buffer_len) {
 
 
 void ethernet::summary(bool moreinfo) const {
-    printf("Ethernet [%s -> %s, type=0x%04x] \n", 
+    printf("Ethernet [%s -> %s type=0x%04x] \n", 
             ETH.src().get_str().c_str(),
             ETH.dst().get_str().c_str(), ETH.type());
 

@@ -40,8 +40,6 @@ class base_stream {
 };
 
 
-
-
 class pcap_stream : public base_stream {
     private:
         FILE* _fd;
@@ -68,6 +66,53 @@ class pcap_stream : public base_stream {
 };
 
 
+class net_stream : public base_stream {
+    private:
+        int _fd;
+        pgen::open_mode _mode;
+
+        void open_netif(const char* name);
+        void ioctl(unsigned long l, void* p);
+        void ioctl_c(unsigned long l, const void* p);
+        void write(const void* buf, size_t buflen);
+        size_t read(void* buf, size_t buflen);
+
+    public:
+
+        net_stream();
+        ~net_stream();
+        pgen::open_mode mode() const;
+
+        void open(const char* name, pgen::open_mode);
+        void close();
+        size_t send(const void* buf, size_t buflen);
+        size_t recv(void* buf, size_t buflen);
+};
+
+
+// class pcapng_stream : public base_stream {
+//     private:
+//         FILE* _fd;
+//         pgen::open_mode _mode;
+//
+//         void fopen(const char* name, const char* mode);
+//         void fwrite(const void* buf, size_t buflen);
+//         size_t fread(void* buf, size_t buflen);
+//     
+//     public:
+//
+//         pcapng_stream();
+//         ~pcapng_stream();
+//         pgen::open_mode mode() const;
+//
+//         void open(const char* name, pgen::open_mode _mode);
+//         void close();
+//         size_t send(const void* buf, size_t buflen);
+//         size_t recv(void* buf, size_t buflen);
+//
+//         bool eof() const;
+//         void flush() const;
+// };
 
 
 
