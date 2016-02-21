@@ -4,8 +4,18 @@
 
 #include <stddef.h>
 #include <stdint.h>
+// #include <>
 
 namespace pgen {
+
+    
+struct bpf_header {
+    uint64_t    timestamp;
+	uint32_t	caplen;
+	uint32_t	datalen;
+	uint16_t	hdrlen;	
+};
+
 
 struct pcap_file_header {
 	uint32_t magic;

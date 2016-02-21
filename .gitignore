@@ -10,4 +10,7 @@
 *.log
 *.aux
 *.dll
+
 tags
+
+test/

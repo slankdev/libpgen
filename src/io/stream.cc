@@ -1,28 +1,36 @@
 
 #include <pgen2/io/stream.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <string>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+
+#include <errno.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <net/if.h>
+#include <net/if_dl.h>
+#include <net/bpf.h>
+#include <fcntl.h>
 
 
 namespace pgen {
 
 
-void base_stream::print() {
-    printf("test \n");
+pgen::open_mode base_stream::mode() const {
+    return _mode;
 }
-
-
 
 
 pcap_stream::pcap_stream() : _fd(NULL) {
 }
 pcap_stream::~pcap_stream() {
     close();
-}
-pgen::open_mode pcap_stream::mode() const {
-    return _mode;
 }
 
 
@@ -110,6 +118,9 @@ size_t pcap_stream::recv(void* buf, size_t buflen) {
 
 
 bool pcap_stream::eof() const {
+    if (_mode != pgen::open_mode::pcap_read) {
+        throw pgen::exception("pgen::pcap_stream::eof: mode not support");
+    }
 
     uint8_t c;
     int res = ::fread(&c, 1, 1, _fd);
@@ -121,12 +132,128 @@ bool pcap_stream::eof() const {
     }
 }
 
-
 void pcap_stream::flush() const {
+    if (_mode != pgen::open_mode::pcap_read) {
+        throw pgen::exception("pgen::pcap_stream::eof: mode not support");
+    }
+
     fflush(_fd);
 }
 
 
+
+
+
+net_stream::net_stream() : _fd(-1) {}
+
+net_stream::~net_stream() {
+    close();   
+}
+
+
+void net_stream::open_netif(const char* name) {
+	const unsigned int one  = 1;
+
+	for (int i = 0; i < 4; i++) { 
+        std::string buf = "/dev/bpf";
+        buf += std::to_string(i);
+		_fd = ::open(buf.c_str(), O_RDWR);
+        if (_fd > 0)
+			break;
+	}
+    if (_fd < 0)
+        throw pgen::exception("pgen::net_stream::open_netif::open: ");
+	
+
+    /*
+     * TODO 
+     * This ioctl task is hard-coding, 
+     * about buffer size is always 4096 byte.
+     */
+    // set bufsize   
+	int bufsize = 4096;
+    ioctl_c(BIOCSBLEN, &bufsize);
+
+	// bind to device
+	struct ifreq ifr;
+	memset(&ifr, 0, sizeof(ifr));
+	strncpy(ifr.ifr_name, name, IFNAMSIZ);
+	ioctl_c(BIOCSETIF, &ifr);
+
+
+	// set promisc
+	ioctl_c(BIOCPROMISC, NULL);
+
+	//if recv packet then call read fast
+	ioctl_c(BIOCIMMEDIATE, &one);
+
+	// set recv sendPacket 
+	ioctl_c(BIOCSSEESENT, &one);
+
+	// flush recv buffer
+	ioctl_c(BIOCFLUSH, NULL);
+
+	// no complite src macaddr
+	ioctl_c(BIOCSHDRCMPLT, &one);
+}
+
+
+void net_stream::write(const void* buf, size_t buflen) {
+    int write_len = ::write(_fd, buf, buflen);
+    if (write_len < 0) {
+        throw pgen::exception("pgen::net_stream::write::write: ");
+    }
+}
+
+size_t net_stream::read(void* buf, size_t buflen) {
+    if (buflen != 4096) {
+        throw pgen::exception("pgen::net_stream::read: [BUG!!!?] it is not OK, if buflen != 4096");
+    }
+    int read_len = ::read(_fd, buf, buflen);
+    if (read_len < 0) {
+        throw pgen::exception("pgen::net_stream::read::read: ");
+    }
+    return read_len;
+}
+
+
+void net_stream::ioctl_c(unsigned long l, const void* p) {
+    int res = ::ioctl(_fd, l, p);
+    if (res < 0) {
+        throw pgen::exception("pgen::net_stream::ioctl: ");
+    }
+}
+
+
+void net_stream::open(const char* name, pgen::open_mode mode) {
+    if (mode == pgen::open_mode::netif) {
+        this->open_netif(name);
+    } else {
+        throw pgen::exception("pgen::net_stream::open: unknown mode");
+    }
+    
+}
+
+void net_stream::close() {
+    if (_fd >= 0) 
+        ::close(_fd);
+}
+
+size_t net_stream::send(const void* buf, size_t buflen) {
+    this->write(buf, buflen);
+    return buflen;
+}
+
+size_t net_stream::recv(void* buf, size_t buflen) {
+    uint8_t b[4096];
+    this->read(b, sizeof(b));
+    struct pgen::bpf_header* bpfh = (struct pgen::bpf_header*)b;
+    if (bpfh->caplen > buflen) {
+        throw pgen::exception("pgen::net_stream::recv: buflen is too small");
+    }
+    memcpy(buf, b+bpfh->hdrlen, bpfh->caplen);
+    return bpfh->caplen;
+}
 
 
 

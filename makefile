@@ -50,7 +50,11 @@ OBJ = $(SRC:.cc=.o)
 
 
 
-all: libpgen2.a
+all: libpgen2.a test-code
+
+test-code:
+	g++ -std=c++11 test/main.cc -L. -Iinclude -lpgen2
+
 
 libpgen2.a: $(OBJ)
 	@rm -f $@
@@ -88,7 +92,4 @@ uninstall:
 
 
 
-main:
-	g++ -std=c++11 main.cc -lpgen2 -Iinclude -L./ -lpgen2
-	./a.out
 
