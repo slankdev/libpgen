@@ -1,6 +1,6 @@
 
 
--include makefile.depend
+-include depend.mk
 
 
 
@@ -63,13 +63,13 @@ libpgen2.a: $(OBJ)
 .PHONY: clean
 clean:
 	$(RM) libpgen2.a a.out
-	$(RM) $(OBJ) makefile.depend
+	$(RM) $(OBJ) 
 
 
 .PHONY: depend
 depend:
 	@echo "Create Dependfile"
-	$(CPP) -MM -MG $(SRC) $(CPPFLAGS) -I$(INCLUDE_DIR) > makefile.depend
+	$(CPP) -MM -MG $(SRC) $(CPPFLAGS) -I$(INCLUDE_DIR) > depend.mk
 
 	
 
