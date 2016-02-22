@@ -18,7 +18,7 @@ class data_container {
     public:
         data_container(size_t pivot=128);
 
-        const uint8_t* data() const;
+        uint8_t* data() const;
         size_t size() const;
         size_t pivot() const;
 

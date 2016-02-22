@@ -16,8 +16,8 @@ data_container::data_container(size_t pivot) : _pivot(pivot) {
     _vec.resize(_pivot, 0);
 }
 
-const uint8_t* data_container::data() const {
-    return _vec.data();       
+uint8_t* data_container::data() const {
+    return (uint8_t*)_vec.data();       
 }
 
 size_t data_container::size() const {

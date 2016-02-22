@@ -27,8 +27,13 @@ size_t ethernet::header_length() const {
 
 
 void ethernet::compile() {
+#if 0
     ETH.write();
     _raw.write_before(_raw.pivot(), ETH.raw(), ETH.length());
+#else
+    ETH.write(_raw.data()+_raw.pivot()-ETH.length() , _raw.pivot()-ETH.length());
+#endif
+
 }
 
 

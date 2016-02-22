@@ -40,7 +40,8 @@ IO_SRC = \
 
 CORE_SRC = \
 	src/core/address.cc \
-	src/core/header/header.cc \
+	src/core/header/ethernet_header.cc \
+	src/core/header/ip_header.cc \
 	src/core/packet.cc \
 	src/core/protocol/ethernet.cc \
 	src/core/protocol/ip.cc

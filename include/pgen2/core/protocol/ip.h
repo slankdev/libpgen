@@ -10,23 +10,20 @@ namespace pgen {
 
 void func() ;
 
-// class ip : packet {
+// version4 only yet
+// class ip : public packet {
 //     private:
-//         void compile();
-//
 //     public:
-//         ethernet_header ethernet;
-//         ip_header ip;
+//         pgen::ethernet_header ETH;
+//         pgen::ip_header IP;
 //
-//         ip(bool isIPv6=false);
-//         ~ip();
-//         void clear();
+//         ip();
 //
-//         void analyze(const void* buffer, size_t buffer_len);
-//         void summary(bool moreinfo=false) const;
-//         void help() const;
+//         size_t header_length() const override;
+//         void clear() override;
+//         void compile() override;
+//         void analyze(const void* buffer, size_t buffer_len) override;
+//         void summary(bool moreinfo=false) const override;
 // };
-//
-
 
 } /* namespace pgen */
