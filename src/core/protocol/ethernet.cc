@@ -42,7 +42,8 @@ void ethernet::analyze(const void* buffer, size_t buffer_len) {
     if (buffer_len < pgen::ethernet_header::min_length)
         throw pgen::exception("pgen::ethernet::analyze: Buffer length is too small");
 
-    _header_len = ETH.read(buffer, buffer_len); 
+    ETH.read(buffer, buffer_len); 
+    _header_len = ETH.length();
     set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
 }
 

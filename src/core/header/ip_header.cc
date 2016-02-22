@@ -3,6 +3,7 @@
 
 #include <pgen2/core/header/header.h>
 #include <pgen2/exception.h>
+#include <pgen2/util.h>
 
 #include <stdint.h>
 #include <stddef.h>
@@ -70,7 +71,6 @@ void ip_header::tos(uint8_t n) {
     _tos = n;
 }
 void ip_header::tot_len(uint16_t n) {
-    printf("special!! \n");
     _tot_len = n;
 }
 void ip_header::id(uint16_t n) {
@@ -95,32 +95,105 @@ void ip_header::dst(const ipaddress& n) {
     _dst = n;
 }
 
+const uint8_t* ip_header::option() const {
+    return _option;
+}
+void ip_header::option(const void* buf, size_t buflen) {
+    if (buflen > 40) {
+        throw pgen::exception("pgen::ip_header::option: buflen is too large");
+    }
+    memcpy(_option, buf, buflen);
+}
+
+
+
+/*
+ * TODO
+ * __BYTE_ORDER macro is may imcomplete.
+ * It is hard-coding on c language's header.
+ * Redefine macro about OS's endian difference.
+ */
+struct ip {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+    uint8_t   hlen:4; 
+    uint8_t   version:4;
+#elif __BYTE_ORDER == __BIG_ENDIAN
+    uint8_t   version:4;
+    uint8_t   hlen:4; 
+#else
+# error	"Please fix endian.h"
+#endif
+    uint8_t   tos;
+    uint16_t  tot_len; 
+    uint16_t  id;
+    uint16_t  frag_off;
+    uint8_t   ttl;
+    uint8_t   protocol;
+    uint16_t  check;
+    uint8_t   src[4];
+    uint8_t   dst[4];     
+};
+
 
 
 void ip_header::write(void* buffer, size_t buffer_len) {
-    if (buffer_len < pgen::ip_header::min_length4) {
+    if (buffer_len < (size_t)(this->hlen()<<2)) {
         throw pgen::exception("pgen::ip_header::read: buflen is too small");
     }
-    if (buffer == NULL) return ;
-    return ;
+
+    struct ip* p = (ip*)buffer;
+    p->version  = 4;
+    p->hlen     = hlen();
+    p->tos      = tos();
+    p->id       = htons(id());
+    p->frag_off = htons(frag_off());
+    p->ttl      = ttl();
+    p->protocol = protocol();
+    p->check    = htons(check());
+    memcpy(p->src, _src.raw(), 4);
+    memcpy(p->dst, _dst.raw(), 4);
+
+    uint8_t* p0 = (uint8_t*)p + pgen::ip_header::min_length;
+    memcpy(p0, _option, (size_t)(hlen()<<2) - pgen::ip_header::min_length);
 }
 
-size_t ip_header::read(const void* buffer, size_t buffer_len) {
-    if (buffer_len < pgen::ip_header::min_length4) {
+
+
+void ip_header::read(const void* buffer, size_t buffer_len) {
+    if (buffer_len < pgen::ip_header::min_length) {
         throw pgen::exception("pgen::ip_header::read: buflen is too small");
     }
-    if (buffer == NULL) return 1;
-    return 1;
+
+    struct ip* p = (ip*)buffer;
+    hlen    (p->hlen);
+    tos     (p->tos);
+    id      (ntohs(p->id));
+    frag_off(ntohs(p->frag_off));
+    ttl     (p->ttl);
+    protocol(p->protocol);
+    check   (ntohs(p->check));
+    for (int i=0; i<4; i++) {
+        _src.set_octet4(i+1, p->src[i]);
+        _dst.set_octet4(i+1, p->dst[i]);
+    }
+
+    if (buffer_len < (size_t)(hlen()<<2)) {
+        throw pgen::exception("pgen::ip_header::read: buflen is too small");
+    }
+
+    uint8_t* p0 = (uint8_t*)p + pgen::ip_header::min_length;
+    memcpy(_option, p0, (size_t)(hlen()<<2) - pgen::ip_header::min_length);
 }
+
+
+size_t ip_header::length() const {
+    return hlen() << 2;
+}
+
 
 // const uint8_t* ip_header::raw() const {
 //     return _raw;
 // }
-
-size_t ip_header::length() const {
-    return 1;
-}
-
 
 
 

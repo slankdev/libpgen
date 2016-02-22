@@ -27,6 +27,8 @@ class ethernet_header {
 
         // uint8_t _raw[max_length];
     public:
+        // void write();
+        // const uint8_t* raw() const; 
 
         ethernet_header();
 
@@ -38,10 +40,8 @@ class ethernet_header {
         void dst(const macaddress& a);
         void type(uint16_t t);
 
-        // void write();
         void write(void* buffer, size_t buffer_len);
-        size_t read(const void* buffer, size_t buffer_len);
-        // const uint8_t* raw() const; 
+        void read(const void* buffer, size_t buffer_len);
         size_t length() const ;
 };
 
@@ -49,13 +49,12 @@ class ethernet_header {
 
 class ip_header {
     public:
-        static const size_t min_length4 
+        static const size_t min_length
             = 12+pgen::ipaddress::length4*2;
-        static const size_t max_length4 
-            = min_length4+40;
+        static const size_t max_length
+            = pgen::ip_header::min_length+40;
 
 	private:
-        // uint8_t _raw[max_length4];
 
         uint8_t    _hlen; // this is special field, and 4bit field
         uint8_t    _tos;
@@ -67,8 +66,12 @@ class ip_header {
         uint16_t   _check;
         ipaddress  _src;
         ipaddress  _dst;     
+        
+        uint8_t _option[40];
 
+        // uint8_t _raw[max_length4];
     public:
+        // const uint8_t* raw() const; 
 
         ip_header();
     
@@ -82,6 +85,7 @@ class ip_header {
         uint16_t check() const ;
         const ipaddress& src() const ;
         const ipaddress& dst() const ;     
+        const uint8_t* option() const ;
 
         void hlen(uint8_t n);    
         void tos(uint8_t n);
@@ -93,10 +97,10 @@ class ip_header {
         void check(uint16_t n);
         void src(const ipaddress& n);
         void dst(const ipaddress& n);
+        void option(const void* buf, size_t buflen);
 
         void write(void* buffer, size_t buffer_len);
-        size_t read(const void* buffer, size_t buffer_len);
-        // const uint8_t* raw() const; 
+        void read(const void* buffer, size_t buffer_len);
         size_t length() const ;
 };
 
