@@ -1,7 +1,6 @@
 
 
 #include <pgen2/core/header.h>
-#include <pgen2/core/packet.h>
 #include <pgen2/core/protocol/ethernet.h>
 #include <pgen2/exception.h>
 
@@ -28,13 +27,8 @@ size_t ethernet::header_length() const {
 
 
 void ethernet::compile() {
-    // uint8_t buf[pgen::ethernet_header::max_length];
-    // _header_len = ETH.write(buf, sizeof(buf));
-    // _raw.write_before(_raw.pivot(), buf, _header_len);
-    
     ETH.write();
     _raw.write_before(_raw.pivot(), ETH.raw(), ETH.length());
-
 }
 
 

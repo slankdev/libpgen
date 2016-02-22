@@ -2,21 +2,16 @@
 #pragma once
 
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 #include <stddef.h>
-#include <unistd.h>
 #include <pgen2/types.h>
-#include <pgen2/exception.h>
-#include <pgen2/io/util.h>
-
 
 
 namespace pgen {
 
 
-
 enum class open_mode {
-    pcap_read,
+    pcap_read = 0,
     pcap_write,
     pcapng_read,
     pcapng_write,
@@ -24,14 +19,13 @@ enum class open_mode {
 };
 
 
-
-
 class base_stream {
     protected:
         pgen::open_mode _mode;
+
     public:
-        virtual ~base_stream() = 0;
         pgen::open_mode mode() const;
+        void print_mode() const;
 
         virtual void open(const char* name, pgen::open_mode mode) = 0;
         virtual void close() = 0;
@@ -40,18 +34,28 @@ class base_stream {
 };
 
 
-class pcap_stream : public base_stream {
-    private:
+class file_stream : public base_stream {
+    protected:
         FILE* _fd;
-        
+
         void fopen(const char* name, const char* mode);
+        void fclose();
         void fwrite(const void* buf, size_t buflen);
         size_t fread(void* buf, size_t buflen);
-    
-    public:
 
-        pcap_stream();
-        ~pcap_stream();
+        bool feof() const;  
+        void fflush() const;
+
+    public:
+        file_stream();
+        ~file_stream();
+};
+
+
+class pcap_stream : public file_stream {
+    private:
+        struct pcap_file_header file_header;
+    public:
 
         void open(const char* name, pgen::open_mode _mode);
         void close();
@@ -84,18 +88,8 @@ class net_stream : public base_stream {
 };
 
 
-// class pcapng_stream : public base_stream {
-//     private:
-//         FILE* _fd;
-//
-//         void fopen(const char* name, const char* mode);
-//         void fwrite(const void* buf, size_t buflen);
-//         size_t fread(void* buf, size_t buflen);
-//     
+// class pcapng_stream : public file_stream {
 //     public:
-//
-//         pcapng_stream();
-//         ~pcapng_stream();
 //
 //         void open(const char* name, pgen::open_mode _mode);
 //         void close();
