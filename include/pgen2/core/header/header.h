@@ -25,10 +25,11 @@ class ethernet_header {
         macaddress _src;
         uint16_t   _type;
 
-        uint8_t _raw[max_length];
+        // uint8_t _raw[max_length];
     public:
 
         ethernet_header();
+
         const macaddress& src() const;
         const macaddress& dst() const;
         const uint16_t&   type() const;
@@ -36,10 +37,10 @@ class ethernet_header {
         macaddress& dst();
         uint16_t&   type();
 
-        // size_t write(void* buffer, size_t buffer_len);
-        void write();
+        // void write();
+        void write(void* buffer, size_t buffer_len);
         size_t read(const void* buffer, size_t buffer_len);
-        const uint8_t* raw() const; 
+        // const uint8_t* raw() const; 
         size_t length() const ;
 };
 
@@ -53,9 +54,9 @@ class ip_header {
             = min_length4+40;
 
 	private:
-        uint8_t _raw[max_length4];
+        // uint8_t _raw[max_length4];
 
-        uint8_t    _hlen:4; // this is special field
+        uint8_t    _hlen; // this is special field, and 4bit field
         uint8_t    _tos;
         uint16_t   _tot_len; // this is special field 
         uint16_t   _id;
@@ -67,31 +68,34 @@ class ip_header {
         ipaddress  _dst;     
 
     public:
-        const uint8_t&    hlen() const ;    
-        const uint8_t&    tos() const ;
-        const uint16_t&   tot_len() const ;
-        const uint16_t&   id() const;
-        const uint16_t&   frag_off() const ;
-        const uint8_t&    ttl() const ;
-        const uint8_t&    protocol() const ;
-        const uint16_t&   check() const ;
-        const ipaddress&  src() const ;
-        const ipaddress&  dst() const ;     
 
-        uint8_t&    hlen();    
-        uint8_t&    tos();
-        uint16_t&   tot_len();
-        uint16_t&   id();
-        uint16_t&   frag_off();
-        uint8_t&    ttl();
-        uint8_t&    protocol();
-        uint16_t&   check();
-        ipaddress&  src();
-        ipaddress&  dst();
+        ip_header();
+    
+        uint8_t    hlen() const ;    
+        uint8_t    tos() const ;
+        uint16_t   tot_len() const ;
+        uint16_t   id() const;
+        uint16_t   frag_off() const ;
+        uint8_t    ttl() const ;
+        uint8_t    protocol() const ;
+        uint16_t   check() const ;
+        const ipaddress& src() const ;
+        const ipaddress& dst() const ;     
 
-        void write();
+        void hlen(uint8_t n);    
+        void tos(uint8_t n);
+        void tot_len(uint16_t n);
+        void id(uint16_t n);
+        void frag_off(uint16_t n);
+        void ttl(uint8_t n );
+        void protocol(uint8_t n);
+        void check(uint16_t n);
+        void src(const ipaddress& n);
+        void dst(const ipaddress& n);
+
+        void write(void* buffer, size_t buffer_len);
         size_t read(const void* buffer, size_t buffer_len);
-        const uint8_t* raw() const; 
+        // const uint8_t* raw() const; 
         size_t length() const ;
 };
 
