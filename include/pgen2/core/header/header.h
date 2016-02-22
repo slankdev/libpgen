@@ -32,10 +32,11 @@ class ethernet_header {
 
         const macaddress& src() const;
         const macaddress& dst() const;
-        const uint16_t&   type() const;
-        macaddress& src();
-        macaddress& dst();
-        uint16_t&   type();
+        uint16_t   type() const;
+
+        void src(const macaddress& a);
+        void dst(const macaddress& a);
+        void type(uint16_t t);
 
         // void write();
         void write(void* buffer, size_t buffer_len);
@@ -71,14 +72,14 @@ class ip_header {
 
         ip_header();
     
-        uint8_t    hlen() const ;    
-        uint8_t    tos() const ;
-        uint16_t   tot_len() const ;
-        uint16_t   id() const;
-        uint16_t   frag_off() const ;
-        uint8_t    ttl() const ;
-        uint8_t    protocol() const ;
-        uint16_t   check() const ;
+        uint8_t  hlen() const ;    
+        uint8_t  tos() const ;
+        uint16_t tot_len() const ;
+        uint16_t id() const;
+        uint16_t frag_off() const ;
+        uint8_t  ttl() const ;
+        uint8_t  protocol() const ;
+        uint16_t check() const ;
         const ipaddress& src() const ;
         const ipaddress& dst() const ;     
 

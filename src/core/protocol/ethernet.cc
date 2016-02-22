@@ -14,9 +14,9 @@ ethernet::ethernet() {
 
 
 void ethernet::clear() {
-    ETH.src()  = "00:00:00:00:00:00";
-    ETH.dst()  = "00:00:00:00:00:00";
-    ETH.type() = 0x0000;
+    ETH.src("00:00:00:00:00:00");
+    ETH.dst("00:00:00:00:00:00");
+    ETH.type(0x0000);
 }
 
 

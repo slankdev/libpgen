@@ -10,9 +10,9 @@ namespace pgen {
  
 
 ethernet_header::ethernet_header() {
-    src().clear();
-    dst().clear();
-    type() = 0;
+    src("00:00:00:00:00:00");
+    dst("00:00:00:00:00:00");
+    type(0);
 }
 
 const macaddress& ethernet_header::src() const {
@@ -21,18 +21,18 @@ const macaddress& ethernet_header::src() const {
 const macaddress& ethernet_header::dst() const {
     return _dst;      
 }
-const uint16_t& ethernet_header::type() const {
+uint16_t ethernet_header::type() const {
     return _type;      
 }
 
-macaddress& ethernet_header::src() {
-    return _src;       
+void ethernet_header::src(const macaddress& a) {
+    _src = a;       
 }
-macaddress& ethernet_header::dst() {
-    return _dst;      
+void ethernet_header::dst(const macaddress& a) {
+    _dst = a;      
 }
-uint16_t& ethernet_header::type() {
-    return _type;      
+void ethernet_header::type(uint16_t t) {
+    _type = t;      
 }
 
 
@@ -87,9 +87,9 @@ size_t ethernet_header::read(const void* buffer, size_t buffer_len) {
 
     const eth* p = (const eth*)buffer;
 
-    src().setbyarray(p->src);
-    dst().setbyarray(p->dst);
-    type() = ntohs(p->type);
+    _src.setbyarray(p->src);
+    _dst.setbyarray(p->dst);
+    _type = ntohs(p->type);
     
     return sizeof(eth);      
 }
