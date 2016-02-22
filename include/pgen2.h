@@ -9,7 +9,7 @@
 #include <pgen2/util.h>
 
 #include <pgen2/core/address.h>
-#include <pgen2/core/header.h>
+#include <pgen2/core/header/header.h>
 #include <pgen2/core/packet.h>
 #include <pgen2/core/protocol/ethernet.h>
 #include <pgen2/core/protocol/ip.h>

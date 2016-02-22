@@ -94,7 +94,6 @@ class ipaddress {
         // int setmaskbydev(const char* ifname);
         // int setnetbydev(const char* ifname);
         // int maskby(const ipaddress& mask);
-
 };
 
 

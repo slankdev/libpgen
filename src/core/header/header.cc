@@ -2,7 +2,7 @@
 
 
 
-#include <pgen2/core/header.h>
+#include <pgen2/core/header/header.h>
 #include <pgen2/exception.h>
 
 
@@ -81,6 +81,8 @@ size_t ethernet_header::read(const void* buffer, size_t buffer_len) {
 size_t ethernet_header::length() const {
     return ethernet_header::max_length;
 }
+
+
 
 
 } /* pgen */
