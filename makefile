@@ -23,19 +23,20 @@ export INSTALL_HDR_DIR := /usr/local/include
 
 
 
-IO_HDR = \
-	stream.h \
-	util.h
-
-IO_SRC = \
-	src/io/stream.cc \
-	src/io/util.cc
-
 TYPES_SRC    = \
 	src/data_container.cc
 
 ARCH_SRC = \
 	src/arch/arch.cc
+
+UTIL_SRC = \
+	src/util.cc
+
+IO_SRC = \
+	src/io/stream.cc \
+	src/io/file_stream.cc \
+	src/io/pcap_stream.cc \
+	src/io/net_stream.cc
 
 CORE_SRC = \
 	src/core/address.cc \
@@ -44,13 +45,16 @@ CORE_SRC = \
 	src/core/protocol/ethernet.cc \
 	src/core/protocol/ip.cc
 	
-SRC = $(IO_SRC) $(TYPES_SRC) $(ARCH_SRC) $(CORE_SRC) 
+SRC = $(IO_SRC) $(TYPES_SRC) $(ARCH_SRC) $(CORE_SRC) $(UTIL_SRC)
 OBJ = $(SRC:.cc=.o)
 
 
 
 
-all: libpgen2.a
+all: libpgen2.a test-code
+
+test-code:
+	$(MAKE) -C test
 
 libpgen2.a: $(OBJ)
 	@rm -f $@
@@ -88,7 +92,4 @@ uninstall:
 
 
 
-main:
-	g++ -std=c++11 main.cc -lpgen2 -Iinclude -L./ -lpgen2
-	./a.out
 

@@ -7,14 +7,10 @@
 
 #include <pgen2/arch/arch.h>
 #include <pgen2/exception.h>
-#include <pgen2/io/util.h>
 
 #include <stdio.h>
-#include <errno.h>
 #include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <ifaddrs.h>
+#include <assert.h>
 
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -23,11 +19,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <ifaddrs.h>
 
-#include <iostream> 
-#include <exception>
-
-#include <assert.h>
 
 #ifdef __PGEN_OSX
 #include <net/if_dl.h>
@@ -43,93 +36,6 @@ namespace pgen {
 namespace arch {
 
 
-#if defined(__PGEN_LINUX)
-int open_rawsock(const char* ifname) {
-    throw pgen::exception("pgen::arch::open_rawsock() is not implemented yet");
-    return 1;
-}
-#endif
-
-
-
-
-#if defined(__PGEN_OSX)
-
-class BSD_Fd {
-    private:
-        int fd;
-        bool do_close;
-        BSD_Fd(const BSD_Fd&) = delete;
-        BSD_Fd& operator=(const BSD_Fd&) = delete;
-
-    public:
-        BSD_Fd() : fd(-1), do_close(true){}
-        ~BSD_Fd() {
-            if (fd >= 0 && do_close) 
-                ::close(fd);
-        }
-        void open() {
-            for (int i = 0; i < 4; i++) { 
-                std::string str = "/dev/bpf" + std::to_string(i);
-                fd = ::open(str.c_str(), O_RDWR);
-                if (fd >= 0)
-                    return;
-            }
-            throw pgen::exception("pgen::arch::open_bpf: cannot open BPF ");
-
-        }
-        void ioctl(int request, void* p) {
-            if (::ioctl(fd, request, p) < 0) {
-                throw pgen::exception("pgen::arch::open_bpf:");
-            }
-        }
-        void ioctl_c(int request, const void* p) {
-            if (::ioctl(fd, request, p) < 0) {
-                throw pgen::exception("pgen::arch::open_bpf:");
-            }
-        }
-        int get_fd() const {
-            return fd;
-        }
-        void dont_close() {
-            do_close = false;
-        }
-};
-
-
-int open_bpf(const char* ifname) {
-    assert(strlen(ifname) < IFNAMSIZ);
-
-    BSD_Fd fd;
-    // throw pgen::exception("pgen::arch::open_bpf() is not implemented yet");
-    // return 1;   
-    struct ifreq ifr;
-
-    fd.open();
-
-    // set buffer size
-    int bufsize = 4096;
-    fd.ioctl(BIOCSBLEN, &bufsize);
-    memset(&ifr, 0, sizeof(ifr));
-    strcpy(ifr.ifr_name, ifname);
-    fd.ioctl(BIOCSETIF, &ifr);
-
-    fd.ioctl_c(BIOCPROMISC, nullptr);
-
-    //if recv packet then call read fast
-    const unsigned int one  = 1;
-    fd.ioctl_c(BIOCIMMEDIATE, &one);
-
-    // set recv sendPacket 
-    fd.ioctl_c(BIOCSSEESENT, &one);
-
-    fd.ioctl_c(BIOCFLUSH, nullptr);
-    fd.ioctl_c(BIOCSHDRCMPLT, &one);
-
-    fd.dont_close();
-    return fd.get_fd();
-}
-#endif
 
 
 
