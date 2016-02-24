@@ -4,7 +4,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <pgen2/core/address.h>
+#include <pgen2/core/macaddress.h>
+#include <pgen2/core/ipaddress.h>
 
 
 
@@ -47,12 +48,12 @@ class ethernet_header {
 
 
 
-class ip_header {
+class ipv4_header {
     public:
         static const size_t min_length
-            = 12+pgen::ipaddress::length4*2;
+            = 12+pgen::ipv4address::_length*2;
         static const size_t max_length
-            = pgen::ip_header::min_length+40;
+            = min_length+40;
 
 	private:
 
@@ -64,8 +65,8 @@ class ip_header {
         uint8_t    _ttl;
         uint8_t    _protocol;
         uint16_t   _check;
-        ipaddress  _src;
-        ipaddress  _dst;     
+        ipv4address  _src;
+        ipv4address  _dst;     
         
         uint8_t _option[40];
 
@@ -73,7 +74,7 @@ class ip_header {
     public:
         // const uint8_t* raw() const; 
 
-        ip_header();
+        ipv4_header();
     
         uint8_t  hlen() const ;    
         uint8_t  tos() const ;
@@ -83,8 +84,8 @@ class ip_header {
         uint8_t  ttl() const ;
         uint8_t  protocol() const ;
         uint16_t check() const ;
-        const ipaddress& src() const ;
-        const ipaddress& dst() const ;     
+        const ipv4address& src() const ;
+        const ipv4address& dst() const ;     
         const uint8_t* option() const ;
 
         void hlen(uint8_t n);    
@@ -95,8 +96,8 @@ class ip_header {
         void ttl(uint8_t n );
         void protocol(uint8_t n);
         void check(uint16_t n);
-        void src(const ipaddress& n);
-        void dst(const ipaddress& n);
+        void src(const ipv4address& n);
+        void dst(const ipv4address& n);
         void option(const void* buf, size_t buflen);
 
         void write(void* buffer, size_t buffer_len);

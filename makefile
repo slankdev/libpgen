@@ -39,7 +39,8 @@ IO_SRC = \
 	src/io/net_stream.cc
 
 CORE_SRC = \
-	src/core/address.cc \
+	src/core/macaddress.cc \
+	src/core/ipaddress.cc \
 	src/core/header/ethernet_header.cc \
 	src/core/header/ip_header.cc \
 	src/core/packet.cc \
