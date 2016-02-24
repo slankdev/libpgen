@@ -11,18 +11,20 @@ namespace pgen {
 
 
 class ipv4address {
+    public:
+
+        static const size_t length = 4;
+        static const size_t strlength = 3*length+3;
+
     private:
 
-        uint8_t _raw[6];
+        uint8_t _raw[length];
         std::string _name;
 
         void _update_name();
         void set_str(const std::string& str);
 
     public:
-
-        static const size_t _length = 4;
-        static const size_t strlength = 3*_length+3;
 
         ipv4address();
         ipv4address(const ipv4address& i);
@@ -31,8 +33,7 @@ class ipv4address {
         void clear();
         
         const void* raw() const ;
-        size_t length() const;
-        const std::string& get_str() const ;
+        const std::string& str() const ;
 
         void     set_octet(int index, uint8_t oct);
         uint8_t  get_octet(int index) const ;
@@ -53,18 +54,20 @@ class ipv4address {
 
 
 class ipv6address {
+    public:
+
+        static const size_t length = 16;
+        static const size_t strlength = 2*length+7;
+
     private:
 
-        uint16_t _raw[8];
+        uint16_t _raw[length / sizeof(uint16_t)];
         std::string _name;
 
         void _update_name();
         void set_str(const std::string& str);
 
     public:
-
-        static const size_t _length = 16;
-        static const size_t strlength = 2*_length+7;
 
         ipv6address();
         ipv6address(const ipv6address& i);
@@ -73,8 +76,7 @@ class ipv6address {
         void clear();
         
         const void* raw() const ;
-        size_t length() const;
-        const std::string& get_str() const ;
+        const std::string& str() const ;
 
         void     set_section(int index, uint16_t num);
         uint16_t get_section(int index) const ;

@@ -9,11 +9,6 @@
 namespace pgen {
  
 
-ethernet_header::ethernet_header() {
-    src("00:00:00:00:00:00");
-    dst("00:00:00:00:00:00");
-    type(0);
-}
 
 const macaddress& ethernet_header::src() const {
     return _src;      
@@ -57,6 +52,7 @@ void ethernet_header::write(void* buffer, size_t bufferlen) {
 }
 
 
+
 // void ethernet_header::write() {
 //     struct eth {
 //         uint8_t dst[pgen::macaddress::length];
@@ -71,10 +67,11 @@ void ethernet_header::write(void* buffer, size_t bufferlen) {
 //     }
 //     p->type = htons(type());
 // }
-
+//
 // const uint8_t* ethernet_header::raw() const {
 //     return _raw;
 // }
+
 
 
 void ethernet_header::read(const void* buffer, size_t buffer_len) {

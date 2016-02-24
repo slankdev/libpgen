@@ -48,6 +48,7 @@ void net_stream::open_netif(const char* name) {
      * about buffer size is always 4096 byte.
      */
     // set bufsize   
+    // buffer size it too hj
 	int bufsize = 4096;
     ioctl_c(BIOCSBLEN, &bufsize);
 

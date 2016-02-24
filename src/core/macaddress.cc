@@ -63,7 +63,7 @@ void macaddress::set_str(const std::string& str) {
     _update_name();
 }
 
-const std::string macaddress::get_str() const {
+const std::string macaddress::str() const {
     return _name;      
 };
 

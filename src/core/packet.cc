@@ -33,7 +33,7 @@ size_t packet::length() const {
 }
 
 
-packet_type packet::get_type() const {
+packet_type packet::type() const {
     return _type;   
 }
 void packet::hex() const {

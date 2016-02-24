@@ -35,7 +35,7 @@ class packet {
 
     public:
 
-        packet_type get_type() const;
+        packet_type type() const;
         void set_contents(const void* buffer, size_t buflen);
         void hex() const;
 

@@ -29,7 +29,7 @@ class macaddress {
         macaddress(const char* str);
         void clear();
 
-        const std::string get_str() const;
+        const std::string str() const;
         const std::string get_bender() const;
 
         void set_octet(int index, uint8_t oct);
