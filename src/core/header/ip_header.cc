@@ -14,7 +14,7 @@
 namespace pgen {
 
 
-ip_header::ip_header() {
+ipv4_header::ipv4_header() {
     hlen(5);
     tos(0);
     tot_len(0);
@@ -28,79 +28,79 @@ ip_header::ip_header() {
 }
 
 
-uint8_t ip_header::hlen() const {
+uint8_t ipv4_header::hlen() const {
     return _hlen;
 }
-uint8_t ip_header::tos() const {
+uint8_t ipv4_header::tos() const {
     return _tos;
 }
-uint16_t   ip_header::tot_len() const {
+uint16_t   ipv4_header::tot_len() const {
     return _tot_len;
 }
-uint16_t   ip_header::id() const { 
+uint16_t   ipv4_header::id() const { 
     return _id;
 }
-uint16_t   ip_header::frag_off() const {
+uint16_t   ipv4_header::frag_off() const {
     return _frag_off;
 }
-uint8_t    ip_header::ttl() const {
+uint8_t    ipv4_header::ttl() const {
     return _ttl;
 }
-uint8_t    ip_header::protocol() const {
+uint8_t    ipv4_header::protocol() const {
     return _protocol;
 }
-uint16_t   ip_header::check() const {
+uint16_t   ipv4_header::check() const {
     return _check;
 }
-const ipaddress&  ip_header::src() const {
+const ipv4address&  ipv4_header::src() const {
     return _src;
 }
-const ipaddress&  ip_header::dst() const {
+const ipv4address&  ipv4_header::dst() const {
     return _dst;
 }
 
 
 
-void ip_header::hlen(uint8_t n) {
+void ipv4_header::hlen(uint8_t n) {
     struct {
         uint8_t bit:4;
     } r;
     _hlen = r.bit = n;
 }
-void ip_header::tos(uint8_t n) {
+void ipv4_header::tos(uint8_t n) {
     _tos = n;
 }
-void ip_header::tot_len(uint16_t n) {
+void ipv4_header::tot_len(uint16_t n) {
     _tot_len = n;
 }
-void ip_header::id(uint16_t n) {
+void ipv4_header::id(uint16_t n) {
     _id = n;
 }
-void ip_header::frag_off(uint16_t n) {
+void ipv4_header::frag_off(uint16_t n) {
     _frag_off = n;
 }
-void ip_header::ttl(uint8_t n) {
+void ipv4_header::ttl(uint8_t n) {
     _ttl = n;
 }
-void ip_header::protocol(uint8_t n) {
+void ipv4_header::protocol(uint8_t n) {
     _protocol = n;
 }
-void ip_header::check(uint16_t n) {
+void ipv4_header::check(uint16_t n) {
     _check = n;
 }
-void ip_header::src(const ipaddress& n) {
+void ipv4_header::src(const ipv4address& n) {
     _src = n;
 }
-void ip_header::dst(const ipaddress& n) {
+void ipv4_header::dst(const ipv4address& n) {
     _dst = n;
 }
 
-const uint8_t* ip_header::option() const {
+const uint8_t* ipv4_header::option() const {
     return _option;
 }
-void ip_header::option(const void* buf, size_t buflen) {
+void ipv4_header::option(const void* buf, size_t buflen) {
     if (buflen > 40) {
-        throw pgen::exception("pgen::ip_header::option: buflen is too large");
+        throw pgen::exception("pgen::ipv4_header::option: buflen is too large");
     }
     memcpy(_option, buf, buflen);
 }
@@ -136,9 +136,9 @@ struct ip {
 
 
 
-void ip_header::write(void* buffer, size_t buffer_len) {
+void ipv4_header::write(void* buffer, size_t buffer_len) {
     if (buffer_len < (size_t)(this->hlen()<<2)) {
-        throw pgen::exception("pgen::ip_header::read: buflen is too small");
+        throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
     }
 
     struct ip* p = (ip*)buffer;
@@ -153,15 +153,15 @@ void ip_header::write(void* buffer, size_t buffer_len) {
     memcpy(p->src, _src.raw(), 4);
     memcpy(p->dst, _dst.raw(), 4);
 
-    uint8_t* p0 = (uint8_t*)p + pgen::ip_header::min_length;
-    memcpy(p0, _option, (size_t)(hlen()<<2) - pgen::ip_header::min_length);
+    uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
+    memcpy(p0, _option, (size_t)(hlen()<<2) - pgen::ipv4_header::min_length);
 }
 
 
 
-void ip_header::read(const void* buffer, size_t buffer_len) {
-    if (buffer_len < pgen::ip_header::min_length) {
-        throw pgen::exception("pgen::ip_header::read: buflen is too small");
+void ipv4_header::read(const void* buffer, size_t buffer_len) {
+    if (buffer_len < pgen::ipv4_header::min_length) {
+        throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
     }
 
     struct ip* p = (ip*)buffer;
@@ -173,25 +173,25 @@ void ip_header::read(const void* buffer, size_t buffer_len) {
     protocol(p->protocol);
     check   (ntohs(p->check));
     for (int i=0; i<4; i++) {
-        _src.set_octet4(i+1, p->src[i]);
-        _dst.set_octet4(i+1, p->dst[i]);
+        _src.set_octet(i+1, p->src[i]);
+        _dst.set_octet(i+1, p->dst[i]);
     }
 
     if (buffer_len < (size_t)(hlen()<<2)) {
-        throw pgen::exception("pgen::ip_header::read: buflen is too small");
+        throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
     }
 
-    uint8_t* p0 = (uint8_t*)p + pgen::ip_header::min_length;
-    memcpy(_option, p0, (size_t)(hlen()<<2) - pgen::ip_header::min_length);
+    uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
+    memcpy(_option, p0, (size_t)(hlen()<<2) - pgen::ipv4_header::min_length);
 }
 
 
-size_t ip_header::length() const {
+size_t ipv4_header::length() const {
     return hlen() << 2;
 }
 
 
-// const uint8_t* ip_header::raw() const {
+// const uint8_t* ipv4_header::raw() const {
 //     return _raw;
 // }
 

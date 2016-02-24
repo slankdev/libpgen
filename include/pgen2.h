@@ -8,7 +8,8 @@
 #include <pgen2/types.h>
 #include <pgen2/util.h>
 
-#include <pgen2/core/address.h>
+#include <pgen2/core/macaddress.h>
+#include <pgen2/core/ipaddress.h>
 #include <pgen2/core/header/header.h>
 #include <pgen2/core/packet.h>
 #include <pgen2/core/protocol/ethernet.h>

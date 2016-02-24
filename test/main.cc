@@ -3,7 +3,8 @@
 #include <pgen2.h>
 
 
-void print(pgen::ip_header& ip) {
+
+void print(pgen::ipv4_header& ip) {
     printf("Internet Protocol \n");
     printf(" - header len     : %d \n", (int)ip.hlen()    );
     printf(" - type of service: %d \n", (int)ip.tos()     );
@@ -19,13 +20,11 @@ void print(pgen::ip_header& ip) {
 
 
 
-
-
 int main() {
     try {
         char data[] = "1234";
 
-        pgen::ip_header ip;
+        pgen::ipv4_header ip;
         ip.src("1.2.3.4");
         ip.dst("5.6.7.9");
         ip.hlen(6);
@@ -37,7 +36,7 @@ int main() {
         ip.write(buf, sizeof(buf));
         pgen::hex(buf, ip.length());
 
-        pgen::ip_header test;
+        pgen::ipv4_header test;
         test.read(buf, ip.length());
         
         memset(buf, 0, sizeof(buf));
