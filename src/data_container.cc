@@ -50,6 +50,10 @@ void data_container::delete_content() {
 }
 
 
+uint8_t& data_container::operator [] (int n) {
+    return _vec[n];
+}
+
 
 } /* namespace types */
 } /* namespace pgen */

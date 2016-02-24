@@ -14,13 +14,14 @@ void print(pgen::ipv4_header& ip) {
     printf(" - time to leave  : %d \n", (int)ip.ttl()     );
     printf(" - protocol       : %d \n", (int)ip.protocol());
     printf(" - checksum       : %d \n", (int)ip.check()   );
-    printf(" - source         : %s \n", ip.src().get_str().c_str());
-    printf(" - destination    : %s \n", ip.dst().get_str().c_str());
+    printf(" - source         : %s \n", ip.src().str().c_str());
+    printf(" - destination    : %s \n", ip.dst().str().c_str());
 }
 
 
 
 int main() {
+
     try {
         char data[] = "1234";
 
@@ -48,4 +49,5 @@ int main() {
     } catch (std::exception& e) {
         printf("%s \n", e.what());
     }
+
 }

@@ -25,7 +25,10 @@ class data_container {
         void write_before(size_t index, const void* buf, size_t buflen);
         void set_content(const void* buf, size_t buflen);
         void delete_content();
+
+        uint8_t& operator [] (int n);
 };
+
 
 } /* namespace types */
 } /* namespace pgen  */

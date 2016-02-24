@@ -42,7 +42,7 @@ ipv4address::ipv4address(const char* str) {
 }
 
 void ipv4address::clear() {
-    for (size_t i=0; i<ipv4address::_length; i++)
+    for (size_t i=0; i<ipv4address::length; i++)
         _raw[i] = 0;
     _update_name();
 }
@@ -85,17 +85,13 @@ const void* ipv4address::raw() const {
 }
 
 
-size_t ipv4address::length() const {
-    return _length;
-}
-
-const std::string& ipv4address::get_str() const  {
+const std::string& ipv4address::str() const  {
     return _name;
 }
 
 
 ipv4address& ipv4address::operator=(const ipv4address& rhs) {
-    memcpy(_raw, rhs._raw, ipv4address::_length);
+    memcpy(_raw, rhs._raw, ipv4address::length);
     _name = rhs._name;
     return *this;
 }
@@ -111,7 +107,7 @@ ipv4address& ipv4address::operator=(const char* rhs) {
 }
 
 bool ipv4address::operator==(const ipv4address& rhs) const {
-    return memcmp(_raw, rhs._raw, ipv4address::_length) == 0;
+    return memcmp(_raw, rhs._raw, ipv4address::length) == 0;
 }
 
 bool ipv4address::operator!=(const ipv4address& rhs) const {
@@ -151,7 +147,7 @@ ipv6address::ipv6address(const char* str) {
 }
 
 void ipv6address::clear() {
-    for (size_t i=0; i<ipv6address::_length; i++)
+    for (size_t i=0; i<ipv6address::length; i++)
         _raw[i] = 0;
     _update_name();
 }
@@ -197,17 +193,14 @@ const void* ipv6address::raw() const {
 }
 
 
-size_t ipv6address::length() const {
-    return _length;
-}
 
-const std::string& ipv6address::get_str() const  {
+const std::string& ipv6address::str() const  {
     return _name;
 }
 
 
 ipv6address& ipv6address::operator=(const ipv6address& rhs) {
-    memcpy(_raw, rhs._raw, ipv6address::_length);
+    memcpy(_raw, rhs._raw, ipv6address::length);
     _name = rhs._name;
     return *this;
 }
@@ -223,7 +216,7 @@ ipv6address& ipv6address::operator=(const char* rhs) {
 }
 
 bool ipv6address::operator==(const ipv6address& rhs) const {
-    return memcmp(_raw, rhs._raw, ipv6address::_length) == 0;
+    return memcmp(_raw, rhs._raw, ipv6address::length) == 0;
 }
 
 bool ipv6address::operator!=(const ipv6address& rhs) const {

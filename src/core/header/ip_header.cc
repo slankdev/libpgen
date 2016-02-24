@@ -14,19 +14,6 @@
 namespace pgen {
 
 
-ipv4_header::ipv4_header() {
-    hlen(5);
-    tos(0);
-    tot_len(0);
-    id(0);
-    frag_off(0);
-    ttl(64);
-    protocol(6);
-    check(0);
-    src("0.0.0.0");
-    dst("0.0.0.0");
-}
-
 
 uint8_t ipv4_header::hlen() const {
     return _hlen;

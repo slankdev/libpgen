@@ -16,22 +16,17 @@ namespace pgen {
 
 class ethernet_header {
     public:
-        static const size_t max_length 
-            = pgen::macaddress::length*2+sizeof(uint16_t);
         static const size_t min_length 
             = pgen::macaddress::length*2+sizeof(uint16_t);
+        static const size_t max_length 
+            = min_length;
 
     private:
         macaddress _dst;
         macaddress _src;
         uint16_t   _type;
 
-        // uint8_t _raw[max_length];
     public:
-        // void write();
-        // const uint8_t* raw() const; 
-
-        ethernet_header();
 
         const macaddress& src() const;
         const macaddress& dst() const;
@@ -48,10 +43,11 @@ class ethernet_header {
 
 
 
+
 class ipv4_header {
     public:
         static const size_t min_length
-            = 12+pgen::ipv4address::_length*2;
+            = 12+pgen::ipv4address::length*2;
         static const size_t max_length
             = min_length+40;
 
@@ -70,12 +66,8 @@ class ipv4_header {
         
         uint8_t _option[40];
 
-        // uint8_t _raw[max_length4];
     public:
-        // const uint8_t* raw() const; 
 
-        ipv4_header();
-    
         uint8_t  hlen() const ;    
         uint8_t  tos() const ;
         uint16_t tot_len() const ;
@@ -104,6 +96,9 @@ class ipv4_header {
         void read(const void* buffer, size_t buffer_len);
         size_t length() const ;
 };
+
+
+
 
 
 } /* pgen */
