@@ -29,6 +29,7 @@
 #endif
 
 #ifdef __PGEN_LINUX
+#include <unistd.h>
 #endif
 
 
@@ -49,14 +50,14 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
     int sockd;
     struct ifreq ifr;
     if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
-        throw pgen::exception("pgen::arch::getmacbydev:socket: " + strerror(errno));
+        throw pgen::exception("pgen::arch::getmacbydev:socket: ");
     }
 
     ifr.ifr_addr.sa_family = AF_INET;
     strcpy(ifr.ifr_name, dev);
     if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
         close(sockd);
-        throw pgen::exception("pgen::arch::getmacbydev:ioctl: " + strerror(errno));
+        throw pgen::exception("pgen::arch::getmacbydev:ioctl: ");
     }
     close(sockd);
     memcpy(mac, ifr.ifr_hwaddr.sa_data, 6);

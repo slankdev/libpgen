@@ -14,9 +14,14 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <net/if.h>
+
+#if defined(__PGEN_OSX)
 #include <net/if_dl.h>
 #include <net/bpf.h>
+#endif
+
 #include <fcntl.h>
+#include <unistd.h>
 
 
 namespace pgen {
@@ -30,6 +35,7 @@ net_stream::~net_stream() {
 
 
 void net_stream::open_netif(const char* name) {
+#if defined(__PGEN_OSX)
 	const unsigned int one  = 1;
 
     for (int i = 0; i < 4; i++) { 
@@ -63,6 +69,14 @@ void net_stream::open_netif(const char* name) {
 	ioctl_c(BIOCSSEESENT, &one);    // set recv sendPacket
 	ioctl_c(BIOCFLUSH, NULL);       // flush recv buffer
 	ioctl_c(BIOCSHDRCMPLT, &one);   // no complite src macaddr
+#elif defined(__PGEN_LINUX)
+    
+    printf("pgen::net_stream::open_netif: for linux is not implemented yet\n");
+    exit(-1);
+
+#else
+    throw pgen::exception("pgen::net_stream::open_netif: unknown error");
+#endif
 }
 
 
