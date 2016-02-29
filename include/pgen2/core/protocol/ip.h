@@ -10,7 +10,7 @@ namespace pgen {
 
 
 
-class ipv4_header : header {
+class ipv4_header : public header {
     public:
         static const size_t min_length
             = 12+pgen::ipv4address::length*2;

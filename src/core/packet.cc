@@ -42,4 +42,30 @@ void packet::hex() const {
 
 
 
+void packet::compile() {
+    uint8_t* pointer = _raw.data() + _raw.pivot();
+    
+    for (std::vector<pgen::header*>::reverse_iterator it=headers.rbegin(); 
+                                                     it!=headers.rend(); it++) {
+    printf("test \n");
+        (*it)->write(pointer-((*it)->length()), (*it)->length());
+        pointer -= (*it)->length();
+    }
+}
+
+
+
+void packet::analyze(const void* buffer, size_t bufferlen) {
+    const uint8_t* pointer = (uint8_t*)buffer;
+
+    for (std::vector<pgen::header*>::iterator it=headers.begin(); it!=headers.end(); it++) {
+        (*it)->read(pointer, bufferlen);
+        pointer   += (*it)->length();
+        bufferlen -= (*it)->length();
+    }
+
+    set_contents(pointer, bufferlen);
+}
+
+
 } /* namespace pgen */

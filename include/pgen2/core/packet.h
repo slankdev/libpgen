@@ -7,7 +7,8 @@
 #include <pgen2/util.h>
 #include <pgen2/data_container.h>
 
-
+#include <vector>
+#include <pgen2/core/header.h>
 
 
 namespace pgen {
@@ -42,7 +43,7 @@ class packet {
         pgen::types::data_container  _raw;
         size_t _header_len; // TODO maybe, this variable don't need.
         static const size_t max_header_len = 128; /* [byte] */
-
+        
     public:
 
         packet_type type() const;                             /**< return packet type */
@@ -56,14 +57,24 @@ class packet {
         virtual size_t header_length() const = 0; /**< return total header length */
         virtual void clear() = 0;                 /**< Re init values             */
 
-        virtual void compile() = 0;  // TODO may become normal member func. 
-        virtual void analyze(const void* buffer, size_t buffer_len) = 0; // TODO it too.
+        // virtual void compile() = 0;  // TODO may become normal member func. 
+        // virtual void analyze(const void* buffer, size_t buffer_len) = 0; // TODO it too.
 
         /**
          * Print summary. Seting argument true, print more information.
          * @param moreinfo need more information
          **/
         virtual void summary(bool moreinfo=false) const = 0;
+
+
+//----------------------------------------------------------------------------------------
+
+    protected:
+        std::vector<pgen::header*> headers;
+        
+    public:
+        void compile(); 
+        void analyze(const void* buffer, size_t bufferlen);
 };
 
 

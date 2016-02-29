@@ -15,6 +15,7 @@ struct eth {
 };
 
 
+
 void ethernet_header::write(void* buffer, size_t bufferlen) {
     if (bufferlen < min_length) {
         throw pgen::exception("pgen::ethernet_header::write: buflen is too small");
@@ -55,7 +56,8 @@ size_t ethernet_header::length() const {
 
 
 ethernet::ethernet() {
-    clear();       
+    headers.push_back(&ETH);
+    clear();
 }
 ethernet::ethernet(const void* buffer, size_t bufferlen) : ethernet() {
     analyze(buffer, bufferlen);
@@ -74,25 +76,25 @@ size_t ethernet::header_length() const {
 }
 
 
-void ethernet::compile() {
-#if 0
-    ETH.write();
-    _raw.write_before(_raw.pivot(), ETH.raw(), ETH.length());
-#else
-    ETH.write(_raw.data()+_raw.pivot()-ETH.length() , _raw.pivot()-ETH.length());
-#endif
-}
-
-
-
-void ethernet::analyze(const void* buffer, size_t buffer_len) {
-    if (buffer_len < pgen::ethernet_header::min_length)
-        throw pgen::exception("pgen::ethernet::analyze: Buffer length is too small");
-
-    ETH.read(buffer, buffer_len); 
-    _header_len = ETH.length();
-    set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
-}
+// void ethernet::compile() {
+// #if 0
+//     ETH.write();
+//     _raw.write_before(_raw.pivot(), ETH.raw(), ETH.length());
+// #else
+//     ETH.write(_raw.data()+_raw.pivot()-ETH.length() , _raw.pivot()-ETH.length());
+// #endif
+// }
+//
+//
+//
+// void ethernet::analyze(const void* buffer, size_t buffer_len) {
+//     if (buffer_len < pgen::ethernet_header::min_length)
+//         throw pgen::exception("pgen::ethernet::analyze: Buffer length is too small");
+//
+//     ETH.read(buffer, buffer_len); 
+//     _header_len = ETH.length();
+//     set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
+// }
 
 
 void ethernet::summary(bool moreinfo) const {

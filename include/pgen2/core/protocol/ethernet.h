@@ -11,7 +11,7 @@ namespace pgen {
 
 
 
-class ethernet_header : header {
+class ethernet_header : public header {
     public:
         static const size_t min_length 
             = pgen::macaddress::length*2+sizeof(uint16_t);
@@ -39,8 +39,8 @@ class ethernet : public packet {
 
         size_t header_length() const override;
         void clear() override;
-        void compile() override;
-        void analyze(const void* buffer, size_t bufferlen) override;
+        // void compile() override;
+        // void analyze(const void* buffer, size_t bufferlen) override;
         void summary(bool moreinfo=false) const override;
 };
 

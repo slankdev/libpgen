@@ -1,9 +1,35 @@
 
 
 #include <pgen2.h>
+const char* dev = "en0";
+
+int main() {
+    try {
+        uint8_t data[] = {0x44, 0x55, 0x66, 0x77};
+
+        pgen::ethernet pack;
+        pack.set_contents(data, sizeof(data));
+        pack.ETH.src.setbydev(dev);
+        pack.ETH.dst = "ff:ff:ff:ff:ff:ff";
+        pack.ETH.type = 0x1234;
+
+        pack.compile();
+        pack.hex();
+
+        uint8_t buffer[1000];
+        memcpy(buffer, pack.raw(), pack.length());
+        
+        pgen::ethernet test(buffer, pack.length());
+        pack.compile();
+        pack.hex();
+    
+    } catch (std::exception& e) {
+        printf("%s \n", e.what());
+    }
+}
 
 
-
+#if 0
 void print(pgen::ipv4_header& ip) {
     printf("Internet Protocol \n");
     printf(" - header len     : %d \n", (int)ip.hlen    );
@@ -52,5 +78,5 @@ int main() {
 
 }
 
-
+#endif
 
