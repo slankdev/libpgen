@@ -9,7 +9,6 @@ namespace pgen {
 
 
 
-
 class ipv4address {
     public:
 

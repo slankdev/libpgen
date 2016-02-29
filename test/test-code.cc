@@ -5,8 +5,6 @@
 
 
 int main () {
-
-
     u_char b[1000];
     int len;
     pgen_unknown buf(p, len);

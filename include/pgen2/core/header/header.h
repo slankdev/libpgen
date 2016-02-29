@@ -13,28 +13,59 @@ namespace pgen {
 
 
 
+/* header class
+ *
+ * Description
+ *      This class provides protocol header functionality. 
+ *      This has many elements of protocol header.
+ *      For example, ethernet_header has ether_dst, ether_src
+ *      and ether_type as dst, src and type.
+ *      Developers must implement new protocol header class 
+ *      inherited this class, if they implement new protocol 
+ *      packet class.
+ *
+ * Member Variables
+ *      There are elements of protocol header. 
+ *      All of elements are public member variables.
+ *      Developers must be careful packet strangeness in
+ *      another functions.
+ *
+ * Member Functions
+ *      This class has some pure virtual functions, so
+ *      developers must override them, if implementing 
+ *      new header class.
+ *
+ *      void write(void* buffer, size_t bufferlen)
+ *      Write header binary to buffer. 
+ *      If bufferlen is too small, throwing pgen::exception.
+ *      
+ *      void read(const void* buffer, size_t bufferlen)
+ *      Read binary as header. 
+ *      If bufferlen is too small, throwing pgen::exception.
+ *      
+ *      size_t length()
+ *      Return header length.
+ */
+class header {
+    public:
+        virtual void write(void* buffer, size_t bufferlen) = 0;
+        virtual void read(const void* buffer, size_t bufferlen) = 0;
+        virtual size_t length() const = 0;
+};
 
-class ethernet_header {
+
+
+
+class ethernet_header : header {
     public:
         static const size_t min_length 
             = pgen::macaddress::length*2+sizeof(uint16_t);
         static const size_t max_length 
             = min_length;
 
-    private:
-        macaddress _dst;
-        macaddress _src;
-        uint16_t   _type;
-
-    public:
-
-        const macaddress& src() const;
-        const macaddress& dst() const;
-        uint16_t   type() const;
-
-        void src(const macaddress& a);
-        void dst(const macaddress& a);
-        void type(uint16_t t);
+        macaddress dst;
+        macaddress src;
+        uint16_t   type;
 
         void write(void* buffer, size_t buffer_len);
         void read(const void* buffer, size_t buffer_len);
@@ -44,53 +75,24 @@ class ethernet_header {
 
 
 
-class ipv4_header {
+class ipv4_header : header {
     public:
         static const size_t min_length
             = 12+pgen::ipv4address::length*2;
         static const size_t max_length
             = min_length+40;
 
-	private:
-
-        uint8_t    _hlen; // this is special field, and 4bit field
-        uint8_t    _tos;
-        uint16_t   _tot_len; // this is special field 
-        uint16_t   _id;
-        uint16_t   _frag_off;
-        uint8_t    _ttl;
-        uint8_t    _protocol;
-        uint16_t   _check;
-        ipv4address  _src;
-        ipv4address  _dst;     
-        
-        uint8_t _option[40];
-
-    public:
-
-        uint8_t  hlen() const ;    
-        uint8_t  tos() const ;
-        uint16_t tot_len() const ;
-        uint16_t id() const;
-        uint16_t frag_off() const ;
-        uint8_t  ttl() const ;
-        uint8_t  protocol() const ;
-        uint16_t check() const ;
-        const ipv4address& src() const ;
-        const ipv4address& dst() const ;     
-        const uint8_t* option() const ;
-
-        void hlen(uint8_t n);    
-        void tos(uint8_t n);
-        void tot_len(uint16_t n);
-        void id(uint16_t n);
-        void frag_off(uint16_t n);
-        void ttl(uint8_t n );
-        void protocol(uint8_t n);
-        void check(uint16_t n);
-        void src(const ipv4address& n);
-        void dst(const ipv4address& n);
-        void option(const void* buf, size_t buflen);
+        uint8_t      hlen; // this is special field, and 4bit field
+        uint8_t      tos;
+        uint16_t     tot_len; // this is special field 
+        uint16_t     id;
+        uint16_t     frag_off;
+        uint8_t      ttl;
+        uint8_t      protocol;
+        uint16_t     check;
+        ipv4address  src;
+        ipv4address  dst;     
+        uint8_t option[max_length-min_length];
 
         void write(void* buffer, size_t buffer_len);
         void read(const void* buffer, size_t buffer_len);

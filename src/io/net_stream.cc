@@ -16,13 +16,14 @@
 #include <net/if.h>
 
 #if defined(__PGEN_OSX)
+#endif
 #include <net/if_dl.h>
 #include <net/bpf.h>
-#endif
 
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <pgen2/arch/arch.h>
 
 namespace pgen {
 

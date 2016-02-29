@@ -1,0 +1,26 @@
+
+
+# Address Class
+
+## Description
+
+This class provides many address functionality.
+There are many address class in namespace pgen.
+for example, ipv4, ipv6, mac address.
+
+## Member Infomation
+
+ + constructor()
+ + constructor(const std::string&)
+ + constructor(const char*)
+ + constructor(const address&)
+ + destructor()
+
+ + void clear(), zero clear address.
+ + std::string& str(), return address std::string.
+ + void setbydev(ifname), set address by device name.
+ + void* raw(), return address raw data.
+ + operator =, ==, != 
+
+ + static size_t length, address length.
+
