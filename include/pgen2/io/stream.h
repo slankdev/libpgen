@@ -19,18 +19,42 @@ enum class open_mode {
 };
 
 
+/**
+ * This class is base class of pgen stream classes.
+ * Developers can implement new stream class inherited this.
+ **/
 class base_stream {
     protected:
         pgen::open_mode _mode;
 
     public:
-        pgen::open_mode mode() const;
-        void print_mode() const;
-
+        pgen::open_mode mode() const; /**< return stream mode */
+        void print_mode() const;      /**< print stream mode  */
+        
+        /**
+         * Open stream 
+         **/
         virtual void open(const char* name, pgen::open_mode mode) = 0;
+
+        /**
+         * Close stream 
+         **/
         virtual void close() = 0;
+
+        /**
+         * Send data from stream
+         * @param [in] buffer send buffer.
+         * @param [in] bufferlen send buffer length.
+         **/
         virtual size_t send(const void* buffer, size_t bufferlen) = 0;
+
+        /**
+         * Recieve data from stream
+         * @param [out] buffer send buffer.
+         * @param [in] bufferlen send buffer length.
+         **/
         virtual size_t recv(void* buffer, size_t bufferlen) = 0;
+
 };
 
 

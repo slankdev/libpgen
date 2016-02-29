@@ -9,11 +9,14 @@ namespace pgen {
 
 
 
+/**
+ * This class provides IPv4 address functionality. 
+ **/
 class ipv4address {
     public:
 
-        static const size_t length = 4;
-        static const size_t strlength = 3*length+3;
+        static const size_t length = 4;             /**< Address length         */
+        static const size_t strlength = 3*length+3; /**< Address't c_str length */
 
     private:
 
@@ -25,16 +28,27 @@ class ipv4address {
 
     public:
 
-        ipv4address();
-        ipv4address(const ipv4address& i);
-        ipv4address(const std::string& str);
-        ipv4address(const char* str);
-        void clear();
-        
-        const void* raw() const ;
-        const std::string& str() const ;
+        ipv4address();                         /**< default constructor                */
+        ipv4address(const ipv4address& i);     /**< copy constructor                   */
+        ipv4address(const std::string& str);   /**< init address from std::string&     */
+        ipv4address(const char* str);          /**< init address from const char*      */
+        void clear();                          /**< clear address "0.0.0.0"            */
 
+        const void* raw() const ;              /**< return address raw data            */
+        const std::string& str() const ;       /**< get address string as std::string& */
+
+        /**
+         * Set octet data.
+         * @param[in] index address index. (1-6)
+         * @param[in] oct octet data (0-255)
+         **/
         void     set_octet(int index, uint8_t oct);
+
+        /**
+         * Get octet data.
+         * @param[in] index address index. (1-6)
+         * @return octet data
+         **/
         uint8_t  get_octet(int index) const ;
 
         ipv4address& operator=(const ipv4address& i);
@@ -43,6 +57,10 @@ class ipv4address {
         bool operator==(const ipv4address& addr) const ;
         bool operator!=(const ipv4address& addr) const ;
 
+        /**
+         * Set address by device name.
+         * @param[in] ifname interface name. (ex, "eth0", "wlan0")
+         **/
         void setbydev(const char* ifname);
 
         // uint8_t& operator [] (int index); // for v4
@@ -52,11 +70,14 @@ class ipv4address {
 };
 
 
+/**
+ * This class provides IPv6 address functionality. 
+ **/
 class ipv6address {
     public:
 
-        static const size_t length = 16;
-        static const size_t strlength = 2*length+7;
+        static const size_t length = 16;            /**< Address length         */
+        static const size_t strlength = 2*length+7; /**< Address't c_str length */ 
 
     private:
 
@@ -68,17 +89,28 @@ class ipv6address {
 
     public:
 
-        ipv6address();
-        ipv6address(const ipv6address& i);
-        ipv6address(const std::string& str);
-        ipv6address(const char* str);
-        void clear();
-        
-        const void* raw() const ;
-        const std::string& str() const ;
+        ipv6address();                              /**< default constructor                */
+        ipv6address(const ipv6address& i);          /**< copy constructor                   */
+        ipv6address(const std::string& str);        /**< init address from std::string&     */
+        ipv6address(const char* str);               /**< init address from const char*      */
+        void clear();                               /**< clear address "0.0.0.0"            */
 
-        void     set_section(int index, uint16_t num);
-        uint16_t get_section(int index) const ;
+        const void* raw() const ;                   /**< return address raw data            */
+        const std::string& str() const ;            /**< get address string as std::string& */
+
+        /**
+         * Set section data.
+         * @param[in] index address index. (1-8)
+         * @param[in] oct section data (0-255)
+         **/
+        void set_section(int index, uint16_t num);
+
+        /**
+         * Get octet data.
+         * @param[in] index address index. (1-6)
+         * @return octet data
+         **/
+        uint16_t get_section(int index) const ;   
 
         ipv6address& operator=(const ipv6address& i);
         ipv6address& operator=(const std::string& str);
@@ -86,6 +118,10 @@ class ipv6address {
         bool operator==(const ipv6address& addr) const ;
         bool operator!=(const ipv6address& addr) const ;
 
+        /**
+         * Set address by device name.
+         * @param[in] ifname interface name. (ex, "eth0", "wlan0")
+         **/
         void setbydev(const char* ifname);
 
         // uint8_t& operator [] (int index); // for v4
