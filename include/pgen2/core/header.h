@@ -33,11 +33,22 @@ class header {
     public:
         
         /**
+         * Re init header elements. 
+         **/
+        virtual void clear() = 0;
+
+        /**
+         * Print summary. Seting argument true, print more information.
+         * @param moreinfo need more information
+         **/
+        virtual void summary(bool moreinfo) const = 0;
+        
+        /**
          * Write header to memory.
          * @param[out] buffer  buffer pointer.
          * @param[in]  buffer length.
          **/
-        virtual void write(void* buffer, size_t bufferlen) = 0;
+        virtual void write(void* buffer, size_t bufferlen) const = 0;
 
         /**
          * Read binary as protocol header. 

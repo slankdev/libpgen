@@ -11,6 +11,15 @@
 namespace pgen {
 
 
+
+packet::packet() {}
+packet::packet(const packet& rhs) {
+    _type = rhs._type;
+    _raw  = rhs._raw;
+    _header_len = rhs._header_len;
+}
+
+
 void packet::set_contents(const void* buffer, size_t buflen) {
     _raw.set_content(buffer, buflen);       
 }
@@ -44,10 +53,10 @@ void packet::hex() const {
 
 void packet::compile() {
     uint8_t* pointer = _raw.data() + _raw.pivot();
+
     
     for (std::vector<pgen::header*>::reverse_iterator it=headers.rbegin(); 
                                                      it!=headers.rend(); it++) {
-    printf("test \n");
         (*it)->write(pointer-((*it)->length()), (*it)->length());
         pointer -= (*it)->length();
     }

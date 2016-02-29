@@ -16,7 +16,27 @@ struct eth {
 
 
 
-void ethernet_header::write(void* buffer, size_t bufferlen) {
+void ethernet_header::clear() {
+    src  = "00:00:00:00:00:00";
+    dst  = "00:00:00:00:00:00";
+    type = 0x0000;
+}
+
+
+void ethernet_header::summary(bool moreinfo) const {
+    printf("Ethernet [%s -> %s type=0x%04x] \n", 
+            src.str().c_str(),
+            dst.str().c_str(), type);
+
+    if (moreinfo) {
+        printf(" - source      : %s \n", src.str().c_str());
+        printf(" - destination : %s \n", dst.str().c_str());
+        printf(" - type        : 0x%04x \n", type);
+    } 
+}
+
+
+void ethernet_header::write(void* buffer, size_t bufferlen) const {
     if (bufferlen < min_length) {
         throw pgen::exception("pgen::ethernet_header::write: buflen is too small");
     }
@@ -56,18 +76,20 @@ size_t ethernet_header::length() const {
 
 
 ethernet::ethernet() {
-    headers.push_back(&ETH);
     clear();
+    headers.push_back(&ETH); // TODO コードが重複している
 }
 ethernet::ethernet(const void* buffer, size_t bufferlen) : ethernet() {
     analyze(buffer, bufferlen);
 }
+ethernet::ethernet(const pgen::ethernet& rhs) : packet(rhs) {
+    ETH = rhs.ETH;
+    headers.push_back(&ETH); // TODO コードが重複している
+}
 
 
 void ethernet::clear() {
-    ETH.src  = "00:00:00:00:00:00";
-    ETH.dst  = "00:00:00:00:00:00";
-    ETH.type = 0x0000;
+    ETH.clear();
 }
 
 
@@ -76,6 +98,11 @@ size_t ethernet::header_length() const {
 }
 
 
+
+
+// void ethernet::summary(bool moreinfo) const {
+//     ETH.summary(moreinfo);
+// }
 // void ethernet::compile() {
 // #if 0
 //     ETH.write();
@@ -95,20 +122,6 @@ size_t ethernet::header_length() const {
 //     _header_len = ETH.length();
 //     set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
 // }
-
-
-void ethernet::summary(bool moreinfo) const {
-    printf("Ethernet [%s -> %s type=0x%04x] \n", 
-            ETH.src.str().c_str(),
-            ETH.dst.str().c_str(), ETH.type);
-
-    if (moreinfo) {
-        printf(" - source      : %s \n", ETH.src.str().c_str());
-        printf(" - destination : %s \n", ETH.dst.str().c_str());
-        printf(" - type        : 0x%04x \n", ETH.type);
-    } 
-}
-
 
 
 

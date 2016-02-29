@@ -21,8 +21,10 @@ class ethernet_header : public header {
         macaddress dst;
         macaddress src;
         uint16_t   type;
-
-        void write(void* buffer, size_t buffer_len);
+    
+        void clear();
+        void summary(bool moreinfo=false) const ;
+        void write(void* buffer, size_t buffer_len) const ;
         void read(const void* buffer, size_t buffer_len);
         size_t length() const ;
 };
@@ -36,14 +38,15 @@ class ethernet : public packet {
 
         ethernet();
         ethernet(const void* buffer, size_t bufferlen);
+        ethernet(const pgen::ethernet& rhs); // TODO check this function.
 
         size_t header_length() const override;
         void clear() override;
+
+        // void summary(bool moreinfo=false) const override;
         // void compile() override;
         // void analyze(const void* buffer, size_t bufferlen) override;
-        void summary(bool moreinfo=false) const override;
 };
-
 
 
 } /* namespace pgen */

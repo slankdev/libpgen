@@ -26,6 +26,7 @@ enum class packet_type {
 
 
 
+
 /**
  * This class provides packet functionality.
  * This is base class, so developers must implement new class
@@ -44,37 +45,78 @@ class packet {
         size_t _header_len; // TODO maybe, this variable don't need.
         static const size_t max_header_len = 128; /* [byte] */
         
+        std::vector<pgen::header*> headers;
+
     public:
 
-        packet_type type() const;                             /**< return packet type */
-        void set_contents(const void* buffer, size_t buflen); /**< set packet content */
-        void hex() const;                                     /**< print hexdump      */
-
-        const uint8_t* raw() const;       /**< return packet raw data     */
-        const uint8_t* contents() const;  /**< return packet content data */
-        size_t length() const;            /**< return packet length       */
-
-        virtual size_t header_length() const = 0; /**< return total header length */
-        virtual void clear() = 0;                 /**< Re init values             */
-
-        // virtual void compile() = 0;  // TODO may become normal member func. 
-        // virtual void analyze(const void* buffer, size_t buffer_len) = 0; // TODO it too.
+        packet();
+        packet(const packet& rhs);
 
         /**
-         * Print summary. Seting argument true, print more information.
-         * @param moreinfo need more information
+         * return packet type 
          **/
-        virtual void summary(bool moreinfo=false) const = 0;
-
-
-//----------------------------------------------------------------------------------------
-
-    protected:
-        std::vector<pgen::header*> headers;
+        packet_type type() const;
         
-    public:
+        /**
+         * set packet content
+         **/
+        void set_contents(const void* buffer, size_t buflen); 
+        
+        /**
+         * print hexdump      
+         **/
+        void hex() const;
+
+        /** 
+         * return packet raw data
+         **/
+        const uint8_t* raw() const;
+
+        /**
+         * return packet content data 
+         **/
+        const uint8_t* contents() const;
+
+        /**
+         * return packet length
+         **/
+        size_t length() const; 
+
+        /**
+         * Build binary to _rar.
+         * call Protocols-Header-class::write() inside this function.
+         **/
         void compile(); 
+        
+        /**
+         * Analyze binary as packet.
+         * call Protocols-Header-class::read() inside this function.
+         **/
         void analyze(const void* buffer, size_t bufferlen);
+
+    public:
+
+        /**
+         * return total header length 
+         **/
+        virtual size_t header_length() const = 0; 
+
+        /**
+         * Re init values
+         **/
+        virtual void clear() = 0;
+
+
+        // #<{(|*
+        //  * Print summary. Seting argument true, print more information.
+        //  * @param moreinfo need more information
+        //  *|)}>#
+        // virtual void summary(bool moreinfo=false) const = 0;
+        // virtual void compile() = 0;  
+        // // TODO may become normal member func. 
+        // virtual void analyze(const void* buffer, size_t buffer_len) = 0; 
+        // // TODO it too.
+
 };
 
 

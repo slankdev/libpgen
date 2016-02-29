@@ -1,7 +1,9 @@
 
 
+#include <pgen2/core/protocol/ethernet.h>
 #include <pgen2/core/protocol/ip.h>
 #include <pgen2/exception.h>
+
 
 
 namespace pgen {
@@ -38,11 +40,44 @@ struct ip {
 
 
 
-void ipv4_header::write(void* buffer, size_t buffer_len) {
+void ipv4_header::clear() {
+        hlen = 5; 
+        tos = 0x0;
+        tot_len = 20; 
+        id = 0x0;
+        frag_off = 0x0;
+        ttl = 64;
+        protocol = 0;
+        check = 0;
+        src = "0.0.0.0";
+        dst = "0.0.0.0";     
+        memset(option, 0, sizeof(option));
+}
+
+
+void ipv4_header::summary(bool moreinfo) const {
+    printf("IP [%s -> %s protocol=%d] \n",
+            src.str().c_str(), dst.str().c_str(), protocol);
+
+    if (moreinfo) {
+        printf(" - header len     : %d \n", (int)hlen    );
+        printf(" - type of service: %d \n", (int)tos     );
+        printf(" - total length   : %d \n", (int)tot_len );
+        printf(" - identifer      : %d \n", (int)id      );
+        printf(" - fragment offset: %d \n", (int)frag_off);
+        printf(" - time to leave  : %d \n", (int)ttl     );
+        printf(" - protocol       : %d \n", (int)protocol);
+        printf(" - checksum       : %d \n", (int)check   );
+        printf(" - source         : %s \n", src.str().c_str());
+        printf(" - destination    : %s \n", dst.str().c_str());
+    }
+}
+
+
+void ipv4_header::write(void* buffer, size_t buffer_len) const {
     if (buffer_len < (size_t)(this->hlen<<2)) {
         throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
     }
-
     struct ip* p = (ip*)buffer;
     p->version  = 4;
     p->hlen     = hlen;
@@ -88,11 +123,49 @@ void ipv4_header::read(const void* buffer, size_t buffer_len) {
 }
 
 
+
 size_t ipv4_header::length() const {
     return hlen << 2;
 }
 
 
 
+ipv4::ipv4() {
+    clear();
+    headers.push_back(&ETH); // TODO duplicate code
+    headers.push_back(&IP);
+}
+ipv4::ipv4(const void* buffer, size_t bufferlen) : ipv4() {
+    analyze(buffer, bufferlen);
+}
+ipv4::ipv4(const pgen::ipv4& rhs) {
+    ETH = rhs.ETH;
+    IP  = rhs.IP;
+    headers.push_back(&ETH); // TODO duplicate code
+    headers.push_back(&IP);
+}
+
+
+
+size_t ipv4::header_length() const {
+    return ETH.length() + IP.length();
+}
+
+
+void ipv4::clear() {
+    ETH.clear();
+    ETH.type = 0x0800;
+    IP.clear();
+}
+
+
+// void ipv4::summary(bool moreinfo) const {
+//     if (moreinfo) {
+//         ETH.summary(true);
+//         IP.summary(true);
+//     } else {
+//         IP.summary(false);
+//     }
+// }
 
 } /* namespace pgen */
