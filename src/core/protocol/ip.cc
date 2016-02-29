@@ -8,13 +8,6 @@ namespace pgen {
     
 
 
-#include <stdio.h>
-void func() { 
-    printf("DUMMY \n");
-}
-
-
-
 
 /*
  * TODO
