@@ -41,11 +41,11 @@ IO_SRC = \
 CORE_SRC = \
 	src/core/macaddress.cc \
 	src/core/ipaddress.cc \
-	src/core/header/ethernet_header.cc \
-	src/core/header/ip_header.cc \
 	src/core/packet.cc \
 	src/core/protocol/ethernet.cc \
 	src/core/protocol/ip.cc
+	# src/core/header/ethernet_header.cc \
+	# src/core/header/ip_header.cc \
 	
 SRC = $(IO_SRC) $(TYPES_SRC) $(ARCH_SRC) $(CORE_SRC) $(UTIL_SRC)
 OBJ = $(SRC:.cc=.o)
