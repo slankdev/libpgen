@@ -1,4 +1,11 @@
 
+
+/**
+ * @file haeder.h
+ * Definition about base header class. We hope to you extending 
+ * new packet class with this class.
+ **/
+
 #pragma once
 
 

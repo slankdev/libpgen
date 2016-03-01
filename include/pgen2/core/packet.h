@@ -1,5 +1,12 @@
 
 
+/**
+ * @file packet.h
+ * Definition about base packet class. We hope to you extending 
+ * new packet class with this class.
+ **/
+
+
 #pragma once
 
 
@@ -54,6 +61,7 @@ class packet {
 
         /**
          * return packet type 
+         * 
          **/
         packet_type type() const;
         

@@ -138,7 +138,7 @@ ipv4::ipv4() {
 ipv4::ipv4(const void* buffer, size_t bufferlen) : ipv4() {
     analyze(buffer, bufferlen);
 }
-ipv4::ipv4(const pgen::ipv4& rhs) {
+ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
     ETH = rhs.ETH;
     IP  = rhs.IP;
     headers.push_back(&ETH); // TODO duplicate code

@@ -22,8 +22,9 @@ int main() {
         pack.IP.dst = "1.2.3.4";
 
         pack.compile();
-        pack.ETH.summary(true);
-        pack.IP.summary(true);
+        // pack.ETH.summary(true);
+        pack.IP.summary();
+        pack.hex();
     
         s.send(pack.raw(), pack.length());
     } catch (std::exception& e) {
