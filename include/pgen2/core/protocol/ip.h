@@ -55,6 +55,7 @@ class ipv4 : public packet {
 
         size_t header_length() const override;
         void clear() override;
+        void init_headers() override;
 
         // void summary(bool moreinfo=false) const override;
         // void compile() override;

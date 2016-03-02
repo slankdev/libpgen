@@ -55,6 +55,7 @@ void ipv4_header::clear() {
 }
 
 
+
 void ipv4_header::summary(bool moreinfo) const {
     printf("IP [%s -> %s protocol=%d] \n",
             src.str().c_str(), dst.str().c_str(), protocol);
@@ -72,6 +73,7 @@ void ipv4_header::summary(bool moreinfo) const {
         printf(" - destination    : %s \n", dst.str().c_str());
     }
 }
+
 
 
 void ipv4_header::write(void* buffer, size_t buffer_len) const {
@@ -132,17 +134,19 @@ size_t ipv4_header::length() const {
 
 ipv4::ipv4() {
     clear();
-    headers.push_back(&ETH); // TODO duplicate code
-    headers.push_back(&IP);
+    init_headers();
 }
+
+
 ipv4::ipv4(const void* buffer, size_t bufferlen) : ipv4() {
     analyze(buffer, bufferlen);
 }
+
+
 ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
     ETH = rhs.ETH;
     IP  = rhs.IP;
-    headers.push_back(&ETH); // TODO duplicate code
-    headers.push_back(&IP);
+    init_headers();
 }
 
 
@@ -152,6 +156,8 @@ size_t ipv4::header_length() const {
 }
 
 
+
+
 void ipv4::clear() {
     ETH.clear();
     ETH.type = 0x0800;
@@ -159,13 +165,15 @@ void ipv4::clear() {
 }
 
 
-// void ipv4::summary(bool moreinfo) const {
-//     if (moreinfo) {
-//         ETH.summary(true);
-//         IP.summary(true);
-//     } else {
-//         IP.summary(false);
-//     }
-// }
+
+void ipv4::init_headers() {
+    headers.clear();
+    headers.push_back(&ETH);
+    headers.push_back(&IP);
+}
+
+
+
+
 
 } /* namespace pgen */

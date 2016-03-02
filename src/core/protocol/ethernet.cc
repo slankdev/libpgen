@@ -54,7 +54,8 @@ void ethernet_header::write(void* buffer, size_t bufferlen) const {
 void ethernet_header::read(const void* buffer, size_t buffer_len) {
 
     if (buffer_len < sizeof(eth)) {
-        throw pgen::exception("pgen::ethernet_header::read: Buffer length is too small");
+        throw pgen::exception(
+                "pgen::ethernet_header::read: Buffer length is too small");
     }
 
     const eth* p = (const eth*)buffer;
@@ -74,17 +75,22 @@ size_t ethernet_header::length() const {
 
 
 
-
 ethernet::ethernet() {
     clear();
-    headers.push_back(&ETH); // TODO コードが重複している
+    init_headers();
 }
+
+
+
 ethernet::ethernet(const void* buffer, size_t bufferlen) : ethernet() {
     analyze(buffer, bufferlen);
 }
+
+
+
 ethernet::ethernet(const pgen::ethernet& rhs) : packet(rhs) {
     ETH = rhs.ETH;
-    headers.push_back(&ETH); // TODO コードが重複している
+    init_headers();
 }
 
 
@@ -95,6 +101,12 @@ void ethernet::clear() {
 
 size_t ethernet::header_length() const {
     return ETH.length();
+}
+
+
+void ethernet::init_headers() {
+    headers.clear();
+    headers.push_back(&ETH);
 }
 
 

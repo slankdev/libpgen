@@ -60,45 +60,53 @@ class packet {
         packet(const packet& rhs);
 
         /**
-         * return packet type 
-         * 
+         * Return packet type as pgen::packet_type.
+         * About pgen::packet_type, refer <>
          **/
         packet_type type() const;
         
         /**
-         * set packet content
+         * Set packet contents.
          **/
         void set_contents(const void* buffer, size_t buflen); 
         
         /**
-         * print hexdump      
+         * Print hexdump      
          **/
         void hex() const;
 
         /** 
-         * return packet raw data
+         * Return packet raw data pointer. 
+         * User can't read and write this area.
+         * A value returned this function depends on the 
+         * compile();
          **/
         const uint8_t* raw() const;
 
         /**
-         * return packet content data 
+         * Return packet content data.
+         * User can't read and write this area.
          **/
         const uint8_t* contents() const;
 
         /**
-         * return packet length
+         * Return packet length.
+         * A value returned this function doesn't depend 
+         * on the compile();
          **/
         size_t length() const; 
 
         /**
-         * Build binary to _rar.
-         * call Protocols-Header-class::write() inside this function.
+         * Build binary to private mamever variable, _rar.
+         * Call header-class::write() inside this function.
+         * This function update only raw data and packet length.
          **/
         void compile(); 
         
         /**
          * Analyze binary as packet.
-         * call Protocols-Header-class::read() inside this function.
+         * Call header-class::read() inside this function.
+         * This function update only protocol member variables.
          **/
         void analyze(const void* buffer, size_t bufferlen);
 
@@ -113,6 +121,13 @@ class packet {
          * Re init values
          **/
         virtual void clear() = 0;
+
+    private:
+
+        /**
+         * Init headers array using compile() and analyze().
+         **/
+        virtual void init_headers() = 0;
 
 
         // #<{(|*
