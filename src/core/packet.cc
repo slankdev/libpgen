@@ -11,6 +11,12 @@
 namespace pgen {
 
 
+pgen::base_stream& operator << (pgen::base_stream& s, const pgen::packet& pack) {
+    s.send(pack.raw(), pack.length()); 
+    return s;
+}
+
+
 
 packet::packet() {}
 packet::packet(const packet& rhs) {

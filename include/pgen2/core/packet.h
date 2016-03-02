@@ -17,6 +17,8 @@
 #include <vector>
 #include <pgen2/core/header.h>
 
+#include <pgen2/io/stream.h>
+
 
 namespace pgen {
 
@@ -59,6 +61,8 @@ class packet {
         header_vect headers;
 
     public:
+        
+        friend pgen::base_stream& operator << (pgen::base_stream& s, const pgen::packet& pack);
 
         packet();
         packet(const packet& rhs);
