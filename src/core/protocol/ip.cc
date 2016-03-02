@@ -138,6 +138,11 @@ void ipv4_header::set_option(const void* buffer, size_t bufferlen) {
 }
 
 
+uint16_t ipv4_header::calc_checksum() const {
+    uint8_t buffer[length()];
+    write(buffer, sizeof(buffer));
+	return ntohs(pgen::checksum(buffer, sizeof(buffer)));
+}
 
 
 ipv4::ipv4() {

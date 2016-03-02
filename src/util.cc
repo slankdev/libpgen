@@ -15,6 +15,29 @@ namespace pgen {
 
 
 
+uint16_t checksum(const void *data, size_t len){
+  uint32_t sum = 0; 
+  const uint16_t* _data = (const uint16_t*)data;
+
+  for (; len > 1; len -= 2) {
+    sum += *_data++;
+    if (sum & 0x80000000) 
+      sum = (sum & 0xffff) + (sum >> 16);
+  }
+
+  if (len == 1) {
+    uint16_t i = 0;
+    *(uint8_t*) (&i) = *(uint8_t*) _data;
+    sum += i;
+  }
+
+  while (sum >> 16)
+    sum = (sum & 0xffff) + (sum >> 16);
+
+  return ~sum;
+}
+
+
 
 
 void hex(const void* buffer, size_t bufferlen) { 
@@ -58,7 +81,6 @@ void hex(const void* buffer, size_t bufferlen) {
     }
     printf("\n");
 }
-
 
 
 } /* namespace pgen */

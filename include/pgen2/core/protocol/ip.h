@@ -33,13 +33,16 @@ class ipv4_header : public header {
         uint8_t option[max_length-min_length];
 
     public:
-        void set_option(const void* buffer, size_t bufferlen);
-
         void clear() override;
         void summary(bool moreinfo=false) const override;
         void write(void* buffer, size_t buffer_len) const override;
         void read(const void* buffer, size_t buffer_len) override;
         size_t length() const override;
+
+    public:
+        void set_option(const void* buffer, size_t bufferlen);
+        uint16_t calc_checksum() const;
+    
 };
 
 
