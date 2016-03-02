@@ -12,7 +12,7 @@ namespace pgen {
 
 
 /*
- * TODO
+ * TODO about struct ip
  * __BYTE_ORDER macro is may imcomplete.
  * It is hard-coding on c language's header.
  * Redefine macro about OS's endian difference.
@@ -94,9 +94,8 @@ void ipv4_header::write(void* buffer, size_t buffer_len) const {
     memcpy(p->src, src.raw(), 4);
     memcpy(p->dst, dst.raw(), 4);
     
-    // TODO rewrite
     uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
-    memcpy(p0, option, (size_t)(hlen<<2) - pgen::ipv4_header::min_length);
+    memcpy(p0, option, length() - pgen::ipv4_header::min_length);
 }
 
 
@@ -127,7 +126,7 @@ void ipv4_header::read(const void* buffer, size_t buffer_len) {
     }
 
     uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
-    memcpy(option, p0, size_t(hlen)*4 - pgen::ipv4_header::min_length);
+    memcpy(option, p0, length() - pgen::ipv4_header::min_length);
 }
 
 
@@ -155,12 +154,6 @@ ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
     IP  = rhs.IP;
     init_headers();
 }
-
-
-// ERASE
-// size_t ipv4::header_length() const {
-//     return ETH.length() + IP.length();
-// }
 
 
 

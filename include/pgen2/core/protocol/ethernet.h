@@ -44,11 +44,6 @@ class ethernet : public packet {
 
         void clear() override;
 
-        // ERASE
-        // size_t header_length() const override;
-        // void summary(bool moreinfo=false) const override;
-        // void compile() override;
-        // void analyze(const void* buffer, size_t bufferlen) override;
 };
 
 

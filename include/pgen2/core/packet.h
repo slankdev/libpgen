@@ -53,12 +53,10 @@ class packet {
     protected:
         pgen::packet_type _type;
         pgen::types::data_container  _raw;
-        // size_t _header_len; // TODO this variable don't need. // ERASE
         static const size_t max_header_len = 128; /* [byte] */
  
         using header_vect = std::vector<pgen::header*>;
         header_vect headers;
-        // std::vector<pgen::header*> headers;
 
     public:
 
@@ -140,17 +138,6 @@ class packet {
          **/
         virtual void init_headers() = 0;
 
-    
-        // ERASE these comment area
-        // #<{(|*
-        //  * Print summary. Seting argument true, print more information.
-        //  * @param moreinfo need more information
-        //  *|)}>#
-        // virtual void summary(bool moreinfo=false) const = 0;
-        // virtual void compile() = 0;  
-        // // TODO may become normal member func. 
-        // virtual void analyze(const void* buffer, size_t buffer_len) = 0; 
-        // // TODO it too.
 };
 
 

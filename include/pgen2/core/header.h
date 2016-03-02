@@ -9,12 +9,7 @@
 #pragma once
 
 
-#include <stdint.h>
-// ERASE
-// #include <stdio.h>
-// #include <pgen2/core/macaddress.h>
-// #include <pgen2/core/ipaddress.h>
-
+#include <stddef.h>
 
 
 namespace pgen {

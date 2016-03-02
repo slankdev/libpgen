@@ -108,33 +108,6 @@ void ethernet::init_headers() {
 
 
 
-// ERASE
-// size_t ethernet::header_length() const {
-//     return ETH.length();
-// }
-// void ethernet::summary(bool moreinfo) const {
-//     ETH.summary(moreinfo);
-// }
-// void ethernet::compile() {
-// #if 0
-//     ETH.write();
-//     _raw.write_before(_raw.pivot(), ETH.raw(), ETH.length());
-// #else
-//     ETH.write(_raw.data()+_raw.pivot()-ETH.length() , _raw.pivot()-ETH.length());
-// #endif
-// }
-//
-//
-//
-// void ethernet::analyze(const void* buffer, size_t buffer_len) {
-//     if (buffer_len < pgen::ethernet_header::min_length)
-//         throw pgen::exception("pgen::ethernet::analyze: Buffer length is too small");
-//
-//     ETH.read(buffer, buffer_len); 
-//     _header_len = ETH.length();
-//     set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
-// }
-
 
 
 } /* namespace pgen */
