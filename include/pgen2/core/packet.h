@@ -21,6 +21,10 @@
 namespace pgen {
 
 
+/**
+ * @enum packet_type
+ * This enum is packet_type about protocol type.
+ **/
 enum class packet_type {
     unknown,
     ethernet, 
@@ -49,10 +53,12 @@ class packet {
     protected:
         pgen::packet_type _type;
         pgen::types::data_container  _raw;
-        size_t _header_len; // TODO maybe, this variable don't need.
+        // size_t _header_len; // TODO this variable don't need. // ERASE
         static const size_t max_header_len = 128; /* [byte] */
-        
-        std::vector<pgen::header*> headers;
+ 
+        using header_vect = std::vector<pgen::header*>;
+        header_vect headers;
+        // std::vector<pgen::header*> headers;
 
     public:
 
@@ -61,7 +67,7 @@ class packet {
 
         /**
          * Return packet type as pgen::packet_type.
-         * About pgen::packet_type, refer <>
+         * About pgen::packet_type, refer pgen::packet_type
          **/
         packet_type type() const;
         
@@ -97,39 +103,45 @@ class packet {
         size_t length() const; 
 
         /**
+         * return total header length.
+         * A value returned this function doesn't depend 
+         * on the compile();
+         **/
+        size_t header_length() const; 
+
+        /**
          * Build binary to private mamever variable, _rar.
          * Call header-class::write() inside this function.
-         * This function update only raw data and packet length.
+         * This function update only raw data.
          **/
         void compile(); 
-        
+
         /**
          * Analyze binary as packet.
          * Call header-class::read() inside this function.
          * This function update only protocol member variables.
+         * This function doesn't update raw data.
          **/
         void analyze(const void* buffer, size_t bufferlen);
 
     public:
 
         /**
-         * return total header length 
-         **/
-        virtual size_t header_length() const = 0; 
-
-        /**
-         * Re init values
+         * Re init values.
+         * Developer must override this.
          **/
         virtual void clear() = 0;
 
-    private:
+    protected:
 
         /**
          * Init headers array using compile() and analyze().
+         * Developer must override this.
          **/
         virtual void init_headers() = 0;
 
-
+    
+        // ERASE these comment area
         // #<{(|*
         //  * Print summary. Seting argument true, print more information.
         //  * @param moreinfo need more information
@@ -139,7 +151,6 @@ class packet {
         // // TODO may become normal member func. 
         // virtual void analyze(const void* buffer, size_t buffer_len) = 0; 
         // // TODO it too.
-
 };
 
 

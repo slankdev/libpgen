@@ -9,7 +9,7 @@ int main() {
         pgen::pcap_stream s;
         s.open(file, pgen::open_mode::pcap_write);
 
-        uint8_t data[] = {0x08, 0x00, 0x00, 0x00};
+        uint8_t data[] = {0x88, 0xaa, 0xbb, 0xdd};
 
         pgen::ipv4 pack;
         pack.set_contents(data, sizeof(data));
@@ -21,10 +21,14 @@ int main() {
         pack.IP.src.setbydev(dev);
         pack.IP.dst = "1.2.3.4";
 
-        pack.compile();
-        // pack.ETH.summary(true);
         pack.IP.summary();
+        // printf("header length = %zd \n", pack.header_length());
+        // printf("packet length = %zd \n", pack.length());
+
+        // pgen::hex(pack.raw(), pack.length());
+        pack.compile();
         pack.hex();
+        // pgen::hex(pack.raw(), pack.length());
     
         s.send(pack.raw(), pack.length());
     } catch (std::exception& e) {

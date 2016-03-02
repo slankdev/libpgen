@@ -11,6 +11,6 @@
 *.aux
 *.dll
 
-doc/html
+docs/html
 tags
 

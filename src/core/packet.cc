@@ -16,7 +16,7 @@ packet::packet() {}
 packet::packet(const packet& rhs) {
     _type = rhs._type;
     _raw  = rhs._raw;
-    _header_len = rhs._header_len;
+    // _header_len = rhs._header_len; // ERASE 
 }
 
 
@@ -41,6 +41,22 @@ size_t packet::length() const {
     return _raw.size() - pgen::packet::max_header_len + header_length();
 }
 
+size_t packet::header_length() const {
+    size_t header_length = 0;
+
+    for (const pgen::header* ph : headers) {
+        header_length += ph->length();
+    }
+    
+    // ERASE
+    // for (header_vect::const_iterator it=headers.begin(); 
+    //                                     it!=headers.end(); it++) {
+    //     header_length += (*it)->length();
+    // }
+
+    return header_length;
+}
+
 
 packet_type packet::type() const {
     return _type;   
@@ -54,9 +70,7 @@ void packet::hex() const {
 void packet::compile() {
     uint8_t* pointer = _raw.data() + _raw.pivot();
 
-    
-    for (std::vector<pgen::header*>::reverse_iterator it=headers.rbegin(); 
-                                                     it!=headers.rend(); it++) {
+    for (auto it=headers.rbegin(); it!=headers.rend(); ++it) {
         (*it)->write(pointer-((*it)->length()), (*it)->length());
         pointer -= (*it)->length();
     }
@@ -67,11 +81,19 @@ void packet::compile() {
 void packet::analyze(const void* buffer, size_t bufferlen) {
     const uint8_t* pointer = (uint8_t*)buffer;
 
-    for (std::vector<pgen::header*>::iterator it=headers.begin(); it!=headers.end(); it++) {
-        (*it)->read(pointer, bufferlen);
-        pointer   += (*it)->length();
-        bufferlen -= (*it)->length();
+    for (pgen::header* ph : headers) {
+        ph->read(pointer, bufferlen);
+        pointer   += ph->length();
+        bufferlen -= ph->length();
     }
+
+    // ERASE
+    // for (header_vect::iterator it=headers.begin(); 
+    //                                     it!=headers.end(); it++) {
+    //     (*it)->read(pointer, bufferlen);
+    //     pointer   += (*it)->length();
+    //     bufferlen -= (*it)->length();
+    // }
 
     set_contents(pointer, bufferlen);
 }

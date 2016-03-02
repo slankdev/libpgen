@@ -14,7 +14,6 @@ export RM              := rm -rf
 export MKDIR           := mkdir -p
 export INSTALL_LIB_DIR := /usr/local/lib
 export INSTALL_HDR_DIR := /usr/local/include
-export DOXYGEN         := doxygen
 
 
 .SUFFIXES: .out .c .cc .o .h 
@@ -94,5 +93,8 @@ uninstall:
 	$(RM) $(INSTALL_HDR_DIR)/pgen2 
 
 
+
+doc:
+	$(MAKE) -C docs
 
 

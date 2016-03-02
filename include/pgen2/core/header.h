@@ -9,10 +9,11 @@
 #pragma once
 
 
-#include <stdio.h>
 #include <stdint.h>
-#include <pgen2/core/macaddress.h>
-#include <pgen2/core/ipaddress.h>
+// ERASE
+// #include <stdio.h>
+// #include <pgen2/core/macaddress.h>
+// #include <pgen2/core/ipaddress.h>
 
 
 
@@ -48,7 +49,7 @@ class header {
          * Print summary. Seting argument true, print more information.
          * @param moreinfo need more information
          **/
-        virtual void summary(bool moreinfo) const = 0;
+        virtual void summary(bool moreinfo=false) const = 0;
         
         /**
          * Write header to memory.

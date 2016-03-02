@@ -99,9 +99,6 @@ void ethernet::clear() {
 }
 
 
-size_t ethernet::header_length() const {
-    return ETH.length();
-}
 
 
 void ethernet::init_headers() {
@@ -111,7 +108,10 @@ void ethernet::init_headers() {
 
 
 
-
+// ERASE
+// size_t ethernet::header_length() const {
+//     return ETH.length();
+// }
 // void ethernet::summary(bool moreinfo) const {
 //     ETH.summary(moreinfo);
 // }

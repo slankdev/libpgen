@@ -75,7 +75,6 @@ void ipv4_header::summary(bool moreinfo) const {
 }
 
 
-
 void ipv4_header::write(void* buffer, size_t buffer_len) const {
     if (buffer_len < (size_t)(this->hlen<<2)) {
         throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
@@ -89,9 +88,13 @@ void ipv4_header::write(void* buffer, size_t buffer_len) const {
     p->ttl      = ttl;
     p->protocol = protocol;
     p->check    = htons(check);
+
+    // TODO implement src.copyto(p->src);
+    // TODO implement dst.copyto(p->dst);
     memcpy(p->src, src.raw(), 4);
     memcpy(p->dst, dst.raw(), 4);
-
+    
+    // TODO rewrite
     uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
     memcpy(p0, option, (size_t)(hlen<<2) - pgen::ipv4_header::min_length);
 }
@@ -111,24 +114,28 @@ void ipv4_header::read(const void* buffer, size_t buffer_len) {
     ttl      = p->ttl;
     protocol = p->protocol;
     check    = ntohs(p->check);
+
+    // TODO reimplement src.setbyarray(p->src);
+    // TODO reimplement dst.setbyarray(p->dst);
     for (int i=0; i<4; i++) {
         src.set_octet(i+1, p->src[i]);
         dst.set_octet(i+1, p->dst[i]);
     }
 
-    if (buffer_len < (size_t)(hlen<<2)) {
+    if (buffer_len < size_t(hlen)*4) {
         throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
     }
 
     uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
-    memcpy(option, p0, (size_t)(hlen<<2) - pgen::ipv4_header::min_length);
+    memcpy(option, p0, size_t(hlen)*4 - pgen::ipv4_header::min_length);
 }
 
 
 
 size_t ipv4_header::length() const {
-    return hlen << 2;
+    return hlen * 4;
 }
+
 
 
 
@@ -150,11 +157,10 @@ ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
 }
 
 
-
-size_t ipv4::header_length() const {
-    return ETH.length() + IP.length();
-}
-
+// ERASE
+// size_t ipv4::header_length() const {
+//     return ETH.length() + IP.length();
+// }
 
 
 
@@ -165,13 +171,9 @@ void ipv4::clear() {
 }
 
 
-
 void ipv4::init_headers() {
-    headers.clear();
-    headers.push_back(&ETH);
-    headers.push_back(&IP);
+    headers = {&ETH, &IP};
 }
-
 
 
 
