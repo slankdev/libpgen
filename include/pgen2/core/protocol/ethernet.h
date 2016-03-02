@@ -3,6 +3,7 @@
 
 #include <pgen2/core/packet.h>
 #include <pgen2/core/header.h>
+#include <pgen2/core/macaddress.h>
 
 
 
@@ -11,7 +12,7 @@ namespace pgen {
 
 
 
-class ethernet_header : header {
+class ethernet_header : public header {
     public:
         static const size_t min_length 
             = pgen::macaddress::length*2+sizeof(uint16_t);
@@ -21,29 +22,29 @@ class ethernet_header : header {
         macaddress dst;
         macaddress src;
         uint16_t   type;
-
-        void write(void* buffer, size_t buffer_len);
-        void read(const void* buffer, size_t buffer_len);
-        size_t length() const ;
+    
+        void clear() override;
+        void summary(bool moreinfo=false) const override;
+        void write(void* buffer, size_t buffer_len) const override;
+        void read(const void* buffer, size_t buffer_len) override;
+        size_t length() const override;
 };
 
 
 
 class ethernet : public packet {
     private:
+        void init_headers() override;
     public:
         pgen::ethernet_header ETH;
 
         ethernet();
         ethernet(const void* buffer, size_t bufferlen);
+        ethernet(const pgen::ethernet& rhs); 
 
-        size_t header_length() const override;
         void clear() override;
-        void compile() override;
-        void analyze(const void* buffer, size_t bufferlen) override;
-        void summary(bool moreinfo=false) const override;
-};
 
+};
 
 
 } /* namespace pgen */

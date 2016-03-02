@@ -1,55 +1,52 @@
 
 
 #include <pgen2.h>
-
-
-
-void print(pgen::ipv4_header& ip) {
-    printf("Internet Protocol \n");
-    printf(" - header len     : %d \n", (int)ip.hlen    );
-    printf(" - type of service: %d \n", (int)ip.tos     );
-    printf(" - total length   : %d \n", (int)ip.tot_len );
-    printf(" - identifer      : %d \n", (int)ip.id      );
-    printf(" - fragment offset: %d \n", (int)ip.frag_off);
-    printf(" - time to leave  : %d \n", (int)ip.ttl     );
-    printf(" - protocol       : %d \n", (int)ip.protocol);
-    printf(" - checksum       : %d \n", (int)ip.check   );
-    printf(" - source         : %s \n", ip.src.str().c_str());
-    printf(" - destination    : %s \n", ip.dst.str().c_str());
-}
-
-
+const char* dev  = "en0";
+const char* file = "out.pcap";
 
 int main() {
-
-    try {
-        char data[] = "1234";
-
-        pgen::ipv4_header ip;
-        ip.src = "1.2.3.4";
-        ip.dst = "5.6.7.9";
-        ip.hlen = 6;
-        memcpy(ip.option, data, strlen(data));
-        print(ip);
-
-
-        uint8_t buf[1000];
-        ip.write(buf, sizeof(buf));
-        pgen::hex(buf, ip.length());
-
-        pgen::ipv4_header test;
-        test.read(buf, ip.length());
-        
-        memset(buf, 0, sizeof(buf));
-        test.write(buf, sizeof(buf));
-        pgen::hex(buf, test.length());
-
-
+    // uint8_t buf[] = {1,2,3,4};
+    //
+    // pgen::ipv4address a;
+    // a.setbyarray(buf);
+    //
+    // printf("address: %s \n", a.str().c_str());
+    //
+    // uint8_t aa[4];
+    // a.copytoarray(aa);
+    // pgen::hex(aa, 4);
+    //
+    //return -1;
     
+    try {
+        pgen::pcap_stream s;
+        s.open(file, pgen::open_mode::pcap_write);
+
+        uint8_t data[] = {0x88, 0xaa, 0xbb, 0xdd};
+
+        pgen::ipv4 pack;
+        pack.set_contents(data, sizeof(data));
+        pack.ETH.src.setbydev(dev);
+        pack.ETH.dst = "ff:ff:ff:ff:ff:ff";
+        pack.IP.hlen = 5;
+        pack.IP.tot_len = (pack.IP.hlen<<2) + 4;
+        pack.IP.protocol = 1;
+        pack.IP.src.setbydev(dev);
+        pack.IP.dst = "1.2.3.4";
+
+        pack.IP.summary();
+        // printf("header length = %zd \n", pack.header_length());
+        // printf("packet length = %zd \n", pack.length());
+
+        // pgen::hex(pack.raw(), pack.length());
+        pack.compile();
+        pack.hex();
+        // pgen::hex(pack.raw(), pack.length());
+    
+        s.send(pack.raw(), pack.length());
     } catch (std::exception& e) {
         printf("%s \n", e.what());
     }
-
 }
 
 

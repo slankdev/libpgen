@@ -11,6 +11,14 @@
 namespace pgen {
 
 
+
+packet::packet() {}
+packet::packet(const packet& rhs) {
+    _type = rhs._type;
+    _raw  = rhs._raw;
+}
+
+
 void packet::set_contents(const void* buffer, size_t buflen) {
     _raw.set_content(buffer, buflen);       
 }
@@ -33,6 +41,15 @@ size_t packet::length() const {
 }
 
 
+size_t packet::header_length() const {
+    size_t header_length = 0;
+    for (const pgen::header* ph : headers)
+        header_length += ph->length();
+
+    return header_length;
+}
+
+
 packet_type packet::type() const {
     return _type;   
 }
@@ -40,6 +57,30 @@ void packet::hex() const {
     pgen::hex(raw(), length());
 }
 
+
+
+void packet::compile() {
+    uint8_t* pointer = _raw.data() + _raw.pivot();
+
+    for (auto it=headers.rbegin(); it!=headers.rend(); ++it) {
+        (*it)->write(pointer-((*it)->length()), (*it)->length());
+        pointer -= (*it)->length();
+    }
+}
+
+
+
+void packet::analyze(const void* buffer, size_t bufferlen) {
+    const uint8_t* pointer = (uint8_t*)buffer;
+
+    for (pgen::header* ph : headers) {
+        ph->read(pointer, bufferlen);
+        pointer   += ph->length();
+        bufferlen -= ph->length();
+    }
+
+    set_contents(pointer, bufferlen);
+}
 
 
 } /* namespace pgen */

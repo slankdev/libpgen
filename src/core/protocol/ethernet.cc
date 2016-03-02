@@ -15,16 +15,35 @@ struct eth {
 };
 
 
-void ethernet_header::write(void* buffer, size_t bufferlen) {
+
+void ethernet_header::clear() {
+    src  = "00:00:00:00:00:00";
+    dst  = "00:00:00:00:00:00";
+    type = 0x0000;
+}
+
+
+void ethernet_header::summary(bool moreinfo) const {
+    printf("Ethernet [%s -> %s type=0x%04x] \n", 
+            src.str().c_str(),
+            dst.str().c_str(), type);
+
+    if (moreinfo) {
+        printf(" - source      : %s \n", src.str().c_str());
+        printf(" - destination : %s \n", dst.str().c_str());
+        printf(" - type        : 0x%04x \n", type);
+    } 
+}
+
+
+void ethernet_header::write(void* buffer, size_t bufferlen) const {
     if (bufferlen < min_length) {
         throw pgen::exception("pgen::ethernet_header::write: buflen is too small");
     }
 
     struct eth* p = (eth*)buffer;
-    for (size_t i=0; i<pgen::macaddress::length; i++) {
-        p->src[i] = src.get_octet(i+1);
-        p->dst[i] = dst.get_octet(i+1);
-    }
+    src.copytoarray(p->src);
+    dst.copytoarray(p->dst);
     p->type = htons(type);
 }
 
@@ -33,11 +52,11 @@ void ethernet_header::write(void* buffer, size_t bufferlen) {
 void ethernet_header::read(const void* buffer, size_t buffer_len) {
 
     if (buffer_len < sizeof(eth)) {
-        throw pgen::exception("pgen::ethernet_header::read: Buffer length is too small");
+        throw pgen::exception(
+                "pgen::ethernet_header::read: Buffer length is too small");
     }
 
     const eth* p = (const eth*)buffer;
-
     src.setbyarray(p->src);
     dst.setbyarray(p->dst);
     type = ntohs(p->type);
@@ -53,59 +72,37 @@ size_t ethernet_header::length() const {
 
 
 
-
 ethernet::ethernet() {
-    clear();       
+    clear();
+    init_headers();
 }
+
+
+
 ethernet::ethernet(const void* buffer, size_t bufferlen) : ethernet() {
     analyze(buffer, bufferlen);
 }
 
 
+
+ethernet::ethernet(const pgen::ethernet& rhs) : packet(rhs) {
+    ETH = rhs.ETH;
+    init_headers();
+}
+
+
 void ethernet::clear() {
-    ETH.src  = "00:00:00:00:00:00";
-    ETH.dst  = "00:00:00:00:00:00";
-    ETH.type = 0x0000;
-}
-
-
-size_t ethernet::header_length() const {
-    return ETH.length();
-}
-
-
-void ethernet::compile() {
-#if 0
-    ETH.write();
-    _raw.write_before(_raw.pivot(), ETH.raw(), ETH.length());
-#else
-    ETH.write(_raw.data()+_raw.pivot()-ETH.length() , _raw.pivot()-ETH.length());
-#endif
+    ETH.clear();
 }
 
 
 
-void ethernet::analyze(const void* buffer, size_t buffer_len) {
-    if (buffer_len < pgen::ethernet_header::min_length)
-        throw pgen::exception("pgen::ethernet::analyze: Buffer length is too small");
 
-    ETH.read(buffer, buffer_len); 
-    _header_len = ETH.length();
-    set_contents((uint8_t*)buffer + _header_len, buffer_len - _header_len);
+void ethernet::init_headers() {
+    headers.clear();
+    headers.push_back(&ETH);
 }
 
-
-void ethernet::summary(bool moreinfo) const {
-    printf("Ethernet [%s -> %s type=0x%04x] \n", 
-            ETH.src.str().c_str(),
-            ETH.dst.str().c_str(), ETH.type);
-
-    if (moreinfo) {
-        printf(" - source      : %s \n", ETH.src.str().c_str());
-        printf(" - destination : %s \n", ETH.dst.str().c_str());
-        printf(" - type        : 0x%04x \n", ETH.type);
-    } 
-}
 
 
 

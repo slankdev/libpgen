@@ -1,12 +1,15 @@
 
+
+/**
+ * @file haeder.h
+ * Definition about base header class. We hope to you extending 
+ * new packet class with this class.
+ **/
+
 #pragma once
 
 
-#include <stdio.h>
-#include <stdint.h>
-#include <pgen2/core/macaddress.h>
-#include <pgen2/core/ipaddress.h>
-
+#include <stddef.h>
 
 
 namespace pgen {
@@ -33,11 +36,22 @@ class header {
     public:
         
         /**
+         * Re init header elements. 
+         **/
+        virtual void clear() = 0;
+
+        /**
+         * Print summary. Seting argument true, print more information.
+         * @param moreinfo need more information
+         **/
+        virtual void summary(bool moreinfo=false) const = 0;
+        
+        /**
          * Write header to memory.
          * @param[out] buffer  buffer pointer.
          * @param[in]  buffer length.
          **/
-        virtual void write(void* buffer, size_t bufferlen) = 0;
+        virtual void write(void* buffer, size_t bufferlen) const = 0;
 
         /**
          * Read binary as protocol header. 

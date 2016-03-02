@@ -120,9 +120,15 @@ void ipv4address::setbydev(const char* ifname) {
 }
 
 
+void ipv4address::setbyarray(const uint8_t array[4]) {
+    memcpy(_raw, array, length);
+    _update_name();
+}
 
 
-
+void ipv4address::copytoarray(uint8_t array[4]) const {
+    memcpy(array, _raw, length);
+}
 
 
 
@@ -228,5 +234,13 @@ void ipv6address::setbydev(const char* ifname) {
     _update_name();
 }
 
+void ipv6address::setbyarray(const uint16_t array[8]) {
+    memcpy(_raw, array, length);
+    _update_name();
+}
+
+void ipv6address::copytoarray(uint16_t array[8]) const {
+    memcpy(array, _raw, length);
+}
 
 } /* namespace pgen */
