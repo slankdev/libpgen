@@ -128,6 +128,15 @@ size_t ipv4_header::length() const {
 
 
 
+void ipv4_header::set_option(const void* buffer, size_t bufferlen) {
+    if (bufferlen > max_length - min_length)
+        throw pgen::exception("pgen::ipv4_header::set_option: option is too lerge");
+
+    memcpy(option, buffer, bufferlen);
+}
+
+
+
 
 ipv4::ipv4() {
     clear();

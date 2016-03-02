@@ -58,7 +58,7 @@ void macaddress::set_str(const std::string& str) {
     if (n != (int)length) {
         throw pgen::exception("pgen::macaddress::set_str: Format error");
     }
-    for(size_t i=0; i<length; i++)  _raw[i] = buf[i];
+    for(size_t i=0; i<length; ++i)  _raw[i] = buf[i];
 
     _update_name();
 }

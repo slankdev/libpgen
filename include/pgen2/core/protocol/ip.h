@@ -29,7 +29,6 @@ class ipv4_header : public header {
         uint16_t     check;
         ipv4address  src;
         ipv4address  dst;
-
     private:
         uint8_t option[max_length-min_length];
 
@@ -45,7 +44,7 @@ class ipv4_header : public header {
 
 
 
-// version4 only yet
+
 class ipv4 : public packet {
     private:
         void init_headers() override;
@@ -60,6 +59,7 @@ class ipv4 : public packet {
         void clear() override;
     
 };
+
 
 
 } /* namespace pgen */

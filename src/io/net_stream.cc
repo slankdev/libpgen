@@ -39,7 +39,7 @@ void net_stream::open_netif(const char* name) {
 #if defined(__PGEN_OSX)
 	const unsigned int one  = 1;
 
-    for (int i = 0; i < 4; i++) { 
+    for (int i = 0; i < 4; ++i) { 
         std::string buf = "/dev/bpf";
         buf += std::to_string(i);
         _fd = ::open(buf.c_str(), O_RDWR);

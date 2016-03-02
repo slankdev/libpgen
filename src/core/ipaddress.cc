@@ -42,7 +42,7 @@ ipv4address::ipv4address(const char* str) {
 }
 
 void ipv4address::clear() {
-    for (size_t i=0; i<ipv4address::length; i++)
+    for (size_t i=0; i<ipv4address::length; ++i)
         _raw[i] = 0;
     _update_name();
 }
@@ -153,7 +153,7 @@ ipv6address::ipv6address(const char* str) {
 }
 
 void ipv6address::clear() {
-    for (size_t i=0; i<ipv6address::length; i++)
+    for (size_t i=0; i<ipv6address::length; ++i)
         _raw[i] = 0;
     _update_name();
 }

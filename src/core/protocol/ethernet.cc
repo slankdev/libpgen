@@ -99,8 +99,7 @@ void ethernet::clear() {
 
 
 void ethernet::init_headers() {
-    headers.clear();
-    headers.push_back(&ETH);
+    headers = {&ETH};
 }
 
 
