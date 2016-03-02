@@ -42,10 +42,8 @@ void ethernet_header::write(void* buffer, size_t bufferlen) const {
     }
 
     struct eth* p = (eth*)buffer;
-    for (size_t i=0; i<pgen::macaddress::length; i++) {
-        p->src[i] = src.get_octet(i+1);
-        p->dst[i] = dst.get_octet(i+1);
-    }
+    src.copytoarray(p->src);
+    dst.copytoarray(p->dst);
     p->type = htons(type);
 }
 
@@ -59,7 +57,6 @@ void ethernet_header::read(const void* buffer, size_t buffer_len) {
     }
 
     const eth* p = (const eth*)buffer;
-
     src.setbyarray(p->src);
     dst.setbyarray(p->dst);
     type = ntohs(p->type);

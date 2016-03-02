@@ -22,10 +22,12 @@
 
 /* 
  * We use this sentence in comments. These are important.
- * TODO   todo comment 
- * FIXME  warning and bug code's comment
- * ERASE  will be erase this line, but now is testing.
- * BUG    bug
+ * TODO    todo comment 
+ * FIXME   warning and bug code's comment
+ * ERASE   will be erase this line, but now is testing.
+ * BUG     bug
+ * NOIMPL  not implement
+ * NOTEST  not tested
  */
 
 

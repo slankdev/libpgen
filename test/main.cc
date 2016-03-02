@@ -5,6 +5,19 @@ const char* dev  = "en0";
 const char* file = "out.pcap";
 
 int main() {
+    // uint8_t buf[] = {1,2,3,4};
+    //
+    // pgen::ipv4address a;
+    // a.setbyarray(buf);
+    //
+    // printf("address: %s \n", a.str().c_str());
+    //
+    // uint8_t aa[4];
+    // a.copytoarray(aa);
+    // pgen::hex(aa, 4);
+    //
+    //return -1;
+    
     try {
         pgen::pcap_stream s;
         s.open(file, pgen::open_mode::pcap_write);

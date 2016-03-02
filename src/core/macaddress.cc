@@ -125,5 +125,8 @@ void macaddress::setbyarray(const uint8_t array[6]) {
     _update_name();
 }
 
+void macaddress::copytoarray(uint8_t array[6]) const {
+    memcpy(array, _raw, length);
+}
 
 } /* namespace pgen */

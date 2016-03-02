@@ -62,6 +62,10 @@ class ipv4address {
          * @param[in] ifname interface name. (ex, "eth0", "wlan0")
          **/
         void setbydev(const char* ifname);
+        
+        void setbyarray(const uint8_t array[4]);
+        void copytoarray(uint8_t array[4]) const;
+
 
         // uint8_t& operator [] (int index); // for v4
         // int setmaskbydev(const char* ifname);
@@ -123,6 +127,9 @@ class ipv6address {
          * @param[in] ifname interface name. (ex, "eth0", "wlan0")
          **/
         void setbydev(const char* ifname);
+
+        void setbyarray(const uint16_t array[8]);
+        void copytoarray(uint16_t array[8]) const;
 
         // uint8_t& operator [] (int index); // for v4
         // int setmaskbydev(const char* ifname);

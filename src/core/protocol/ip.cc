@@ -88,11 +88,8 @@ void ipv4_header::write(void* buffer, size_t buffer_len) const {
     p->ttl      = ttl;
     p->protocol = protocol;
     p->check    = htons(check);
-
-    // TODO implement src.copyto(p->src);
-    // TODO implement dst.copyto(p->dst);
-    memcpy(p->src, src.raw(), 4);
-    memcpy(p->dst, dst.raw(), 4);
+    src.copytoarray(p->src);
+    dst.copytoarray(p->dst);
     
     uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
     memcpy(p0, option, length() - pgen::ipv4_header::min_length);
@@ -113,17 +110,11 @@ void ipv4_header::read(const void* buffer, size_t buffer_len) {
     ttl      = p->ttl;
     protocol = p->protocol;
     check    = ntohs(p->check);
+    src.setbyarray(p->src);
+    dst.setbyarray(p->dst);
 
-    // TODO reimplement src.setbyarray(p->src);
-    // TODO reimplement dst.setbyarray(p->dst);
-    for (int i=0; i<4; i++) {
-        src.set_octet(i+1, p->src[i]);
-        dst.set_octet(i+1, p->dst[i]);
-    }
-
-    if (buffer_len < size_t(hlen)*4) {
+    if (buffer_len < length())
         throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
-    }
 
     uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
     memcpy(option, p0, length() - pgen::ipv4_header::min_length);
