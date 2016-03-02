@@ -14,8 +14,12 @@ file_stream::~file_stream() {
 
 void file_stream::fopen(const char* name, const char* mode) {
     _fd = ::fopen(name, mode);
-    if (_fd == NULL)
-        throw pgen::exception("pgen::file_stream::fopen: ");
+    if (_fd == NULL) {
+        std::string err = "pgen::file_stream::fopen:";
+        err += name;
+        err += " ";
+        throw pgen::exception(err.c_str());
+    }
 }
 
 void file_stream::fclose() {

@@ -17,6 +17,7 @@
 
 #include <pgen2/io/stream.h>
 
+#include <pgen2/module/module.h>
 
 
 

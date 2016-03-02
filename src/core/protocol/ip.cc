@@ -82,6 +82,7 @@ void ipv4_header::write(void* buffer, size_t buffer_len) const {
     struct ip* p = (ip*)buffer;
     p->version  = 4;
     p->hlen     = hlen;
+    p->tot_len  = htons(tot_len);
     p->tos      = tos;
     p->id       = htons(id);
     p->frag_off = htons(frag_off);
@@ -104,6 +105,7 @@ void ipv4_header::read(const void* buffer, size_t buffer_len) {
 
     struct ip* p = (ip*)buffer;
     hlen     = p->hlen;
+    tot_len  = ntohs(p->tot_len);
     tos      = p->tos;
     id       = ntohs(p->id);
     frag_off = ntohs(p->frag_off);
