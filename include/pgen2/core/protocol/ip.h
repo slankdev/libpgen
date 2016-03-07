@@ -18,8 +18,9 @@ class ipv4_header : public header {
     public:
         static const size_t min_length = 20;
         static const size_t max_length = 60;
-
-        uint8_t      hlen; // this is special field, and 4bit field
+    
+        uint8_t      version:4;
+        uint8_t      hlen:4; // this is special field, and 4bit field
         uint8_t      tos;
         uint16_t     tot_len; // this is special field 
         uint16_t     id;

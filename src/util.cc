@@ -83,6 +83,31 @@ void hex(const void* buffer, size_t bufferlen) {
 }
 
 
+
+void bin(const void* buffer, size_t bufferlen) {
+    struct bits {
+        uint8_t b0:1;
+        uint8_t b1:1;
+        uint8_t b2:1;
+        uint8_t b3:1;
+        uint8_t b4:1;
+        uint8_t b5:1;
+        uint8_t b6:1;
+        uint8_t b7:1;
+    };
+    const uint8_t* p0 = (const uint8_t*)buffer;
+    for (size_t i=0; i<bufferlen; i++) {
+        bits* b = (bits*)p0;
+        printf("%d%d%d%d%d%d%d%d ", 
+                b->b0, b->b1, b->b2, b->b3,
+                b->b4, b->b5, b->b6, b->b7);
+        p0++;
+        if ((i+1) % 8 == 0) printf("\n");
+    }
+}
+
+
+
 } /* namespace pgen */
 
 

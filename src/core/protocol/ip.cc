@@ -41,17 +41,18 @@ struct ip {
 
 
 void ipv4_header::clear() {
-        hlen = 5; 
-        tos = 0x0;
-        tot_len = 20; 
-        id = 0x0;
-        frag_off = 0x0;
-        ttl = 64;
-        protocol = 0;
-        check = 0;
-        src = "0.0.0.0";
-        dst = "0.0.0.0";     
-        memset(option, 0, sizeof(option));
+    version = 4;
+    hlen = 5; 
+    tos = 0x0;
+    tot_len = 20; 
+    id = 0x0;
+    frag_off = 0x0;
+    ttl = 64;
+    protocol = 0;
+    check = 0;
+    src = "0.0.0.0";
+    dst = "0.0.0.0";     
+    memset(option, 0, sizeof(option));
 }
 
 
@@ -61,6 +62,7 @@ void ipv4_header::summary(bool moreinfo) const {
             src.str().c_str(), dst.str().c_str(), protocol);
 
     if (moreinfo) {
+        printf(" - version        : %d \n", (int)version );
         printf(" - header len     : %d \n", (int)hlen    );
         printf(" - type of service: %d \n", (int)tos     );
         printf(" - total length   : %d \n", (int)tot_len );
@@ -80,7 +82,7 @@ void ipv4_header::write(void* buffer, size_t buffer_len) const {
         throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
     }
     struct ip* p = (ip*)buffer;
-    p->version  = 4;
+    p->version  = version;
     p->hlen     = hlen;
     p->tot_len  = htons(tot_len);
     p->tos      = tos;
@@ -104,6 +106,7 @@ void ipv4_header::read(const void* buffer, size_t buffer_len) {
     }
 
     struct ip* p = (ip*)buffer;
+    version  = p->version;
     hlen     = p->hlen;
     tot_len  = ntohs(p->tot_len);
     tos      = p->tos;
