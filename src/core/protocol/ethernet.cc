@@ -91,6 +91,15 @@ ethernet::ethernet(const pgen::ethernet& rhs) : packet(rhs) {
 }
 
 
+pgen::ethernet& ethernet::operator=(const pgen::ethernet& rhs) {
+
+    ETH = rhs.ETH;
+    init_headers();
+
+    return *this;
+}
+
+
 void ethernet::clear() {
     ETH.clear();
 }

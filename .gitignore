@@ -11,6 +11,7 @@
 *.aux
 *.dll
 
+test
 docs/html
 tags
 

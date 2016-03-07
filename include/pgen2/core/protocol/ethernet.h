@@ -31,16 +31,24 @@ class ethernet_header : public header {
 };
 
 
+#include <stdint.h>
 
 class ethernet : public packet {
     private:
         void init_headers() override;
     public:
+        enum class type : std::uint16_t {
+            ip   = 0x0800,
+            arp  = 0x0806,
+            ipv6 = 0x86dd
+        };
+
         pgen::ethernet_header ETH;
 
         ethernet();
         ethernet(const void* buffer, size_t bufferlen);
         ethernet(const pgen::ethernet& rhs); 
+        pgen::ethernet& operator = (const pgen::ethernet& rhs);
 
         void clear() override;
 

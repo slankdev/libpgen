@@ -43,6 +43,7 @@ CORE_SRC = \
 	src/core/ipaddress.cc \
 	src/core/packet.cc \
 	src/core/protocol/ethernet.cc \
+	src/core/protocol/ipv6.cc \
 	src/core/protocol/ip.cc
 
 MODULE_SRC = \
