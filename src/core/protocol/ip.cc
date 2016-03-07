@@ -5,6 +5,7 @@
 #include <pgen2/exception.h>
 
 
+#include <sys/_endian.h>
 
 namespace pgen {
     
