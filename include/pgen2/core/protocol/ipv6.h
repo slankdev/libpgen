@@ -2,7 +2,8 @@
 
 #include <pgen2/core/header.h>
 #include <pgen2/core/ipaddress.h>
-
+#include <pgen2/core/protocol/ethernet.h>
+#include <pgen2/core/packet.h>
 
 namespace pgen {
     
@@ -34,6 +35,27 @@ class ipv6_header : public header {
         void read(const void* buffer, size_t bufferlen) override;
         size_t length() const override;
 
+};
+
+class ipv6 : public packet {
+    private:
+        void init_headers() override;
+    public:
+        enum class proto : uint8_t {
+            icmp = 1,
+            tcp  = 6,
+            udp  = 17
+        };
+
+        pgen::ethernet_header ETH;
+        pgen::ipv6_header IP;
+
+        ipv6();
+        ipv6(const void* buffer, size_t bufferlen);
+        ipv6(const pgen::ipv6& rhs);
+        pgen::ipv6& operator =(const pgen::ipv6& rhs);
+
+        void clear() override;
 };
 
 

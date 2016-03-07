@@ -110,4 +110,45 @@ size_t ipv6_header::length() const {
 
 
 
+
+
+
+ipv6::ipv6::ipv6() {
+    clear();
+    init_headers();
+}
+
+ipv6::ipv6(const void* buffer, size_t bufferlen) : ipv6() {
+    analyze(buffer, bufferlen);
+}
+
+ipv6::ipv6(const pgen::ipv6& rhs) : packet(rhs) {
+    ETH = rhs.ETH;
+    IP  = rhs.IP;
+    init_headers();
+}
+
+
+pgen::ipv6& ipv6::operator=(const pgen::ipv6& rhs) {
+    ETH = rhs.ETH;
+    IP  = rhs.IP;
+    init_headers();
+
+    return *this;
+}
+
+
+void ipv6::clear() {
+    ETH.clear();
+    ETH.type = 0x86dd;
+    IP.clear();
+}
+
+
+void ipv6::init_headers() {
+    headers = {&ETH, &IP};
+}
+
+
+
 } /* namespace pgen */

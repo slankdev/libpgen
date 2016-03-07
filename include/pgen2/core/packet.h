@@ -60,6 +60,12 @@ class packet {
         using header_vect = std::vector<pgen::header*>;
         header_vect headers;
 
+        /**
+         * Init headers array using compile() and analyze().
+         * Developer must override this.
+         **/
+        virtual void init_headers() = 0;
+
     public:
         
         friend pgen::base_stream& operator << (pgen::base_stream& s, const pgen::packet& pack);
@@ -126,21 +132,11 @@ class packet {
          **/
         void analyze(const void* buffer, size_t bufferlen);
 
-    public:
-
         /**
          * Re init values.
          * Developer must override this.
          **/
         virtual void clear() = 0;
-
-    protected:
-
-        /**
-         * Init headers array using compile() and analyze().
-         * Developer must override this.
-         **/
-        virtual void init_headers() = 0;
 
 };
 

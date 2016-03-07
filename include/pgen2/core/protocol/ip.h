@@ -53,12 +53,19 @@ class ipv4 : public packet {
     private:
         void init_headers() override;
     public:
+        enum class proto : uint8_t {
+            icmp = 1,
+            tcp  = 6,
+            udp  = 17
+        };
+
         pgen::ethernet_header ETH;
         pgen::ipv4_header IP;
 
         ipv4();
         ipv4(const void* buffer, size_t bufferlen);
         ipv4(const pgen::ipv4& rhs);
+        pgen::ipv4& operator = (const pgen::ipv4& rhs);
 
         void clear() override;
     
