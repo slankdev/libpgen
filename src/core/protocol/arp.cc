@@ -109,5 +109,48 @@ size_t arp_header::length() const {
 
 
 
+
+
+arp::arp() {
+    clear();
+    init_headers();
+}
+
+
+arp::arp(const pgen::arp& rhs) : arp() {
+    ETH = rhs.ETH;
+    ARP = rhs.ARP;
+    init_headers();
+}
+
+
+arp::arp(const void* buffer, size_t bufferlen) : arp() {
+    analyze(buffer, bufferlen);
+}
+
+
+
+pgen::arp& arp::operator=(const pgen::arp& rhs) {
+    ETH = rhs.ETH;
+    ARP = rhs.ARP;
+    init_headers();
+
+    return *this;
+}
+
+
+
+void arp::clear() {
+    ETH.clear();
+    ETH.type = 0x0806;
+    ARP.clear();
+}
+
+void arp::init_headers() {
+    headers = {&ETH, &ARP};
+}
+
+
+
 } /* namespace pgen */
 
