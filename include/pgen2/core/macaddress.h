@@ -70,6 +70,8 @@ class macaddress {
         void setbyarray(const uint8_t array[6]);
 
         void copytoarray(uint8_t array[6]) const;
+
+        void setbcast();
 };
 
 

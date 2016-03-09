@@ -53,7 +53,7 @@ class ipv6 : public packet {
         ipv6();
         ipv6(const void* buffer, size_t bufferlen);
         ipv6(const pgen::ipv6& rhs);
-        pgen::ipv6& operator =(const pgen::ipv6& rhs);
+        // pgen::ipv6& operator =(const pgen::ipv6& rhs); //ERASE
 
         void clear() override;
 };
