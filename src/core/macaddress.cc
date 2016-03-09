@@ -129,4 +129,9 @@ void macaddress::copytoarray(uint8_t array[6]) const {
     memcpy(array, _raw, length);
 }
 
+
+void macaddress::setbcast() {
+    *this = "ff:ff:ff:ff:ff:ff";
+}
+
 } /* namespace pgen */

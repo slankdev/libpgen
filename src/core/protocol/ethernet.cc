@@ -90,14 +90,14 @@ ethernet::ethernet(const pgen::ethernet& rhs) : packet(rhs) {
     init_headers();
 }
 
-
-pgen::ethernet& ethernet::operator=(const pgen::ethernet& rhs) {
-
-    ETH = rhs.ETH;
-    init_headers();
-
-    return *this;
-}
+// ERASE
+// pgen::ethernet& ethernet::operator=(const pgen::ethernet& rhs) {
+//
+//     ETH = rhs.ETH;
+//     init_headers();
+//
+//     return *this;
+// }
 
 
 void ethernet::clear() {

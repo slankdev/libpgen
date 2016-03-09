@@ -25,13 +25,12 @@ class ethernet_header : public header {
     
         void clear() override;
         void summary(bool moreinfo=false) const override;
-        void write(void* buffer, size_t buffer_len) const override;
-        void read(const void* buffer, size_t buffer_len) override;
+        void write(void* buffer, size_t bufferlen) const override;
+        void read(const void* buffer, size_t bufferlen) override;
         size_t length() const override;
 };
 
 
-#include <stdint.h>
 
 class ethernet : public packet {
     private:
@@ -48,7 +47,7 @@ class ethernet : public packet {
         ethernet();
         ethernet(const void* buffer, size_t bufferlen);
         ethernet(const pgen::ethernet& rhs); 
-        pgen::ethernet& operator = (const pgen::ethernet& rhs);
+        // pgen::ethernet& operator = (const pgen::ethernet& rhs); //ERASE
 
         void clear() override;
 

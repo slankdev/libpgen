@@ -129,13 +129,14 @@ ipv6::ipv6(const pgen::ipv6& rhs) : packet(rhs) {
 }
 
 
-pgen::ipv6& ipv6::operator=(const pgen::ipv6& rhs) {
-    ETH = rhs.ETH;
-    IP  = rhs.IP;
-    init_headers();
-
-    return *this;
-}
+// ERASE
+// pgen::ipv6& ipv6::operator=(const pgen::ipv6& rhs) {
+//     ETH = rhs.ETH;
+//     IP  = rhs.IP;
+//     init_headers();
+//
+//     return *this;
+// }
 
 
 void ipv6::clear() {
