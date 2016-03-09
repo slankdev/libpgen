@@ -138,6 +138,8 @@ class packet {
          **/
         virtual void clear() = 0;
 
+
+        pgen::packet& operator = (const pgen::packet& rhs);
 };
 
 

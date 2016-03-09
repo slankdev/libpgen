@@ -166,13 +166,15 @@ ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
     init_headers();
 }
 
-pgen::ipv4& ipv4::operator=(const pgen::ipv4& rhs) {
-    ETH = rhs.ETH;
-    IP  = rhs.IP;
-    init_headers();
 
-    return *this;
-}
+// ERASE
+// pgen::ipv4& ipv4::operator=(const pgen::ipv4& rhs) {
+//     ETH = rhs.ETH;
+//     IP  = rhs.IP;
+//     init_headers();
+//
+//     return *this;
+// }
 
 
 

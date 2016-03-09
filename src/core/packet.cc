@@ -5,6 +5,7 @@
 #include <pgen2/data_container.h>
 #include <pgen2/core/packet.h>
 #include <pgen2/util.h>
+#include <pgen2/exception.h>
 
 
 
@@ -87,6 +88,19 @@ void packet::analyze(const void* buffer, size_t bufferlen) {
 
     set_contents(pointer, bufferlen);
 }
+
+
+pgen::packet& packet::operator = (const pgen::packet& rhs) {
+    init_headers();
+    if (rhs.headers.size() != headers.size())
+        throw pgen::exception("pgen::packet::operator=: not same packet type");
+
+    for (size_t i=0; i<headers.size(); i++)
+        *headers[i] = *(rhs.headers[i]);
+
+    return *this;
+}
+
 
 
 } /* namespace pgen */

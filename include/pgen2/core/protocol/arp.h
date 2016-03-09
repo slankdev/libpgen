@@ -48,7 +48,7 @@ class arp : public packet {
         arp();
         arp(const void* buffer, size_t bufferlen);
         arp(const pgen::arp& rhs); 
-        pgen::arp& operator = (const pgen::arp& rhs);
+        // pgen::arp& operator = (const pgen::arp& rhs); //ERASE
 
         void clear() override;
 };
