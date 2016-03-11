@@ -32,6 +32,7 @@ enum class packet_type {
     ethernet, 
     arp,
     ip,
+    ipv6,
     icmp,
     tcp,
     udp
