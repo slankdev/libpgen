@@ -41,10 +41,10 @@ class ipv6 : public packet {
     private:
         void init_headers() override;
     public:
-        enum class proto : uint8_t {
-            icmp = 1,
-            tcp  = 6,
-            udp  = 17
+        struct protocol {
+            static const uint8_t icmp = 1;
+            static const uint8_t tcp  = 6;
+            static const uint8_t udp  = 17;
         };
 
         pgen::ethernet_header ETH;

@@ -141,7 +141,7 @@ ipv6::ipv6(const pgen::ipv6& rhs) : packet(rhs) {
 
 void ipv6::clear() {
     ETH.clear();
-    ETH.type = 0x86dd;
+    ETH.type = pgen::ethernet::type::ipv6;
     IP.clear();
 }
 

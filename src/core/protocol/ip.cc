@@ -180,7 +180,7 @@ ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
 
 void ipv4::clear() {
     ETH.clear();
-    ETH.type = 0x0800;
+    ETH.type = ethernet::type::ip;
     IP.clear();
 }
 

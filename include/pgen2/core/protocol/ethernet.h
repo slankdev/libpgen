@@ -36,10 +36,10 @@ class ethernet : public packet {
     private:
         void init_headers() override;
     public:
-        enum class type : std::uint16_t {
-            ip   = 0x0800,
-            arp  = 0x0806,
-            ipv6 = 0x86dd
+        struct type {
+            static const uint16_t ip   = 0x0800;
+            static const uint16_t arp  = 0x0806;
+            static const uint16_t ipv6 = 0x86dd;
         };
 
         pgen::ethernet_header ETH;

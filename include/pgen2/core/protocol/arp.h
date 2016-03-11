@@ -42,6 +42,11 @@ class arp : public packet {
     private:
         void init_headers() override;
     public:
+        struct operation {
+            static const uint16_t request = 1;
+            static const uint16_t reply   = 2;
+        };
+
         pgen::ethernet_header ETH;
         pgen::arp_header      ARP;
 

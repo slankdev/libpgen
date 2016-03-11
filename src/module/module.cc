@@ -15,6 +15,7 @@ namespace pgen {
 namespace module {
 
 
+
 pgen::packet_type detect(const void* buffer, size_t bufferlen) {
     pgen::packet_type type = pgen::packet_type::ethernet;
 
@@ -32,6 +33,7 @@ pgen::packet_type detect(const void* buffer, size_t bufferlen) {
         p += ip.length();
         bufferlen -= ip.length();
 
+        // return func(ip.protocol);
         if (ip.protocol == 1)
             goto analyze_icmp;
         if (ip.protocol == 6)
@@ -48,6 +50,8 @@ pgen::packet_type detect(const void* buffer, size_t bufferlen) {
         ipv6h.read(p, bufferlen);
         p += ipv6h.length();
         bufferlen -= ipv6h.length();
+
+        // return func(ip.protocol);
 
         if (ipv6h.next_header == 1)
             goto analyze_icmp;

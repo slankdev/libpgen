@@ -29,7 +29,7 @@ void arp_header::clear() {
     ptype     = 0x0800;
     hwlen     = 6;
     plen      = 4;
-    operation = 1;
+    operation = pgen::arp::operation::request;
     hwsrc.clear();
     psrc.clear();
     hwdst = "ff:ff:ff:ff:ff:ff";
@@ -53,8 +53,10 @@ void arp_header::summary(bool moreinfo) const {
         printf(" - hardware len  : %d \n", hwlen);
         printf(" - protocol len  : %d \n", plen);
         printf(" - operation     : ");
-        if (operation == 1) printf("request(%d)\n",    operation);
-        else if (operation == 2) printf("reply(%d)\n", operation);
+        if (operation == pgen::arp::operation::request) 
+            printf("request(%d)\n",    operation);
+        else if (operation == pgen::arp::operation::reply) 
+            printf("reply(%d)\n", operation);
         else printf("unknown(%d)\n", operation);
         printf(" - sender hw addr: %s \n", hwsrc.str().c_str());
         printf(" - sender p  addr: %s \n",  psrc.str().c_str());
@@ -142,7 +144,7 @@ arp::arp(const void* buffer, size_t bufferlen) : arp() {
 
 void arp::clear() {
     ETH.clear();
-    ETH.type = 0x0806;
+    ETH.type = pgen::ethernet::type::arp;
     ARP.clear();
 }
 
