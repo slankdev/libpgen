@@ -30,6 +30,12 @@ namespace pgen {
 
 net_stream::net_stream() : _fd(-1) {}
 
+
+net_stream::net_stream(const char* name, pgen::open_mode mode) : net_stream() {
+    open(name, mode);
+}
+
+
 net_stream::~net_stream() {
     close();   
 }

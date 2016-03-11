@@ -13,6 +13,12 @@
 namespace pgen {
 
 
+pcap_stream::pcap_stream() {}
+pcap_stream::pcap_stream(const char* name, pgen::open_mode mode) : pcap_stream() {
+    open(name, mode);
+}
+
+
 void pcap_stream::open(const char* name, pgen::open_mode mode) {
     switch (mode) {
         case pgen::open_mode::pcap_write:

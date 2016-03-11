@@ -35,6 +35,7 @@ class base_stream {
          * Open stream 
          **/
         virtual void open(const char* name, pgen::open_mode mode) = 0;
+        
 
         /**
          * Close stream 
@@ -81,6 +82,9 @@ class pcap_stream : public file_stream {
         struct pcap_file_header file_header;
     public:
 
+        pcap_stream();
+        pcap_stream(const char* name, pgen::open_mode mode);
+
         void open(const char* name, pgen::open_mode _mode);
         void close();
         size_t send(const void* buf, size_t buflen);
@@ -94,7 +98,6 @@ class pcap_stream : public file_stream {
 class net_stream : public base_stream {
     private:
         int _fd;
-        pgen::open_mode _mode;
 
         void open_netif(const char* name);
         void ioctl_c(unsigned long l, const void* p);
@@ -103,6 +106,7 @@ class net_stream : public base_stream {
     public:
 
         net_stream();
+        net_stream(const char* name, pgen::open_mode mode);
         ~net_stream();
 
         void open(const char* name, pgen::open_mode);
