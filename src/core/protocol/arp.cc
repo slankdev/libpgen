@@ -131,15 +131,6 @@ arp::arp(const void* buffer, size_t bufferlen) : arp() {
 }
 
 
-// ERASE
-// pgen::arp& arp::operator=(const pgen::arp& rhs) {
-//     ETH = rhs.ETH;
-//     ARP = rhs.ARP;
-//     init_headers();
-//
-//     return *this;
-// }
-
 
 
 void arp::clear() {

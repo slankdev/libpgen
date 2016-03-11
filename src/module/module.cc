@@ -50,16 +50,6 @@ pgen::packet_type detect(const void* buffer, size_t bufferlen) {
 
         return detect_L4(ip.protocol, p, bufferlen);
 
-        // ERASE
-        // if (ip.protocol == 1)
-        //     goto analyze_icmp;
-        // if (ip.protocol == 6)
-        //     goto analyze_tcp;
-        // if (ip.protocol == 17)
-        //     goto analyze_udp;
-        // else 
-        //     return type;
-
     } else if (eth.type == 0x86dd) {
         type = pgen::packet_type::ipv6;
 
@@ -69,16 +59,6 @@ pgen::packet_type detect(const void* buffer, size_t bufferlen) {
         bufferlen -= ipv6h.length();
 
         return detect_L4(ipv6h.next_header, p, bufferlen);
-    
-        // ERASE
-        // if (ipv6h.next_header == 1)
-        //     goto analyze_icmp;
-        // if (ipv6h.next_header == 6)
-        //     goto analyze_tcp;
-        // if (ipv6h.next_header == 17)
-        //     goto analyze_udp;
-        // else 
-        //     return type;
 
     } else if (eth.type == 0x0806) {
         type = pgen::packet_type::arp;
@@ -87,17 +67,6 @@ pgen::packet_type detect(const void* buffer, size_t bufferlen) {
         type = pgen::packet_type::ethernet;   
         return type;
     }
-
-// ERASE
-// analyze_icmp:
-//     type = pgen::packet_type::icmp;
-//     return type;
-// analyze_tcp:
-//     type = pgen::packet_type::tcp;
-//     return type;
-// analyze_udp:
-//     type = pgen::packet_type::udp;
-//     return type;
 
 }
 

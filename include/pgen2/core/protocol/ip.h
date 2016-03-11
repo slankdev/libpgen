@@ -65,7 +65,6 @@ class ipv4 : public packet {
         ipv4();
         ipv4(const void* buffer, size_t bufferlen);
         ipv4(const pgen::ipv4& rhs);
-        // pgen::ipv4& operator = (const pgen::ipv4& rhs); // ERASE
 
         void clear() override;
     

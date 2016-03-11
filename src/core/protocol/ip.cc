@@ -167,15 +167,6 @@ ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
 }
 
 
-// ERASE
-// pgen::ipv4& ipv4::operator=(const pgen::ipv4& rhs) {
-//     ETH = rhs.ETH;
-//     IP  = rhs.IP;
-//     init_headers();
-//
-//     return *this;
-// }
-
 
 
 void ipv4::clear() {

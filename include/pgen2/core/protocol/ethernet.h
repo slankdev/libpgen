@@ -47,7 +47,6 @@ class ethernet : public packet {
         ethernet();
         ethernet(const void* buffer, size_t bufferlen);
         ethernet(const pgen::ethernet& rhs); 
-        // pgen::ethernet& operator = (const pgen::ethernet& rhs); //ERASE
 
         void clear() override;
 
