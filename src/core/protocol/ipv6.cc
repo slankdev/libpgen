@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <pgen2/core/protocol/ipv6.h>
 #include <pgen2/exception.h>
+#include <arpa/inet.h>
 
 
 namespace pgen {

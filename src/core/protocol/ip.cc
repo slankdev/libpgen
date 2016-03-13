@@ -3,9 +3,8 @@
 #include <pgen2/core/protocol/ethernet.h>
 #include <pgen2/core/protocol/ip.h>
 #include <pgen2/exception.h>
+#include <arpa/inet.h>
 
-
-#include <sys/_endian.h>
 
 namespace pgen {
     

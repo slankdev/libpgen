@@ -4,6 +4,7 @@
 #include <pgen2/core/protocol/arp.h>
 #include <pgen2/exception.h>
 #include <string>
+#include <arpa/inet.h>
 
 
 namespace pgen {
