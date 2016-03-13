@@ -3,6 +3,7 @@
 #include <pgen2/io/stream.h>
 #include <pgen2/types.h>
 #include <pgen2/exception.h>
+#include <pgen2/arch/arch.h>
 
 #include <string>
 #include <stdio.h>
