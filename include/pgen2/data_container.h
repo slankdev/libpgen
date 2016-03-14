@@ -18,15 +18,15 @@ class data_container {
     public:
         data_container(size_t pivot=128);
 
-        uint8_t* data() const;
-        size_t size() const;
-        size_t pivot() const;
+        uint8_t* data() const noexcept;
+        size_t size() const noexcept;
+        size_t pivot() const noexcept;
 
         void write_before(size_t index, const void* buf, size_t buflen);
         void set_content(const void* buf, size_t buflen);
         void delete_content();
 
-        uint8_t& operator [] (int n);
+        uint8_t& operator [] (int n) noexcept;
 };
 
 

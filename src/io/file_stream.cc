@@ -8,7 +8,7 @@ namespace pgen {
  
 
 file_stream::file_stream() : _fd(nullptr) {}
-file_stream::~file_stream() {
+file_stream::~file_stream() noexcept {
     this->fclose();
 }
 
@@ -22,9 +22,11 @@ void file_stream::fopen(const char* name, const char* mode) {
     }
 }
 
-void file_stream::fclose() {
-    if (_fd != nullptr) 
+void file_stream::fclose() noexcept {
+    if (_fd != nullptr) { 
         ::fclose(_fd);
+        _fd = nullptr;
+    }
 }
 
 void file_stream::write(const void* buf, size_t buflen) {
@@ -45,7 +47,8 @@ size_t file_stream::read(void* buf, size_t buflen) {
 
 
 
-bool file_stream::feof() const {
+// TODO is this function noexcept?
+bool file_stream::feof() const noexcept {
     uint8_t c;
     int res = ::fread(&c, 1, 1, _fd);
     if (res != 1 && ::feof(_fd)) {
@@ -57,7 +60,10 @@ bool file_stream::feof() const {
 }
 
 void file_stream::fflush() const {
-    ::fflush(_fd);
+    int res = ::fflush(_fd);
+    if (res != 0) {
+        pgen::exception("pgen::file_stream::fflush: ");
+    }
 }
 
 

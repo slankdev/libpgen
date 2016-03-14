@@ -38,7 +38,7 @@ net_stream::net_stream(const char* name, pgen::open_mode mode) : net_stream() {
 }
 
 
-net_stream::~net_stream() {
+net_stream::~net_stream() noexcept {
     close();   
 }
 
@@ -127,7 +127,7 @@ void net_stream::open(const char* name, pgen::open_mode mode) {
 }
 
 
-void net_stream::close() {
+void net_stream::close() noexcept {
     if (_fd >= 0) {
         ::close(_fd);
         _fd = -1;

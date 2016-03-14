@@ -16,7 +16,7 @@ namespace pgen {
 
 
 
-uint16_t checksum(const void *data, size_t len){
+uint16_t checksum(const void *data, size_t len) noexcept {
   uint32_t sum = 0; 
   const uint16_t* _data = reinterpret_cast<const uint16_t*>(data);
 
@@ -46,7 +46,7 @@ uint16_t checksum(const void *data, size_t len){
  * So smart code. Thank you @herumi 
  * I'll do my best more.
  */
-void hex(const void *buffer, size_t bufferlen) {
+void hex(const void *buffer, size_t bufferlen) noexcept {
     printf("hexdump len: %zu \n", bufferlen);
     const uint8_t *data = reinterpret_cast<const uint8_t*>(buffer);
     size_t row = 0;
@@ -77,7 +77,7 @@ void hex(const void *buffer, size_t bufferlen) {
 
 
 
-void bin(const void* buffer, size_t bufferlen) {
+void bin(const void* buffer, size_t bufferlen) noexcept {
     struct bits {
         uint8_t b0:1;
         uint8_t b1:1;

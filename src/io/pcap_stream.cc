@@ -49,7 +49,7 @@ void pcap_stream::open(const char* name, pgen::open_mode mode) {
 
 
 
-void pcap_stream::close() {
+void pcap_stream::close() noexcept {
     this->fclose();
 }
 
@@ -90,8 +90,8 @@ size_t pcap_stream::recv(void* buf, size_t buflen) {
 }
 
 
-
-bool pcap_stream::eof() const {
+// TODO is this function noexcept?
+bool pcap_stream::eof() const noexcept {
     /*
      * FIXME
      * If below's code uncomment out, this function always

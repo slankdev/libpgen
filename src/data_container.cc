@@ -16,16 +16,16 @@ data_container::data_container(size_t pivot) : _pivot(pivot) {
     _vec.resize(_pivot, 0);
 }
 
-uint8_t* data_container::data() const {
+uint8_t* data_container::data() const noexcept {
     // TODO is this code OK ?
     return const_cast<uint8_t*>(_vec.data());
 }
 
-size_t data_container::size() const {
+size_t data_container::size() const noexcept {
     return _vec.size(); 
 }
 
-size_t data_container::pivot() const {
+size_t data_container::pivot() const noexcept {
     return _pivot;      
 }
 
@@ -50,7 +50,7 @@ void data_container::delete_content() {
 }
 
 
-uint8_t& data_container::operator [] (int n) {
+uint8_t& data_container::operator [] (int n) noexcept {
     return _vec[n];
 }
 
