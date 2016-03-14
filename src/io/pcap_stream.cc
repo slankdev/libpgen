@@ -62,7 +62,7 @@ struct pcap_packet_header {
 };
 
 
-size_t pcap_stream::send(const void* buf, size_t buflen) {
+void pcap_stream::send(const void* buf, size_t buflen) {
    
     struct pcap_packet_header ph;
     ph.timestamp_sec  = 0;
@@ -73,7 +73,6 @@ size_t pcap_stream::send(const void* buf, size_t buflen) {
     this->write(&ph, sizeof(ph));
     this->write(buf, buflen);
 
-    return buflen;
 }
 
 

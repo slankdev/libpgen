@@ -88,20 +88,25 @@ void net_stream::open_netif(const char* name, size_t buffer_size) {
 
 
 
-ssize_t net_stream::write(const void* buffer, size_t bufferlen) {
+void net_stream::write(const void* buffer, size_t bufferlen) {
     ssize_t write_len = ::write(_fd, buffer, bufferlen);
-    if (write_len < 0) {
+    if (static_cast<size_t>(write_len) != bufferlen) {
+        throw pgen::exception("pgen::net_stream::write::write: write comletion faild");
+    } else if (write_len < 0) {
         throw pgen::exception("pgen::net_stream::write::write: ");
     }
-    return write_len;
 }
 
-ssize_t net_stream::read(void* buffer, size_t bufferlen) {
+size_t net_stream::read(void* buffer, size_t bufferlen) {
     ssize_t read_len = ::read(_fd, buffer, bufferlen);
+
     if (read_len < 0) {
         throw pgen::exception("pgen::net_stream::read::read: ");
+    } else if (read_len == EINTR) {
+        return read(buffer, bufferlen);   
     }
-    return read_len;
+    
+    return static_cast<size_t>(read_len);
 }
 
 
@@ -123,14 +128,15 @@ void net_stream::open(const char* name, pgen::open_mode mode) {
 
 
 void net_stream::close() {
-    if (_fd >= 0) 
+    if (_fd >= 0) {
         ::close(_fd);
+        _fd = -1;
+    }
 }
 
 
-size_t net_stream::send(const void* buffer, size_t bufferlen) {
+void net_stream::send(const void* buffer, size_t bufferlen) {
     this->write(buffer, bufferlen);
-    return bufferlen;
 }
 
 
