@@ -2,7 +2,6 @@
 
 
 #include <pgen2/io/stream.h>
-#include <pgen2/types.h>
 #include <pgen2/exception.h>
 
 #include <stdio.h>
@@ -30,12 +29,12 @@ void pcap_stream::open(const char* name, pgen::open_mode mode) {
             file_header.sigfigs  = 0x0000;
             file_header.snaplen  = 0x0000ffff;
             file_header.linktype = 0x00000001;
-            fwrite(&file_header, sizeof(file_header));
+            write(&file_header, sizeof(file_header));
             break;
 
         case pgen::open_mode::pcap_read:
             fopen(name, "rb");
-            fread(&file_header, sizeof(file_header));
+            read(&file_header, sizeof(file_header));
             break;
 
         default:
@@ -51,30 +50,39 @@ void pcap_stream::close() {
 }
 
 
+struct pcap_packet_header {
+    uint32_t timestamp_sec;
+    uint32_t timestamp_usec;
+    uint32_t include_len;
+    uint32_t original_len;
+};
+
+
 size_t pcap_stream::send(const void* buf, size_t buflen) {
    
-    struct pgen::pcap_packet_headr ph;
+    struct pcap_packet_header ph;
     ph.timestamp_sec  = 0;
     ph.timestamp_usec = 0;
     ph.include_len    = buflen;
     ph.original_len   = buflen;
 
-    this->fwrite(&ph, sizeof(ph));
-    this->fwrite(buf, buflen);
+    this->write(&ph, sizeof(ph));
+    this->write(buf, buflen);
 
     return buflen;
 }
 
+
 size_t pcap_stream::recv(void* buf, size_t buflen) {
     
-    struct pgen::pcap_packet_headr ph;
-    this->fread(&ph, sizeof(ph));
+    struct pcap_packet_header ph;
+    this->read(&ph, sizeof(ph));
     
     if (buflen < ph.original_len) {
         throw pgen::exception("pgen::pcap_stream::recv: buffer length is too small");
     }
 
-    this->fread(buf, ph.original_len);
+    this->read(buf, ph.original_len);
     return ph.original_len;
 }
 
