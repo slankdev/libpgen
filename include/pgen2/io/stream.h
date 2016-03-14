@@ -19,6 +19,7 @@ enum class open_mode {
 };
 
 
+
 /**
  * This class is base class of pgen stream classes.
  * Developers can implement new stream class inherited this.
@@ -66,8 +67,8 @@ class file_stream : public base_stream {
 
         void fopen(const char* name, const char* mode);
         void fclose();
-        void fwrite(const void* buf, size_t buflen);
-        size_t fread(void* buf, size_t buflen);
+        ssize_t write(const void* buf, size_t buflen);
+        ssize_t read(void* buf, size_t buflen);
 
         bool feof() const;  
         void fflush() const;

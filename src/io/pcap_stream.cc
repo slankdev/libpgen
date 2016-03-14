@@ -29,12 +29,12 @@ void pcap_stream::open(const char* name, pgen::open_mode mode) {
             file_header.sigfigs  = 0x0000;
             file_header.snaplen  = 0x0000ffff;
             file_header.linktype = 0x00000001;
-            fwrite(&file_header, sizeof(file_header));
+            write(&file_header, sizeof(file_header));
             break;
 
         case pgen::open_mode::pcap_read:
             fopen(name, "rb");
-            fread(&file_header, sizeof(file_header));
+            read(&file_header, sizeof(file_header));
             break;
 
         default:
@@ -66,8 +66,8 @@ size_t pcap_stream::send(const void* buf, size_t buflen) {
     ph.include_len    = buflen;
     ph.original_len   = buflen;
 
-    this->fwrite(&ph, sizeof(ph));
-    this->fwrite(buf, buflen);
+    this->write(&ph, sizeof(ph));
+    this->write(buf, buflen);
 
     return buflen;
 }
@@ -76,13 +76,13 @@ size_t pcap_stream::send(const void* buf, size_t buflen) {
 size_t pcap_stream::recv(void* buf, size_t buflen) {
     
     struct pcap_packet_header ph;
-    this->fread(&ph, sizeof(ph));
+    this->read(&ph, sizeof(ph));
     
     if (buflen < ph.original_len) {
         throw pgen::exception("pgen::pcap_stream::recv: buffer length is too small");
     }
 
-    this->fread(buf, ph.original_len);
+    this->read(buf, ph.original_len);
     return ph.original_len;
 }
 

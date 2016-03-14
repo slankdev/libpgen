@@ -27,15 +27,16 @@ void file_stream::fclose() {
         ::fclose(_fd);
 }
 
-void file_stream::fwrite(const void* buf, size_t buflen) {
+ssize_t file_stream::write(const void* buf, size_t buflen) {
     size_t number_of_write = ::fwrite(buf, buflen, 1, _fd);   
     if (number_of_write != 1) {
         throw pgen::exception("pgen::file_stream::fwirte::fwite: ");
     }
+    return buflen;
 }
 
 
-size_t file_stream::fread(void* buf, size_t buflen) {
+ssize_t file_stream::read(void* buf, size_t buflen) {
     size_t number_of_read = ::fread(buf, buflen, 1, _fd);   
     if (number_of_read != 1) {
         throw pgen::exception("pgen::file_stream::fread::fread: ");
