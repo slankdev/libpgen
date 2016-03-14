@@ -17,6 +17,7 @@ namespace pgen {
 
 uint16_t checksum(const void *data, size_t len){
   uint32_t sum = 0; 
+  // const uint16_t* _data = (const uint16_t*)data;
   const uint16_t* _data = (const uint16_t*)data;
 
   for (; len > 1; len -= 2) {

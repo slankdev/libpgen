@@ -113,6 +113,7 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
 }
 
 
+
 /* 
  * Thanks 
  *  http://d.hatena.ne.jp/shammer/20101212/p1 
@@ -148,6 +149,7 @@ void getipv6bydev(const char* dev, uint16_t ip[8]) {
     freeifaddrs(if_list);
     throw pgen::exception("pgen::getipv6bydev: can't get address");
 }
+
 
 
 } /* namespace arch */
