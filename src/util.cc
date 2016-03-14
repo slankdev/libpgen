@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <iostream>
 #include <pgen2/util.h>
 
 
@@ -40,47 +41,39 @@ uint16_t checksum(const void *data, size_t len){
 
 
 
-void hex(const void* buffer, size_t bufferlen) { 
 
-    printf("hexdump len: %lu \n", bufferlen);
-
-    const uint8_t* data = reinterpret_cast<const uint8_t*>(buffer);
-
-    size_t row=0;
-    size_t column=0;
-    for(row=0; (row+column)<16+bufferlen; row+=16){
-        for(column=0; column<=15; column++){
-            if(!(row+column < bufferlen)){
-                printf("   ");
-                if((row+column)%8  == 0 && (row+column)%16 != 0) printf(" ");
-            }else{
-                if((row+column)%16 == 0) printf("%04x:    ", static_cast<unsigned int>(row+column));
-                if((row+column)%8  == 0 && (row+column)%16 != 0) printf(" ");
-                printf("%02x ", data[row+column]);
-            }
+/* 
+ * So smart code. Thank you @herumi 
+ * I'll do my best more.
+ */
+void hex(const void *buffer, size_t bufferlen) {
+    printf("hexdump len: %zu \n", bufferlen);
+    const uint8_t *data = reinterpret_cast<const uint8_t*>(buffer);
+    size_t row = 0;
+    while (bufferlen > 0) {
+        printf("%04zx:   ", row);
+        size_t n = std::min<size_t>(bufferlen, 16);
+        for (size_t i = 0; i < n; i++) {
+            if (i == 8) printf(" ");
+            printf(" %02x", data[i]);
         }
-
-        for(column=0; column<=15; column++){
-            if(!(row+column < bufferlen)){
-                printf(" ");
-            }else{
-                if((row+column)%16 == 0) 
-                    printf("  ");
-                if((row+column)%8 == 0 && (row+column)%16!=0) 
-                    printf("  ");
-                
-                if(0x20<=data[row+column] && data[row+column]<=0x7E)
-                    printf("%c", data[row+column]);
-                else
-                    printf(".");
-                
-                if((row+column+1)%16 == 0)  
-                    printf("\n");
-            }
+        for (size_t i = n; i < 16; i++) {
+            printf("   ");
         }
+        printf("   ");
+        for (size_t i = 0; i < n; i++) {
+            if (i == 8) printf("  ");
+            uint8_t c = data[i];
+            if (!(0x20 <= c && c <= 0x7e)) c = '.';
+            printf("%c", c);
+        }
+        printf("\n");
+        bufferlen -= n;
+        data += n;
     }
-    printf("\n");
 }
+
+
 
 
 
@@ -105,6 +98,7 @@ void bin(const void* buffer, size_t bufferlen) {
         if ((i+1) % 8 == 0) printf("\n");
     }
 }
+
 
 
 
