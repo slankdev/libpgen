@@ -70,12 +70,12 @@ void net_stream::open_netif(const char* name, size_t buffer_size) {
 
     /* other config */
     unsigned int one = 1;
-	ioctl(BIOCPROMISC, NULL);     // set promisc
+	ioctl(BIOCPROMISC, nullptr);     // set promisc
 	ioctl(BIOCIMMEDIATE, &one);   //if recv packet then call read fast
 	ioctl(BIOCSSEESENT, &one);    // set recv sendPacket
-	ioctl(BIOCFLUSH, NULL);       // flush recv buffer
+	ioctl(BIOCFLUSH, nullptr);       // flush recv buffer
 	ioctl(BIOCSHDRCMPLT, &one);   // no complite src macaddr
-    _buffer_point = NULL;           // init _buffer_point
+    _buffer_point = nullptr;           // init _buffer_point
 #elif defined(__PGEN_LINUX)
     
     printf("pgen::net_stream::open_netif: for linux is not implemented yet\n");
@@ -168,7 +168,7 @@ size_t net_stream::recv(void* buffer, size_t bufferlen) {
     _buffer_point += bh->caplen;
 
     if (_buffer_point - _buffer.data() >= _buffer_size_readed)
-        _buffer_point = NULL;
+        _buffer_point = nullptr;
 
     return copylen;
 

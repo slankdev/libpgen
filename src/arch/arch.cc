@@ -74,7 +74,7 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
     }
 
     // TODO this codes has some casting
-    for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
+    for(ifaptr = ifap; ifaptr != nullptr; ifaptr = (ifaptr)->ifa_next) {
         if (!strcmp((ifaptr)->ifa_name, dev) && 
                 (((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
             ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
@@ -128,7 +128,7 @@ void getipv6bydev(const char* dev, uint16_t ip[8]) {
     void * tmp;
 
     getifaddrs(&if_list);
-    for (struct ifaddrs* ifa = if_list ; ifa != NULL ; ifa = ifa->ifa_next) {
+    for (struct ifaddrs* ifa = if_list ; ifa != nullptr ; ifa = ifa->ifa_next) {
         if (strcmp(ifa->ifa_name, dev) == 0) { 
             if (!ifa->ifa_addr) {
                 continue;

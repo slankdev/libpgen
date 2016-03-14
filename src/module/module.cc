@@ -17,7 +17,7 @@ namespace module {
 
 static pgen::packet_type detect_L4(uint8_t protocol, const void* buffer, size_t bufferlen) {
     // ERASE
-    if (buffer == NULL || bufferlen == 0)
+    if (buffer == nullptr || bufferlen == 0)
         exit(-1);
     
     if (protocol == pgen::ipv4::protocol::icmp)

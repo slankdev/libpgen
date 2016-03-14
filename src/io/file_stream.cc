@@ -7,14 +7,14 @@
 namespace pgen {
  
 
-file_stream::file_stream() : _fd(NULL) {}
+file_stream::file_stream() : _fd(nullptr) {}
 file_stream::~file_stream() {
     this->fclose();
 }
 
 void file_stream::fopen(const char* name, const char* mode) {
     _fd = ::fopen(name, mode);
-    if (_fd == NULL) {
+    if (_fd == nullptr) {
         std::string err = "pgen::file_stream::fopen:";
         err += name;
         err += " ";
@@ -23,7 +23,7 @@ void file_stream::fopen(const char* name, const char* mode) {
 }
 
 void file_stream::fclose() {
-    if (_fd != NULL) 
+    if (_fd != nullptr) 
         ::fclose(_fd);
 }
 
