@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <stddef.h>
 #include <vector>
+
 
 
 namespace pgen {
@@ -29,8 +29,8 @@ class base_stream {
         pgen::open_mode _mode;
 
     public:
-        pgen::open_mode mode() const; /**< return stream mode */
-        void print_mode() const;      /**< print stream mode  */
+        pgen::open_mode mode() const noexcept; /**< return stream mode */
+        void print_mode() const noexcept;      /**< print stream mode  */
         
         /**
          * Open stream 
@@ -41,14 +41,14 @@ class base_stream {
         /**
          * Close stream 
          **/
-        virtual void close() = 0;
+        virtual void close() noexcept = 0;
 
         /**
          * Send data from stream
          * @param [in] buffer send buffer.
          * @param [in] bufferlen send buffer length.
          **/
-        virtual size_t send(const void* buffer, size_t bufferlen) = 0;
+        virtual void send(const void* buffer, size_t bufferlen) = 0;
 
         /**
          * Recieve data from stream
@@ -66,16 +66,16 @@ class file_stream : public base_stream {
         FILE* _fd;
 
         void fopen(const char* name, const char* mode);
-        void fclose();
-        ssize_t write(const void* buf, size_t buflen);
-        ssize_t read(void* buf, size_t buflen);
+        void fclose() noexcept;
+        void write(const void* buf, size_t buflen);
+        size_t read(void* buf, size_t buflen);
 
-        bool feof() const;  
+        bool feof() const noexcept;  
         void fflush() const;
 
     public:
         file_stream();
-        ~file_stream();
+        ~file_stream() noexcept;
 };
 
 
@@ -99,11 +99,11 @@ class pcap_stream : public file_stream {
         pcap_stream(const char* name, pgen::open_mode mode);
 
         void open(const char* name, pgen::open_mode _mode);
-        void close();
-        size_t send(const void* buf, size_t buflen);
+        void close() noexcept;
+        void send(const void* buf, size_t buflen);
         size_t recv(void* buf, size_t buflen);
 
-        bool eof() const;   /* pcap_read only  */
+        bool eof() const noexcept;   /* pcap_read only  */
         void flush() const; /* pcap_write only */
 };
 
@@ -118,17 +118,17 @@ class net_stream : public base_stream {
         void open_netif(const char* name, size_t buffer_size=0);
 
         void ioctl(unsigned long l, void* p);
-        ssize_t write(const void* buffer, size_t bufferlen);
-        ssize_t read(void* buffer, size_t bufferlen);
+        void write(const void* buffer, size_t bufferlen);
+        size_t read(void* buffer, size_t bufferlen);
     public:
 
         net_stream();
         net_stream(const char* name, pgen::open_mode mode);
-        ~net_stream();
+        ~net_stream() noexcept;
 
         void open(const char* name, pgen::open_mode);
-        void close();
-        size_t send(const void* buffer, size_t bufferlen);
+        void close() noexcept;
+        void send(const void* buffer, size_t bufferlen);
         size_t recv(void* buffer, size_t bufferlen);
 };
 

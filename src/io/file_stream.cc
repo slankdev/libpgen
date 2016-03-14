@@ -7,14 +7,14 @@
 namespace pgen {
  
 
-file_stream::file_stream() : _fd(NULL) {}
-file_stream::~file_stream() {
+file_stream::file_stream() : _fd(nullptr) {}
+file_stream::~file_stream() noexcept {
     this->fclose();
 }
 
 void file_stream::fopen(const char* name, const char* mode) {
     _fd = ::fopen(name, mode);
-    if (_fd == NULL) {
+    if (_fd == nullptr) {
         std::string err = "pgen::file_stream::fopen:";
         err += name;
         err += " ";
@@ -22,21 +22,22 @@ void file_stream::fopen(const char* name, const char* mode) {
     }
 }
 
-void file_stream::fclose() {
-    if (_fd != NULL) 
+void file_stream::fclose() noexcept {
+    if (_fd != nullptr) { 
         ::fclose(_fd);
+        _fd = nullptr;
+    }
 }
 
-ssize_t file_stream::write(const void* buf, size_t buflen) {
+void file_stream::write(const void* buf, size_t buflen) {
     size_t number_of_write = ::fwrite(buf, buflen, 1, _fd);   
     if (number_of_write != 1) {
         throw pgen::exception("pgen::file_stream::fwirte::fwite: ");
     }
-    return buflen;
 }
 
 
-ssize_t file_stream::read(void* buf, size_t buflen) {
+size_t file_stream::read(void* buf, size_t buflen) {
     size_t number_of_read = ::fread(buf, buflen, 1, _fd);   
     if (number_of_read != 1) {
         throw pgen::exception("pgen::file_stream::fread::fread: ");
@@ -46,7 +47,8 @@ ssize_t file_stream::read(void* buf, size_t buflen) {
 
 
 
-bool file_stream::feof() const {
+// TODO is this function noexcept?
+bool file_stream::feof() const noexcept {
     uint8_t c;
     int res = ::fread(&c, 1, 1, _fd);
     if (res != 1 && ::feof(_fd)) {
@@ -58,7 +60,10 @@ bool file_stream::feof() const {
 }
 
 void file_stream::fflush() const {
-    ::fflush(_fd);
+    int res = ::fflush(_fd);
+    if (res != 0) {
+        pgen::exception("pgen::file_stream::fflush: ");
+    }
 }
 
 

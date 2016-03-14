@@ -81,7 +81,7 @@ void ipv4_header::write(void* buffer, size_t buffer_len) const {
     if (buffer_len < (size_t)(this->hlen<<2)) {
         throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
     }
-    struct ip* p = (ip*)buffer;
+    struct ip* p = reinterpret_cast<ip*>(buffer);
     p->version  = version;
     p->hlen     = hlen;
     p->tot_len  = htons(tot_len);
@@ -105,7 +105,7 @@ void ipv4_header::read(const void* buffer, size_t buffer_len) {
         throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
     }
 
-    struct ip* p = (ip*)buffer;
+    const struct ip* p = reinterpret_cast<const ip*>(buffer);
     version  = p->version;
     hlen     = p->hlen;
     tot_len  = ntohs(p->tot_len);
@@ -121,7 +121,7 @@ void ipv4_header::read(const void* buffer, size_t buffer_len) {
     if (buffer_len < length())
         throw pgen::exception("pgen::ipv4_header::read: buflen is too small");
 
-    uint8_t* p0 = (uint8_t*)p + pgen::ipv4_header::min_length;
+    const uint8_t* p0 = reinterpret_cast<const uint8_t*>(p) + pgen::ipv4_header::min_length;
     memcpy(option, p0, length() - pgen::ipv4_header::min_length);
 }
 

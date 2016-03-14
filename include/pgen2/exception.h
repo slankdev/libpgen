@@ -6,7 +6,6 @@
 #include <string>
 #include <string.h>
 #include <errno.h>
-#include <stdlib.h>
 #include <iostream>
 #include <sstream>
 
@@ -19,7 +18,7 @@ class exception : public std::exception {
     private:
         std::string str;
     public:
-        explicit exception(const char* s="") {
+        explicit exception(const char* s="") noexcept {
             int e = errno;
             str = s; 
             if (e != 0)
@@ -27,7 +26,7 @@ class exception : public std::exception {
         } 
 
         template<class T>
-        exception& operator<<(const T& t) {
+        exception& operator<<(const T& t) noexcept {
             std::ostringstream os;
             os << " " << t ;
             str += os.str();

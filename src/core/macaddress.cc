@@ -23,15 +23,19 @@ namespace pgen {
 macaddress::macaddress() {
     clear();
 }
+
 macaddress::macaddress(const macaddress& m) {
     *this = m;
 }
+
 macaddress::macaddress(const std::string& str) {
     set_str(str);
 }
+
 macaddress::macaddress(const char* str) {
     set_str(str);
 }
+
 void macaddress::clear(){
     memset(_raw, 0, sizeof(_raw));
     _update_name();

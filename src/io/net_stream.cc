@@ -38,7 +38,7 @@ net_stream::net_stream(const char* name, pgen::open_mode mode) : net_stream() {
 }
 
 
-net_stream::~net_stream() {
+net_stream::~net_stream() noexcept {
     close();   
 }
 
@@ -70,12 +70,12 @@ void net_stream::open_netif(const char* name, size_t buffer_size) {
 
     /* other config */
     unsigned int one = 1;
-	ioctl(BIOCPROMISC, NULL);     // set promisc
+	ioctl(BIOCPROMISC, nullptr);     // set promisc
 	ioctl(BIOCIMMEDIATE, &one);   //if recv packet then call read fast
 	ioctl(BIOCSSEESENT, &one);    // set recv sendPacket
-	ioctl(BIOCFLUSH, NULL);       // flush recv buffer
+	ioctl(BIOCFLUSH, nullptr);       // flush recv buffer
 	ioctl(BIOCSHDRCMPLT, &one);   // no complite src macaddr
-    _buffer_point = NULL;           // init _buffer_point
+    _buffer_point = nullptr;           // init _buffer_point
 #elif defined(__PGEN_LINUX)
     
     printf("pgen::net_stream::open_netif: for linux is not implemented yet\n");
@@ -88,20 +88,25 @@ void net_stream::open_netif(const char* name, size_t buffer_size) {
 
 
 
-ssize_t net_stream::write(const void* buffer, size_t bufferlen) {
+void net_stream::write(const void* buffer, size_t bufferlen) {
     ssize_t write_len = ::write(_fd, buffer, bufferlen);
-    if (write_len < 0) {
+    if (static_cast<size_t>(write_len) != bufferlen) {
+        throw pgen::exception("pgen::net_stream::write::write: write comletion faild");
+    } else if (write_len < 0) {
         throw pgen::exception("pgen::net_stream::write::write: ");
     }
-    return write_len;
 }
 
-ssize_t net_stream::read(void* buffer, size_t bufferlen) {
+size_t net_stream::read(void* buffer, size_t bufferlen) {
     ssize_t read_len = ::read(_fd, buffer, bufferlen);
+
     if (read_len < 0) {
         throw pgen::exception("pgen::net_stream::read::read: ");
+    } else if (read_len == EINTR) {
+        return read(buffer, bufferlen);   
     }
-    return read_len;
+    
+    return static_cast<size_t>(read_len);
 }
 
 
@@ -114,7 +119,6 @@ void net_stream::ioctl(unsigned long l, void* p) {
 
 
 void net_stream::open(const char* name, pgen::open_mode mode) {
-
     if (mode == pgen::open_mode::netif) {
         this->open_netif(name);
     } else {
@@ -123,15 +127,16 @@ void net_stream::open(const char* name, pgen::open_mode mode) {
 }
 
 
-void net_stream::close() {
-    if (_fd >= 0) 
+void net_stream::close() noexcept {
+    if (_fd >= 0) {
         ::close(_fd);
+        _fd = -1;
+    }
 }
 
 
-size_t net_stream::send(const void* buffer, size_t bufferlen) {
+void net_stream::send(const void* buffer, size_t bufferlen) {
     this->write(buffer, bufferlen);
-    return bufferlen;
 }
 
 
@@ -148,12 +153,13 @@ struct bpf_header {
  * has potential that getting speed up.
  */
 size_t net_stream::recv(void* buffer, size_t bufferlen) {
-    if (_buffer_point == NULL) {
+    if (_buffer_point == nullptr) {
         _buffer_size_readed = read(_buffer.data(), _buffer.size());
         _buffer_point = _buffer.data();
     }
 
-    struct bpf_header* bh = (bpf_header*)_buffer_point;
+    struct bpf_header* bh = reinterpret_cast<bpf_header*>(_buffer_point);
+
     size_t copylen = bh->caplen;
     if (bufferlen < bh->caplen)
         copylen = bufferlen;
@@ -162,7 +168,7 @@ size_t net_stream::recv(void* buffer, size_t bufferlen) {
     _buffer_point += bh->caplen;
 
     if (_buffer_point - _buffer.data() >= _buffer_size_readed)
-        _buffer_point = NULL;
+        _buffer_point = nullptr;
 
     return copylen;
 

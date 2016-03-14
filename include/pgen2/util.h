@@ -10,10 +10,10 @@ namespace pgen {
 
 
 
-uint16_t checksum(const void *data, size_t len);
-void hex(const void* buffer, size_t bufferlen);
+uint16_t checksum(const void *data, size_t len) noexcept;
 
-void bin(const void* buffer, size_t bufferlen);
+void hex(const void* buffer, size_t bufferlen) noexcept;
+void bin(const void* buffer, size_t bufferlen) noexcept;
 
 
 } /* namespace pgen */

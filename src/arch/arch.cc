@@ -72,7 +72,9 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
     if(getifaddrs(&ifap) != 0){
         throw pgen::exception("pgen::arch::getmacbydev:getifaddrs: undefined error");
     }
-    for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
+
+    // TODO this codes has some casting
+    for(ifaptr = ifap; ifaptr != nullptr; ifaptr = (ifaptr)->ifa_next) {
         if (!strcmp((ifaptr)->ifa_name, dev) && 
                 (((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
             ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
@@ -96,7 +98,6 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
 
     int sockd;
     struct ifreq ifr;
-    struct sockaddr_in *sa;
 
     if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
         throw pgen::exception("pgen::arch::getipv4bydev:socket: ");
@@ -108,9 +109,10 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
         throw pgen::exception("pgen::arch::getipv4bydev:ioctl: ");
     }
     close(sockd);
-    sa = (struct sockaddr_in*)&ifr.ifr_addr;
+    struct sockaddr_in* sa = reinterpret_cast<struct sockaddr_in*>(&ifr.ifr_addr);
     memcpy(ip, &(sa->sin_addr.s_addr), sizeof(uint32_t));
 }
+
 
 
 /* 
@@ -126,12 +128,14 @@ void getipv6bydev(const char* dev, uint16_t ip[8]) {
     void * tmp;
 
     getifaddrs(&if_list);
-    for (struct ifaddrs* ifa = if_list ; ifa != NULL ; ifa = ifa->ifa_next) {
+    for (struct ifaddrs* ifa = if_list ; ifa != nullptr ; ifa = ifa->ifa_next) {
         if (strcmp(ifa->ifa_name, dev) == 0) { 
             if (!ifa->ifa_addr) {
                 continue;
             } else {
                 if (ifa->ifa_addr->sa_family == AF_INET6) { 
+
+                    // TODO this is complex casting code
                     tmp = &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
                     memcpy(ip, tmp, sizeof(struct in6_addr));
                     freeifaddrs(if_list);
@@ -148,6 +152,7 @@ void getipv6bydev(const char* dev, uint16_t ip[8]) {
     freeifaddrs(if_list);
     throw pgen::exception("pgen::getipv6bydev: can't get address");
 }
+
 
 
 } /* namespace arch */

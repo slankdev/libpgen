@@ -44,7 +44,7 @@ void ethernet_header::write(void* buffer, size_t bufferlen) const {
         throw pgen::exception("pgen::ethernet_header::write: buflen is too small");
     }
 
-    struct eth* p = (eth*)buffer;
+    struct eth* p = reinterpret_cast<eth*>(buffer);
     src.copytoarray(p->src);
     dst.copytoarray(p->dst);
     p->type = htons(type);
@@ -59,7 +59,7 @@ void ethernet_header::read(const void* buffer, size_t buffer_len) {
                 "pgen::ethernet_header::read: Buffer length is too small");
     }
 
-    const eth* p = (const eth*)buffer;
+    const eth* p = reinterpret_cast<const eth*>(buffer);
     src.setbyarray(p->src);
     dst.setbyarray(p->dst);
     type = ntohs(p->type);

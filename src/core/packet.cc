@@ -60,6 +60,8 @@ size_t packet::header_length() const {
 packet_type packet::type() const {
     return _type;   
 }
+
+
 void packet::hex() const {
     pgen::hex(raw(), length());
 }
@@ -69,6 +71,7 @@ void packet::hex() const {
 void packet::compile() {
     uint8_t* pointer = _raw.data() + _raw.pivot();
 
+    // TODO this code has some cast. maybe dynamic_cast?
     for (auto it=headers.rbegin(); it!=headers.rend(); ++it) {
         (*it)->write(pointer-((*it)->length()), (*it)->length());
         pointer -= (*it)->length();
@@ -95,6 +98,7 @@ pgen::packet& packet::operator = (const pgen::packet& rhs) {
     if (rhs.headers.size() != headers.size())
         throw pgen::exception("pgen::packet::operator=: not same packet type");
 
+    // TODO this code has some cast. maybe dynamic_cast?
     for (size_t i=0; i<headers.size(); i++)
         *headers[i] = *(rhs.headers[i]);
 

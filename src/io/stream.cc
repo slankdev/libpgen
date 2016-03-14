@@ -11,12 +11,12 @@
 namespace pgen {
 
 
-pgen::open_mode base_stream::mode() const {
+pgen::open_mode base_stream::mode() const noexcept {
     return _mode;
 }
 
 
-void base_stream::print_mode() const {
+void base_stream::print_mode() const noexcept {
     switch (_mode) {
         case pgen::open_mode::pcap_read: {
             printf("pcap_read mode \n");

@@ -21,6 +21,7 @@ pcap_stream::pcap_stream(const char* name, pgen::open_mode mode) : pcap_stream()
 void pcap_stream::open(const char* name, pgen::open_mode mode) {
     switch (mode) {
         case pgen::open_mode::pcap_write:
+        {
             fopen(name, "wb");
             file_header.magic = 0xa1b2c3d4;
             file_header.version_major = 0x0002;
@@ -31,21 +32,24 @@ void pcap_stream::open(const char* name, pgen::open_mode mode) {
             file_header.linktype = 0x00000001;
             write(&file_header, sizeof(file_header));
             break;
-
+        }
         case pgen::open_mode::pcap_read:
+        {
             fopen(name, "rb");
             read(&file_header, sizeof(file_header));
             break;
-
+        }
         default:
+        {
             throw pgen::exception("pgen::pcap_stream::open: unknown mode \n");
             break;
+        }
     }
 }
 
 
 
-void pcap_stream::close() {
+void pcap_stream::close() noexcept {
     this->fclose();
 }
 
@@ -58,7 +62,7 @@ struct pcap_packet_header {
 };
 
 
-size_t pcap_stream::send(const void* buf, size_t buflen) {
+void pcap_stream::send(const void* buf, size_t buflen) {
    
     struct pcap_packet_header ph;
     ph.timestamp_sec  = 0;
@@ -69,7 +73,6 @@ size_t pcap_stream::send(const void* buf, size_t buflen) {
     this->write(&ph, sizeof(ph));
     this->write(buf, buflen);
 
-    return buflen;
 }
 
 
@@ -87,8 +90,8 @@ size_t pcap_stream::recv(void* buf, size_t buflen) {
 }
 
 
-
-bool pcap_stream::eof() const {
+// TODO is this function noexcept?
+bool pcap_stream::eof() const noexcept {
     /*
      * FIXME
      * If below's code uncomment out, this function always

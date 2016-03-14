@@ -13,9 +13,11 @@ void callback(const void* buffer, size_t bufferlen) {
     pgen::packet_type t = pgen::module::detect(buffer, bufferlen); 
     if (t == pgen::packet_type::arp) {
         pgen::arp pack(buffer, bufferlen);
-        if (pack.ARP.operation == pgen::arp::operation::reply)
-            pack.ARP.summary(true);
-        // pgen::hex(buffer, bufferlen);
+        if (pack.ARP.operation == pgen::arp::operation::request) {
+            pgen::hex(buffer, bufferlen);
+            // pack.ARP.summary(true);
+            exit(1);
+        }
     }
 }
 
@@ -37,5 +39,6 @@ int main() {
         printf("%s \n", e.what());
     }
 }
+
 
 

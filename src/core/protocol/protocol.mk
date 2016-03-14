@@ -1,4 +1,0 @@
-
-
-
-SRC = ethernet.cc

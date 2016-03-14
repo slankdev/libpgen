@@ -71,7 +71,7 @@ void arp_header::write(void* buffer, size_t bufferlen) const {
         throw pgen::exception("pgen::arp_header::write: bufferlen is too small");
     }
 
-    struct arp_struct* p = (arp_struct*)buffer;
+    struct arp_struct* p = reinterpret_cast<arp_struct*>(buffer);
     p->hwtype = htons(hwtype);
     p->ptype  = htons(ptype);
     p->hwlen  = hwlen;
@@ -88,7 +88,7 @@ void arp_header::read(const void* buffer, size_t bufferlen) {
         throw pgen::exception("pgen::arp_header::read: bufferlen is too small");
     }
 
-    struct arp_struct* p = (arp_struct*)buffer;
+    const struct arp_struct* p = reinterpret_cast<const arp_struct*>(buffer);
     hwtype = ntohs(p->hwtype);
     ptype  = ntohs(p->ptype);
     hwlen  = p->hwlen;

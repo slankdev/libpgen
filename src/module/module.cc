@@ -16,9 +16,9 @@ namespace module {
 
 
 static pgen::packet_type detect_L4(uint8_t protocol, const void* buffer, size_t bufferlen) {
-    if (buffer == NULL || bufferlen == 0)
+    // ERASE
+    if (buffer == nullptr || bufferlen == 0)
         exit(-1);
-
     
     if (protocol == pgen::ipv4::protocol::icmp)
         return pgen::packet_type::icmp;
@@ -34,7 +34,7 @@ static pgen::packet_type detect_L4(uint8_t protocol, const void* buffer, size_t 
 pgen::packet_type detect(const void* buffer, size_t bufferlen) {
     pgen::packet_type type = pgen::packet_type::ethernet;
 
-    uint8_t* p = (uint8_t*)buffer;
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(buffer);
     pgen::ethernet_header eth;
     eth.read(p, bufferlen);
     p += eth.length();
