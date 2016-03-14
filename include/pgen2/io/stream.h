@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
-#include <pgen2/types.h>
+#include <vector>
 
 
 namespace pgen {
@@ -59,6 +59,7 @@ class base_stream {
 };
 
 
+
 class file_stream : public base_stream {
     protected:
         FILE* _fd;
@@ -74,6 +75,17 @@ class file_stream : public base_stream {
     public:
         file_stream();
         ~file_stream();
+};
+
+
+struct pcap_file_header {
+	uint32_t magic;
+	uint16_t version_major;
+	uint16_t version_minor;
+	uint32_t timezone;
+	uint32_t sigfigs;
+	uint32_t snaplen;
+	uint32_t linktype;
 };
 
 
@@ -98,11 +110,15 @@ class pcap_stream : public file_stream {
 class net_stream : public base_stream {
     private:
         int _fd;
+        std::vector<uint8_t> _buffer;
+        uint8_t* _buffer_point;
+        ssize_t _buffer_size_readed;
 
-        void open_netif(const char* name);
-        void ioctl_c(unsigned long l, const void* p);
-        void write(const void* buf, size_t buflen);
-        size_t read(void* buf, size_t buflen);
+        void open_netif(const char* name, size_t buffer_size=0);
+
+        void ioctl(unsigned long l, void* p);
+        ssize_t write(const void* buffer, size_t bufferlen);
+        ssize_t read(void* buffer, size_t bufferlen);
     public:
 
         net_stream();
@@ -111,8 +127,8 @@ class net_stream : public base_stream {
 
         void open(const char* name, pgen::open_mode);
         void close();
-        size_t send(const void* buf, size_t buflen);
-        size_t recv(void* buf, size_t buflen);
+        size_t send(const void* buffer, size_t bufferlen);
+        size_t recv(void* buffer, size_t bufferlen);
 };
 
 

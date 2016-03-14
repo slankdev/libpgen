@@ -2,7 +2,6 @@
 
 
 #include <pgen2/io/stream.h>
-#include <pgen2/types.h>
 #include <pgen2/exception.h>
 
 #include <stdio.h>
@@ -51,9 +50,17 @@ void pcap_stream::close() {
 }
 
 
+struct pcap_packet_header {
+    uint32_t timestamp_sec;
+    uint32_t timestamp_usec;
+    uint32_t include_len;
+    uint32_t original_len;
+};
+
+
 size_t pcap_stream::send(const void* buf, size_t buflen) {
    
-    struct pgen::pcap_packet_headr ph;
+    struct pcap_packet_header ph;
     ph.timestamp_sec  = 0;
     ph.timestamp_usec = 0;
     ph.include_len    = buflen;
@@ -65,9 +72,10 @@ size_t pcap_stream::send(const void* buf, size_t buflen) {
     return buflen;
 }
 
+
 size_t pcap_stream::recv(void* buf, size_t buflen) {
     
-    struct pgen::pcap_packet_headr ph;
+    struct pcap_packet_header ph;
     this->fread(&ph, sizeof(ph));
     
     if (buflen < ph.original_len) {
