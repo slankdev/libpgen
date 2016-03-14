@@ -114,7 +114,6 @@ void net_stream::ioctl(unsigned long l, void* p) {
 
 
 void net_stream::open(const char* name, pgen::open_mode mode) {
-
     if (mode == pgen::open_mode::netif) {
         this->open_netif(name);
     } else {
@@ -148,12 +147,13 @@ struct bpf_header {
  * has potential that getting speed up.
  */
 size_t net_stream::recv(void* buffer, size_t bufferlen) {
-    if (_buffer_point == NULL) {
+    if (_buffer_point == nullptr) {
         _buffer_size_readed = read(_buffer.data(), _buffer.size());
         _buffer_point = _buffer.data();
     }
 
-    struct bpf_header* bh = (bpf_header*)_buffer_point;
+    struct bpf_header* bh = reinterpret_cast<bpf_header*>(_buffer_point);
+
     size_t copylen = bh->caplen;
     if (bufferlen < bh->caplen)
         copylen = bufferlen;

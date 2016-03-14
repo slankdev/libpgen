@@ -72,6 +72,8 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
     if(getifaddrs(&ifap) != 0){
         throw pgen::exception("pgen::arch::getmacbydev:getifaddrs: undefined error");
     }
+
+    // TODO this codes has some casting
     for(ifaptr = ifap; ifaptr != NULL; ifaptr = (ifaptr)->ifa_next) {
         if (!strcmp((ifaptr)->ifa_name, dev) && 
                 (((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
@@ -96,7 +98,6 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
 
     int sockd;
     struct ifreq ifr;
-    struct sockaddr_in *sa;
 
     if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
         throw pgen::exception("pgen::arch::getipv4bydev:socket: ");
@@ -108,7 +109,7 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
         throw pgen::exception("pgen::arch::getipv4bydev:ioctl: ");
     }
     close(sockd);
-    sa = (struct sockaddr_in*)&ifr.ifr_addr;
+    struct sockaddr_in* sa = reinterpret_cast<struct sockaddr_in*>(&ifr.ifr_addr);
     memcpy(ip, &(sa->sin_addr.s_addr), sizeof(uint32_t));
 }
 
@@ -133,6 +134,8 @@ void getipv6bydev(const char* dev, uint16_t ip[8]) {
                 continue;
             } else {
                 if (ifa->ifa_addr->sa_family == AF_INET6) { 
+
+                    // TODO this is complex casting code
                     tmp = &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
                     memcpy(ip, tmp, sizeof(struct in6_addr));
                     freeifaddrs(if_list);

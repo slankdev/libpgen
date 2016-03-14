@@ -71,7 +71,7 @@ void ipv6_header::write(void* buffer, size_t bufferlen) const {
     }
 
     
-    struct ipv6_struct* p = (ipv6_struct*)buffer;
+    struct ipv6_struct* p = reinterpret_cast<ipv6_struct*>(buffer);
     p->version = version;
     p->trafic_class1 = 0;
     p->trafic_class2 = 0;
@@ -92,7 +92,7 @@ void ipv6_header::read(const void* buffer, size_t bufferlen) {
                 "pgen::ipv6_header::read: bufferlen is too small");
     }
 
-    struct ipv6_struct* p = (ipv6_struct*)buffer;
+    const struct ipv6_struct* p = reinterpret_cast<const ipv6_struct*>(buffer);
     version      = p->version;
     trafic_class = 0;
     flow_level   = 0;

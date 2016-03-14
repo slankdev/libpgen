@@ -17,8 +17,7 @@ namespace pgen {
 
 uint16_t checksum(const void *data, size_t len){
   uint32_t sum = 0; 
-  // const uint16_t* _data = (const uint16_t*)data;
-  const uint16_t* _data = (const uint16_t*)data;
+  const uint16_t* _data = reinterpret_cast<const uint16_t*>(data);
 
   for (; len > 1; len -= 2) {
     sum += *_data++;
@@ -28,7 +27,7 @@ uint16_t checksum(const void *data, size_t len){
 
   if (len == 1) {
     uint16_t i = 0;
-    *(uint8_t*) (&i) = *(uint8_t*) _data;
+    *(uint8_t*) (&i) = *(uint8_t*) _data; // TODO malformed codes
     sum += i;
   }
 
@@ -45,7 +44,7 @@ void hex(const void* buffer, size_t bufferlen) {
 
     printf("hexdump len: %lu \n", bufferlen);
 
-    const uint8_t* data = (const uint8_t*)buffer;
+    const uint8_t* data = reinterpret_cast<const uint8_t*>(buffer);
 
     size_t row=0;
     size_t column=0;
@@ -55,7 +54,7 @@ void hex(const void* buffer, size_t bufferlen) {
                 printf("   ");
                 if((row+column)%8  == 0 && (row+column)%16 != 0) printf(" ");
             }else{
-                if((row+column)%16 == 0) printf("%04x:    ", (unsigned int)(row+column));
+                if((row+column)%16 == 0) printf("%04x:    ", static_cast<unsigned int>(row+column));
                 if((row+column)%8  == 0 && (row+column)%16 != 0) printf(" ");
                 printf("%02x ", data[row+column]);
             }
@@ -96,7 +95,7 @@ void bin(const void* buffer, size_t bufferlen) {
         uint8_t b6:1;
         uint8_t b7:1;
     };
-    const uint8_t* p0 = (const uint8_t*)buffer;
+    const uint8_t* p0 = reinterpret_cast<const uint8_t*>(buffer);
     for (size_t i=0; i<bufferlen; i++) {
         bits* b = (bits*)p0;
         printf("%d%d%d%d%d%d%d%d ", 

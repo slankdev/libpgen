@@ -21,6 +21,7 @@ pcap_stream::pcap_stream(const char* name, pgen::open_mode mode) : pcap_stream()
 void pcap_stream::open(const char* name, pgen::open_mode mode) {
     switch (mode) {
         case pgen::open_mode::pcap_write:
+        {
             fopen(name, "wb");
             file_header.magic = 0xa1b2c3d4;
             file_header.version_major = 0x0002;
@@ -31,15 +32,18 @@ void pcap_stream::open(const char* name, pgen::open_mode mode) {
             file_header.linktype = 0x00000001;
             write(&file_header, sizeof(file_header));
             break;
-
+        }
         case pgen::open_mode::pcap_read:
+        {
             fopen(name, "rb");
             read(&file_header, sizeof(file_header));
             break;
-
+        }
         default:
+        {
             throw pgen::exception("pgen::pcap_stream::open: unknown mode \n");
             break;
+        }
     }
 }
 

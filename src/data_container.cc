@@ -17,7 +17,8 @@ data_container::data_container(size_t pivot) : _pivot(pivot) {
 }
 
 uint8_t* data_container::data() const {
-    return (uint8_t*)_vec.data();       
+    // TODO is this code OK ?
+    return const_cast<uint8_t*>(_vec.data());
 }
 
 size_t data_container::size() const {
@@ -34,14 +35,14 @@ void data_container::write_before(size_t index, const void* buf, size_t buflen) 
 
     std::vector<uint8_t>::iterator it = _vec.begin();
     it += index - buflen;
-    uint8_t* p = (uint8_t*)buf;
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(buf);
     for (size_t i=0; i<buflen; ++i, ++it)
         *it = p[i];
 }
 
 void data_container::set_content(const void* buf, size_t buflen) {
     delete_content();
-    _vec.insert(_vec.end(), (uint8_t*)buf, (uint8_t*)buf+buflen);
+    _vec.insert(_vec.end(), reinterpret_cast<const uint8_t*>(buf), reinterpret_cast<const uint8_t*>(buf) + buflen);
 }
 
 void data_container::delete_content() {
