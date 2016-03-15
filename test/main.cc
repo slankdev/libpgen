@@ -24,6 +24,12 @@ void callback(const void* buffer, size_t bufferlen) {
 
 int main() {
     try {
+        pgen::arp pack;
+        pack.compile();
+        pack.ARP.summary(true);
+        pack.hex();
+        return 1;
+
 
         pgen::net_stream net(dev, pgen::open_mode::netif);
         while (1) {
