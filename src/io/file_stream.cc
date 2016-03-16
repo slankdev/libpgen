@@ -68,4 +68,20 @@ void file_stream::fflush() const {
 
 
 
+
+bool file_stream::eof() const noexcept { // TODO is this function noexcept?
+    /*
+     * FIXME
+     * If below's code uncomment out, this function always
+     * throw exception. Please help...
+     */
+    return this->feof();
+}
+
+
+void file_stream::flush() const {
+    this->fflush();
+}
+
+
 };
