@@ -47,7 +47,7 @@ uint16_t checksum(const void *data, size_t len) noexcept {
  * I'll do my best more.
  */
 void hex(const void *buffer, size_t bufferlen) noexcept {
-    printf("hexdump len: %zu \n", bufferlen);
+    // printf("hexdump len: %zu \n", bufferlen); // ERASE
     const uint8_t *data = reinterpret_cast<const uint8_t*>(buffer);
     size_t row = 0;
     while (bufferlen > 0) {
