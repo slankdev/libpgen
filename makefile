@@ -36,6 +36,7 @@ IO_SRC = \
 	src/io/stream.cc \
 	src/io/file_stream.cc \
 	src/io/pcap_stream.cc \
+	src/io/pcapng_stream.cc \
 	src/io/net_stream.cc
 
 CORE_SRC = \

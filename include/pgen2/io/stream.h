@@ -108,6 +108,19 @@ class pcap_stream : public file_stream {
 };
 
 
+// class pcapng_stream : public file_stream {
+//     public:
+//
+//         void open(const char* name, pgen::open_mode _mode);
+//         void close();
+//         size_t send(const void* buf, size_t buflen);
+//         size_t recv(void* buf, size_t buflen);
+//
+//         bool eof() const;
+//         void flush() const;
+// };
+
+
 class net_stream : public base_stream {
     private:
         int _fd;
@@ -133,17 +146,6 @@ class net_stream : public base_stream {
 };
 
 
-// class pcapng_stream : public file_stream {
-//     public:
-//
-//         void open(const char* name, pgen::open_mode _mode);
-//         void close();
-//         size_t send(const void* buf, size_t buflen);
-//         size_t recv(void* buf, size_t buflen);
-//
-//         bool eof() const;
-//         void flush() const;
-// };
 
 
 
