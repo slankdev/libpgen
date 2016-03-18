@@ -27,25 +27,32 @@ struct pcapng_type {
  * when need new block class.
  **/
 class pcapng_block {
+    
     protected:
-        void read_opt_from(const void* buffer, size_t optlen);
-        void read_blocktail(const void* buffer) const ;
-        void write_blocktail(void* buffer) const ;
+        virtual size_t impl_length() const = 0;
+        virtual void read_impl(const void* buffer) = 0;
+        virtual void write_impl(void* buffer) const = 0;
 
     public:
         uint32_t type;
         uint32_t total_length;
         std::vector<uint8_t> option;
 
+        void read(const void* buffer, size_t bufferlen);
+        void write(void* buffer, size_t bufferlen) const;
         virtual void summary(bool moreinfo=true) = 0;
-        virtual void read(const void* buffer, size_t bufferlen) = 0;
-        virtual void write(void* buffer, size_t bufferlen) const = 0;
+
 };
 
 
 
-
 class pcapng_SHB : public pcapng_block {
+
+    protected:
+        size_t impl_length() const override;
+        void read_impl(const void* buffer) override;
+        void write_impl(void* buffer) const override;
+
     public:
         uint32_t magic;
         uint16_t version_major;
@@ -54,23 +61,22 @@ class pcapng_SHB : public pcapng_block {
 
         pcapng_SHB();
         void summary(bool moreinfo=true) override;
-        void read(const void* buffer, size_t bufferlen) override;
-        void write(void* buffer, size_t bufferlen) const override;
+
 };
 
 
 
-class pcapng_IDB : public pcapng_block {
-    public:
-        uint16_t link_type;
-        uint16_t reserved;
-        uint32_t snap_length;
-
-        pcapng_IDB();
-        void summary(bool moreinfo=true) override;
-        void read(const void* buffer, size_t bufferlen) override;
-        void write(void* buffer, size_t bufferlen) const override;
-};
+// class pcapng_IDB : public pcapng_block {
+//     public:
+//         uint16_t link_type;
+//         uint16_t reserved;
+//         uint32_t snap_length;
+//
+//         pcapng_IDB();
+//         void summary(bool moreinfo=true) override;
+//         void read(const void* buffer, size_t bufferlen) override;
+//         void write(void* buffer, size_t bufferlen) const override;
+// };
 
 
 

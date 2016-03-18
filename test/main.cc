@@ -24,10 +24,10 @@ int main() {
         fwrite(buf, h.total_length, 1, fp );
         pgen::hex(buf, h.total_length);
     
-        pgen::pcapng_IDB i;
-        i.write(buf, sizeof buf);
-        fwrite(buf, i.total_length, 1, fp );
-        pgen::hex(buf, i.total_length);
+        // pgen::pcapng_IDB i;
+        // i.write(buf, sizeof buf);
+        // fwrite(buf, i.total_length, 1, fp );
+        // pgen::hex(buf, i.total_length);
 
 
         fclose(fp);
