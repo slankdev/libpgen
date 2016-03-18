@@ -62,9 +62,10 @@ class pcapng_IDB : public pcapng_block {
         uint32_t snap_length;
         std::vector<uint8_t> option;
 
+        pcapng_IDB();
         void summary(bool moreinfo=true) override;
-        // void read(const void* buffer, size_t bufferlen) override;
-        // void write(void* buffer, size_t bufferlen) const override;
+        void read(const void* buffer, size_t bufferlen) override;
+        void write(void* buffer, size_t bufferlen) const override;
 };
 
 

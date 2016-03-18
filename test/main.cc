@@ -16,17 +16,20 @@ using std::endl;
 
 int main() {
     try {
+        FILE *fp = fopen("out.pcapng", "wb");
         uint8_t buf[1000];
 
         pgen::pcapng_SHB h;
-        cout << h.option.size() << endl;
         h.write(buf, sizeof buf);
-    
-
-        pgen::hex(buf, h.total_length);
-        
-        FILE *fp = fopen("out.pcapng", "wb");
         fwrite(buf, h.total_length, 1, fp );
+        pgen::hex(buf, h.total_length);
+    
+        pgen::pcapng_IDB i;
+        i.write(buf, sizeof buf);
+        fwrite(buf, i.total_length, 1, fp );
+        pgen::hex(buf, i.total_length);
+
+
         fclose(fp);
 
 
