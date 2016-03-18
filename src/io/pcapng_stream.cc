@@ -76,6 +76,33 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
 }
 
 
+
+
+void pcapng_block::write_head(void* buffer, size_t bufferlen) const {
+    if (bufferlen < sizeof(pcapng_block_head))
+        throw pgen::exception("pgen::pcapng_block::write_head: bufferlen is too small");
+    struct pcapng_block_head* pcapng_head = 
+        reinterpret_cast<pcapng_block_head*>(buffer);
+    pcapng_head->type = type;
+    pcapng_head->total_length = total_length;
+}
+
+
+void pcapng_block::write_option(void* buffer, size_t bufferlen) const {
+    if (bufferlen < option.size())
+        throw pgen::exception("pgen::pcapng_block::write_option: bufferlen is too small");
+    memcpy(buffer, option.data(), option.size());
+}
+
+
+void pcapng_block::write_tail(void* buffer, size_t bufferlen) const {
+    if (bufferlen < sizeof(pcapng_block_tail))
+        throw pgen::exception("pgen::pcapng_block::write_tail: bufferlen is too small");
+    struct pcapng_block_tail* pcapng_tail = reinterpret_cast<pcapng_block_tail*>(buffer);
+    pcapng_tail->total_length   = total_length;
+}
+
+
 void pcapng_block::write(void* buffer, size_t bufferlen) const {
     if (bufferlen < total_length) 
         throw pgen::exception("pgen::pcapng_SHB::write: buffer length is too small");
@@ -83,12 +110,7 @@ void pcapng_block::write(void* buffer, size_t bufferlen) const {
     uint8_t* buffer_pointer = reinterpret_cast<uint8_t*>(buffer);
     size_t buffer_length = bufferlen;
 
-    if (buffer_length < sizeof(pcapng_block_head))
-        throw pgen::exception("pgen::pcapng_block::write: bufferlen is too small");
-    struct pcapng_block_head* pcapng_head = 
-        reinterpret_cast<pcapng_block_head*>(buffer_pointer);
-    pcapng_head->type = type;
-    pcapng_head->total_length = total_length;
+    write_head(buffer_pointer, buffer_length);
     buffer_pointer += sizeof(pcapng_block_head);
     buffer_length -= sizeof(pcapng_block_head);
 
@@ -96,16 +118,11 @@ void pcapng_block::write(void* buffer, size_t bufferlen) const {
     buffer_pointer += impl_length();
     buffer_length -= impl_length();
 
-    if (buffer_length < option.size())
-        throw pgen::exception("pgen::pcapng_block::write: bufferlen is too small");
-    memcpy(buffer_pointer, option.data(), option.size());
+    write_option(buffer_pointer, buffer_length);
     buffer_pointer += option.size();
     buffer_length -= option.size();
 
-    if (buffer_length < sizeof(pcapng_block_tail))
-        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
-    struct pcapng_block_tail* pcapng_tail = reinterpret_cast<pcapng_block_tail*>(buffer_pointer);
-    pcapng_tail->total_length   = total_length;
+    write_tail(buffer_pointer, buffer_length);
     buffer_pointer += sizeof(pcapng_block_tail);
     buffer_length -= sizeof(pcapng_block_tail);
 

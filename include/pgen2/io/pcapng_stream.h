@@ -31,6 +31,9 @@ class pcapng_block {
         void read_head(const void* buffer, size_t bufferlen);
         void read_option(const void* buffer, size_t bufferlen);
         void read_tail(const void* buffer, size_t bufferlen);
+        void write_head(void* buffer, size_t bufferlen) const;
+        void write_option(void* buffer, size_t bufferlen) const;
+        void write_tail(void* buffer, size_t bufferlen) const;
 
     protected:
         virtual size_t impl_length() const = 0;
@@ -46,6 +49,8 @@ class pcapng_block {
         void write(void* buffer, size_t bufferlen) const;
         virtual void summary(bool moreinfo=true) const = 0;
 };
+
+
 
 class pcapng_SHB : public pcapng_block {
     protected:
@@ -63,6 +68,8 @@ class pcapng_SHB : public pcapng_block {
         void summary(bool moreinfo=true) const override;
 };
 
+
+
 class pcapng_IDB : public pcapng_block {
     protected:
         size_t impl_length() const override;
@@ -77,6 +84,8 @@ class pcapng_IDB : public pcapng_block {
         pcapng_IDB();
         void summary(bool moreinfo=true) const override;
 };
+
+
 
 class pcapng_EPB : public pcapng_block {
     protected:
