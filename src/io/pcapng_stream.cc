@@ -10,10 +10,30 @@
 
 namespace pgen {
 
+
+
 struct pcapng_block_tail {
     uint32_t total_length;
 };
 
+void pcapng_block::read_opt_from(const void* buffer, size_t optlen) {
+    option.resize(optlen);
+    memcpy(option.data(), buffer, optlen);
+}
+
+void pcapng_block::read_blocktail(const void* buffer) const {
+    const struct pcapng_block_tail* pcapng_tail = 
+        reinterpret_cast<const pcapng_block_tail*>(buffer);
+    uint32_t total_length2   = pcapng_tail->total_length;
+
+    if (total_length2 != total_length) 
+        throw pgen::exception("pgen::pcapng_block::read_blocktail: read block error");
+}
+
+void pcapng_block::write_blocktail(void* buffer) const {
+    struct pcapng_block_tail* pcapng_tail = reinterpret_cast<pcapng_block_tail*>(buffer);
+    pcapng_tail->total_length   = total_length;
+}
 
 
 
@@ -31,7 +51,9 @@ struct shb_struct {
 
 pcapng_SHB::pcapng_SHB() {
     type = pgen::pcapng_type::SHB;
-    total_length = option.size() + sizeof(struct shb_struct) + sizeof(struct pcapng_block_tail);
+    total_length = option.size() + 
+        sizeof(struct shb_struct) + 
+        sizeof(struct pcapng_block_tail);
     magic = 0x1a2b3c4d;
     version_major = 0x0001;
     version_minor = 0x0000;
@@ -55,7 +77,6 @@ void pcapng_SHB::summary(bool moreinfo) {
 void pcapng_SHB::read(const void* buffer, size_t bufferlen) {
     if (bufferlen < sizeof(struct shb_struct)+sizeof(struct pcapng_block_tail)) 
         throw pgen::exception("pgen::pcapng_SHB::read: buffer length is too small");
-
     const uint8_t* buffer_pointer = reinterpret_cast<const uint8_t*>(buffer);
 
     const struct shb_struct* shb = 
@@ -71,14 +92,11 @@ void pcapng_SHB::read(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::SHB)
         throw pgen::exception("pgen::pcapng_SHB::read: this is not SHB");
 
-    option.resize(total_length);
-    assert(total_length == option.size()); // TODO is this needed?
-    memcpy(option.data(), buffer_pointer, total_length);
+    read_opt_from(buffer_pointer, 
+            total_length - sizeof(shb_struct) - sizeof(pcapng_block_tail));
     buffer_pointer += option.size();
 
-    const struct pcapng_block_tail* pcapng_tail = 
-        reinterpret_cast<const pcapng_block_tail*>(buffer_pointer);
-    total_length   = pcapng_tail->total_length;
+    read_blocktail(buffer_pointer);
     buffer_pointer += sizeof(struct pcapng_block_tail);
 
     if (buffer_pointer - reinterpret_cast<const uint8_t*>(buffer) != total_length) 
@@ -104,8 +122,7 @@ void pcapng_SHB::write(void* buffer, size_t bufferlen) const {
     memcpy(buffer_pointer, option.data(), option.size());
     buffer_pointer += option.size();
 
-    struct pcapng_block_tail* pcapng_tail = reinterpret_cast<pcapng_block_tail*>(buffer_pointer);
-    pcapng_tail->total_length   = total_length;
+    write_blocktail(buffer_pointer);
     buffer_pointer += sizeof(struct pcapng_block_tail);
 
     if (buffer_pointer - reinterpret_cast<uint8_t*>(buffer) != total_length)
@@ -166,21 +183,16 @@ void pcapng_IDB::read(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::IDB)
         throw pgen::exception("pgen::pcapng_IDB::read: this is not IDB");
 
-    option.resize(total_length);
-    assert(total_length == option.size()); // TODO is this needed?
-    memcpy(option.data(), buffer_pointer, total_length);
+    read_opt_from(buffer_pointer, 
+            total_length - sizeof(shb_struct) - sizeof(pcapng_block_tail));
     buffer_pointer += option.size();
 
-    const struct pcapng_block_tail* pcapng_tail = 
-        reinterpret_cast<const pcapng_block_tail*>(buffer_pointer);
-    total_length   = pcapng_tail->total_length;
+    read_blocktail(buffer_pointer);
     buffer_pointer += sizeof(struct pcapng_block_tail);
 
     if (buffer_pointer - reinterpret_cast<const uint8_t*>(buffer) != total_length) 
         throw pgen::exception("pgen::pcapng_IDB::read: length error");
 }
-
-
 
 void pcapng_IDB::write(void* buffer, size_t bufferlen) const {
     if (bufferlen < sizeof(struct idb_struct)+sizeof(struct pcapng_block_tail)) 
@@ -199,14 +211,12 @@ void pcapng_IDB::write(void* buffer, size_t bufferlen) const {
     memcpy(buffer_pointer, option.data(), option.size());
     buffer_pointer += option.size();
 
-    struct pcapng_block_tail* pcapng_tail = reinterpret_cast<pcapng_block_tail*>(buffer_pointer);
-    pcapng_tail->total_length   = total_length;
+    write_blocktail(buffer_pointer);
     buffer_pointer += sizeof(struct pcapng_block_tail);
 
     if (buffer_pointer - reinterpret_cast<const uint8_t*>(buffer) != total_length) 
         throw pgen::exception("pgen::pcapng_IDB::write: length error");
 }
-
 
 
 

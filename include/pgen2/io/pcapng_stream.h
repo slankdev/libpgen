@@ -11,12 +11,12 @@ namespace pgen {
 
 
 struct pcapng_type {
-    static const uint32_t SHB = 0x0a0d0d0a;  /**< Section Header block        */
-    static const uint32_t IDB = 0x00000001;  /**< interface description block */
-    static const uint32_t SPB = 0x00000003;  /**< Simple Packet block         */
-    static const uint32_t NRB = 0x00000004;  /**< Name Resorution Block       */
-    static const uint32_t ISB = 0x00000005;  /**< Interface Statistic block   */
-    static const uint32_t EPB = 0x00000006;  /**< Enhanced Packet block       */
+    static const uint32_t SHB = 0x0a0d0d0a;/**< Section Header block        */
+    static const uint32_t IDB = 0x00000001;/**< interface description block */
+    static const uint32_t SPB = 0x00000003;/**< Simple Packet block         */
+    static const uint32_t NRB = 0x00000004;/**< Name Resorution Block       */
+    static const uint32_t ISB = 0x00000005;/**< Interface Statistic block   */
+    static const uint32_t EPB = 0x00000006;/**< Enhanced Packet block       */
 };
 
 
@@ -27,9 +27,15 @@ struct pcapng_type {
  * when need new block class.
  **/
 class pcapng_block {
+    protected:
+        void read_opt_from(const void* buffer, size_t optlen);
+        void read_blocktail(const void* buffer) const ;
+        void write_blocktail(void* buffer) const ;
+
     public:
         uint32_t type;
         uint32_t total_length;
+        std::vector<uint8_t> option;
 
         virtual void summary(bool moreinfo=true) = 0;
         virtual void read(const void* buffer, size_t bufferlen) = 0;
@@ -45,7 +51,6 @@ class pcapng_SHB : public pcapng_block {
         uint16_t version_major;
         uint16_t version_minor;
         uint32_t section_length[2];
-        std::vector<uint8_t> option;
 
         pcapng_SHB();
         void summary(bool moreinfo=true) override;
@@ -60,7 +65,6 @@ class pcapng_IDB : public pcapng_block {
         uint16_t link_type;
         uint16_t reserved;
         uint32_t snap_length;
-        std::vector<uint8_t> option;
 
         pcapng_IDB();
         void summary(bool moreinfo=true) override;
