@@ -39,18 +39,34 @@ class pcapng_block {
 
 
 
-class pcapng_SHB : public pcapng_block{
+class pcapng_SHB : public pcapng_block {
     public:
         uint32_t magic;
         uint16_t version_major;
         uint16_t version_minor;
-        uint32_t section_length;
+        uint32_t section_length[2];
         std::vector<uint8_t> option;
 
+        pcapng_SHB();
         void summary(bool moreinfo=true) override;
         void read(const void* buffer, size_t bufferlen) override;
         void write(void* buffer, size_t bufferlen) const override;
 };
+
+
+
+class pcapng_IDB : public pcapng_block {
+    public:
+        uint16_t link_type;
+        uint16_t reserved;
+        uint32_t snap_length;
+        std::vector<uint8_t> option;
+
+        void summary(bool moreinfo=true) override;
+        // void read(const void* buffer, size_t bufferlen) override;
+        // void write(void* buffer, size_t bufferlen) const override;
+};
+
 
 
 

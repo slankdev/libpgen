@@ -1,6 +1,7 @@
 
 
 
+#include <iostream>
 #include <pgen2.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -8,31 +9,27 @@
 const char* dev = "en0";
 const char* out = "out.pcap";
 
+using std::cout;
+using std::endl;
 
-void callback(const void* buffer, size_t bufferlen) {
-    pgen::packet_type t = pgen::module::detect(buffer, bufferlen); 
-    if (t == pgen::packet_type::arp) {
-        pgen::arp pack(buffer, bufferlen);
-        if (pack.ARP.operation == pgen::arp::operation::request) {
-            pgen::hex(buffer, bufferlen);
-            // pack.ARP.summary(true);
-            exit(1);
-        }
-    }
-}
 
 
 int main() {
     try {
+        uint8_t buf[1000];
 
-        pgen::net_stream net(dev, pgen::open_mode::netif);
-        while (1) {
+        pgen::pcapng_SHB h;
+        cout << h.option.size() << endl;
+        h.write(buf, sizeof buf);
+    
 
-            uint8_t buf[10000];
-            size_t recvlen = net.recv(buf, sizeof buf);
+        pgen::hex(buf, h.total_length);
+        
+        FILE *fp = fopen("out.pcapng", "wb");
+        fwrite(buf, h.total_length, 1, fp );
+        fclose(fp);
 
-            callback(buf, recvlen);
-        }
+
 
 
     } catch (std::exception& e) {
