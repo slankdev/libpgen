@@ -73,7 +73,6 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
         throw pgen::exception("pgen::arch::getmacbydev:getifaddrs: undefined error");
     }
 
-    // TODO this codes has some casting
     for(ifaptr = ifap; ifaptr != nullptr; ifaptr = (ifaptr)->ifa_next) {
         if (!strcmp((ifaptr)->ifa_name, dev) && 
                 (((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {

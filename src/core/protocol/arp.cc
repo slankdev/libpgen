@@ -101,11 +101,6 @@ void arp_header::read(const void* buffer, size_t bufferlen) {
 }
 
 size_t arp_header::length() const {
-    /* 
-     * TODO hard coding about pgen::arp_header::length()
-     * This function is hard coded. if not ethernet and ip's ARP,
-     * packet length is not same to usualy ARP packet.
-     */
     return min_length;
 }
 

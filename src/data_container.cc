@@ -17,7 +17,6 @@ data_container::data_container(size_t pivot) : _pivot(pivot) {
 }
 
 uint8_t* data_container::data() const noexcept {
-    // TODO is this code OK ?
     return const_cast<uint8_t*>(_vec.data());
 }
 
