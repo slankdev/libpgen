@@ -33,7 +33,7 @@ class pcapng_block {
 
         virtual void summary(bool moreinfo=true) = 0;
         virtual void read(const void* buffer, size_t bufferlen) = 0;
-        virtual void write(void* buffer, size_t bufferlen) = 0;
+        virtual void write(void* buffer, size_t bufferlen) const = 0;
 };
 
 
@@ -47,9 +47,9 @@ class pcapng_SHB : public pcapng_block{
         uint32_t section_length;
         std::vector<uint8_t> option;
 
-        void summary(bool moreinfo=true);
-        void read(const void* buffer, size_t bufferlen);
-        void write(void* buffer, size_t bufferlen);
+        void summary(bool moreinfo=true) override;
+        void read(const void* buffer, size_t bufferlen) override;
+        void write(void* buffer, size_t bufferlen) const override;
 };
 
 
