@@ -27,7 +27,6 @@ struct pcapng_type {
  * when need new block class.
  **/
 class pcapng_block {
-    
     protected:
         virtual size_t impl_length() const = 0;
         virtual void read_impl(const void* buffer) = 0;
@@ -41,13 +40,9 @@ class pcapng_block {
         void read(const void* buffer, size_t bufferlen);
         void write(void* buffer, size_t bufferlen) const;
         virtual void summary(bool moreinfo=true) const = 0;
-
 };
 
-
-
 class pcapng_SHB : public pcapng_block {
-
     protected:
         size_t impl_length() const override;
         void read_impl(const void* buffer) override;
@@ -61,13 +56,9 @@ class pcapng_SHB : public pcapng_block {
 
         pcapng_SHB();
         void summary(bool moreinfo=true) const override;
-
 };
 
-
-
 class pcapng_IDB : public pcapng_block {
-
     protected:
         size_t impl_length() const override;
         void read_impl(const void* buffer) override;
@@ -82,6 +73,25 @@ class pcapng_IDB : public pcapng_block {
         void summary(bool moreinfo=true) const override;
 };
 
+class pcapng_EPB : public pcapng_block {
+    protected:
+        size_t impl_length() const override;
+        void read_impl(const void* buffer) override;
+        void write_impl(void* buffer) const override;
+
+    public:
+        uint32_t interface_id;
+        uint32_t timestamp_high;
+        uint32_t timestamp_low;
+        uint32_t capture_length;
+        uint32_t packet_length;
+
+        const uint8_t* packet_data_pointer;
+        void set_packet(const void* packet, size_t packetlen);
+    
+        pcapng_EPB();
+        void summary(bool moreinfo=true) const override;
+};
 
 
 

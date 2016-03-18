@@ -215,6 +215,89 @@ void pcapng_IDB::write_impl(void* buffer) const {
 
 
 
+struct epb_struct {
+    uint32_t interface_id;
+    uint32_t timestamp_high;
+    uint32_t timestamp_low;
+    uint32_t capture_length;
+    uint32_t packet_length;
+};
+
+pcapng_EPB::pcapng_EPB() {
+    type = pgen::pcapng_type::EPB;
+    total_length = 
+        sizeof(pcapng_block_head) +
+        sizeof(epb_struct)        +
+        option.size()             +
+        sizeof(pcapng_block_tail);
+    interface_id = 0; // TODO hard code
+    timestamp_high = 0; // TODO hard code
+    timestamp_low  = 0;  //  TODO hard code
+    capture_length = 0;
+    packet_length  = 0;
+}
+
+size_t pcapng_EPB::impl_length() const {
+    size_t bodysize = sizeof(struct epb_struct) + capture_length;
+    // [OR] return sizeof(struct epb_struct) + packet_length;
+   
+    int a = bodysize % sizeof(uint32_t);
+    if (a != 0)
+        bodysize += sizeof(uint32_t)-a;
+
+    return bodysize;
+}
+
+void pcapng_EPB::summary(bool moreinfo) const {
+    printf("Enhanced Packet Block \n");
+    if (moreinfo) {
+        printf("Not implemented yet \n");
+    }
+}
+
+void pcapng_EPB::read_impl(const void* buffer) {
+    // if (buffer < total_length - 
+    //         sizeof(pcapng_block_head) - 
+    //         sizeof(pcapng_block_tail) -
+    //         sizeof(epb_struct)) {
+    //     throw pgen::exception("pgen::pcapng_EPB::read_impl: buffer");
+    // }
+
+    if (buffer == NULL) {
+        puts("asdfafasdf");
+        exit(-1);
+    }
+    printf("notimplement yet\n");
+    
+}
+
+void pcapng_EPB::write_impl(void* buffer) const {
+    struct epb_struct* epb = reinterpret_cast<epb_struct*>(buffer);
+    epb->interface_id   = interface_id;
+    epb->timestamp_high = timestamp_high;
+    epb->timestamp_low  = timestamp_low;
+    epb->capture_length = capture_length;
+    epb->packet_length  = packet_length;
+
+    memcpy(reinterpret_cast<uint8_t*>(buffer)+sizeof(epb_struct), 
+            packet_data_pointer, capture_length);
+}
+
+void pcapng_EPB::set_packet(const void* packet, size_t packetlen) {
+    packet_data_pointer = reinterpret_cast<const uint8_t*>(packet);
+
+    capture_length = packetlen;
+    packet_length  = packetlen;
+
+    int a = packetlen % sizeof(uint32_t);
+    if (a != 0)
+        total_length += packetlen + (sizeof(uint32_t)-a);
+    else
+        total_length += packetlen;
+
+}
+
+
 
 
 } /* namespace pgen */

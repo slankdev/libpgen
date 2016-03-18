@@ -29,10 +29,17 @@ int main() {
         fwrite(buf, i.total_length, 1, fp );
         pgen::hex(buf, i.total_length);
 
+        pgen::arp pack;
+        pack.compile();
+
+        pgen::pcapng_EPB e;
+        e.set_packet(pack.raw(), pack.length());
+        e.write(buf, sizeof buf);
+        fwrite(buf, e.total_length, 1, fp );
+        pgen::hex(buf, e.total_length);
+
 
         fclose(fp);
-
-
 
 
     } catch (std::exception& e) {
