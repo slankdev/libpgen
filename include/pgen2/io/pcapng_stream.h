@@ -40,7 +40,7 @@ class pcapng_block {
 
         void read(const void* buffer, size_t bufferlen);
         void write(void* buffer, size_t bufferlen) const;
-        virtual void summary(bool moreinfo=true) = 0;
+        virtual void summary(bool moreinfo=true) const = 0;
 
 };
 
@@ -60,23 +60,27 @@ class pcapng_SHB : public pcapng_block {
         uint32_t section_length[2];
 
         pcapng_SHB();
-        void summary(bool moreinfo=true) override;
+        void summary(bool moreinfo=true) const override;
 
 };
 
 
 
-// class pcapng_IDB : public pcapng_block {
-//     public:
-//         uint16_t link_type;
-//         uint16_t reserved;
-//         uint32_t snap_length;
-//
-//         pcapng_IDB();
-//         void summary(bool moreinfo=true) override;
-//         void read(const void* buffer, size_t bufferlen) override;
-//         void write(void* buffer, size_t bufferlen) const override;
-// };
+class pcapng_IDB : public pcapng_block {
+
+    protected:
+        size_t impl_length() const override;
+        void read_impl(const void* buffer) override;
+        void write_impl(void* buffer) const override;
+
+    public:
+        uint16_t link_type;
+        uint16_t reserved;
+        uint32_t snap_length;
+
+        pcapng_IDB();
+        void summary(bool moreinfo=true) const override;
+};
 
 
 
