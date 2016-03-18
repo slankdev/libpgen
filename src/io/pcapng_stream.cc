@@ -27,19 +27,23 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
         throw pgen::exception("pgen::pcapng_SHB::read: buffer length is too small");
 
     const uint8_t* buffer_pointer = reinterpret_cast<const uint8_t*>(buffer);
+    size_t buffer_length = bufferlen;
 
     const struct pcapng_block_head* pcapng_head = 
         reinterpret_cast<const pcapng_block_head*>(buffer_pointer);
     type = pcapng_head->type;
     total_length = pcapng_head->total_length;
     buffer_pointer += sizeof(pcapng_block_head);
+    buffer_length -= sizeof(pcapng_block_head);
 
-    read_impl(buffer_pointer);
+    read_impl(buffer_pointer, buffer_length);
     buffer_pointer += impl_length();
+    buffer_length -= impl_length();
 
     option.resize(total_length - sizeof(pcapng_block_head) - impl_length() - sizeof(pcapng_block_tail));
     memcpy(option.data(), buffer_pointer, option.size());
     buffer_pointer += option.size();
+    buffer_length -= option.size();
 
     const struct pcapng_block_tail* pcapng_tail = 
         reinterpret_cast<const pcapng_block_tail*>(buffer_pointer);
@@ -47,8 +51,9 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
     if (total_length2 != total_length) 
         throw pgen::exception("pgen::pcapng_block::read: totlen1 != totlen2");
     buffer_pointer += sizeof(struct pcapng_block_tail);
+    buffer_length -= sizeof(struct pcapng_block_tail);
 
-    if (buffer_pointer - reinterpret_cast<const uint8_t*>(buffer) != total_length) 
+    if (bufferlen - buffer_length != total_length) 
         throw pgen::exception("pgen::pcapng_block::read: length error");
 }
 
@@ -60,24 +65,29 @@ void pcapng_block::write(void* buffer, size_t bufferlen) const {
         throw pgen::exception("pgen::pcapng_SHB::write: buffer length is too small");
 
     uint8_t* buffer_pointer = reinterpret_cast<uint8_t*>(buffer);
+    size_t buffer_length = bufferlen;
 
     struct pcapng_block_head* pcapng_head = 
         reinterpret_cast<pcapng_block_head*>(buffer_pointer);
     pcapng_head->type = type;
     pcapng_head->total_length = total_length;
     buffer_pointer += sizeof(pcapng_block_head);
+    buffer_length -= sizeof(pcapng_block_head);
 
-    write_impl(buffer_pointer);
+    write_impl(buffer_pointer, buffer_length);
     buffer_pointer += impl_length();
+    buffer_length -= impl_length();
 
     memcpy(buffer_pointer, option.data(), option.size());
     buffer_pointer += option.size();
+    buffer_length -= option.size();
 
     struct pcapng_block_tail* pcapng_tail = reinterpret_cast<pcapng_block_tail*>(buffer_pointer);
     pcapng_tail->total_length   = total_length;
-    buffer_pointer += sizeof(struct pcapng_block_tail);
+    buffer_pointer += sizeof(pcapng_block_tail);
+    buffer_length -= sizeof(pcapng_block_tail);
 
-    if (buffer_pointer - reinterpret_cast<uint8_t*>(buffer) != total_length) {
+    if (bufferlen - buffer_length != total_length) {
         // ERASE
         // printf("bp - b: %zd \n", buffer_pointer - reinterpret_cast<uint8_t*>(buffer));
         // printf("total len : %zd \n", total_length);
@@ -127,7 +137,7 @@ size_t pcapng_SHB::impl_length() const {
     return sizeof(struct shb_struct);
 }
 
-void pcapng_SHB::read_impl(const void* buffer) {
+void pcapng_SHB::read_impl(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::SHB)
         throw pgen::exception("pgen::pcapng_SHB::read: this is not SHB");
 
@@ -141,7 +151,7 @@ void pcapng_SHB::read_impl(const void* buffer) {
 
 }
 
-void pcapng_SHB::write_impl(void* buffer) const {
+void pcapng_SHB::write_impl(void* buffer, size_t bufferlen) const {
     struct shb_struct* shb = reinterpret_cast<shb_struct*>(buffer);
     shb->magic             = magic;
     shb->version_major     = version_major;
@@ -192,7 +202,7 @@ void pcapng_IDB::summary(bool moreinfo) const {
     }
 }
 
-void pcapng_IDB::read_impl(const void* buffer) {
+void pcapng_IDB::read_impl(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::IDB)
         throw pgen::exception("pgen::pcapng_IDB::read: this is not IDB");
 
@@ -203,7 +213,7 @@ void pcapng_IDB::read_impl(const void* buffer) {
     snap_length  = idb->snap_length;
 }
 
-void pcapng_IDB::write_impl(void* buffer) const {
+void pcapng_IDB::write_impl(void* buffer, size_t bufferlen) const {
     struct idb_struct* idb = reinterpret_cast<idb_struct*>(buffer);
     idb->link_type    = link_type   ;
     idb->reserved     = reserved    ;
@@ -255,7 +265,7 @@ void pcapng_EPB::summary(bool moreinfo) const {
     }
 }
 
-void pcapng_EPB::read_impl(const void* buffer) {
+void pcapng_EPB::read_impl(const void* buffer, size_t bufferlen) {
     // if (buffer < total_length - 
     //         sizeof(pcapng_block_head) - 
     //         sizeof(pcapng_block_tail) -
@@ -271,7 +281,7 @@ void pcapng_EPB::read_impl(const void* buffer) {
     
 }
 
-void pcapng_EPB::write_impl(void* buffer) const {
+void pcapng_EPB::write_impl(void* buffer, size_t bufferlen) const {
     struct epb_struct* epb = reinterpret_cast<epb_struct*>(buffer);
     epb->interface_id   = interface_id;
     epb->timestamp_high = timestamp_high;
