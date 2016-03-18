@@ -22,6 +22,32 @@ struct pcapng_block_tail {
 
 
 
+void pcapng_block::read_head(const void* buffer, size_t bufferlen) {
+    if (bufferlen < sizeof(pcapng_block_head))
+        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
+    const struct pcapng_block_head* pcapng_head = 
+        reinterpret_cast<const pcapng_block_head*>(buffer);
+    type = pcapng_head->type;
+    total_length = pcapng_head->total_length;
+}
+
+void pcapng_block::read_option(const void* buffer, size_t bufferlen) {
+    size_t optlen = total_length - sizeof(pcapng_block_head) - impl_length() - sizeof(pcapng_block_tail);
+    if (bufferlen < optlen)
+        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
+    option.resize(optlen);
+    memcpy(option.data(), buffer, option.size());
+}
+
+void pcapng_block::read_tail(const void* buffer, size_t bufferlen) {
+    if (bufferlen < sizeof(pcapng_block_tail))
+        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
+    const struct pcapng_block_tail* pcapng_tail = 
+        reinterpret_cast<const pcapng_block_tail*>(buffer);
+    uint32_t total_length2   = pcapng_tail->total_length;
+    if (total_length2 != total_length) 
+        throw pgen::exception("pgen::pcapng_block::read: totlen1 != totlen2");
+}
 
 
 void pcapng_block::read(const void* buffer, size_t bufferlen) {
@@ -29,12 +55,7 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
     const uint8_t* buffer_pointer = reinterpret_cast<const uint8_t*>(buffer);
     size_t buffer_length = bufferlen;
     
-    if (buffer_length < sizeof(pcapng_block_head))
-        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
-    const struct pcapng_block_head* pcapng_head = 
-        reinterpret_cast<const pcapng_block_head*>(buffer_pointer);
-    type = pcapng_head->type;
-    total_length = pcapng_head->total_length;
+    read_head(buffer_pointer, buffer_length);
     buffer_pointer += sizeof(pcapng_block_head);
     buffer_length -= sizeof(pcapng_block_head);
 
@@ -42,21 +63,11 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
     buffer_pointer += impl_length();
     buffer_length -= impl_length();
 
-    size_t optlen = total_length - sizeof(pcapng_block_head) - impl_length() - sizeof(pcapng_block_tail);
-    if (buffer_length < optlen)
-        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
-    option.resize(optlen);
-    memcpy(option.data(), buffer_pointer, option.size());
+    read_option(buffer_pointer, buffer_length);
     buffer_pointer += option.size();
     buffer_length -= option.size();
 
-    if (buffer_length < sizeof(pcapng_block_tail))
-        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
-    const struct pcapng_block_tail* pcapng_tail = 
-        reinterpret_cast<const pcapng_block_tail*>(buffer_pointer);
-    uint32_t total_length2   = pcapng_tail->total_length;
-    if (total_length2 != total_length) 
-        throw pgen::exception("pgen::pcapng_block::read: totlen1 != totlen2");
+    read_tail(buffer_pointer, buffer_length);
     buffer_pointer += sizeof(struct pcapng_block_tail);
     buffer_length -= sizeof(struct pcapng_block_tail);
 

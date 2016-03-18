@@ -27,6 +27,11 @@ struct pcapng_type {
  * when need new block class.
  **/
 class pcapng_block {
+    private:
+        void read_head(const void* buffer, size_t bufferlen);
+        void read_option(const void* buffer, size_t bufferlen);
+        void read_tail(const void* buffer, size_t bufferlen);
+
     protected:
         virtual size_t impl_length() const = 0;
         virtual void read_impl(const void* buffer, size_t bufferlen) = 0;
