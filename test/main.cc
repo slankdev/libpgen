@@ -38,9 +38,7 @@ int main() {
         fwrite(buf, e.total_length, 1, fp );
         pgen::hex(buf, e.total_length);
 
-
         fclose(fp);
-
 
     } catch (std::exception& e) {
         printf("%s \n", e.what());

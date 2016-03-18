@@ -22,13 +22,15 @@ struct pcapng_block_tail {
 
 
 
+
+
 void pcapng_block::read(const void* buffer, size_t bufferlen) {
-    if (bufferlen < sizeof(pcapng_block_head) + impl_length() + sizeof(pcapng_block_tail)) 
-        throw pgen::exception("pgen::pcapng_SHB::read: buffer length is too small");
 
     const uint8_t* buffer_pointer = reinterpret_cast<const uint8_t*>(buffer);
     size_t buffer_length = bufferlen;
-
+    
+    if (buffer_length < sizeof(pcapng_block_head))
+        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
     const struct pcapng_block_head* pcapng_head = 
         reinterpret_cast<const pcapng_block_head*>(buffer_pointer);
     type = pcapng_head->type;
@@ -40,11 +42,16 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
     buffer_pointer += impl_length();
     buffer_length -= impl_length();
 
-    option.resize(total_length - sizeof(pcapng_block_head) - impl_length() - sizeof(pcapng_block_tail));
+    size_t optlen = total_length - sizeof(pcapng_block_head) - impl_length() - sizeof(pcapng_block_tail);
+    if (buffer_length < optlen)
+        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
+    option.resize(optlen);
     memcpy(option.data(), buffer_pointer, option.size());
     buffer_pointer += option.size();
     buffer_length -= option.size();
 
+    if (buffer_length < sizeof(pcapng_block_tail))
+        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
     const struct pcapng_block_tail* pcapng_tail = 
         reinterpret_cast<const pcapng_block_tail*>(buffer_pointer);
     uint32_t total_length2   = pcapng_tail->total_length;
@@ -59,14 +66,14 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
 
 
 void pcapng_block::write(void* buffer, size_t bufferlen) const {
-    if (bufferlen < sizeof(pcapng_block_head) + impl_length() + sizeof(pcapng_block_tail)) 
-        throw pgen::exception("pgen::pcapng_SHB::write: buffer length is too small");
     if (bufferlen < total_length) 
         throw pgen::exception("pgen::pcapng_SHB::write: buffer length is too small");
 
     uint8_t* buffer_pointer = reinterpret_cast<uint8_t*>(buffer);
     size_t buffer_length = bufferlen;
 
+    if (buffer_length < sizeof(pcapng_block_head))
+        throw pgen::exception("pgen::pcapng_block::write: bufferlen is too small");
     struct pcapng_block_head* pcapng_head = 
         reinterpret_cast<pcapng_block_head*>(buffer_pointer);
     pcapng_head->type = type;
@@ -78,10 +85,14 @@ void pcapng_block::write(void* buffer, size_t bufferlen) const {
     buffer_pointer += impl_length();
     buffer_length -= impl_length();
 
+    if (buffer_length < option.size())
+        throw pgen::exception("pgen::pcapng_block::write: bufferlen is too small");
     memcpy(buffer_pointer, option.data(), option.size());
     buffer_pointer += option.size();
     buffer_length -= option.size();
 
+    if (buffer_length < sizeof(pcapng_block_tail))
+        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
     struct pcapng_block_tail* pcapng_tail = reinterpret_cast<pcapng_block_tail*>(buffer_pointer);
     pcapng_tail->total_length   = total_length;
     buffer_pointer += sizeof(pcapng_block_tail);
@@ -140,6 +151,8 @@ size_t pcapng_SHB::impl_length() const {
 void pcapng_SHB::read_impl(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::SHB)
         throw pgen::exception("pgen::pcapng_SHB::read: this is not SHB");
+    if (bufferlen < impl_length())
+        throw pgen::exception("pgen::pcapng_SHB::read: bufferlen is too small");
 
     const struct shb_struct* shb = 
         reinterpret_cast<const shb_struct*>(buffer);
@@ -148,10 +161,13 @@ void pcapng_SHB::read_impl(const void* buffer, size_t bufferlen) {
     version_minor     = shb->version_minor ;
     section_length[0] = shb->section_length[0];
     section_length[1] = shb->section_length[1];
-
 }
 
+
 void pcapng_SHB::write_impl(void* buffer, size_t bufferlen) const {
+    if (bufferlen < impl_length())
+        throw pgen::exception("pgen::pcapng_SHB::write: bufferlen is too small");
+
     struct shb_struct* shb = reinterpret_cast<shb_struct*>(buffer);
     shb->magic             = magic;
     shb->version_major     = version_major;
@@ -205,6 +221,8 @@ void pcapng_IDB::summary(bool moreinfo) const {
 void pcapng_IDB::read_impl(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::IDB)
         throw pgen::exception("pgen::pcapng_IDB::read: this is not IDB");
+    if (bufferlen < impl_length())
+        throw pgen::exception("pgen::pcapng_IDB::read_impl: bufferlen is too small");
 
     const struct idb_struct* idb =
         reinterpret_cast<const idb_struct*>(buffer);
@@ -214,6 +232,9 @@ void pcapng_IDB::read_impl(const void* buffer, size_t bufferlen) {
 }
 
 void pcapng_IDB::write_impl(void* buffer, size_t bufferlen) const {
+    if (bufferlen < impl_length())
+        throw pgen::exception("pgen::pcapng_IDB::write_impl: bufferlen is too small");
+
     struct idb_struct* idb = reinterpret_cast<idb_struct*>(buffer);
     idb->link_type    = link_type   ;
     idb->reserved     = reserved    ;
@@ -266,6 +287,9 @@ void pcapng_EPB::summary(bool moreinfo) const {
 }
 
 void pcapng_EPB::read_impl(const void* buffer, size_t bufferlen) {
+    if (bufferlen < impl_length())
+        throw pgen::exception("pgen::pcapng_IDB::read_impl: bufferlen is too small");
+
     // if (buffer < total_length - 
     //         sizeof(pcapng_block_head) - 
     //         sizeof(pcapng_block_tail) -
@@ -282,6 +306,9 @@ void pcapng_EPB::read_impl(const void* buffer, size_t bufferlen) {
 }
 
 void pcapng_EPB::write_impl(void* buffer, size_t bufferlen) const {
+    if (bufferlen < impl_length())
+        throw pgen::exception("pgen::pcapng_IDB::write_impl: bufferlen is too small");
+
     struct epb_struct* epb = reinterpret_cast<epb_struct*>(buffer);
     epb->interface_id   = interface_id;
     epb->timestamp_high = timestamp_high;
@@ -299,12 +326,10 @@ void pcapng_EPB::set_packet(const void* packet, size_t packetlen) {
     capture_length = packetlen;
     packet_length  = packetlen;
 
+    total_length += packetlen;
     int a = packetlen % sizeof(uint32_t);
     if (a != 0)
-        total_length += packetlen + (sizeof(uint32_t)-a);
-    else
-        total_length += packetlen;
-
+        total_length += (sizeof(uint32_t)-a);
 }
 
 
