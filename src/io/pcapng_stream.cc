@@ -32,7 +32,7 @@ void pcapng_block::read_head(const void* buffer, size_t bufferlen) {
 }
 
 void pcapng_block::read_option(const void* buffer, size_t bufferlen) {
-    size_t optlen = total_length - sizeof(pcapng_block_head) - impl_length() - sizeof(pcapng_block_tail);
+    size_t optlen = total_length - sizeof(pcapng_block_head) - body_length() - sizeof(pcapng_block_tail);
     if (bufferlen < optlen)
         throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
     option.resize(optlen);
@@ -59,9 +59,9 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
     buffer_pointer += sizeof(pcapng_block_head);
     buffer_length -= sizeof(pcapng_block_head);
 
-    read_impl(buffer_pointer, buffer_length);
-    buffer_pointer += impl_length();
-    buffer_length -= impl_length();
+    read_body(buffer_pointer, buffer_length);
+    buffer_pointer += body_length();
+    buffer_length -= body_length();
 
     read_option(buffer_pointer, buffer_length);
     buffer_pointer += option.size();
@@ -114,9 +114,9 @@ void pcapng_block::write(void* buffer, size_t bufferlen) const {
     buffer_pointer += sizeof(pcapng_block_head);
     buffer_length -= sizeof(pcapng_block_head);
 
-    write_impl(buffer_pointer, buffer_length);
-    buffer_pointer += impl_length();
-    buffer_length -= impl_length();
+    write_body(buffer_pointer, buffer_length);
+    buffer_pointer += body_length();
+    buffer_length -= body_length();
 
     write_option(buffer_pointer, buffer_length);
     buffer_pointer += option.size();
@@ -126,12 +126,8 @@ void pcapng_block::write(void* buffer, size_t bufferlen) const {
     buffer_pointer += sizeof(pcapng_block_tail);
     buffer_length -= sizeof(pcapng_block_tail);
 
-    if (bufferlen - buffer_length != total_length) {
-        // ERASE
-        // printf("bp - b: %zd \n", buffer_pointer - reinterpret_cast<uint8_t*>(buffer));
-        // printf("total len : %zd \n", total_length);
+    if (bufferlen - buffer_length != total_length)
         throw pgen::exception("pgen::pcapng_block::write: length error");
-    }
 }
 
 
@@ -172,15 +168,15 @@ void pcapng_SHB::summary(bool moreinfo) const {
     }
 }
 
-size_t pcapng_SHB::impl_length() const {
+size_t pcapng_SHB::body_length() const {
     return sizeof(struct shb_struct);
 }
 
-void pcapng_SHB::read_impl(const void* buffer, size_t bufferlen) {
+void pcapng_SHB::read_body(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::SHB)
-        throw pgen::exception("pgen::pcapng_SHB::read: this is not SHB");
-    if (bufferlen < impl_length())
-        throw pgen::exception("pgen::pcapng_SHB::read: bufferlen is too small");
+        throw pgen::exception("pgen::pcapng_SHB::read_body: this is not SHB");
+    if (bufferlen < body_length())
+        throw pgen::exception("pgen::pcapng_SHB::read_body: bufferlen is too small");
 
     const struct shb_struct* shb = 
         reinterpret_cast<const shb_struct*>(buffer);
@@ -192,9 +188,9 @@ void pcapng_SHB::read_impl(const void* buffer, size_t bufferlen) {
 }
 
 
-void pcapng_SHB::write_impl(void* buffer, size_t bufferlen) const {
-    if (bufferlen < impl_length())
-        throw pgen::exception("pgen::pcapng_SHB::write: bufferlen is too small");
+void pcapng_SHB::write_body(void* buffer, size_t bufferlen) const {
+    if (bufferlen < body_length())
+        throw pgen::exception("pgen::pcapng_SHB::write_body: bufferlen is too small");
 
     struct shb_struct* shb = reinterpret_cast<shb_struct*>(buffer);
     shb->magic             = magic;
@@ -226,12 +222,12 @@ pcapng_IDB::pcapng_IDB() {
         sizeof(idb_struct)        + 
         option.size()             + 
         sizeof(pcapng_block_tail);
-    link_type = 1 ; // TODO this is hard coding 1:ethernet, 9:ppp
-    reserved = 0; // TODO I'v not gathered information about reserved 
-    snap_length = 0; // TODO I'v not ry) but being 0 is OK, not error
+    link_type = pgen::pcapng_IDB::ethernet;
+    reserved = 0;
+    snap_length = 0;
 }
 
-size_t pcapng_IDB::impl_length() const {
+size_t pcapng_IDB::body_length() const {
     return sizeof(struct idb_struct);
 }
 
@@ -246,11 +242,11 @@ void pcapng_IDB::summary(bool moreinfo) const {
     }
 }
 
-void pcapng_IDB::read_impl(const void* buffer, size_t bufferlen) {
+void pcapng_IDB::read_body(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::IDB)
         throw pgen::exception("pgen::pcapng_IDB::read: this is not IDB");
-    if (bufferlen < impl_length())
-        throw pgen::exception("pgen::pcapng_IDB::read_impl: bufferlen is too small");
+    if (bufferlen < body_length())
+        throw pgen::exception("pgen::pcapng_IDB::read_body: bufferlen is too small");
 
     const struct idb_struct* idb =
         reinterpret_cast<const idb_struct*>(buffer);
@@ -259,9 +255,9 @@ void pcapng_IDB::read_impl(const void* buffer, size_t bufferlen) {
     snap_length  = idb->snap_length;
 }
 
-void pcapng_IDB::write_impl(void* buffer, size_t bufferlen) const {
-    if (bufferlen < impl_length())
-        throw pgen::exception("pgen::pcapng_IDB::write_impl: bufferlen is too small");
+void pcapng_IDB::write_body(void* buffer, size_t bufferlen) const {
+    if (bufferlen < body_length())
+        throw pgen::exception("pgen::pcapng_IDB::write_body: bufferlen is too small");
 
     struct idb_struct* idb = reinterpret_cast<idb_struct*>(buffer);
     idb->link_type    = link_type   ;
@@ -289,14 +285,14 @@ pcapng_EPB::pcapng_EPB() {
         sizeof(epb_struct)        +
         option.size()             +
         sizeof(pcapng_block_tail);
-    interface_id = 0; // TODO hard code
-    timestamp_high = 0; // TODO hard code
-    timestamp_low  = 0;  //  TODO hard code
+    interface_id   = 0;
+    timestamp_high = 0;
+    timestamp_low  = 0;
     capture_length = 0;
     packet_length  = 0;
 }
 
-size_t pcapng_EPB::impl_length() const {
+size_t pcapng_EPB::body_length() const {
     size_t bodysize = sizeof(struct epb_struct) + capture_length;
     // [OR] return sizeof(struct epb_struct) + packet_length;
    
@@ -314,28 +310,31 @@ void pcapng_EPB::summary(bool moreinfo) const {
     }
 }
 
-void pcapng_EPB::read_impl(const void* buffer, size_t bufferlen) {
-    if (bufferlen < impl_length())
-        throw pgen::exception("pgen::pcapng_IDB::read_impl: bufferlen is too small");
 
-    // if (buffer < total_length - 
-    //         sizeof(pcapng_block_head) - 
-    //         sizeof(pcapng_block_tail) -
-    //         sizeof(epb_struct)) {
-    //     throw pgen::exception("pgen::pcapng_EPB::read_impl: buffer");
-    // }
+// TODO need test
+void pcapng_EPB::read_body(const void* buffer, size_t bufferlen) {
+    if (type != pgen::pcapng_type::EPB)
+        throw pgen::exception("pgen::pcapng_IDB::read: this is not EPB");
+    if (bufferlen < sizeof(epb_struct))
+        throw pgen::exception("pgen::pcapng_IDB::read_body: bufferlen is too small");
 
-    if (buffer == NULL) {
-        puts("asdfafasdf");
-        exit(-1);
-    }
-    printf("notimplement yet\n");
+    const struct epb_struct* epb =
+        reinterpret_cast<const epb_struct*>(buffer);
+    interface_id   = epb->interface_id  ;
+    timestamp_high = epb->timestamp_high;
+    timestamp_low  = epb->timestamp_low ;
+    capture_length = epb->capture_length;
+    packet_length  = epb->packet_length ;
+
+    if (bufferlen < body_length())
+        throw pgen::exception("pgen::pcapng_IDB::read_body: bufferlen is too small");
     
+    packet_data_pointer = reinterpret_cast<const uint8_t*>(buffer) + sizeof(epb_struct);
 }
 
-void pcapng_EPB::write_impl(void* buffer, size_t bufferlen) const {
-    if (bufferlen < impl_length())
-        throw pgen::exception("pgen::pcapng_IDB::write_impl: bufferlen is too small");
+void pcapng_EPB::write_body(void* buffer, size_t bufferlen) const {
+    if (bufferlen < body_length())
+       throw pgen::exception("pgen::pcapng_IDB::write_body: bufferlen is too small");
 
     struct epb_struct* epb = reinterpret_cast<epb_struct*>(buffer);
     epb->interface_id   = interface_id;

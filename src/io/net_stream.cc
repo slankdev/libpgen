@@ -147,11 +147,7 @@ struct bpf_header {
 	uint16_t	hdrlen;	
 };
 
-/*
- * TODO
- * This function uses temporary stored memory, so this function
- * has potential that getting speed up.
- */
+
 size_t net_stream::recv(void* buffer, size_t bufferlen) {
     if (_buffer_point == nullptr) {
         _buffer_size_readed = read(_buffer.data(), _buffer.size());
@@ -171,16 +167,6 @@ size_t net_stream::recv(void* buffer, size_t bufferlen) {
         _buffer_point = nullptr;
 
     return copylen;
-
-    // ERASE
-    // uint8_t b[4096];
-    // this->read(b, sizeof(b));
-    // struct pgen::bpf_header* bpfh = (struct pgen::bpf_header*)b;
-    // if (bpfh->caplen > bufferlen) {
-    //     throw pgen::exception("pgen::net_stream::recv: bufferlen is too small");
-    // }
-    // memcpy(buf, b+bpfh->hdrlen, bpfh->caplen);
-    // return bpfh->caplen;
 }
 
 

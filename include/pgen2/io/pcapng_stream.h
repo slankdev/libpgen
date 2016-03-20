@@ -36,9 +36,9 @@ class pcapng_block {
         void write_tail(void* buffer, size_t bufferlen) const;
 
     protected:
-        virtual size_t impl_length() const = 0;
-        virtual void read_impl(const void* buffer, size_t bufferlen) = 0;
-        virtual void write_impl(void* buffer, size_t bufferlen) const = 0;
+        virtual size_t body_length() const = 0;
+        virtual void read_body(const void* buffer, size_t bufferlen) = 0;
+        virtual void write_body(void* buffer, size_t bufferlen) const = 0;
 
     public:
         uint32_t type;
@@ -54,9 +54,9 @@ class pcapng_block {
 
 class pcapng_SHB : public pcapng_block {
     protected:
-        size_t impl_length() const override;
-        void read_impl(const void* buffer, size_t bufferlen) override;
-        void write_impl(void* buffer, size_t bufferlen) const override;
+        size_t body_length() const override;
+        void read_body(const void* buffer, size_t bufferlen) override;
+        void write_body(void* buffer, size_t bufferlen) const override;
 
     public:
         uint32_t magic;
@@ -72,11 +72,20 @@ class pcapng_SHB : public pcapng_block {
 
 class pcapng_IDB : public pcapng_block {
     protected:
-        size_t impl_length() const override;
-        void read_impl(const void* buffer, size_t bufferlen) override;
-        void write_impl(void* buffer, size_t bufferlen) const override;
+        size_t body_length() const override;
+        void read_body(const void* buffer, size_t bufferlen) override;
+        void write_body(void* buffer, size_t bufferlen) const override;
 
     public:
+        struct link_types {
+            static const uint16_t null      =  0;
+            static const uint16_t ethernet  =  1;
+            static const uint16_t ppp       =  9;
+            static const uint16_t fddi      = 10;
+            static const uint16_t ppp_ether = 51;
+            static const uint16_t raw       = 101;
+        };
+
         uint16_t link_type;
         uint16_t reserved;
         uint32_t snap_length;
@@ -89,9 +98,9 @@ class pcapng_IDB : public pcapng_block {
 
 class pcapng_EPB : public pcapng_block {
     protected:
-        size_t impl_length() const override;
-        void read_impl(const void* buffer, size_t bufferlen) override;
-        void write_impl(void* buffer, size_t bufferlen) const override;
+        size_t body_length() const override;
+        void read_body(const void* buffer, size_t bufferlen) override;
+        void write_body(void* buffer, size_t bufferlen) const override;
 
     public:
         uint32_t interface_id;
