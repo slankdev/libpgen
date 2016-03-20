@@ -19,7 +19,14 @@
 #if defined(__PGEN_OSX)
 #include <net/if_dl.h>
 #include <net/bpf.h>
+#elif defined(__PGEN_LINUX)
+#include <netpacket/packet.h>
+#include <netinet/if_ether.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 #endif
+
+
 
 
 #include <fcntl.h>
@@ -76,13 +83,34 @@ void net_stream::open_netif(const char* name, size_t buffer_size) {
 	ioctl(BIOCFLUSH, nullptr);       // flush recv buffer
 	ioctl(BIOCSHDRCMPLT, &one);   // no complite src macaddr
     _buffer_point = nullptr;           // init _buffer_point
+
 #elif defined(__PGEN_LINUX)
+
+    struct ifreq ifreq;
+    struct sockaddr_ll sa;
     
-    printf("pgen::net_stream::open_netif: for linux is not implemented yet\n");
-    exit(-1);
+    _fd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    if (_fd < 0) {
+        throw pgen::exception("pgen::net_stream::open_netif: ");
+    }
+
+    // TODO fix strncpy to strcpy
+    memset(&ifreq, 0, sizeof(ifreq));
+    strncpy(ifreq.ifr_name, name, sizeof(ifreq.ifr_name)-1);
+    ioctl(SIOCGIFINDEX, &ifreq);
+
+    sa.sll_family = AF_PACKET;
+    sa.sll_protocol = htons(ETH_P_ALL);
+    sa.sll_ifindex  = ifreq.ifr_ifindex;
+    // TODO impl bind rapped net_stream;
+    bind(reinterpret_cast<sockaddr*>(&sa), sizeof(sa));
+
+    ioctl(SIOCGIFFLAGS, &ifreq);
+    ifreq.ifr_flags = ifreq.ifr_flags | IFF_PROMISC;
+    ioctl(SIOCSIFFLAGS, &ifreq);
 
 #else
-    throw pgen::exception("pgen::net_stream::open_netif: unknown error");
+#error "unknown arch"
 #endif
 }
 
@@ -91,7 +119,8 @@ void net_stream::open_netif(const char* name, size_t buffer_size) {
 void net_stream::write(const void* buffer, size_t bufferlen) {
     ssize_t write_len = ::write(_fd, buffer, bufferlen);
     if (static_cast<size_t>(write_len) != bufferlen) {
-        throw pgen::exception("pgen::net_stream::write::write: write comletion faild");
+        throw pgen::exception(
+                "pgen::net_stream::write::write: write comletion faild");
     } else if (write_len < 0) {
         throw pgen::exception("pgen::net_stream::write::write: ");
     }
@@ -108,6 +137,15 @@ size_t net_stream::read(void* buffer, size_t bufferlen) {
     
     return static_cast<size_t>(read_len);
 }
+
+
+void net_stream::bind(const struct sockaddr* sa, size_t len) {
+    int res = ::bind(_fd, sa, len);
+    if (res < 0) {
+        throw pgen::exception("pgen::net_stream::bind: ");
+    }
+}
+
 
 
 void net_stream::ioctl(unsigned long l, void* p) {
@@ -149,6 +187,7 @@ struct bpf_header {
 
 
 size_t net_stream::recv(void* buffer, size_t bufferlen) {
+#if defined(__PGEN_OSX)
     if (_buffer_point == nullptr) {
         _buffer_size_readed = read(_buffer.data(), _buffer.size());
         _buffer_point = _buffer.data();
@@ -167,6 +206,25 @@ size_t net_stream::recv(void* buffer, size_t bufferlen) {
         _buffer_point = nullptr;
 
     return copylen;
+#elif defined(__PGEN_LINUX)
+    ssize_t recvlen = read(buffer, bufferlen);
+    if (recvlen < 0) {
+        throw pgen::exception("pgen::net_stream::recv: ");
+    }
+    return recvlen;
+#else
+#error "unknown arch"
+#endif
+
+    // ERASE
+    // uint8_t b[4096];
+    // this->read(b, sizeof(b));
+    // struct pgen::bpf_header* bpfh = (struct pgen::bpf_header*)b;
+    // if (bpfh->caplen > bufferlen) {
+    //     throw pgen::exception("pgen::net_stream::recv: bufferlen is too small");
+    // }
+    // memcpy(buf, b+bpfh->hdrlen, bpfh->caplen);
+    // return bpfh->caplen;
 }
 
 
