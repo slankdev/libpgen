@@ -222,7 +222,7 @@ pcapng_IDB::pcapng_IDB() {
         sizeof(idb_struct)        + 
         option.size()             + 
         sizeof(pcapng_block_tail);
-    link_type = pgen::pcapng_IDB::ethernet;
+    link_type = pgen::pcapng_IDB::link_types::ethernet;
     reserved = 0;
     snap_length = 0;
 }
