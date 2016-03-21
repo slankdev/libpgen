@@ -9,6 +9,7 @@
 namespace pgen {
 
 
+// TODO I don't like this impl.
 typedef uint32_t pcapng_blocktype_t;
 struct pcapng_type {
     static const uint32_t SHB = 0x0a0d0d0a;/**< Section Header block        */
@@ -158,8 +159,8 @@ class pcapng_stream : public file_stream {
         void send(const void* buf, size_t buflen);
         size_t recv(void* buf, size_t buflen);
 
-        void write_block(const void* buffer, size_t bufferlen);
-        void read_block(void* buffer, size_t bufferlen);
+        void write_block(pcapng_block& block);
+        size_t read_block(void* buffer, size_t bufferlen);
 };
 
 

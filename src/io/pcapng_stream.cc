@@ -15,6 +15,7 @@ namespace pgen {
 
 
 
+
 struct pcapng_block_head {
     uint32_t type;
     uint32_t total_length;
@@ -25,6 +26,17 @@ struct pcapng_block_tail {
 };
 
 
+static pcapng_blocktype_t detect_pcapng_blocktype(
+        const void* buffer, size_t bufferlen) {
+    if (bufferlen < sizeof(struct pcapng_block_head)) {
+        throw pgen::exception(
+            "pgen::detect_pcapng_blocktype: bufferlen is too small");
+    }
+    const struct pcapng_block_head* p =
+        reinterpret_cast<const pcapng_block_head*>(buffer);
+    return p->type;
+}
+
 pcapng_block::pcapng_block() {
     type = 0;
     total_length = 0;
@@ -34,7 +46,7 @@ pcapng_block::pcapng_block() {
 void pcapng_block::read_head(const void* buffer, size_t bufferlen) {
     if (bufferlen < sizeof(pcapng_block_head)) {
         throw pgen::exception(
-                "pgen::pcapng_block::read: bufferlen is too small");
+             "pgen::pcapng_block::read: bufferlen is too small");
     }
 
     const struct pcapng_block_head* pcapng_head = 
@@ -42,6 +54,7 @@ void pcapng_block::read_head(const void* buffer, size_t bufferlen) {
     type = pcapng_head->type;
     total_length = pcapng_head->total_length;
 }
+
 
 void pcapng_block::read_option(const void* buffer, size_t bufferlen) {
     size_t optlen = total_length - sizeof(pcapng_block_head) 
@@ -55,6 +68,7 @@ void pcapng_block::read_option(const void* buffer, size_t bufferlen) {
     option.resize(optlen);
     memcpy(option.data(), buffer, option.size());
 }
+
 
 void pcapng_block::read_tail(const void* buffer, size_t bufferlen) {
     if (bufferlen < sizeof(pcapng_block_tail)) {
@@ -283,6 +297,8 @@ struct idb_struct {
     uint32_t snap_length;
 };
 
+
+
 pcapng_IDB::pcapng_IDB() {
     type = pgen::pcapng_type::IDB;
     total_length = 
@@ -296,9 +312,11 @@ pcapng_IDB::pcapng_IDB() {
 }
 
 
+
 size_t pcapng_IDB::body_length() const {
     return sizeof(struct idb_struct);
 }
+
 
 
 void pcapng_IDB::summary(bool moreinfo) const {
@@ -311,6 +329,8 @@ void pcapng_IDB::summary(bool moreinfo) const {
         pgen::hex(option.data(), option.size());
     }
 }
+
+
 
 void pcapng_IDB::read_body(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::IDB) {
@@ -327,6 +347,8 @@ void pcapng_IDB::read_body(const void* buffer, size_t bufferlen) {
     reserved     = idb->reserved;
     snap_length  = idb->snap_length;
 }
+
+
 
 void pcapng_IDB::write_body(void* buffer, size_t bufferlen) const {
     if (bufferlen < body_length()) {
@@ -394,8 +416,10 @@ void pcapng_EPB::summary(bool moreinfo) const {
 
 // TODO need test
 void pcapng_EPB::read_body(const void* buffer, size_t bufferlen) {
-    if (type != pgen::pcapng_type::EPB)
-        throw pgen::exception("pgen::pcapng_IDB::read: this is not EPB");
+    if (type != pgen::pcapng_type::EPB) {
+        printf("0x%04x \n", type);
+        throw pgen::exception("pgen::pcapng_EPB::read: this is not EPB");
+    }
     if (bufferlen < sizeof(epb_struct)) {
         throw pgen::exception(
                 "pgen::pcapng_IDB::read_body: bufferlen is too small");
@@ -446,6 +470,116 @@ void pcapng_EPB::set_packet(const void* packet, size_t packetlen) {
     if (a != 0)
         total_length += (sizeof(uint32_t)-a);
 }
+
+
+
+
+
+pcapng_stream::pcapng_stream() {}
+pcapng_stream::pcapng_stream(const char* name, pgen::open_mode mode) {
+    open(name, mode);
+}
+
+void pcapng_stream::open(const char* name, pgen::open_mode mode) {
+    switch (mode) {
+        case pgen::open_mode::pcapng_write:
+        {
+            uint8_t tmp_buffer[1000];
+            fopen(name, "wb");
+            pcapng_SHB shb;
+            shb.write(tmp_buffer, sizeof tmp_buffer);
+            write(tmp_buffer, shb.total_length);
+            pcapng_IDB idb;
+            idb.write(tmp_buffer, sizeof tmp_buffer);
+            write(tmp_buffer, idb.total_length);
+            break;
+        }
+        case pgen::open_mode::pcapng_read:
+        {
+            fopen(name, "rb");
+            //,,,
+            break;
+        }
+        default:
+        {
+            throw pgen::exception(
+                    "pgen::pcapng_stream::open: unknown mode \n");
+            break;
+        }
+    }
+}
+
+void pcapng_stream::close() noexcept {
+    this->fclose();
+}
+
+void pcapng_stream::send(const void* buffer, size_t bufferlen) {
+    pcapng_EPB epb;
+    epb.set_packet(buffer, bufferlen);
+    write_block(epb);
+}
+
+size_t pcapng_stream::recv(void* buffer, size_t bufferlen) {
+    while (1) {
+        if (feof()) {
+            throw pgen::exception(
+                    "pgen::pcapng_stream::recv: is end of file");
+        }
+        
+        uint8_t tmp_buffer[1000];
+        size_t blocklen = read_block(tmp_buffer, sizeof(tmp_buffer));
+        pcapng_blocktype_t type = detect_pcapng_blocktype(tmp_buffer, blocklen);
+        if (type == pcapng_type::EPB) {
+            pcapng_EPB epb;
+            epb.read(tmp_buffer, blocklen);
+            memcpy(buffer, epb.packet_data_pointer, epb.packet_length);
+            return epb.packet_length;
+    
+        } else if (type == pcapng_type::SPB) {
+            throw pgen::exception(
+                    "pgen::pcapng_stream::recv: not implement");
+        } else {
+            continue;
+        }
+    }
+}
+
+void pcapng_stream::write_block(pcapng_block& block) {
+    std::vector<uint8_t> raw_data;
+    raw_data.resize(block.total_length);
+    block.write(raw_data.data(), raw_data.size());
+    write(raw_data.data(), raw_data.size());
+}
+
+size_t pcapng_stream::read_block(void* buffer, size_t bufferlen) {
+    uint8_t* buffer_pointer = reinterpret_cast<uint8_t*>(buffer);
+
+    struct pcapng_block_head* head = 
+        reinterpret_cast<pcapng_block_head*>(buffer_pointer);
+    read(head, sizeof(pcapng_block_head));
+    buffer_pointer += sizeof(pcapng_block_head);
+    bufferlen -= sizeof(pcapng_block_head);
+
+    uint8_t* body = reinterpret_cast<uint8_t*>(buffer_pointer);
+    size_t bodylen = head->total_length 
+        - sizeof(pcapng_block_head) - sizeof(pcapng_block_tail);
+    read(body, bodylen);
+    buffer_pointer += bodylen;
+    bufferlen      -= bodylen;
+    
+    struct pcapng_block_tail* tail =
+        reinterpret_cast<pcapng_block_tail*>(buffer_pointer);
+    read(tail, sizeof(pcapng_block_tail));
+    buffer_pointer += sizeof(tail);
+    bufferlen -= sizeof(tail);
+
+    if (head->total_length != tail->total_length) {
+        pgen::exception(
+                "pgen::pcapng_stream::read_block: read error");
+    }
+    return head->total_length;
+}
+
 
 
 
