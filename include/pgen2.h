@@ -17,6 +17,9 @@
 #include <pgen2/core/protocol/ipv6.h>
 
 #include <pgen2/io/stream.h>
+#include <pgen2/io/net_stream.h>
+#include <pgen2/io/file_stream.h>
+#include <pgen2/io/pcap_stream.h>
 #include <pgen2/io/pcapng_stream.h>
 
 #include <pgen2/module/module.h>

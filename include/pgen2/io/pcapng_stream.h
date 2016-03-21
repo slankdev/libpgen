@@ -4,12 +4,14 @@
 
 #include <stddef.h>
 #include <pgen2/io/stream.h>
+#include <pgen2/io/file_stream.h>
 
 
 namespace pgen {
 
 
-
+// TODO I don't like this impl.
+typedef uint32_t pcapng_blocktype_t;
 struct pcapng_type {
     static const uint32_t SHB = 0x0a0d0d0a;/**< Section Header block        */
     static const uint32_t IDB = 0x00000001;/**< interface description block */
@@ -18,6 +20,8 @@ struct pcapng_type {
     static const uint32_t ISB = 0x00000005;/**< Interface Statistic block   */
     static const uint32_t EPB = 0x00000006;/**< Enhanced Packet block       */
 };
+
+
 
 
 
@@ -45,10 +49,28 @@ class pcapng_block {
         uint32_t total_length;
         std::vector<uint8_t> option;
 
+        pcapng_block();
         void read(const void* buffer, size_t bufferlen);
         void write(void* buffer, size_t bufferlen) const;
         virtual void summary(bool moreinfo=true) const = 0;
 };
+
+
+
+
+
+class pcapng_unknown : public pcapng_block {
+    protected:
+        size_t body_length() const override;
+        void read_body(const void* buffer, size_t bufferlen) override;
+        void write_body(void* buffer, size_t bufferlen) const override;
+
+    public:
+        pcapng_unknown();
+        void summary(bool moreinfo=true) const override;
+};
+
+
 
 
 
@@ -67,6 +89,9 @@ class pcapng_SHB : public pcapng_block {
         pcapng_SHB();
         void summary(bool moreinfo=true) const override;
 };
+
+
+
 
 
 
@@ -96,6 +121,11 @@ class pcapng_IDB : public pcapng_block {
 
 
 
+
+
+
+
+
 class pcapng_EPB : public pcapng_block {
     protected:
         size_t body_length() const override;
@@ -120,9 +150,6 @@ class pcapng_EPB : public pcapng_block {
 
 
 
-
-
-
 class pcapng_stream : public file_stream {
     public:
         pcapng_stream();
@@ -133,9 +160,13 @@ class pcapng_stream : public file_stream {
         void send(const void* buf, size_t buflen);
         size_t recv(void* buf, size_t buflen);
 
-        void write_block(const void* buffer, size_t bufferlen);
-        void read_block(void* buffer, size_t bufferlen);
+        void write_block(pcapng_block& block);
+        size_t read_block(void* buffer, size_t bufferlen);
 };
+
+
+
+
 
 
 } /* namespace pgen */

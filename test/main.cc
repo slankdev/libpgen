@@ -8,42 +8,46 @@
 #include <string.h>
 const char* dev = "en0";
 const char* out = "out.pcap";
+const char* in  = "in.pcapng";
 
 using std::cout;
 using std::endl;
 
-
-
+#if 1
 int main() {
     try {
-        FILE *fp = fopen("out.pcapng", "wb");
-        uint8_t buf[1000];
-
-        pgen::pcapng_SHB h;
-        h.write(buf, sizeof buf);
-        fwrite(buf, h.total_length, 1, fp );
-        pgen::hex(buf, h.total_length);
-    
-        pgen::pcapng_IDB i;
-        i.write(buf, sizeof buf);
-        fwrite(buf, i.total_length, 1, fp );
-        pgen::hex(buf, i.total_length);
-
+        pgen::pcapng_stream pcapng;
+        pcapng.open(in, pgen::open_mode::pcapng_read);
+        while (1) {
+            uint8_t buf[10000];
+            try {
+                size_t recvlen = pcapng.recv(buf, sizeof(buf));
+                pgen::packet_type type = pgen::module::detect(buf, recvlen);
+                printf("packet length = %zd \n", recvlen);
+                pgen::hex(buf, recvlen);
+            } catch (std::exception& e) {
+                printf("recv exception: %s \n", e.what());
+                break;
+            }
+        }
+    } catch (std::exception& e) {
+        printf("%s \n", e.what());
+    }
+}
+#else 
+int main() {
+    try {
         pgen::arp pack;
         pack.compile();
-
-        pgen::pcapng_EPB e;
-        e.set_packet(pack.raw(), pack.length());
-        e.write(buf, sizeof buf);
-        fwrite(buf, e.total_length, 1, fp );
-        pgen::hex(buf, e.total_length);
-
-        fclose(fp);
+        
+        pgen::pcapng_stream pcapng;
+        pcapng.open(out, pgen::open_mode::pcapng_write);
+        pcapng << pack;
 
     } catch (std::exception& e) {
         printf("%s \n", e.what());
     }
 }
-
+#endif
 
 
