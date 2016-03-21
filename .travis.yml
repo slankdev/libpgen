@@ -3,7 +3,7 @@ language:
     - objective-c
 
 compiler:
-    - g++
+    - g++-4.8
 script:
     - g++ --version
     - make
