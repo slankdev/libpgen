@@ -1,6 +1,6 @@
 
 
-#include <pgen2/io/stream.h>
+#include <pgen2/io/net_stream.h>
 #include <pgen2/exception.h>
 #include <pgen2/arch/arch.h>
 

@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <pgen2/io/stream.h>
+#include <pgen2/io/file_stream.h>
 
 
 namespace pgen {

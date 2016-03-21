@@ -1,7 +1,7 @@
 
 
 
-#include <pgen2/io/stream.h>
+#include <pgen2/io/pcap_stream.h>
 #include <pgen2/io/pcapng_stream.h>
 #include <pgen2/exception.h>
 
