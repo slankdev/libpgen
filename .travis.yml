@@ -2,8 +2,6 @@ language:
     - cpp
     - objective-c
 
-compiler:
-    - g++-4.8
 script:
     - g++ --version
     - make
