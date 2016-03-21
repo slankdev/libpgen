@@ -3,7 +3,8 @@
 
 
 
-export CPP             := g++
+# export CPP             := g++
+export CPP             := clang
 export CPPFLAGS        := -std=c++11 -Wextra 
 export INCLUDE_DIR     := include 
 export AR              := ar 

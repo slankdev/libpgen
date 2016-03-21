@@ -2,7 +2,9 @@ language:
     - cpp
     - objective-c
 
+compiler:
+    - clang
+
 script:
-    - g++ --version
     - make
 
