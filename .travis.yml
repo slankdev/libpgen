@@ -3,8 +3,8 @@ language:
     - objective-c
 
 compiler:
-    - clang
+    - clang++
 
 script:
-    - make
+    - make CPP=clang++
 
