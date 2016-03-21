@@ -11,6 +11,10 @@
 namespace pgen {
 
 
+
+
+
+
 struct pcapng_block_head {
     uint32_t type;
     uint32_t total_length;
@@ -21,10 +25,18 @@ struct pcapng_block_tail {
 };
 
 
+pcapng_block::pcapng_block() {
+    type = 0;
+    total_length = 0;
+}
+
 
 void pcapng_block::read_head(const void* buffer, size_t bufferlen) {
-    if (bufferlen < sizeof(pcapng_block_head))
-        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
+    if (bufferlen < sizeof(pcapng_block_head)) {
+        throw pgen::exception(
+                "pgen::pcapng_block::read: bufferlen is too small");
+    }
+
     const struct pcapng_block_head* pcapng_head = 
         reinterpret_cast<const pcapng_block_head*>(buffer);
     type = pcapng_head->type;
@@ -32,21 +44,31 @@ void pcapng_block::read_head(const void* buffer, size_t bufferlen) {
 }
 
 void pcapng_block::read_option(const void* buffer, size_t bufferlen) {
-    size_t optlen = total_length - sizeof(pcapng_block_head) - body_length() - sizeof(pcapng_block_tail);
-    if (bufferlen < optlen)
-        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
+    size_t optlen = total_length - sizeof(pcapng_block_head) 
+        - body_length() - sizeof(pcapng_block_tail);
+
+    if (bufferlen < optlen) {
+        throw pgen::exception(
+                "pgen::pcapng_block::read: bufferlen is too small");
+    }
+
     option.resize(optlen);
     memcpy(option.data(), buffer, option.size());
 }
 
 void pcapng_block::read_tail(const void* buffer, size_t bufferlen) {
-    if (bufferlen < sizeof(pcapng_block_tail))
-        throw pgen::exception("pgen::pcapng_block::read: bufferlen is too small");
+    if (bufferlen < sizeof(pcapng_block_tail)) {
+        throw pgen::exception(
+                "pgen::pcapng_block::read: bufferlen is too small");
+    }
+
     const struct pcapng_block_tail* pcapng_tail = 
         reinterpret_cast<const pcapng_block_tail*>(buffer);
     uint32_t total_length2   = pcapng_tail->total_length;
-    if (total_length2 != total_length) 
-        throw pgen::exception("pgen::pcapng_block::read: totlen1 != totlen2");
+    if (total_length2 != total_length) {
+        throw pgen::exception(
+                "pgen::pcapng_block::read: totlen1 != totlen2");
+    }
 }
 
 
@@ -79,8 +101,11 @@ void pcapng_block::read(const void* buffer, size_t bufferlen) {
 
 
 void pcapng_block::write_head(void* buffer, size_t bufferlen) const {
-    if (bufferlen < sizeof(pcapng_block_head))
-        throw pgen::exception("pgen::pcapng_block::write_head: bufferlen is too small");
+    if (bufferlen < sizeof(pcapng_block_head)) {
+        throw pgen::exception(
+                "pgen::pcapng_block::write_head: bufferlen is too small");
+    }
+
     struct pcapng_block_head* pcapng_head = 
         reinterpret_cast<pcapng_block_head*>(buffer);
     pcapng_head->type = type;
@@ -89,23 +114,32 @@ void pcapng_block::write_head(void* buffer, size_t bufferlen) const {
 
 
 void pcapng_block::write_option(void* buffer, size_t bufferlen) const {
-    if (bufferlen < option.size())
-        throw pgen::exception("pgen::pcapng_block::write_option: bufferlen is too small");
+    if (bufferlen < option.size()) {
+        throw pgen::exception(
+                "pgen::pcapng_block::write_option: bufferlen is too small");
+    }
+
     memcpy(buffer, option.data(), option.size());
 }
 
 
 void pcapng_block::write_tail(void* buffer, size_t bufferlen) const {
-    if (bufferlen < sizeof(pcapng_block_tail))
-        throw pgen::exception("pgen::pcapng_block::write_tail: bufferlen is too small");
-    struct pcapng_block_tail* pcapng_tail = reinterpret_cast<pcapng_block_tail*>(buffer);
+    if (bufferlen < sizeof(pcapng_block_tail)) {
+        throw pgen::exception(
+                "pgen::pcapng_block::write_tail: bufferlen is too small");
+    }
+
+    struct pcapng_block_tail* pcapng_tail = 
+        reinterpret_cast<pcapng_block_tail*>(buffer);
     pcapng_tail->total_length   = total_length;
 }
 
 
 void pcapng_block::write(void* buffer, size_t bufferlen) const {
-    if (bufferlen < total_length) 
-        throw pgen::exception("pgen::pcapng_SHB::write: buffer length is too small");
+    if (bufferlen < total_length) {
+        throw pgen::exception(
+                "pgen::pcapng_SHB::write: buffer length is too small");
+    }
 
     uint8_t* buffer_pointer = reinterpret_cast<uint8_t*>(buffer);
     size_t buffer_length = bufferlen;
@@ -126,9 +160,37 @@ void pcapng_block::write(void* buffer, size_t bufferlen) const {
     buffer_pointer += sizeof(pcapng_block_tail);
     buffer_length -= sizeof(pcapng_block_tail);
 
-    if (bufferlen - buffer_length != total_length)
+    if (bufferlen - buffer_length != total_length) {
         throw pgen::exception("pgen::pcapng_block::write: length error");
+    }
 }
+
+
+
+pcapng_unknown::pcapng_unknown() {}
+
+size_t pcapng_unknown::body_length() const {
+    return 0;
+}
+
+void pcapng_unknown::read_body(const void* buffer, size_t bufferlen) {
+    return;
+}
+
+void pcapng_unknown::write_body(void* buffer, size_t bufferlen) const {
+    return;
+}
+
+void pcapng_unknown::summary(bool moreinfo) const {
+    printf("Unkown Block \n");
+    if (moreinfo) {
+        printf("type : %04x \n", type);
+        printf("total_length: %04x \n", total_length);
+        pgen::hex(option.data(), option.size());
+    }
+}
+
+
 
 
 
@@ -173,10 +235,14 @@ size_t pcapng_SHB::body_length() const {
 }
 
 void pcapng_SHB::read_body(const void* buffer, size_t bufferlen) {
-    if (type != pgen::pcapng_type::SHB)
-        throw pgen::exception("pgen::pcapng_SHB::read_body: this is not SHB");
-    if (bufferlen < body_length())
-        throw pgen::exception("pgen::pcapng_SHB::read_body: bufferlen is too small");
+    if (type != pgen::pcapng_type::SHB) {
+        throw pgen::exception(
+                "pgen::pcapng_SHB::read_body: this is not SHB");
+    }
+    if (bufferlen < body_length()) {
+        throw pgen::exception(
+                "pgen::pcapng_SHB::read_body: bufferlen is too small");
+    }
 
     const struct shb_struct* shb = 
         reinterpret_cast<const shb_struct*>(buffer);
@@ -189,8 +255,10 @@ void pcapng_SHB::read_body(const void* buffer, size_t bufferlen) {
 
 
 void pcapng_SHB::write_body(void* buffer, size_t bufferlen) const {
-    if (bufferlen < body_length())
-        throw pgen::exception("pgen::pcapng_SHB::write_body: bufferlen is too small");
+    if (bufferlen < body_length()) {
+        throw pgen::exception(
+                "pgen::pcapng_SHB::write_body: bufferlen is too small");
+    }
 
     struct shb_struct* shb = reinterpret_cast<shb_struct*>(buffer);
     shb->magic             = magic;
@@ -227,9 +295,11 @@ pcapng_IDB::pcapng_IDB() {
     snap_length = 0;
 }
 
+
 size_t pcapng_IDB::body_length() const {
     return sizeof(struct idb_struct);
 }
+
 
 void pcapng_IDB::summary(bool moreinfo) const {
     printf("Interface Description Block \n");
@@ -243,10 +313,13 @@ void pcapng_IDB::summary(bool moreinfo) const {
 }
 
 void pcapng_IDB::read_body(const void* buffer, size_t bufferlen) {
-    if (type != pgen::pcapng_type::IDB)
+    if (type != pgen::pcapng_type::IDB) {
         throw pgen::exception("pgen::pcapng_IDB::read: this is not IDB");
-    if (bufferlen < body_length())
-        throw pgen::exception("pgen::pcapng_IDB::read_body: bufferlen is too small");
+    }
+    if (bufferlen < body_length()) {
+        throw pgen::exception(
+                "pgen::pcapng_IDB::read_body: bufferlen is too small");
+    }
 
     const struct idb_struct* idb =
         reinterpret_cast<const idb_struct*>(buffer);
@@ -256,8 +329,10 @@ void pcapng_IDB::read_body(const void* buffer, size_t bufferlen) {
 }
 
 void pcapng_IDB::write_body(void* buffer, size_t bufferlen) const {
-    if (bufferlen < body_length())
-        throw pgen::exception("pgen::pcapng_IDB::write_body: bufferlen is too small");
+    if (bufferlen < body_length()) {
+        throw pgen::exception(
+                "pgen::pcapng_IDB::write_body: bufferlen is too small");
+    }
 
     struct idb_struct* idb = reinterpret_cast<idb_struct*>(buffer);
     idb->link_type    = link_type   ;
@@ -278,6 +353,7 @@ struct epb_struct {
     uint32_t packet_length;
 };
 
+
 pcapng_EPB::pcapng_EPB() {
     type = pgen::pcapng_type::EPB;
     total_length = 
@@ -292,6 +368,8 @@ pcapng_EPB::pcapng_EPB() {
     packet_length  = 0;
 }
 
+
+
 size_t pcapng_EPB::body_length() const {
     size_t bodysize = sizeof(struct epb_struct) + capture_length;
     // [OR] return sizeof(struct epb_struct) + packet_length;
@@ -303,6 +381,8 @@ size_t pcapng_EPB::body_length() const {
     return bodysize;
 }
 
+
+
 void pcapng_EPB::summary(bool moreinfo) const {
     printf("Enhanced Packet Block \n");
     if (moreinfo) {
@@ -311,12 +391,15 @@ void pcapng_EPB::summary(bool moreinfo) const {
 }
 
 
+
 // TODO need test
 void pcapng_EPB::read_body(const void* buffer, size_t bufferlen) {
     if (type != pgen::pcapng_type::EPB)
         throw pgen::exception("pgen::pcapng_IDB::read: this is not EPB");
-    if (bufferlen < sizeof(epb_struct))
-        throw pgen::exception("pgen::pcapng_IDB::read_body: bufferlen is too small");
+    if (bufferlen < sizeof(epb_struct)) {
+        throw pgen::exception(
+                "pgen::pcapng_IDB::read_body: bufferlen is too small");
+    }
 
     const struct epb_struct* epb =
         reinterpret_cast<const epb_struct*>(buffer);
@@ -326,15 +409,20 @@ void pcapng_EPB::read_body(const void* buffer, size_t bufferlen) {
     capture_length = epb->capture_length;
     packet_length  = epb->packet_length ;
 
-    if (bufferlen < body_length())
-        throw pgen::exception("pgen::pcapng_IDB::read_body: bufferlen is too small");
+    if (bufferlen < body_length()) {
+        throw pgen::exception(
+                "pgen::pcapng_IDB::read_body: bufferlen is too small");
+    }
     
-    packet_data_pointer = reinterpret_cast<const uint8_t*>(buffer) + sizeof(epb_struct);
+    packet_data_pointer = 
+        reinterpret_cast<const uint8_t*>(buffer) + sizeof(epb_struct);
 }
 
 void pcapng_EPB::write_body(void* buffer, size_t bufferlen) const {
-    if (bufferlen < body_length())
-       throw pgen::exception("pgen::pcapng_IDB::write_body: bufferlen is too small");
+    if (bufferlen < body_length()) {
+       throw pgen::exception(
+               "pgen::pcapng_IDB::write_body: bufferlen is too small");
+    }
 
     struct epb_struct* epb = reinterpret_cast<epb_struct*>(buffer);
     epb->interface_id   = interface_id;
