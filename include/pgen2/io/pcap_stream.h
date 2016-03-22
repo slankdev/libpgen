@@ -38,7 +38,6 @@ class pcap_stream : public file_stream {
         pcap_stream(const char* name, pgen::open_mode mode);
 
         void open(const char* name, pgen::open_mode _mode);
-        void close() noexcept;
         void send(const void* buf, size_t buflen);
         size_t recv(void* buf, size_t buflen);
 

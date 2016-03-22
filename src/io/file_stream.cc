@@ -68,6 +68,11 @@ void file_stream::fflush() const {
 
 
 
+void file_stream::close() noexcept {
+    this->fclose();
+}
+
+
 
 bool file_stream::eof() const noexcept { // TODO is this function noexcept?
     return this->feof();

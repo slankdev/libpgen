@@ -30,6 +30,7 @@ class file_stream : public base_stream {
     public:
         file_stream();
         ~file_stream() noexcept;
+        void close() noexcept;
 
         bool eof() const noexcept;   /* read only  */
         void flush() const; /* write only */

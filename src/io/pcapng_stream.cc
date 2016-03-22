@@ -508,9 +508,7 @@ void pcapng_stream::open(const char* name, pgen::open_mode mode) {
     }
 }
 
-void pcapng_stream::close() noexcept {
-    this->fclose();
-}
+
 
 void pcapng_stream::send(const void* buffer, size_t bufferlen) {
     pcapng_EPB epb;

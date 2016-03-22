@@ -52,10 +52,6 @@ void pcap_stream::open(const char* name, pgen::open_mode mode) {
 
 
 
-void pcap_stream::close() noexcept {
-    this->fclose();
-}
-
 
 struct pcap_packet_header {
     uint32_t timestamp_sec;
