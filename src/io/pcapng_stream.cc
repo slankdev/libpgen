@@ -180,29 +180,6 @@ void pcapng_block::write(void* buffer, size_t bufferlen) const {
 
 
 
-pcapng_unknown::pcapng_unknown() {}
-
-size_t pcapng_unknown::body_length() const {
-    return 0;
-}
-
-void pcapng_unknown::read_body(const void* buffer, size_t bufferlen) {
-    return;
-}
-
-void pcapng_unknown::write_body(void* buffer, size_t bufferlen) const {
-    return;
-}
-
-void pcapng_unknown::summary(bool moreinfo) const {
-    printf("Unkown Block \n");
-    if (moreinfo) {
-        printf("type : %04x \n", type);
-        printf("total_length: %04x \n", total_length);
-        pgen::hex(option.data(), option.size());
-    }
-}
-
 
 
 
@@ -529,6 +506,8 @@ size_t pcapng_stream::recv(void* buffer, size_t bufferlen) {
         if (type == pcapng_type::EPB) {
             pcapng_EPB epb;
             epb.read(tmp_buffer, blocklen);
+            if (bufferlen < epb.packet_length)
+                epb.packet_length = bufferlen;
             memcpy(buffer, epb.packet_data_pointer, epb.packet_length);
             return epb.packet_length;
     
