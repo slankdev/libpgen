@@ -1,9 +1,6 @@
 
 
-
-// #include <pgen2/core/protocol/ethernet.h>
-// #include <pgen2/core/protocol/ip.h>
-// #include <arpa/inet.h>
+#include <arpa/inet.h>
 #include <pgen2/core/protocol/udp.h>
 #include <pgen2/exception.h>
 
@@ -24,7 +21,7 @@ struct udp_struct {
 void udp_header::clear() {
     src = 53;
     dst = 53;
-    len = 0;
+    len = min_length;
     check  = 0;
 }
 
@@ -76,7 +73,6 @@ size_t udp_header::length() const {
 }
 
 
-// TODO not tested and debuging
 uint16_t udp_header::calc_checksum(const ipv4_header& iph,
         const void* data, size_t datalen) const {
     
@@ -100,10 +96,10 @@ uint16_t udp_header::calc_checksum(const ipv4_header& iph,
     ph->ip_len   = htons(iph.tot_len-iph.length());
     p += sizeof(pseudo_header);
     
-    write(p, min_length);
+    write(p, sizeof(buffer)-sizeof(pseudo_header));
     p += length();
 
-    memcpy(p, data, datalen);
+    memcpy(p, data, sizeof(buffer)-sizeof(pseudo_header)-length());
     p += datalen;
 
     if (sizeof(buffer) != static_cast<size_t>(p-buffer)) {
@@ -111,42 +107,46 @@ uint16_t udp_header::calc_checksum(const ipv4_header& iph,
                 "pgen::udp_header::calc_checksum: error");
     }
 
-    return pgen::checksum(buffer, sizeof(buffer));
+    return ntohs(pgen::checksum(buffer, sizeof(buffer)));
 }
 
 
 
-// ipv4::ipv4() {
-//     clear();
-//     init_headers();
-// }
-//
-//
-// ipv4::ipv4(const void* buffer, size_t bufferlen) : ipv4() {
-//     analyze(buffer, bufferlen);
-// }
-//
-//
-// ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
-//     ETH = rhs.ETH;
-//     IP  = rhs.IP;
-//     init_headers();
-// }
-//
-//
-//
-//
-// void ipv4::clear() {
-//     ETH.clear();
-//     ETH.type = ethernet::type::ip;
-//     IP.clear();
-// }
-//
-//
-//
-// void ipv4::init_headers() {
-//     headers = {&ETH, &IP};
-// }
+udp::udp() {
+    clear();
+    init_headers();
+}
+
+
+udp::udp(const void* buffer, size_t bufferlen) : udp() {
+    analyze(buffer, bufferlen);
+}
+
+
+udp::udp(const pgen::udp& rhs) : packet(rhs) {
+    UDP = rhs.UDP;
+    ETH = rhs.ETH;
+    IP  = rhs.IP;
+    init_headers();
+}
+
+
+
+
+void udp::clear() {
+    ETH.clear();
+    ETH.type = ethernet::type::ip;
+    IP.clear();
+    IP.protocol = pgen::ipv4::protocol::udp;
+    IP.tot_len = IP.length() + UDP.length();
+    UDP.clear();
+}
+
+
+
+void udp::init_headers() {
+    headers = {&ETH, &IP, &UDP};
+}
 
 
 

@@ -39,26 +39,28 @@ class udp_header : public header {
 
 
 
-// class udp : public packet {
-//     private:
-//         void init_headers() override;
-//     public:
-//         struct port {
-//             static const uint8_t icmp = 1;
-//             static const uint8_t tcp  = 6;
-//             static const uint8_t udp  = 17;
-//         };
-//
-//         // pgen::udp_header UDP;
-//         pgen::ethernet_header ETH;
-//         pgen::ipv4_header IP;
-//
-//         udp();
-//         udp(const void* buffer, size_t bufferlen);
-//         udp(const pgen::udp& rhs);
-//
-//         void clear() override;
-// };
+class udp : public packet {
+    private:
+        void init_headers() override;
+
+    public:
+        struct port {
+            static const uint16_t dns      = 53;
+            static const uint16_t dhcps    = 67;
+            static const uint16_t dhcpc    = 68;
+            static const uint16_t ar_drone = 5556;
+        };
+
+        pgen::udp_header UDP;
+        pgen::ethernet_header ETH;
+        pgen::ipv4_header IP;
+
+        udp();
+        udp(const void* buffer, size_t bufferlen);
+        udp(const pgen::udp& rhs);
+
+        void clear() override;
+};
 
 
 

@@ -15,21 +15,25 @@ using std::endl;
 
 int main() {
     try {
+
+        pgen::pcapng_stream pcapng(in, pgen::open_mode::pcapng_read);
+        uint8_t buf[10000];
+        size_t recvlen = pcapng.recv(buf, sizeof buf);
+        pgen::hex(buf, recvlen);
+        printf("\n");
+
+        pgen::udp pack(buf, recvlen);
+        pack.UDP.summary(true);
+
+        pack.UDP.check = 0;
+        pack.UDP.check = pack.UDP.calc_checksum(pack.IP, pack.contents(),
+                pack.length()-pack.header_length());
+        pack.compile();
+        pack.UDP.summary(true);
+
+        pack.hex();
+        // pcapng << pack;
         
-        pgen::ipv4_header ip;
-        ip.clear();
-
-        pgen::udp_header u;
-        u.src = 80;
-        u.dst = 443;
-        u.len = 0;
-        u.check = 0xffff;
-
-        // uint8_t buf[1000];
-        // u.write(buf, sizeof buf);
-
-        ip.summary();              
-        cout << u.calc_checksum(ip, NULL, 0);
 
     } catch (std::exception& e) {
         printf("%s \n", e.what());
