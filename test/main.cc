@@ -7,47 +7,31 @@
 #include <stdio.h>
 #include <string.h>
 const char* dev = "en0";
-const char* out = "out.pcap";
+const char* out = "out.pcapng";
 const char* in  = "in.pcapng";
 
 using std::cout;
 using std::endl;
 
-#if 1
 int main() {
     try {
-        pgen::pcapng_stream pcapng;
-        pcapng.open(in, pgen::open_mode::pcapng_read);
-        while (1) {
-            uint8_t buf[10000];
-            try {
-                size_t recvlen = pcapng.recv(buf, sizeof(buf));
-                pgen::packet_type type = pgen::module::detect(buf, recvlen);
-                printf("packet length = %zd \n", recvlen);
-                pgen::hex(buf, recvlen);
-            } catch (std::exception& e) {
-                printf("recv exception: %s \n", e.what());
-                break;
-            }
-        }
-    } catch (std::exception& e) {
-        printf("%s \n", e.what());
-    }
-}
-#else 
-int main() {
-    try {
-        pgen::arp pack;
-        pack.compile();
         
-        pgen::pcapng_stream pcapng;
-        pcapng.open(out, pgen::open_mode::pcapng_write);
-        pcapng << pack;
+        pgen::ipv4_header ip;
+        ip.clear();
+
+        pgen::udp_header u;
+        u.src = 80;
+        u.dst = 443;
+        u.len = 0;
+        u.check = 0xffff;
+
+        // uint8_t buf[1000];
+        // u.write(buf, sizeof buf);
+
+        ip.summary();              
+        cout << u.calc_checksum(ip, NULL, 0);
 
     } catch (std::exception& e) {
         printf("%s \n", e.what());
     }
 }
-#endif
-
-

@@ -59,21 +59,6 @@ class pcapng_block {
 
 
 
-class pcapng_unknown : public pcapng_block {
-    protected:
-        size_t body_length() const override;
-        void read_body(const void* buffer, size_t bufferlen) override;
-        void write_body(void* buffer, size_t bufferlen) const override;
-
-    public:
-        pcapng_unknown();
-        void summary(bool moreinfo=true) const override;
-};
-
-
-
-
-
 class pcapng_SHB : public pcapng_block {
     protected:
         size_t body_length() const override;
