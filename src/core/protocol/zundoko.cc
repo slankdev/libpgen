@@ -39,11 +39,11 @@ void zundoko_header::summary(bool moreinfo) const {
     printf("]\n");
 
     if (moreinfo) {
-        printf("type : ");
+        printf(" - type   : ");
         print_type(type);
         printf("\n");
-        printf("msg_len: %d \n", msg_len);
-        printf("msg  : %s \n", msg.c_str());
+        printf(" - msg_len: %d \n", msg_len);
+        printf(" - msg    : %s \n", msg.c_str());
     }
 }
 
@@ -88,5 +88,47 @@ void zundoko_header::read(const void* buffer, size_t buffer_len) {
 size_t zundoko_header::length() const {
     return sizeof(zundoko_struct)+msg_len;
 }
+
+
+
+
+
+
+void zundoko::init_headers() {
+    headers = {&ETH, &IP, &UDP, &ZUNDOKO};
+}
+
+
+zundoko::zundoko() {
+    clear();
+    init_headers();
+}
+
+
+zundoko::zundoko(const void* buffer, size_t bufferlen) : zundoko() {
+    analyze(buffer, bufferlen);
+}
+
+
+zundoko::zundoko(const pgen::zundoko& rhs) : zundoko() {
+    ZUNDOKO = rhs.ZUNDOKO;
+    UDP     = rhs.UDP    ;
+    IP      = rhs.IP     ;
+    ETH     = rhs.ETH    ;
+    init_headers();
+}
+
+void zundoko::clear() {
+    ETH.clear();
+    ETH.type =ethernet::type::ip;
+    IP.clear();
+    IP.protocol == pgen::ipv4::protocol::udp;
+    IP.tot_len = IP.length() + UDP.length() + ZUNDOKO.length();
+    UDP.clear();
+    UDP.src = pgen::udp::port::zundoko;
+    UDP.dst = pgen::udp::port::zundoko;
+    UDP.len = UDP.length() + ZUNDOKO.length();
+}
+
     
 } /* namespace pgen */

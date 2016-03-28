@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-const char* dev = "en0";
+const char* dev = "lo";
 const char* out = "out.pcapng";
 const char* in  = "in.pcapng";
 
@@ -18,27 +18,32 @@ using std::endl;
 
 int main() {
     try {
-        pgen::zundoko_header z;
-        z.clear();
-        z.msg = "test";
-        z.msg_len = z.msg.length();
-        z.summary(true);
 
-        uint8_t buf[1000];
-        z.write(buf, sizeof buf);
-        pgen::hex(buf, z.length());
+        pgen::net_stream net(dev, pgen::open_mode::netif);
+        uint8_t buf[10000];
 
-        pgen::zundoko_header d;
-        d.read(buf, z.length());
-        d.summary(true);
-        d.write(buf, sizeof buf);
-        pgen::hex(buf, d.length());
+        while (1) {
+            size_t recvlen = net.recv(buf, sizeof buf);
+
+            pgen::packet_type type = pgen::module::detect(buf, recvlen);
+            if (type == pgen::packet_type::udp) {
+                pgen::udp udp(buf, recvlen);
+                if (udp.UDP.src==pgen::udp::port::zundoko || udp.UDP.dst==pgen::udp::port::zundoko) {
+                    pgen::zundoko pack(buf, recvlen);
+                    if (pack.ZUNDOKO.type == pgen::zundoko::type::kiyoshi) {
+                        printf("Success %s msg=\"%s\" \n", pack.IP.src.str().c_str(),
+                                pack.ZUNDOKO.msg.c_str());
+                    }
+                }
+            }
+        }
+
+        
+        
 
 
 #if 0
         pgen::pcapng_stream pcapng(in, pgen::open_mode::pcapng_read);
-        uint8_t buf[10000];
-        size_t recvlen = pcapng.recv(buf, sizeof buf);
         pgen::hex(buf, recvlen);
         printf("\n");
 

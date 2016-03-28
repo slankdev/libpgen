@@ -49,6 +49,7 @@ class udp : public packet {
             static const uint16_t dhcps    = 67;
             static const uint16_t dhcpc    = 68;
             static const uint16_t ar_drone = 5556;
+            static const uint16_t zundoko  = 9988;
         };
 
         pgen::udp_header UDP;
