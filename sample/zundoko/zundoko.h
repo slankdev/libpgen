@@ -4,14 +4,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdint.h>
+#include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <net/if.h>
+
+
+
+struct zundoko {
+    static const uint16_t ZUN     = 0;
+    static const uint16_t DOKO    = 1;
+    static const uint16_t KIYOSHI = 2;
+    uint16_t type;
+    uint16_t message_length;
+};
+
+
 
 
 class Socket {

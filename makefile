@@ -48,6 +48,7 @@ CORE_SRC = \
 	src/core/protocol/arp.cc \
 	src/core/protocol/ipv6.cc \
 	src/core/protocol/ip.cc \
+	src/core/protocol/zundoko.cc \
 	src/core/protocol/udp.cc
 
 
