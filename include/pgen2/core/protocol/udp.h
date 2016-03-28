@@ -52,8 +52,8 @@ class udp : public packet {
         };
 
         pgen::udp_header UDP;
-        pgen::ethernet_header ETH;
         pgen::ipv4_header IP;
+        pgen::ethernet_header ETH;
 
         udp();
         udp(const void* buffer, size_t bufferlen);

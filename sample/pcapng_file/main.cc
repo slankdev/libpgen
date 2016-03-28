@@ -10,7 +10,7 @@ const char* in  = "in.pcapng";
 using std::cout;
 using std::endl;
 
-#if 1
+#if 0
 int main() {
     try {
         pgen::pcapng_stream pcapng;
