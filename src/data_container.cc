@@ -44,7 +44,7 @@ void data_container::write_before(size_t index,
     // std::copy_n(buf, buflen, &_vec[index - buflen]);
     //
     const uint8_t* p = reinterpret_cast<const uint8_t*>(buf);
-    std::copy_n(p, buflen, &_vec[index - buflen]);S
+    std::copy_n(p, buflen, &_vec[index - buflen]);
 
     // ERASE
     // std::vector<uint8_t>::iterator it = _vec.begin();
