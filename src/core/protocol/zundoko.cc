@@ -128,9 +128,9 @@ zundoko::zundoko(const pgen::zundoko& rhs) : zundoko() {
 
 void zundoko::clear() {
     ETH.clear();
-    ETH.type =ethernet::type::ip;
+    ETH.type = ethernet::type::ip;
     IP.clear();
-    IP.protocol == pgen::ipv4::protocol::udp;
+    IP.protocol = pgen::ipv4::protocol::udp;
     IP.tot_len = IP.length() + UDP.length() + ZUNDOKO.length();
     UDP.clear();
     UDP.src = pgen::udp::port::zundoko;
