@@ -18,7 +18,24 @@ using std::endl;
 
 int main() {
     try {
+        pgen::zundoko_header z;
+        z.clear();
+        z.msg = "test";
+        z.msg_len = z.msg.length();
+        z.summary(true);
 
+        uint8_t buf[1000];
+        z.write(buf, sizeof buf);
+        pgen::hex(buf, z.length());
+
+        pgen::zundoko_header d;
+        d.read(buf, z.length());
+        d.summary(true);
+        d.write(buf, sizeof buf);
+        pgen::hex(buf, d.length());
+
+
+#if 0
         pgen::pcapng_stream pcapng(in, pgen::open_mode::pcapng_read);
         uint8_t buf[10000];
         size_t recvlen = pcapng.recv(buf, sizeof buf);
@@ -36,7 +53,7 @@ int main() {
 
         pack.hex();
         // pcapng << pack;
-        
+#endif       
 
     } catch (std::exception& e) {
         printf("%s \n", e.what());
