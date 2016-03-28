@@ -36,28 +36,28 @@ class zundoko_header : public header {
 
 
 
-// class zundoko : public packet {
-//     private:
-//         void init_headers() override;
-//
-//     public:
-//         struct type {
-//             static const uint16_t zun     = 0;
-//             static const uint16_t doko    = 1;
-//             static const uint16_t kiyoshi = 2;
-//         };
-//
-//         pgen::zundoko_header ZUNDOKO;
-//         pgen::udp_header UDP;
-//         pgen::ipv4_header IP;
-//         pgen::ethernet_header ETH;
-//
-//         zundoko();
-//         zundoko(const void* buffer, size_t bufferlen);
-//         zundoko(const pgen::zundoko& rhs);
-//
-//         void clear() override;
-// };
+class zundoko : public packet {
+    private:
+        void init_headers() override;
+
+    public:
+        struct type {
+            static const uint16_t zun     = 0;
+            static const uint16_t doko    = 1;
+            static const uint16_t kiyoshi = 2;
+        };
+
+        pgen::zundoko_header ZUNDOKO;
+        pgen::udp_header UDP;
+        pgen::ipv4_header IP;
+        pgen::ethernet_header ETH;
+
+        zundoko();
+        zundoko(const void* buffer, size_t bufferlen);
+        zundoko(const pgen::zundoko& rhs);
+
+        void clear() override;
+};
 
 
 
