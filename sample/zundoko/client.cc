@@ -54,6 +54,13 @@ void send_zundoko(Socket& sock, struct sockaddr_in* addr) {
     memset(buffer, 0, sizeof buffer);
     ssize_t recvlen = sock.recvfrom(buffer, sizeof buffer, 0, 
             (sockaddr*)addr, &len);
+
+    zd = reinterpret_cast<zundoko*>(buffer);
+    if (ntohs(zd->type) == zundoko::KIYOSHI) {
+        printf("Recv KIYOSHI !!! \n");
+    } else {
+        printf("Miss \n");
+    }
 }
 
 
