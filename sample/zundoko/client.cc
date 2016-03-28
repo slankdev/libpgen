@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "Socket.h"
+#include "zundoko.h"
 
 
 void send_zundoko(Socket& sock, struct sockaddr_in* addr) {
@@ -11,28 +11,49 @@ void send_zundoko(Socket& sock, struct sockaddr_in* addr) {
     printf("input('z':send ZUN, 'd':send DOKO, ELSE:sned random): ");
     scanf("%s", inputstr);
     
-    bool isZUN;
+    uint8_t buffer[1000];
+    memset(buffer, 0, sizeof buffer);
+
+    struct zundoko* zd = reinterpret_cast<zundoko*>(buffer);
+
+    char* msg = reinterpret_cast<char*>(buffer+sizeof(zundoko));
     if (strcmp(inputstr, "z")==0) { /* ZUN */
-        isZUN = true;
+        zd->type = htons(zundoko::ZUN);
+        zd->message_length = htons(0);
     } else if (strcmp(inputstr, "d")==0) { /* DOKO */
-        isZUN = false;
+        zd->type = htons(zundoko::DOKO);
+        zd->message_length = htons(0);
+    } else if (strcmp(inputstr, "zm") == 0) { /* ZUN add msg */
+        printf("input msg: ");
+        scanf("%s", msg);
+        zd->type = htons(zundoko::ZUN);
+        zd->message_length = htons(strlen(msg));
+    } else if (strcmp(inputstr, "dm") == 0) { /* DOKO add msg */
+        printf("input msg: ");
+        scanf("%s", msg);
+        zd->type = htons(zundoko::DOKO);
+        zd->message_length = htons(strlen(msg));
     } else {
         srand(time(NULL));
         int r = rand() % 2;
-        isZUN = r==0 ? true : false;
+        zd->type = htons(r==0 ? zundoko::ZUN : zundoko::DOKO);
+        zd->message_length = htons(0);
     }
     
-    char str[1000];
-    strcpy(str, isZUN ? "ZUN" : "DOKO");
-        
-    sock.sendto(str, strlen(str), 0, 
+    sock.sendto(buffer, sizeof(struct zundoko)+ntohs(zd->message_length), 0, 
                 (sockaddr*)addr, sizeof(sockaddr_in));
+    printf("--------------sent--------------\n");
+    printf("ZunDoko Type: %s \n", zd->type==zundoko::ZUN ? "ZUN" : "DOKO");
+    printf("Message Len : %d \n", ntohs(zd->message_length));
+    if (ntohs(zd->message_length) != 0) {
+        printf("Message    : %s \n", msg);
+    }
+    printf("--------------------------------\n");
 
     socklen_t len = sizeof(sockaddr_in);
-    memset(str, 0, sizeof str);
-    sock.recvfrom(str, sizeof str, 0, 
+    memset(buffer, 0, sizeof buffer);
+    ssize_t recvlen = sock.recvfrom(buffer, sizeof buffer, 0, 
             (sockaddr*)addr, &len);
-    printf("recv: %s \n", str);
 }
 
 

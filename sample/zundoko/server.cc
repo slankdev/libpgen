@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Socket.h"
+#include "zundoko.h"
 
 
 void client_hanle(Socket& sock) {
