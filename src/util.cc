@@ -121,29 +121,22 @@ void hex(const void *buffer, size_t bufferlen) noexcept {
 
 
 
-void bin(const void* buffer, size_t bufferlen) noexcept {
-    struct bits {
-        uint8_t b0:1;
-        uint8_t b1:1;
-        uint8_t b2:1;
-        uint8_t b3:1;
-        uint8_t b4:1;
-        uint8_t b5:1;
-        uint8_t b6:1;
-        uint8_t b7:1;
-    };
+
+// Thanks @herumi for code-review
+void bin(const void* buffer, size_t bufferlen) noexcept
+{
     const uint8_t* p0 = reinterpret_cast<const uint8_t*>(buffer);
+    char buf[] = "00000000 ";
     for (size_t i=0; i<bufferlen; i++) {
-        bits* b = (bits*)p0;
-        printf("%d%d%d%d%d%d%d%d ", 
-                b->b0, b->b1, b->b2, b->b3,
-                b->b4, b->b5, b->b6, b->b7);
-        p0++;
+        uint8_t c = p0[i];
+        for (size_t j = 0; j < 8; j++) {
+            buf[j] = '0' + (c & 1);
+            c >>= 1;
+        }
+        printf("%s", buf);
         if ((i+1) % 8 == 0) printf("\n");
     }
-}
-
-
+} 
 
 
 } /* namespace pgen */
