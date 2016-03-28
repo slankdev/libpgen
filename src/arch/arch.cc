@@ -22,13 +22,13 @@
 #include <ifaddrs.h>
 
 
-#ifdef __PGEN_OSX
+#ifdef PGEN_OSX
 #include <net/if_dl.h>
 #include <net/bpf.h>
 #include <fcntl.h>
 #endif
 
-#ifdef __PGEN_LINUX
+#ifdef PGEN_LINUX
 #include <unistd.h>
 #endif
 
@@ -42,7 +42,7 @@ namespace arch {
 
 
 void getmacbydev(const char* dev, uint8_t mac[6]) {
-#if defined(__PGEN_LINUX)
+#if defined(PGEN_LINUX)
     if(strlen(dev) >= IFNAMSIZ) {
         throw pgen::exception("pgen::arch::getmacbydev: Interface name size is too large");
     }
@@ -65,7 +65,7 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
     return ; //success
 
 
-#elif defined(__PGEN_OSX)
+#elif defined(PGEN_OSX)
     
     struct ifaddrs *ifap, *ifaptr;
     unsigned char *ptr;

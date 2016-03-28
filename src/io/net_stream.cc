@@ -16,10 +16,10 @@
 #include <fcntl.h>
 #include <net/if.h>
 
-#if defined(__PGEN_OSX)
+#if defined(PGEN_OSX)
 #include <net/if_dl.h>
 #include <net/bpf.h>
-#elif defined(__PGEN_LINUX)
+#elif defined(PGEN_LINUX)
 #include <netpacket/packet.h>
 #include <netinet/if_ether.h>
 #include <arpa/inet.h>
@@ -51,7 +51,7 @@ net_stream::~net_stream() noexcept {
 
 
 void net_stream::open_netif(const char* name, size_t buffer_size) {
-#if defined(__PGEN_OSX)
+#if defined(PGEN_OSX)
 
     for (int i = 0; i < 4; ++i) { 
         std::string buf = "/dev/bpf";
@@ -84,7 +84,7 @@ void net_stream::open_netif(const char* name, size_t buffer_size) {
 	ioctl(BIOCSHDRCMPLT, &one);   // no complite src macaddr
     _buffer_point = nullptr;           // init _buffer_point
 
-#elif defined(__PGEN_LINUX)
+#elif defined(PGEN_LINUX)
 
     struct ifreq ifreq;
     struct sockaddr_ll sa;
@@ -187,7 +187,7 @@ struct bpf_header {
 
 
 size_t net_stream::recv(void* buffer, size_t bufferlen) {
-#if defined(__PGEN_OSX)
+#if defined(PGEN_OSX)
     if (_buffer_point == nullptr) {
         _buffer_size_readed = read(_buffer.data(), _buffer.size());
         _buffer_point = _buffer.data();
@@ -206,7 +206,7 @@ size_t net_stream::recv(void* buffer, size_t bufferlen) {
         _buffer_point = nullptr;
 
     return copylen;
-#elif defined(__PGEN_LINUX)
+#elif defined(PGEN_LINUX)
     ssize_t recvlen = read(buffer, bufferlen);
     if (recvlen < 0) {
         throw pgen::exception("pgen::net_stream::recv: ");
