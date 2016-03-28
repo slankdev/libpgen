@@ -16,6 +16,7 @@
 #include <pgen2/core/protocol/ip.h>
 #include <pgen2/core/protocol/ipv6.h>
 #include <pgen2/core/protocol/udp.h>
+#include <pgen2/core/protocol/zundoko.h>
 
 #include <pgen2/io/stream.h>
 #include <pgen2/io/net_stream.h>

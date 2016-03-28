@@ -1,11 +1,12 @@
 
+
+
 #pragma once
 
 #include <pgen2/core/packet.h>
 #include <pgen2/core/header.h>
-#include <pgen2/core/protocol/ip.h>
-#include <pgen2/core/ipaddress.h>
-
+#include <pgen2/core/protocol/udp.h>
+#include <string>
 
 
 
@@ -14,15 +15,14 @@ namespace pgen {
 
 
 
-class udp_header : public header {
+class zundoko_header : public header {
     public:
         static const size_t min_length = sizeof(uint16_t)*4;
         static const size_t max_length = min_length;
 
-        uint16_t src;
-        uint16_t dst;
-        uint16_t len;
-        uint16_t check;
+        uint16_t type;
+        uint16_t msg_len;
+        std::string msg;
 
     public:
         void clear() override;
@@ -31,34 +31,30 @@ class udp_header : public header {
         void read(const void* buffer, size_t buffer_len) override;
         size_t length() const override;
 
-    public:
-        uint16_t calc_checksum(const ipv4_header& ip, 
-                const void* data, size_t datalen) const;
 };
 
 
 
 
-class udp : public packet {
+class zundoko : public packet {
     private:
         void init_headers() override;
 
     public:
-        struct port {
-            static const uint16_t dns      = 53;
-            static const uint16_t dhcps    = 67;
-            static const uint16_t dhcpc    = 68;
-            static const uint16_t ar_drone = 5556;
-            static const uint16_t zundoko  = 9988;
+        struct type {
+            static const uint16_t zun     = 0;
+            static const uint16_t doko    = 1;
+            static const uint16_t kiyoshi = 2;
         };
 
+        pgen::zundoko_header ZUNDOKO;
         pgen::udp_header UDP;
         pgen::ipv4_header IP;
         pgen::ethernet_header ETH;
 
-        udp();
-        udp(const void* buffer, size_t bufferlen);
-        udp(const pgen::udp& rhs);
+        zundoko();
+        zundoko(const void* buffer, size_t bufferlen);
+        zundoko(const pgen::zundoko& rhs);
 
         void clear() override;
 };
