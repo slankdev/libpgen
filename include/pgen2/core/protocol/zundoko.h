@@ -17,8 +17,8 @@ namespace pgen {
 
 class zundoko_header : public header {
     public:
-        static const size_t min_length = sizeof(uint16_t)*4;
-        static const size_t max_length = min_length;
+        static const size_t min_length = sizeof(uint16_t)*2;
+        static const size_t max_length = min_length + 100;
 
         uint16_t type;
         uint16_t msg_len;

@@ -5,9 +5,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-const char* dev = "en0";
-const char* out = "out.pcapng";
 const char* in  = "in.pcapng";
+
 #define ZDPORT 9988
 using std::cout;
 using std::endl;
@@ -15,12 +14,11 @@ using std::endl;
 int main() {
     try 
     {
-
-        pgen::net_stream net(in, pgen::open_mode::netif);
-        uint8_t buf[10000];
+        pgen::pcapng_stream pcapng(in, pgen::open_mode::pcapng_read);
 
         while (1) {
-            size_t recvlen = net.recv(buf, sizeof buf);
+            uint8_t buf[10000];
+            size_t recvlen = pcapng.recv(buf, sizeof buf);
 
             pgen::packet_type type = pgen::module::detect(buf, recvlen);
             if (type == pgen::packet_type::udp) {
@@ -31,8 +29,6 @@ int main() {
                         printf("Success %s msg=\"%s\" \n", pack.IP.dst.str().c_str(),
                                 pack.ZUNDOKO.msg.c_str());
                     } else {
-                        printf("other type \n");
-    
                     }
                 }
             }
