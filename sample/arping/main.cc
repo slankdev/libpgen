@@ -21,13 +21,13 @@ int main(int argc, char** argv) {
         send_pack.ARP.psrc.setbydev(argv[1]);
         send_pack.ARP.hwdst = send_pack.ETH.dst;
         send_pack.ARP.pdst = argv[2];
+        send_pack.compile();
 
         net_stream net(argv[1], open_mode::netif);
 
         printf("ARPING %s from %s %s\n", argv[2], 
                 send_pack.ETH.src.str().c_str(), argv[1]);
         for (int count=0; count<5; ) {
-            send_pack.compile();
             net << send_pack;
 
             uint8_t recvbuf[10000];

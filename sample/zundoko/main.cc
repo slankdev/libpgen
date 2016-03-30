@@ -1,21 +1,12 @@
 
 
-#include <iostream>
 #include <pgen2.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-const char* in  = "in.pcapng";
-
 #define ZDPORT 9988
-using std::cout;
-using std::endl;
-
+const char* in  = "in.pcapng";
 int main() {
-    try 
-    {
+    try {
         pgen::pcapng_stream pcapng(in, pgen::open_mode::pcapng_read);
-
         while (1) {
             uint8_t buf[10000];
             size_t recvlen = pcapng.recv(buf, sizeof buf);
@@ -28,16 +19,11 @@ int main() {
                     if (pack.ZUNDOKO.type == pgen::zundoko::type::kiyoshi) {
                         printf("Success %s msg=\"%s\" \n", pack.IP.dst.str().c_str(),
                                 pack.ZUNDOKO.msg.c_str());
-                    } else {
                     }
                 }
             }
         }
-
-        
-    }
-    catch (std::exception& e)
-    {
+    } catch (std::exception& e) {
         printf("%s \n", e.what());
     }
 }
