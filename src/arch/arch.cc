@@ -22,13 +22,13 @@
 #include <ifaddrs.h>
 
 
-#ifdef __PGEN_OSX
+#ifdef PGEN_OSX
 #include <net/if_dl.h>
 #include <net/bpf.h>
 #include <fcntl.h>
 #endif
 
-#ifdef __PGEN_LINUX
+#ifdef PGEN_LINUX
 #include <unistd.h>
 #endif
 
@@ -42,7 +42,7 @@ namespace arch {
 
 
 void getmacbydev(const char* dev, uint8_t mac[6]) {
-#if defined(__PGEN_LINUX)
+#if defined(PGEN_LINUX)
     if(strlen(dev) >= IFNAMSIZ) {
         throw pgen::exception("pgen::arch::getmacbydev: Interface name size is too large");
     }
@@ -55,17 +55,18 @@ void getmacbydev(const char* dev, uint8_t mac[6]) {
 
     ifr.ifr_addr.sa_family = AF_INET;
     strcpy(ifr.ifr_name, dev);
-    if(ioctl(sockd, SIOCGIFHWADDR, &ifr) < 0){
-        close(sockd);
+    
+    int ret = ioctl(sockd, SIOCGIFHWADDR, &ifr);
+    close(sockd);
+    if (ret < 0) {
         throw pgen::exception("pgen::arch::getmacbydev:ioctl: ");
     }
-    close(sockd);
     memcpy(mac, ifr.ifr_hwaddr.sa_data, 6);
     
     return ; //success
 
 
-#elif defined(__PGEN_OSX)
+#elif defined(PGEN_OSX)
     
     struct ifaddrs *ifap, *ifaptr;
     unsigned char *ptr;
@@ -103,11 +104,11 @@ void getipv4bydev(const char* dev, uint8_t ip[4]) {
     }
     ifr.ifr_addr.sa_family = AF_INET;
     strcpy(ifr.ifr_name, dev);
-    if(ioctl(sockd, SIOCGIFADDR, &ifr) < 0){
-        close(sockd);
+    int ret = ioctl(sockd, SIOCGIFADDR, &ifr);
+    close(sockd);
+    if(ret < 0){
         throw pgen::exception("pgen::arch::getipv4bydev:ioctl: ");
     }
-    close(sockd);
     struct sockaddr_in* sa = reinterpret_cast<struct sockaddr_in*>(&ifr.ifr_addr);
     memcpy(ip, &(sa->sin_addr.s_addr), sizeof(uint32_t));
 }
