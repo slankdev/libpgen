@@ -1,10 +1,13 @@
 
 #include <pgen2.h>
-using pgen::arp;
-using pgen::net_stream;
-using pgen::module::detect;
-using pgen::open_mode;
-using pgen::packet_type;
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+// using pgen::arp;
+// using pgen::net_stream;
+// using pgen::module::detect;
+// using pgen::open_mode;
+// using pgen::packet_type;
 
 int main(int argc, char** argv) {
     if (argc < 3) {
@@ -13,17 +16,17 @@ int main(int argc, char** argv) {
     }
 
     try {
-        arp send_pack;   
+        pgen::arp send_pack;   
         send_pack.ETH.src.setbydev(argv[1]);
         send_pack.ETH.dst.setbcast();
-        send_pack.ARP.operation = arp::operation::request;
+        send_pack.ARP.operation = pgen::arp::operation::request;
         send_pack.ARP.hwsrc = send_pack.ETH.src;
         send_pack.ARP.psrc.setbydev(argv[1]);
         send_pack.ARP.hwdst = send_pack.ETH.dst;
         send_pack.ARP.pdst = argv[2];
         send_pack.compile();
 
-        net_stream net(argv[1], open_mode::netif);
+        pgen::net_stream net(argv[1], pgen::open_mode::netif);
 
         printf("ARPING %s from %s %s\n", argv[2], 
                 send_pack.ETH.src.str().c_str(), argv[1]);
@@ -33,9 +36,9 @@ int main(int argc, char** argv) {
             uint8_t recvbuf[10000];
             size_t recvlen = net.recv(recvbuf, sizeof recvbuf);
 
-            if (detect(recvbuf, recvlen) == pgen::packet_type::arp) {
-                arp recv_pack(recvbuf, recvlen);
-                if (recv_pack.ARP.operation == arp::operation::reply) {
+            if (pgen::module::detect(recvbuf, recvlen) == pgen::packet_type::arp) {
+                pgen::arp recv_pack(recvbuf, recvlen);
+                if (recv_pack.ARP.operation == pgen::arp::operation::reply) {
                     recv_pack.ARP.summary();
                     sleep(1);
                     count++;

@@ -7,4 +7,4 @@ SRC = main.cc
 
 
 all: $(SRC)
-	$(CPP) $(CPPFLAGS) -o $(TARGET) $(SRC)
+	$(CPP) -I../../include -L../../ $(CPPFLAGS) -o $(TARGET) $(SRC)
