@@ -1,4 +1,5 @@
 
+#pragma once
 
 #include <pgen2/core/header.h>
 #include <pgen2/core/ipaddress.h>
