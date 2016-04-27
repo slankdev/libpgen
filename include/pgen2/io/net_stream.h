@@ -19,7 +19,7 @@ namespace pgen {
 class net_stream : public base_stream {
     private:
         int _fd;
-#if defined(__PGEN_OSX)
+#if defined(PGEN_OSX)
         std::vector<uint8_t> _buffer;
         uint8_t* _buffer_point;
         ssize_t _buffer_size_readed;

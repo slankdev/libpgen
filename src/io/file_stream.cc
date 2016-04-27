@@ -54,7 +54,8 @@ bool file_stream::feof() const noexcept {
     if (res != 1 && ::feof(_fd)) {
         return true;
     } else {
-        fseek(_fd, -1, SEEK_CUR);
+        // fseek(_fd, -1, SEEK_CUR); // ERASE
+        ungetc(c, _fd);
         return false;
     }
 }

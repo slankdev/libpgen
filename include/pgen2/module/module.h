@@ -1,6 +1,7 @@
 
 
 
+#pragma once
 
 #include <pgen2/core/packet.h>
 #include <stddef.h>

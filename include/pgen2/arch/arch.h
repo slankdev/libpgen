@@ -3,12 +3,12 @@
 
 
 #ifdef __linux
-#define __PGEN_LINUX
+#define PGEN_LINUX
 #endif
 
 
 #ifdef __APPLE__
-#define __PGEN_OSX
+#define PGEN_OSX
 #endif
 
 

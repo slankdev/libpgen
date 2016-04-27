@@ -1,31 +1,20 @@
 
 
-#include <iostream>
 #include <pgen2.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <string.h>
-const char* dev = "wlan0";
-const char* out = "out.pcapng";
+#define ZDPORT 9988
 const char* in  = "in.pcapng";
-
-using std::cout;
-using std::endl;
-
 int main() {
-    try 
-    {
-
-        pgen::net_stream net(dev, pgen::open_mode::netif);
-        uint8_t buf[10000];
-
+    try {
+        pgen::pcapng_stream pcapng(in, pgen::open_mode::pcapng_read);
         while (1) {
-            size_t recvlen = net.recv(buf, sizeof buf);
+            uint8_t buf[10000];
+            size_t recvlen = pcapng.recv(buf, sizeof buf);
 
             pgen::packet_type type = pgen::module::detect(buf, recvlen);
             if (type == pgen::packet_type::udp) {
                 pgen::udp udp(buf, recvlen);
-                if (udp.UDP.src==pgen::udp::port::zundoko || udp.UDP.dst==pgen::udp::port::zundoko) {
+                if (udp.UDP.src==ZDPORT || udp.UDP.dst==ZDPORT) {
                     pgen::zundoko pack(buf, recvlen);
                     if (pack.ZUNDOKO.type == pgen::zundoko::type::kiyoshi) {
                         printf("Success %s msg=\"%s\" \n", pack.IP.dst.str().c_str(),
@@ -34,11 +23,7 @@ int main() {
                 }
             }
         }
-
-        
-    }
-    catch (std::exception& e)
-    {
+    } catch (std::exception& e) {
         printf("%s \n", e.what());
     }
 }
