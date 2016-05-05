@@ -21,6 +21,8 @@ static uint16_t read_as_little_endian(const void* data)
     return uint16_t(p[0]) | (uint16_t(p[1]) << 8);
 }
 
+
+
 /* Thanks @herumi, Isn't used yet */
 static uint16_t read_as_big_endian(const void* data)
 {
@@ -30,9 +32,9 @@ static uint16_t read_as_big_endian(const void* data)
 
 
 
-// TODO This function work currectry 
-// only when architecture is little endian.
-// add code about endian differences
+
+
+
 uint16_t checksum(const void* data, size_t len) noexcept 
 {
     uint32_t sum;
@@ -59,28 +61,6 @@ uint16_t checksum(const void* data, size_t len) noexcept
 }
 
 
-// uint16_t checksum(const void *data, size_t len) noexcept 
-// {
-//     uint32_t sum = 0; 
-//     const uint16_t* _data = reinterpret_cast<const uint16_t*>(data);
-//  
-//     for (; len > 1; len -= 2) {
-//         sum += *_data++;
-//         if (sum & 0x80000000) 
-//           sum = (sum & 0xffff) + (sum >> 16);
-//     }
-//  
-//     if (len == 1) {
-//         uint16_t i = 0;
-//         *(uint8_t*)(&i) = *(uint8_t*)_data; // TODO malformed codes
-//         sum += i;
-//     }
-//  
-//     while (sum >> 16)
-//         sum = (sum & 0xffff) + (sum >> 16);
-//        
-//     return ~sum;
-// }
 
 
 
@@ -90,7 +70,8 @@ uint16_t checksum(const void* data, size_t len) noexcept
  * So smart code. Thank you @herumi 
  * I'll do my best more.
  */
-void hex(const void *buffer, size_t bufferlen) noexcept {
+void hex(const void *buffer, size_t bufferlen) noexcept 
+{
     // printf("hexdump len: %zu \n", bufferlen); // ERASE
     const uint8_t *data = reinterpret_cast<const uint8_t*>(buffer);
     size_t row = 0;
@@ -122,6 +103,7 @@ void hex(const void *buffer, size_t bufferlen) noexcept {
 
 
 
+
 // Thanks @herumi for code-review
 void bin(const void* buffer, size_t bufferlen) noexcept
 {
@@ -139,8 +121,8 @@ void bin(const void* buffer, size_t bufferlen) noexcept
 } 
 
 
+
+
+
 } /* namespace pgen */
-
-
-
 

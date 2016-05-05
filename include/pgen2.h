@@ -1,7 +1,7 @@
 
 
 
-#include <pgen2/arch/arch.h>
+#include <pgen2/arch.h>
 
 #include <pgen2/core/data_container.h>
 #include <pgen2/exception.h>

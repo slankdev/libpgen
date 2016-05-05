@@ -2,9 +2,7 @@
 
 
 
-
 export CPP             := g++
-# export CPP             := clang
 export CPPFLAGS        := -std=c++11 -Wextra 
 export INCLUDE_DIR     := include 
 export AR              := ar 
@@ -24,11 +22,14 @@ export INSTALL_HDR_DIR := /usr/local/include
 
 
 
-ARCH_SRC = \
-	src/arch/arch.cc
+
+
 
 UTIL_SRC = \
 	src/util.cc
+UTIL_OBJ = $(UTIL_SRC:.cc=.o)
+
+
 
 IO_SRC = \
 	src/io/stream.cc \
@@ -36,6 +37,8 @@ IO_SRC = \
 	src/io/pcap_stream.cc \
 	src/io/pcapng_stream.cc \
 	src/io/net_stream.cc
+IO_OBJ = $(IO_SRC:.cc=.o)
+
 
 CORE_SRC = \
 	src/core/data_container.cc \
@@ -48,14 +51,16 @@ CORE_SRC = \
 	src/core/protocol/ip.cc \
 	src/core/protocol/zundoko.cc \
 	src/core/protocol/udp.cc
+CORE_OBJ = $(CORE_SRC:.cc=.o)
 
 
 MODULE_SRC = \
 	src/module/module.cc
+MODULE_OBJ = $(MODULE_SRC:.cc=.o)
 
 
-SRC = $(IO_SRC) $(ARCH_SRC) $(CORE_SRC) $(MODULE_SRC) $(UTIL_SRC) 
-OBJ = $(SRC:.cc=.o)
+SRC = $(IO_SRC) $(CORE_SRC) $(MODULE_SRC) $(UTIL_SRC) 
+OBJ = $(IO_OBJ) $(CORE_OBJ) $(MODULE_OBJ) $(UTIL_OBJ) 
 
 
 
@@ -63,23 +68,29 @@ OBJ = $(SRC:.cc=.o)
 
 all: libpgen2.a test-code
 
-# build-core:
-# build-io:
-# build-module:
+build-base:   $(UTIL_OBJ)
+build-core:   $(CORE_OBJ)
+build-io:     $(IO_OBJ)
+build-module: $(MODULE_OBJ)
 
 
-libpgen2.a: $(OBJ)
+# libpgen2.a: $(OBJ)
+libpgen2.a: build-base build-io build-core build-module
 	@rm -f $@
 	$(AR) rc $@ $(OBJ)
 	$(RANLIB) $@
 
+
+
 test-code:
 	$(MAKE) -C test
+
 
 .PHONY: clean
 clean:
 	$(RM) libpgen2.a a.out
 	$(RM) $(OBJ) 
+
 
 
 .PHONY: depend
@@ -95,6 +106,8 @@ install:
 	$(CP) libpgen2.a      $(INSTALL_LIB_DIR)
 	$(CP) include/pgen2.h $(INSTALL_HDR_DIR)
 	$(CP) include/pgen2   $(INSTALL_HDR_DIR)
+
+
 
 .PHONY: uninstall
 uninstall:

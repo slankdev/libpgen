@@ -3,7 +3,7 @@
 
 
 #include <pgen2/io/stream.h>
-#include <pgen2/arch/arch.h>
+#include <pgen2/arch.h>
 
 #include <sys/socket.h> // for struct sockaddr
 #include <stddef.h>
