@@ -24,9 +24,6 @@ export INSTALL_HDR_DIR := /usr/local/include
 
 
 
-# TYPES_SRC    = \
-# 	src/data_container.cc
-
 ARCH_SRC = \
 	src/arch/arch.cc
 
@@ -57,23 +54,27 @@ MODULE_SRC = \
 	src/module/module.cc
 
 
-SRC = $(IO_SRC) $(TYPES_SRC) $(ARCH_SRC) $(CORE_SRC) $(MODULE_SRC) $(UTIL_SRC) 
+SRC = $(IO_SRC) $(ARCH_SRC) $(CORE_SRC) $(MODULE_SRC) $(UTIL_SRC) 
 OBJ = $(SRC:.cc=.o)
+
 
 
 
 
 all: libpgen2.a test-code
 
-test-code:
-	$(MAKE) -C test
+# build-core:
+# build-io:
+# build-module:
+
 
 libpgen2.a: $(OBJ)
 	@rm -f $@
 	$(AR) rc $@ $(OBJ)
 	$(RANLIB) $@
 
-
+test-code:
+	$(MAKE) -C test
 
 .PHONY: clean
 clean:
@@ -88,7 +89,6 @@ depend:
 
 -include depend.mk
 	
-
 
 .PHONY: install
 install:
