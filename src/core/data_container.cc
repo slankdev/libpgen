@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <stdint.h>
-#include <pgen2/data_container.h>
+#include <pgen2/core/data_container.h>
 #include <pgen2/exception.h>
 
 

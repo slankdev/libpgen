@@ -24,8 +24,8 @@ export INSTALL_HDR_DIR := /usr/local/include
 
 
 
-TYPES_SRC    = \
-	src/data_container.cc
+# TYPES_SRC    = \
+# 	src/data_container.cc
 
 ARCH_SRC = \
 	src/arch/arch.cc
@@ -41,6 +41,7 @@ IO_SRC = \
 	src/io/net_stream.cc
 
 CORE_SRC = \
+	src/core/data_container.cc \
 	src/core/macaddress.cc \
 	src/core/ipaddress.cc \
 	src/core/packet.cc \
