@@ -12,7 +12,7 @@
 
 #include <assert.h>
 #include <pgen2/util.h>
-#include <pgen2/data_container.h>
+#include <pgen2/core/data_container.h>
 
 #include <vector>
 #include <pgen2/core/header.h>

@@ -1,6 +1,6 @@
 
 
-#include <pgen2/arch/arch.h>
+#include <pgen2/arch.h>
 #include <pgen2/exception.h>
 #include <pgen2/core/macaddress.h>
 #include <pgen2/core/ipaddress.h>
@@ -9,16 +9,58 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+
 #include <string>
 #include <iostream>
 #include <exception>
+
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <net/if.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <ifaddrs.h>
 
+
+#ifdef PGEN_OSX
+#include <net/if_dl.h>
+#include <net/bpf.h>
+#include <fcntl.h>
+#endif
+
+#ifdef PGEN_LINUX
+#include <unistd.h>
+#endif
 
 namespace pgen {
 
 
+
+
+void getipv4bydev(const char* dev, uint8_t ip[4]) {
+    if(strlen(dev) >= IFNAMSIZ) {
+        throw pgen::exception("pgen::getipv4bydev: Interface name size is too large");
+    }
+
+    int sockd;
+    struct ifreq ifr;
+
+    if ((sockd=socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+        throw pgen::exception("pgen::getipv4bydev:socket: ");
+    }
+    ifr.ifr_addr.sa_family = AF_INET;
+    strcpy(ifr.ifr_name, dev);
+    int ret = ioctl(sockd, SIOCGIFADDR, &ifr);
+    close(sockd);
+    if(ret < 0){
+        throw pgen::exception("pgen::getipv4bydev:ioctl: ");
+    }
+    struct sockaddr_in* sa = reinterpret_cast<struct sockaddr_in*>(&ifr.ifr_addr);
+    memcpy(ip, &(sa->sin_addr.s_addr), sizeof(uint32_t));
+}
 
 
 
@@ -115,7 +157,7 @@ bool ipv4address::operator!=(const ipv4address& rhs) const {
 }
 
 void ipv4address::setbydev(const char* ifname) {
-    pgen::arch::getipv4bydev(ifname, _raw);
+    pgen::getipv4bydev(ifname, _raw);
     _update_name();
 }
 
@@ -129,6 +171,55 @@ void ipv4address::setbyarray(const uint8_t array[4]) {
 void ipv4address::copytoarray(uint8_t array[4]) const {
     memcpy(array, _raw, length);
 }
+
+
+
+
+
+
+
+/* 
+ * Thanks 
+ *  http://d.hatena.ne.jp/shammer/20101212/p1 
+ */
+void getipv6bydev(const char* dev, uint16_t ip[8]) {
+    if (strlen(dev) >= IFNAMSIZ) {
+        throw pgen::exception("pgen::getipv6bydev: Interface name size is too large");
+    }
+
+    struct ifaddrs * if_list;
+    void * tmp;
+
+    getifaddrs(&if_list);
+    for (struct ifaddrs* ifa = if_list ; ifa != nullptr ; ifa = ifa->ifa_next) {
+        if (strcmp(ifa->ifa_name, dev) == 0) { 
+            if (!ifa->ifa_addr) {
+                continue;
+            } else {
+                if (ifa->ifa_addr->sa_family == AF_INET6) { 
+
+                    // TODO this is complex casting code
+                    tmp = &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr;
+                    memcpy(ip, tmp, sizeof(struct in6_addr));
+                    freeifaddrs(if_list);
+                    return ;
+                }
+                else {
+                    // For example, reach here the cases
+                    // sa_family is AF_PACKET(17).
+                    // sa_family is AF_INET6(23).
+                }
+            }
+        }
+    }
+    freeifaddrs(if_list);
+    throw pgen::exception("pgen::getipv6bydev: can't get address");
+}
+
+
+
+
+
 
 
 
@@ -230,7 +321,7 @@ bool ipv6address::operator!=(const ipv6address& rhs) const {
 }
 
 void ipv6address::setbydev(const char* ifname) {
-    pgen::arch::getipv6bydev(ifname, _raw);
+    pgen::getipv6bydev(ifname, _raw);
     _update_name();
 }
 

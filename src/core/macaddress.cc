@@ -1,25 +1,103 @@
 
 
 
-#include <pgen2/arch/arch.h>
+#include <pgen2/arch.h>
 #include <pgen2/exception.h>
 #include <pgen2/core/macaddress.h>
 #include <pgen2/core/ipaddress.h>
 
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
+#include <assert.h>
 #include <string>
 #include <iostream>
 #include <exception>
 #include <arpa/inet.h>
+
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <ifaddrs.h>
+
+#ifdef PGEN_OSX
+#include <net/if_dl.h>
+#include <net/bpf.h>
+#include <fcntl.h>
+#endif
+
+#ifdef PGEN_LINUX
+#include <unistd.h>
+#endif
+
 
 
 
 
 namespace pgen {
  
+
+
+void getmacbydev(const char* dev, uint8_t mac[6]) {
+#if defined(PGEN_LINUX)
+    if(strlen(dev) >= IFNAMSIZ) {
+        throw pgen::exception("pgen::getmacbydev: Interface name size is too large");
+    }
+
+    int sockd;
+    struct ifreq ifr;
+    if ((sockd=socket(AF_INET,SOCK_DGRAM,0)) < 0){
+        throw pgen::exception("pgen::getmacbydev:socket: ");
+    }
+
+    ifr.ifr_addr.sa_family = AF_INET;
+    strcpy(ifr.ifr_name, dev);
+    
+    int ret = ioctl(sockd, SIOCGIFHWADDR, &ifr);
+    close(sockd);
+    if (ret < 0) {
+        throw pgen::exception("pgen::getmacbydev:ioctl: ");
+    }
+    memcpy(mac, ifr.ifr_hwaddr.sa_data, 6);
+    
+    return ; //success
+
+
+#elif defined(PGEN_OSX)
+    
+    struct ifaddrs *ifap, *ifaptr;
+    unsigned char *ptr;
+    if(getifaddrs(&ifap) != 0){
+        throw pgen::exception("pgen::getmacbydev:getifaddrs: undefined error");
+    }
+
+    for(ifaptr = ifap; ifaptr != nullptr; ifaptr = (ifaptr)->ifa_next) {
+        if (!strcmp((ifaptr)->ifa_name, dev) && 
+                (((ifaptr)->ifa_addr)->sa_family == AF_LINK)) {
+            ptr = (unsigned char *)LLADDR((struct sockaddr_dl *)(ifaptr)->ifa_addr);
+            memcpy(mac, ptr, 6);
+            freeifaddrs(ifap);
+            return; // success
+        }
+    }
+    
+
+#endif
+    throw pgen::exception("pgen::getmacbydev: Unknown error");
+}
+
+
+
+
+
+
+
+
 macaddress::macaddress() {
     clear();
 }
@@ -120,7 +198,7 @@ bool macaddress::operator!=(const macaddress& rhs) const {
 }
 
 void macaddress::setbydev(const char* ifname) {
-    pgen::arch::getmacbydev(ifname, _raw);
+    pgen::getmacbydev(ifname, _raw);
     _update_name();
 }
 
