@@ -20,6 +20,7 @@ export INSTALL_HDR_DIR := /usr/local/include
 	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
 
 
+MAKEFLAGS += --no-print-directory
 
 
 
