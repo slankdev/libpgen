@@ -3,11 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-// using pgen::arp;
-// using pgen::net_stream;
-// using pgen::module::detect;
-// using pgen::open_mode;
-// using pgen::packet_type;
+
 
 int main(int argc, char** argv) {
     if (argc < 3) {
