@@ -2,7 +2,7 @@
 
 #include <pgen2/io/net_stream.h>
 #include <pgen2/exception.h>
-#include <pgen2/arch/arch.h>
+#include <pgen2/arch.h>
 
 #include <string>
 #include <vector>
@@ -32,7 +32,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <pgen2/arch/arch.h>
+#include <pgen2/arch.h>
 
 namespace pgen {
 

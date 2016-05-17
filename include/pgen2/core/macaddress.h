@@ -8,6 +8,7 @@
 namespace pgen {
 
 
+void getmacbydev(const char* dev, uint8_t mac[6]);
 
 /**
  * This class provides MAC address functionality. 

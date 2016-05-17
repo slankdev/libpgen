@@ -8,6 +8,9 @@
 namespace pgen {
 
 
+void getipv4bydev(const char* dev, uint8_t ip[4]);
+void getipv6bydev(const char* dev, uint16_t ip[8]);
+
 
 /**
  * This class provides IPv4 address functionality. 
