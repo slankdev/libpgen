@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <pgen2.h>
 
-const char* dev = "enp0s8";
+const char* dev = "eth0";
 
 int main()
 {
@@ -19,5 +19,6 @@ int main()
     pack.hex();
 
     pgen::net_stream net(dev, pgen::open_mode::netif);
-    net << pack;
+    for (;;)
+        net << pack;
 }
