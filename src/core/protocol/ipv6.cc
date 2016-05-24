@@ -116,6 +116,7 @@ size_t ipv6_header::length() const {
 
 ipv6::ipv6::ipv6() {
     clear();
+    printf("test \n");
     init_headers();
 }
 

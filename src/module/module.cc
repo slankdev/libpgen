@@ -20,6 +20,20 @@ namespace module {
 
 
 
+bool detect_arp(const void* buffer, size_t bufferlen)
+{
+    pgen::ethernet_header eth;
+    eth.read(buffer, bufferlen);
+    return eth.type == pgen::ethernet::type::arp;
+}
+
+bool detect_ipv6(const void* buffer, size_t bufferlen)
+{
+    pgen::ethernet_header eth;
+    eth.read(buffer, bufferlen);
+    return eth.type == pgen::ethernet::type::ipv6;
+}
+
 
 // static pgen::packet_type detect_L4(uint8_t protocol, const void* buffer, size_t bufferlen) {
 //     // ERASE

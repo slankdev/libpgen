@@ -11,6 +11,8 @@ namespace pgen {
 namespace module {
 
 
+bool detect_arp(const void* buffer, size_t bufferlen);
+bool detect_ipv6(const void* buffer, size_t bufferlen);
 
 
 int check(

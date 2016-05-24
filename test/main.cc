@@ -26,9 +26,11 @@ int main() {
         while (1) {
             size_t recvlen = stream.recv(buf, sizeof buf);
 
-            pgen::ptype_l3 type = pgen::module::detect_l3(buf, recvlen);
-            if (type == pgen::ptype_l3::ipv6) {
+            if (pgen::module::detect_ipv6(buf, recvlen)) {
                 printf("ip v6 \n");
+                pgen::ipv6 pack;
+                printf("fin cnstrctr\n");
+                // pack.analyze(buf, recvlen);
             } else {
                 printf("others \n");
             }
