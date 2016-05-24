@@ -114,9 +114,8 @@ size_t ipv6_header::length() const {
 
 
 
-ipv6::ipv6::ipv6() {
+ipv6::ipv6() {
     clear();
-    printf("test \n");
     init_headers();
 }
 
@@ -134,6 +133,7 @@ ipv6::ipv6(const pgen::ipv6& rhs) : packet(rhs) {
 
 
 void ipv6::clear() {
+    
     ETH.clear();
     ETH.type = pgen::ethernet::type::ipv6;
     IP.clear();

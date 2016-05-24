@@ -28,10 +28,11 @@ int main() {
         while (1) {
             size_t recvlen = stream.recv(buf, sizeof buf);
 
-            if (pgen::module::detect_icmpv4(buf, recvlen)) {
-                printf("filtered packet  \n");
-                pgen::ipv4 pack;
+            if (pgen::module::detect_ipv6(buf, recvlen)) {
+                printf("filterd \n");
+                pgen::ipv6 pack;
                 pack.analyze(buf, recvlen);
+                pack.IP.summary(true);
             } else {
                 // printf("others \n");
             }

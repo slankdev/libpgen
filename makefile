@@ -3,7 +3,7 @@
 
 
 export CPP             := g++
-export CPPFLAGS        := -std=c++11 -Wextra 
+export CPPFLAGS        := -std=c++11 -Wextra -g3 -O0
 export INCLUDE_DIR     := include 
 export AR              := ar 
 export RANLIB          := ranlib

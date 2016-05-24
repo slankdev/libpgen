@@ -244,7 +244,7 @@ ipv6address::ipv6address(const char* str) {
 }
 
 void ipv6address::clear() {
-    for (size_t i=0; i<ipv6address::length; ++i)
+    for (size_t i=0; i<ipv6address::length/sizeof(uint16_t); ++i)
         _raw[i] = 0;
     _update_name();
 }
@@ -260,6 +260,8 @@ void ipv6address::_update_name() {
             ntohs(_raw[4]), ntohs(_raw[5]), ntohs(_raw[6]), ntohs(_raw[7]));
     _name.resize(strlen(&_name[0]));
 }
+
+
 
 void ipv6address::set_str(const std::string& str) {
     int n = inet_pton(AF_INET6, str.c_str(), _raw);
