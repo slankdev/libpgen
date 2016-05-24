@@ -11,7 +11,6 @@ namespace pgen {
 namespace module {
 
 
-pgen::packet_type detect(const void* buffer, size_t bufferlen);
 
 
 int check(
