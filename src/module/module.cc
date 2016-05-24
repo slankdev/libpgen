@@ -1,6 +1,7 @@
 
 
 #include <pgen2/core/packet.h>
+#include <pgen2/core/protocol/arp.h>
 #include <pgen2/core/protocol/ethernet.h>
 #include <pgen2/core/protocol/ip.h>
 #include <pgen2/core/protocol/ipv6.h>
@@ -19,20 +20,122 @@ namespace module {
 
 
 
-
-bool detect_arp(const void* buffer, size_t bufferlen)
+bool detect_ethernet(const void* buffer, size_t bufferlen, size_t* hdrlen=nullptr, uint16_t* type=nullptr)
 {
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(buffer); 
+
     pgen::ethernet_header eth;
-    eth.read(buffer, bufferlen);
-    return eth.type == pgen::ethernet::type::arp;
+    eth.read(p, bufferlen);
+    p += eth.length();
+    bufferlen -= eth.length();
+
+    if (hdrlen) {
+        *hdrlen = eth.length();
+    }
+    if (type) {
+        *type = eth.type;
+    }
+    
+    return true;
 }
 
-bool detect_ipv6(const void* buffer, size_t bufferlen)
+
+
+bool detect_arp(const void* buffer, size_t bufferlen, size_t* hdrlen)
 {
-    pgen::ethernet_header eth;
-    eth.read(buffer, bufferlen);
-    return eth.type == pgen::ethernet::type::ipv6;
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(buffer); 
+
+    size_t eth_hlen;
+    uint16_t type;
+    if (detect_ethernet(p, bufferlen, &eth_hlen, &type)) {
+        p += eth_hlen;
+        bufferlen -= eth_hlen;
+        if (type == pgen::ethernet::type::arp) {
+            pgen::arp_header arp;
+            arp.read(p, bufferlen);
+
+            if (hdrlen) {
+                *hdrlen = eth_hlen + arp.length();
+            }
+            return true;
+        }
+    }
+    return false;
 }
+
+
+
+
+bool detect_ipv4(const void* buffer, size_t bufferlen, size_t* hdrlen, uint16_t* proto)
+{
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(buffer); 
+
+    size_t eth_hlen;
+    uint16_t type;
+    if (detect_ethernet(p, bufferlen, &eth_hlen, &type)) {
+        p += eth_hlen;
+        bufferlen -= eth_hlen;
+        if (type == pgen::ethernet::type::ip) {
+            pgen::ipv4_header ipv4;
+            ipv4.read(p, bufferlen);
+
+            if (hdrlen) {
+                *hdrlen = eth_hlen + ipv4.length();
+            }
+            if (proto) {
+                *proto = ipv4.protocol;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+
+bool detect_ipv6(const void* buffer, size_t bufferlen, size_t* hdrlen, uint16_t* proto)
+{
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(buffer); 
+
+    size_t eth_hlen;
+    uint16_t type;
+    if (detect_ethernet(p, bufferlen, &eth_hlen, &type)) {
+        p += eth_hlen;
+        bufferlen -= eth_hlen;
+        if (type == pgen::ethernet::type::ipv6) {
+            pgen::ipv6_header ipv6;
+            ipv6.read(p, bufferlen);
+
+            if (hdrlen) {
+                *hdrlen = eth_hlen + ipv6.length();
+            }
+            if (proto) {
+                *proto = ipv6.next_header;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+bool detect_icmpv4(const void* buffer, size_t bufferlen)
+{
+    const uint8_t* p = reinterpret_cast<const uint8_t*>(buffer); 
+
+    size_t ip_hlen;
+    uint16_t proto;
+    if (detect_ipv4(p, bufferlen, &ip_hlen, &proto)) {
+        p += ip_hlen;
+        bufferlen -= ip_hlen;
+        if (proto == pgen::ipv4::protocol::icmp) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 
 
 // static pgen::packet_type detect_L4(uint8_t protocol, const void* buffer, size_t bufferlen) {

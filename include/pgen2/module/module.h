@@ -11,8 +11,12 @@ namespace pgen {
 namespace module {
 
 
-bool detect_arp(const void* buffer, size_t bufferlen);
-bool detect_ipv6(const void* buffer, size_t bufferlen);
+
+bool detect_ethernet(const void* buffer, size_t bufferlen, size_t* hdrlen=nullptr, uint16_t* type=nullptr);
+bool detect_arp(const void* buffer, size_t bufferlen, size_t* hdrlen=nullptr);
+bool detect_ipv6(const void* buffer, size_t bufferlen, size_t* hdrlen=nullptr, uint16_t* proto=nullptr);
+bool detect_ipv4(const void* buffer, size_t bufferlen, size_t* hdrlen=nullptr, uint16_t* proto=nullptr);
+bool detect_icmpv4(const void* buffer, size_t bufferlen);
 
 
 int check(
