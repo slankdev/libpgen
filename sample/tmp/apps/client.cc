@@ -5,17 +5,12 @@
 #include <arpa/inet.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
-
 #include <slankdev.h>
 #include "tmp.h"
 
-
-#define SERV_PORT 8888
 #define SERV_ADDR "127.0.0.1"
 #define BUFSIZE 1000
-#define CLIENT_ID 1234
-
-
+#define CLIENT_ID 0x1234
 
 int main()
 {
@@ -27,13 +22,14 @@ int main()
     sin.sin_family = AF_INET;
     sin.sin_port = htons(SERV_PORT);
     sin.sin_addr.s_addr = inet_addr(SERV_ADDR);
-    printf("[server] %s:%d/udp \n", 
+    printf("[connect] %s:%d/udp \n", 
             inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
 
     for (int seqence=0; ; seqence++) {
         char msg[BUFSIZE-sizeof(tmp_header)];
         printf("msg>> ");
-        scanf("%s", msg);
+        fgets(msg, sizeof msg, stdin);
+        msg[strlen(msg)-1] = '\0';
         size_t msglen = strlen(msg)+1;
         size_t totallen = sizeof(struct tmp_header)+msglen;
 

@@ -32,11 +32,11 @@ class tmp_header : public pgen::header {
 
         void summary(bool moreinfo=false) const override
         {
-            printf("TMP[id=%d, seq=%d, msg=%s]", 
-                    id, seq, msg);
+            printf("TMP[id=0x%04x, seq=%d, msg=%s]\n", 
+                    id, seq, msg.c_str());
 
             if (moreinfo) {
-                printf(" - id    : %d \n", id);
+                printf(" - id    : 0x%04x \n", id);
                 printf(" - seq   : %d \n", seq);
                 printf(" - msglen: %d \n", msglen);
                 printf(" - msg   : %s \n", msg.c_str());
@@ -146,4 +146,32 @@ class tmp : public pgen::packet {
 };
 
 
+
+bool is_tmp_packet(const void* _buf, size_t len)
+{
+    const uint8_t* buf = reinterpret_cast<const uint8_t*>(_buf);
+
+    pgen::ethernet_header eth;
+    eth.read(buf, len);
+    buf += eth.length();
+    len -= eth.length();
+    if (eth.type != pgen::ethernet::type::ip)
+        return false;
+    
+    pgen::ipv4_header ip;
+    ip.read(buf, len);
+    buf += ip.length();
+    len -= ip.length();
+    if (ip.protocol != pgen::ipv4::protocol::udp)
+        return false;
+
+    pgen::udp_header udp;
+    udp.read(buf, len);
+    buf += ip.length();
+    len -= ip.length();
+    if (!(udp.src==8888 || udp.dst==8888))
+        return false;
+
+    return true;
+}
 
