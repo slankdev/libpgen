@@ -1,4 +1,8 @@
 
+GPATH
+GTAGS
+GRTAGS
+GSYMS
 
 .DS_Store
 *.out
