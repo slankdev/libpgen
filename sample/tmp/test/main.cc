@@ -44,11 +44,5 @@ int main()
             printf("tmp packet \n");
         else
             printf("other packet \n");
-    
     }
-
-    
-
-    
-    
 }
