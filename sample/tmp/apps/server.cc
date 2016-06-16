@@ -9,7 +9,7 @@
 #include "tmp.h"
 
 #define BUFSIZE 10000
-#define DEVICE "lo"
+#define DEVICE "DEVICENAME"
 
 void handle_client(slankdev::safe_intfd& fd)
 {
