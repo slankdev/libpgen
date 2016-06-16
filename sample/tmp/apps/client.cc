@@ -8,12 +8,15 @@
 #include <slankdev.h>
 #include "tmp.h"
 
-#define SERV_ADDR "127.0.0.1"
 #define BUFSIZE 1000
-#define CLIENT_ID 0x1234
 
-int main()
+int main(int argc, char** argv)
 {
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s SERVERIP USERID \n", argv[0]);
+        return -1;
+    }
+
     slankdev::safe_intfd fd;
     fd.socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -21,7 +24,7 @@ int main()
     memset(&sin, 0, sizeof sin);
     sin.sin_family = AF_INET;
     sin.sin_port = htons(SERV_PORT);
-    sin.sin_addr.s_addr = inet_addr(SERV_ADDR);
+    sin.sin_addr.s_addr = inet_addr(argv[1]);
     printf("[connect] %s:%d/udp \n", 
             inet_ntoa(sin.sin_addr), ntohs(sin.sin_port));
 
@@ -35,7 +38,7 @@ int main()
 
         uint8_t buf[BUFSIZE];
         struct tmp_header* tmph = (struct tmp_header*)buf;
-        tmph->id = htonl(CLIENT_ID);
+        tmph->id = htonl(argv[2]);
         tmph->seq= htons(seqence);
         tmph->msg_len = htons(msglen);
         memcpy(buf+sizeof(tmp_header), msg, msglen);

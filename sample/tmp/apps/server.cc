@@ -9,7 +9,6 @@
 #include "tmp.h"
 
 #define BUFSIZE 10000
-#define DEVICE "DEVICENAME"
 
 void handle_client(slankdev::safe_intfd& fd)
 {
@@ -39,14 +38,19 @@ void handle_client(slankdev::safe_intfd& fd)
 }
 
 
-int main()
+int main(int argc, char** argv)
 {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s DEVICE\n", argv[0]);
+        return -1;
+    }
+
     slankdev::safe_intfd fd;
     fd.socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
     struct ifreq ifr;
     memset(&ifr, 0, sizeof ifr);
-    strncpy(ifr.ifr_name, DEVICE, IFNAMSIZ-1);
+    strncpy(ifr.ifr_name, argv[1], IFNAMSIZ-1);
     fd.ioctl(SIOCGIFADDR, &ifr);
 
     struct sockaddr_in sin;
