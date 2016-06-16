@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
         uint8_t buf[BUFSIZE];
         struct tmp_header* tmph = (struct tmp_header*)buf;
-        tmph->id = htonl(atoi(argv[2]));
+        tmph->id = htonl(strtol(argv[2], NULL, 16));
         tmph->seq= htons(seqence);
         tmph->msg_len = htons(msglen);
         memcpy(buf+sizeof(tmp_header), msg, msglen);
