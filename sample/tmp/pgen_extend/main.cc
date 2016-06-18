@@ -3,7 +3,6 @@
 #include <pgen2.h>
 #include <time.h>
 #include "tmp.h"
-const char* in  = "in.pcap";
 
 static const char* getnow()
 {
@@ -14,9 +13,14 @@ static const char* getnow()
     return str;
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    pgen::pcap_stream packet_stream(in, pgen::open_mode::pcap_read);
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s pcapfile \n", argv[0]);
+        return -1;
+    }
+
+    pgen::pcap_stream packet_stream(argv[1], pgen::open_mode::pcap_read);
     while (1) {
         uint8_t buf[10000];
         size_t recvlen;
