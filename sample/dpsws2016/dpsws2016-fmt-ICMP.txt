@@ -1,0 +1,10 @@
+Ether no vlan skip :hex:14
+IP skip:hex:9
+IP Proto:dig:1
+IP skip:hex:2
+IP Src Addr:hex:4
+IP Dst Addr:hex:4
+ICMP Type:dig:1
+ICMP Code:dig:1
+ICMP Checksum:hex:2
+ICMP Data:hex:-1
