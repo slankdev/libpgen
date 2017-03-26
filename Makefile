@@ -4,7 +4,7 @@
 def:
 	@make -C test
 
-testclean:
+clean:
 	@make -C test clean
 
 
