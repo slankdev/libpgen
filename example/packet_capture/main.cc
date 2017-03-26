@@ -1,5 +1,6 @@
 
-#include <pgen2.h>
+#include <pgen2/core.h>
+#include <pgen2/io.h>
 const char* dev = "lo";
 int main() {
     try {

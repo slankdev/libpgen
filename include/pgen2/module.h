@@ -20,7 +20,7 @@ bool detect_icmpv4(const void* buffer, size_t bufferlen);
 
 
 int check(
-        pgen::packet* pack, const char* filename, 
+        pgen::packet* pack, const char* filename,
         void (*callback)(const void*,size_t)=nullptr);
 
 
