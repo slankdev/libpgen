@@ -1,44 +1,17 @@
 
 
-
-
-export CPP             := g++
-export CPPFLAGS        := -std=c++11 -Wextra -g3 -O0
-export INCLUDE_DIR     := include 
-export AR              := ar 
-export RANLIB          := ranlib
-export MAKE            := make
-export CP              := cp -rf
-export RM              := rm -rf
-export MKDIR           := mkdir -p
-export INSTALL_LIB_DIR := /usr/local/lib
-export INSTALL_HDR_DIR := /usr/local/include
-
-
-.SUFFIXES: .out .c .cc .o .h 
-.cc.o: 
-	$(CPP) $(CPPFLAGS) -c $< -o $@  -I$(INCLUDE_DIR)
-
-
+CXX             := g++
+CXXFLAGS        := -std=c++11 -Wextra -g3 -O0 -Iinclude
 MAKEFLAGS += --no-print-directory
 
+INSTALL_LIB_DIR := /usr/local/lib
+INSTALL_HDR_DIR := /usr/local/include
 
 
+.SUFFIXES: .out .c .cc .o .h
+.cc.o:
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-
-UTIL_SRC = \
-	src/util.cc
-UTIL_OBJ = $(UTIL_SRC:.cc=.o)
-
-
-
-IO_SRC = \
-	src/io/stream.cc \
-	src/io/file_stream.cc \
-	src/io/pcap_stream.cc \
-	src/io/pcapng_stream.cc \
-	src/io/net_stream.cc
-IO_OBJ = $(IO_SRC:.cc=.o)
 
 
 CORE_SRC = \
@@ -55,70 +28,39 @@ CORE_SRC = \
 CORE_OBJ = $(CORE_SRC:.cc=.o)
 
 
-MODULE_SRC = \
-	src/module/module.cc
-MODULE_OBJ = $(MODULE_SRC:.cc=.o)
+OBJ = $(CORE_OBJ)
 
 
-SRC = $(IO_SRC) $(CORE_SRC) $(MODULE_SRC) $(UTIL_SRC) 
-OBJ = $(IO_OBJ) $(CORE_OBJ) $(MODULE_OBJ) $(UTIL_OBJ) 
-
-
-
-
-
-all: libpgen2.a test-code
-
-build-base:   $(UTIL_OBJ)
+all: libpgen2.a
 build-core:   $(CORE_OBJ)
-build-io:     $(IO_OBJ)
-build-module: $(MODULE_OBJ)
 
 
-# libpgen2.a: $(OBJ)
-libpgen2.a: build-base build-io build-core build-module
+libpgen2.a: build-core
 	@rm -f $@
-	$(AR) rc $@ $(OBJ)
-	$(RANLIB) $@
+	ar rc $@ $(OBJ)
+	ranlib $@
 
 
-
-test-code:
-	$(MAKE) -C test
-
-
-.PHONY: clean
 clean:
-	$(RM) libpgen2.a a.out
-	$(RM) $(OBJ) 
+	rm -rf libpgen2.a a.out
+	rm -rf $(OBJ)
 
 
-
-.PHONY: depend
-depend:
-	@echo "Create Dependfile"
-	$(CPP) -MM -MG $(SRC) $(CPPFLAGS) -I$(INCLUDE_DIR) > depend.mk
-
--include depend.mk
-	
-
-.PHONY: install
 install:
-	$(CP) libpgen2.a      $(INSTALL_LIB_DIR)
-	$(CP) include/pgen2.h $(INSTALL_HDR_DIR)
-	$(CP) include/pgen2   $(INSTALL_HDR_DIR)
+	cp -rf libpgen2.a      $(INSTALL_LIB_DIR)
+	cp -rf include/pgen2.h $(INSTALL_HDR_DIR)
+	cp -rf include/pgen2   $(INSTALL_HDR_DIR)
 
 
-
-.PHONY: uninstall
 uninstall:
-	$(RM) $(INSTALL_LIB_DIR)/libpgen2.a
-	$(RM) $(INSTALL_HDR_DIR)/pgen2.h
-	$(RM) $(INSTALL_HDR_DIR)/pgen2 
+	rm -rf $(INSTALL_LIB_DIR)/libpgen2.a
+	rm -rf $(INSTALL_HDR_DIR)/pgen2.h
+	rm -rf $(INSTALL_HDR_DIR)/pgen2
 
 
-
-doc:
-	$(MAKE) -C docs
-
-
+# .PHONY: depend
+# depend:
+# 	@echo "Create Dependfile"
+# 	$(CXX) -MM -MG $(SRC) $(CXXFLAGS) -I$(INCLUDE_DIR) > depend.mk
+#
+# -include depend.mk

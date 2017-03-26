@@ -1,11 +1,11 @@
 
 #include <pgen2.h>
-const char* dev = "en0";
+const char* dev = "lo";
 int main() {
     try {
         pgen::net_stream handle;
         handle.open(dev, pgen::open_mode::netif);
-        
+
         while (1) {
             uint8_t buf[4096];
             size_t recv_len = handle.recv(buf, sizeof(buf));

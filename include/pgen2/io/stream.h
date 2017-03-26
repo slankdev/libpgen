@@ -1,10 +1,14 @@
 
 #pragma once
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include <vector>
-#include <stdio.h>
+#include <string>
 
 
 
@@ -33,14 +37,14 @@ class base_stream {
     public:
         pgen::open_mode mode() const noexcept; /**< return stream mode */
         void print_mode() const noexcept;      /**< print stream mode  */
-        
+
         /**
-         * Open stream 
+         * Open stream
          **/
         virtual void open(const char* name, pgen::open_mode mode) = 0;
-        
+
         /**
-         * Close stream 
+         * Close stream
          **/
         virtual void close() noexcept = 0;
 
@@ -60,6 +64,35 @@ class base_stream {
 
 };
 
+
+inline pgen::open_mode base_stream::mode() const noexcept {
+    return _mode;
+}
+
+
+inline void base_stream::print_mode() const noexcept {
+    switch (_mode) {
+        case pgen::open_mode::pcap_read: {
+            printf("pcap_read mode \n");
+            break;
+        } case pgen::open_mode::pcap_write: {
+            printf("pcap_write mode \n");
+            break;
+        } case pgen::open_mode::pcapng_read: {
+            printf("pcapng_read mode \n");
+            break;
+        } case pgen::open_mode::pcapng_write: {
+            printf("pcapng_write mode \n");
+            break;
+        } case pgen::open_mode::netif: {
+            printf("netif mode \n");
+            break;
+        } defult: {
+            printf("unknown mode \n");
+            break;
+        }
+    }
+}
 
 
 
