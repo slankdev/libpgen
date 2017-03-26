@@ -1,7 +1,7 @@
 
 sudo: false
 
-language: cpp
+language:
   - cpp
   - objective-c
 
@@ -12,6 +12,7 @@ compiler:
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
   - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
+  - make CXX="${CXX}"
 
 addons:
   apt:
@@ -25,4 +26,4 @@ addons:
       - gcc-5
 
 script:
-  - make CXX="${CXX}"
+  - echo Success
