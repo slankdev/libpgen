@@ -42,14 +42,6 @@ class udp : public packet {
         void init_headers() override;
 
     public:
-        struct port {
-            static const uint16_t dns      = 53;
-            static const uint16_t dhcps    = 67;
-            static const uint16_t dhcpc    = 68;
-            static const uint16_t ar_drone = 5556;
-            static const uint16_t zundoko  = 9988;
-        };
-
         pgen::udp_header UDP;
         pgen::ipv4_header IP;
         pgen::ethernet_header ETH;

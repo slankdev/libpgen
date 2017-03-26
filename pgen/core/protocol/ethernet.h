@@ -36,12 +36,6 @@ class ethernet : public packet {
     private:
         void init_headers() override;
     public:
-        struct type {
-            static const uint16_t ip   = 0x0800;
-            static const uint16_t arp  = 0x0806;
-            static const uint16_t ipv6 = 0x86dd;
-        };
-
         pgen::ethernet_header ETH;
 
         ethernet();
@@ -53,21 +47,18 @@ class ethernet : public packet {
 };
 
 
-} /* namespace pgen */
 
 
 
-
-// IMPL
+/************************************************************************\
+ *                                                                      *
+ * Following code is Function Implementation                            *
+ *                                                                      *
+\************************************************************************/
 
 
 #include <pgen/exception.h>
 #include <arpa/inet.h>
-
-
-
-namespace pgen {
-
 
 
 
