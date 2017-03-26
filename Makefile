@@ -4,6 +4,10 @@
 def:
 	@make -C test
 
+testclean:
+	@make -C test clean
+
+
 install:
 	cp -rf pgen2 $(INSTALL_PATH)
 
