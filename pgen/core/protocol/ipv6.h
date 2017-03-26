@@ -202,7 +202,7 @@ inline ipv6::ipv6(const pgen::ipv6& rhs) : packet(rhs) {
 inline void ipv6::clear() {
 
     ETH.clear();
-    ETH.type = pgen::ethernet::type::ipv6;
+    ETH.type = 0x86dd;
     IP.clear();
 }
 

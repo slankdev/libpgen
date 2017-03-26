@@ -196,7 +196,7 @@ inline arp::arp(const void* buffer, size_t bufferlen) : arp() {
 
 inline void arp::clear() {
     ETH.clear();
-    ETH.type = pgen::ethernet::type::arp;
+    ETH.type = 0x0806;
     ARP.clear();
 }
 

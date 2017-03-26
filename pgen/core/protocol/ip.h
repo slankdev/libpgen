@@ -251,7 +251,7 @@ inline ipv4::ipv4(const pgen::ipv4& rhs) : packet(rhs) {
 
 inline void ipv4::clear() {
     ETH.clear();
-    ETH.type = ethernet::type::ip;
+    ETH.type = 0x0800;
     IP.clear();
 }
 

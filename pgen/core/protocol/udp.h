@@ -202,7 +202,7 @@ inline udp::udp(const pgen::udp& rhs) : packet(rhs) {
 
 inline void udp::clear() {
     ETH.clear();
-    ETH.type = ethernet::type::ip;
+    ETH.type = 0x0800;
     IP.clear();
     IP.protocol = pgen::ipv4::protocol::udp;
     IP.tot_len = IP.length() + UDP.length();
