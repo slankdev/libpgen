@@ -5,7 +5,6 @@ CXXFLAGS = -std=c++11 -g -I$(PREFIX)
 
 
 SRCS = \
-	test_main.cc \
 	test_eth.cc
 OBJS = $(SRCS:.cc=.out)
 
@@ -17,4 +16,4 @@ OBJS = $(SRCS:.cc=.out)
 def: $(OBJS)
 
 clean:
-	rm -rf $(OBJS)
+	rm -rf *.out

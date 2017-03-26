@@ -16,4 +16,4 @@ OBJS = $(SRCS:.cc=.out)
 def: $(OBJS)
 
 clean:
-	rm -rf $(OBJS)
+	rm -rf *.out
