@@ -6,13 +6,13 @@
 #include <stdint.h>
 #include <vector>
 #include <stdio.h>
-#include <pgen2/io/file_stream.h>
+#include <pgen/io/file_stream.h>
 
 
 /* for impl */
-#include <pgen2/io/pcap_stream.h>
-#include <pgen2/io/pcapng_stream.h>
-#include <pgen2/exception.h>
+#include <pgen/io/pcap_stream.h>
+#include <pgen/io/pcapng_stream.h>
+#include <pgen/exception.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

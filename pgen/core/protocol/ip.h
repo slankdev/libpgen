@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include <pgen2/core/packet.h>
-#include <pgen2/core/header.h>
-#include <pgen2/core/protocol/ethernet.h>
-#include <pgen2/core/ipaddress.h>
+#include <pgen/core/packet.h>
+#include <pgen/core/header.h>
+#include <pgen/core/protocol/ethernet.h>
+#include <pgen/core/ipaddress.h>
 
 
 
@@ -82,8 +82,8 @@ class ipv4 : public packet {
 
 
 
-#include <pgen2/core/protocol/ethernet.h>
-#include <pgen2/exception.h>
+#include <pgen/core/protocol/ethernet.h>
+#include <pgen/exception.h>
 #include <arpa/inet.h>
 
 

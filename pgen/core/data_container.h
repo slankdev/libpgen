@@ -42,7 +42,7 @@ class data_container {
 #include <algorithm>
 #include <stdio.h>
 #include <stdint.h>
-#include <pgen2/exception.h>
+#include <pgen/exception.h>
 
 
 namespace pgen {

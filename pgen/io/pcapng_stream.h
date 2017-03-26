@@ -3,8 +3,8 @@
 
 
 #include <stddef.h>
-#include <pgen2/io/stream.h>
-#include <pgen2/io/file_stream.h>
+#include <pgen/io/stream.h>
+#include <pgen/io/file_stream.h>
 
 
 namespace pgen {
@@ -164,9 +164,9 @@ class pcapng_stream : public file_stream {
 
 
 
-#include <pgen2/io/pcapng_stream.h>
-#include <pgen2/exception.h>
-#include <pgen2/util.h>
+#include <pgen/io/pcapng_stream.h>
+#include <pgen/exception.h>
+#include <pgen/util.h>
 #include <assert.h>
 
 namespace pgen {

@@ -11,13 +11,12 @@
 
 
 #include <assert.h>
-#include <pgen2/util.h>
-#include <pgen2/core/data_container.h>
+#include <pgen/util.h>
+#include <pgen/core/data_container.h>
 
 #include <vector>
-#include <pgen2/core/header.h>
-
-#include <pgen2/io/stream.h>
+#include <pgen/core/header.h>
+#include <pgen/io/stream.h>
 
 
 namespace pgen {
@@ -155,10 +154,10 @@ class packet {
 
 
 #include <assert.h>
-#include <pgen2/core/data_container.h>
-#include <pgen2/core/packet.h>
-#include <pgen2/util.h>
-#include <pgen2/exception.h>
+#include <pgen/core/data_container.h>
+#include <pgen/core/packet.h>
+#include <pgen/util.h>
+#include <pgen/exception.h>
 
 
 

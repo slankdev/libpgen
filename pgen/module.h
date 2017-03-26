@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <pgen2/core/packet.h>
+#include <pgen/core/packet.h>
 #include <stddef.h>
 
 
@@ -11,15 +11,15 @@
 /*
  * For IMPLE
  */
-#include <pgen2/core/packet.h>
-#include <pgen2/core/protocol/arp.h>
-#include <pgen2/core/protocol/ethernet.h>
-#include <pgen2/core/protocol/ip.h>
-#include <pgen2/core/protocol/ipv6.h>
-#include <pgen2/io/net_stream.h>
-#include <pgen2/io/file_stream.h>
-#include <pgen2/io/pcapng_stream.h>
-#include <pgen2/io/pcap_stream.h>
+#include <pgen/core/packet.h>
+#include <pgen/core/protocol/arp.h>
+#include <pgen/core/protocol/ethernet.h>
+#include <pgen/core/protocol/ip.h>
+#include <pgen/core/protocol/ipv6.h>
+#include <pgen/io/net_stream.h>
+#include <pgen/io/file_stream.h>
+#include <pgen/io/pcapng_stream.h>
+#include <pgen/io/pcap_stream.h>
 #include <string.h>
 #include <stdio.h>
 

@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include <pgen2/core/packet.h>
-#include <pgen2/core/header.h>
-#include <pgen2/core/protocol/ip.h>
-#include <pgen2/core/ipaddress.h>
+#include <pgen/core/packet.h>
+#include <pgen/core/header.h>
+#include <pgen/core/protocol/ip.h>
+#include <pgen/core/ipaddress.h>
 
 
 
@@ -77,7 +77,7 @@ class udp : public packet {
 
 
 #include <arpa/inet.h>
-#include <pgen2/exception.h>
+#include <pgen/exception.h>
 
 
 namespace pgen {

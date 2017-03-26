@@ -7,8 +7,8 @@
 #include <vector>
 #include <stdio.h>
 
-#include <pgen2/io/stream.h>
-#include <pgen2/exception.h>
+#include <pgen/io/stream.h>
+#include <pgen/exception.h>
 
 
 

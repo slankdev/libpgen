@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <pgen2/core/packet.h>
-#include <pgen2/core/header.h>
-#include <pgen2/core/macaddress.h>
+#include <pgen/core/packet.h>
+#include <pgen/core/header.h>
+#include <pgen/core/macaddress.h>
 
 
 
@@ -61,7 +61,7 @@ class ethernet : public packet {
 // IMPL
 
 
-#include <pgen2/exception.h>
+#include <pgen/exception.h>
 #include <arpa/inet.h>
 
 

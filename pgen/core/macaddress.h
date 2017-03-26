@@ -94,10 +94,10 @@ class macaddress {
 
 
 
-#include <pgen2/arch.h>
-#include <pgen2/exception.h>
-#include <pgen2/core/macaddress.h>
-#include <pgen2/core/ipaddress.h>
+#include <pgen/arch.h>
+#include <pgen/exception.h>
+#include <pgen/core/macaddress.h>
+#include <pgen/core/ipaddress.h>
 
 #include <stdint.h>
 #include <stdio.h>

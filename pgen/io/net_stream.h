@@ -2,8 +2,8 @@
 #pragma once
 
 
-#include <pgen2/io/stream.h>
-#include <pgen2/arch.h>
+#include <pgen/io/stream.h>
+#include <pgen/arch.h>
 
 #include <sys/socket.h> // for struct sockaddr
 #include <stddef.h>
@@ -16,9 +16,9 @@
 
 
 /* following include is only for Impl */
-#include <pgen2/io/net_stream.h>
-#include <pgen2/exception.h>
-#include <pgen2/arch.h>
+#include <pgen/io/net_stream.h>
+#include <pgen/exception.h>
+#include <pgen/arch.h>
 
 #include <string>
 #include <vector>
@@ -43,7 +43,7 @@
 #endif
 #include <fcntl.h>
 #include <unistd.h>
-#include <pgen2/arch.h>
+#include <pgen/arch.h>
 
 namespace pgen {
 
