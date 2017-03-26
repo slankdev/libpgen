@@ -1,10 +1,30 @@
-language: 
-    - cpp
-    - objective-c
+
+sudo: false
+
+language: cpp
+  - cpp
+  - objective-c
 
 compiler:
-    - clang++
+  - clang++
+  - g++
+
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise
+    packages:
+      - libpcap-dev
+      - libncurses5-dev
+      - clang-3.7
+      - g++-5
+      - gcc-5
 
 script:
-    - make CPP=clang++
-
+  - make CXX="${CXX}"
