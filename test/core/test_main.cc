@@ -5,9 +5,9 @@
 
 
 #include <iostream>
-#include <pgen2/core.h>
-#include <pgen2/io.h>
-#include <pgen2/module.h>
+#include <pgen/core.h>
+#include <pgen/io.h>
+#include <pgen/module.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
