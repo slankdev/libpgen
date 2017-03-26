@@ -15,10 +15,6 @@ INSTALL_HDR_DIR := /usr/local/include
 
 
 CORE_SRC = \
-	src/core/data_container.cc \
-	src/core/macaddress.cc \
-	src/core/ipaddress.cc \
-	src/core/packet.cc \
 	src/core/protocol/ethernet.cc \
 	src/core/protocol/arp.cc \
 	src/core/protocol/ipv6.cc \
@@ -40,6 +36,7 @@ libpgen2.a: build-core
 	ar rc $@ $(OBJ)
 	ranlib $@
 
+re: clean all
 
 clean:
 	rm -rf libpgen2.a a.out
