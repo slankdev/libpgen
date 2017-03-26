@@ -1,14 +1,11 @@
 
 
 
-INSTALL_PATH := /usr/local/include
-
-
 def:
-	@echo test
+	@make -C test
 
 install:
-	cp -rf include/pgen2   $(INSTALL_PATH)
+	cp -rf pgen2 $(INSTALL_PATH)
 
 uninstall:
 	rm -rf $(INSTALL_PATH)/pgen2
