@@ -1,3 +1,5 @@
+*.pcap
+*.pcapng
 
 GPATH
 GTAGS

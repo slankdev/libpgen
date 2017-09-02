@@ -2,6 +2,10 @@
 
 # LibPGEN
 
+**New version's test is working in progress**
+- [x] pgen::io
+- [ ] pgen::core
+
 - master  [![Build Status](https://travis-ci.org/slankdev/libpgen.svg?branch=master)](https://travis-ci.org/slankdev/libpgen)
 
 ## Description
@@ -49,3 +53,4 @@ $ sudo make uninstall    // uninstall
 ## LICENCE
 
 GNU GPL v2.0 https://www.gnu.org/licenses/gpl-2.0.html
+
