@@ -1,10 +1,33 @@
-language: 
-    - cpp
-    - objective-c
+
+sudo: false
+
+language:
+  - cpp
+  - objective-c
 
 compiler:
-    - clang++
+  - clang++
+  - g++
+
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
+  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
+  - make CXX="${CXX}"
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise
+    packages:
+      - clang-3.7
+      - g++-5
+      - gcc-5
 
 script:
-    - make CPP=clang++
+  - echo Success
 
+notifications:
+  slack:
+    secure: xo3pfZf1qumSuhQb+kmeGB/zx3o3437T/Dy59NWYt1lgiAGLZ4182G0MSlzAFzE7jdWfwOisaX5Kpdtjn3ult8nLY97iTLHxY1LuUqavL1vlY9YdQ0HEmJ/VyxVibDaqoe61ryTwiIpyRogx8E0+wzk06kr31vUwIsoTq+Q8vR7Cc7eWj4Vj+96KEgzlNRnGlF94T6hsU+0U1JX4kxBMou9SB4HlOwHHUBPIqWMmBqi50zPXUMwJ5yaOhQ1Qx+HR+U4qb2KhLeq8h3lzSENftzUP9/jN2BDnYQvlgwAIzkV8vUVQblzfTvPPg7prONDafnxGPdupiaSzsJjJgS08v0k/cd+TgqweHYLiIcomohHA6sayj/9dcr5wqIHbKgdExN5McS/MfWtjRPYfKJimKbk5/EWgII0StF+fof8BMUToY9mnkm2Yao80TG3dvBzIfSbWmROpnQp4JW5WYGYNpYHYtijJfcxf1HeAHtFBZ3kMcZ1zY+SNMKZnG1PvNvQPUFGZ2cCjL2HcgHrZgXO5sLQut6WK/rjvK3yqspjOWUmAlmeOXQB/DvnmIN3DjX9nF3LoPPb6F7y++XjbQoljjy6JIYenl0ux13x4JeTolI44Yd/OMkHGWowGipBYQDF6VJ4KSF+3W0FG34cF6cWo2LEy3APZgnVPk+oeU0jkNgw=
